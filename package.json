@@ -1,0 +1,18 @@
+{
+  "browserslist": [
+    "last 1 chrome versions"
+  ],
+  "devDependencies": {
+    "coffeescript": "^2.5.1",
+    "parcel": "^1.12.4",
+    "parcel-plugin-svelte": "^4.0.6",
+    "pug": "^2.0.4",
+    "stylus": "^0.54.7",
+    "svelte": "^3.18.1",
+    "svelte-preprocess": "^3.4.0"
+  },
+  "scripts": {
+    "hack": "parcel index.html --no-cache",
+    "ship": "parcel build index.html"
+  }
+}
