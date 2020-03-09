@@ -15,30 +15,35 @@
 </template>
 
 <style type="text/stylus">
+
     .popular-stories-list
         display: flex
+        height: 100%
     .popular-story-reader
         width: 560px
         background: wheat
+        height: 100%
+        overflow: auto
     .comment
         font-size: 12px
-        padding: 4px 8px
+        padding: 6px
         word-break: break-word
     nav
         width: 400px
+        height: 100%
+        overflow: auto
     .story-brochure
-        padding: 4px 8px
+        padding: 6px
         display: flex
         justify-content: space-between
         cursor: pointer
-    .selected-story-brochure
-        background: wheat
     .read-story-brochure
         background: lightgray
+    .selected-story-brochure
+        background: wheat
     .story-headline
-        max-height: 48px
+        max-height: 56px
         overflow: hidden
-        text-overflow: ellipsis
         font-size: 14px
         font-weight: bold
         margin-left: 4px
