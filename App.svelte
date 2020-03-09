@@ -1,12 +1,68 @@
 <template lang="pug">
+    section(class='popular-stories-list')
+        nav
+            +each('popular_stories as story')
+                article(on:click!='{() => {fetch_base_comments_for_story(story.id); selected_story = story; read_stories.add(story.id); read_stories = read_stories}}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}' class='story-brochure')
+                    section
+                        section(class='story-headline') {story.title}
+                        section(class='subreddit-label') {story.subreddit}
+                    section
+                        +if('story.thumbnail !== "default" && story.thumbnail !== "self"')
+                            img(class='story-thumbnail' src='{story.thumbnail}')
+        article(class='popular-story-reader')
+            +each('selected_story_comments as comment')
+                p(class='comment') {comment.body}
 </template>
 
 <style type="text/stylus">
+    .popular-stories-list
+        display: flex
+    .popular-story-reader
+        width: 560px
+        background: wheat
+    .comment
+        font-size: 12px
+        padding: 4px 8px
+        word-break: break-word
+    nav
+        width: 400px
+    .story-brochure
+        padding: 4px 8px
+        display: flex
+        justify-content: space-between
+        cursor: pointer
+    .selected-story-brochure
+        background: wheat
+    .read-story-brochure
+        background: lightgray
+    .story-headline
+        max-height: 48px
+        overflow: hidden
+        text-overflow: ellipsis
+        font-size: 14px
+        font-weight: bold
+        margin-left: 4px
+    .subreddit-label
+        display: inline-block
+        overflow: hidden
+        text-overflow: ellipsis
+        font-size: 12px
+        background: lightgray
+        margin: 4px
+    .story-thumbnail
+        width: 80px
 </style>
 
 <script type="text/coffeescript">
+    export popular_stories = []
+    export niche_stories = []
+    export selected_story = {}
+    export selected_story_comments = []
+    export read_stories = new Set()
     # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
     # docs: https://www.reddit.com/dev/api
+    token_type = '';
+    access_token = '';
     (() ->
         body = new FormData()
         body.append('grant_type', 'https://oauth.reddit.com/grants/installed_client')
@@ -24,6 +80,14 @@
                 'Authorization': token_type + ' ' + access_token
         })
         { data } = await response.json()
-        console.log data
+        popular_stories = data.children.map((child) => child.data)
     )()
+    fetch_base_comments_for_story = (story_id) ->
+        response = await fetch('https://oauth.reddit.com/comments/' + story_id, {
+                method: 'GET'
+                headers:
+                    'Authorization': token_type + ' ' + access_token
+            })
+        [..., comments] = await response.json()
+        selected_story_comments = comments.data.children.map((child) => child.data)
 </script>
