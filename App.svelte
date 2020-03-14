@@ -10,8 +10,7 @@
                         +if('story.thumbnail !== "default" && story.thumbnail !== "self"')
                             img(class='story-thumbnail' src='{story.thumbnail}')
         article(class='popular-story-reader')
-            +each('selected_story.replies as comment')
-                p(class='comment') {comment.body}
+            Replies(comment='{selected_story}')
 </template>
 
 <style type="text/stylus">
@@ -23,11 +22,6 @@
         background: wheat
         height: 100%
         overflow: auto
-    .comment
-        font-size: 12px
-        line-height: 1.2
-        padding: 6px
-        word-break: break-word
     nav
         width: 400px
         height: 100%
@@ -60,6 +54,7 @@
 </style>
 
 <script type="text/coffeescript">
+    import Replies from './Replies.svelte'
     export popular_stories = []
     export niche_stories = []
     export selected_story =
