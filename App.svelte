@@ -1,56 +1,71 @@
 <template lang="pug">
-    section(class='popular-stories-list')
+    #main
         nav
-            +each('popular_stories as story')
-                article(on:click!='{() => {selected_story = story; read_stories.add(story.id); read_stories = read_stories}}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}' class='story-brochure')
-                    section
-                        section(class='story-headline') {story.title}
-                        section(class='subreddit-label') {story.subreddit}
-                    section
-                        +if('story.thumbnail !== "default" && story.thumbnail !== "self"')
-                            img(class='story-thumbnail' src='{story.thumbnail}')
-        article(class='popular-story-reader')
+            header
+                button Popular
+                button Niche
+            #stories-list
+                +each('popular_stories as story')
+                    article.story-brochure(on:click!='{() => {selected_story = story; read_stories.add(story.id); read_stories = read_stories}}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}')
+                        section
+                            section.story-headline {story.title}
+                            section.subreddit-label {story.subreddit}
+                        section
+                            +if('story.thumbnail !== "default" && story.thumbnail !== "self"')
+                                img.story-thumbnail(src='{story.thumbnail}')
+            footer
+                button Load next 10
+        +if('selected_story.post_hint === "image"')
+            img(src='{selected_story.url}')
+        article#comments
             Replies(comment='{selected_story}')
 </template>
 
 <style type="text/stylus">
-    .popular-stories-list
+    #main
         display: flex
         height: 100%
-    .popular-story-reader
-        width: 560px
-        background: wheat
-        height: 100%
-        overflow: auto
+        font-family: sans-serif
     nav
-        width: 400px
-        height: 100%
+        display: flex
+        flex-direction: column
+        justify-content: space-between
+    header
+        display: flex
+    button
+        width: 100%
+        font-size: 24px
+        padding: 12px
+        background: white
+    #stories-list
+        width: 320px
         overflow: auto
     .story-brochure
-        padding: 6px
+        padding: 12px
         display: flex
         justify-content: space-between
+        border: 1px solid black
         cursor: pointer
     .read-story-brochure
         background: lightgray
     .selected-story-brochure
         background: wheat
-        border: 1px solid black
     .story-headline
-        max-height: 56px
-        overflow: hidden
         font-size: 14px
         font-weight: bold
-        margin-left: 4px
+        margin-right: 2px
     .subreddit-label
         display: inline-block
         overflow: hidden
         text-overflow: ellipsis
         font-size: 12px
         background: lightgray
-        margin: 4px
     .story-thumbnail
         width: 80px
+    #comments
+        height: 100%
+        margin-left: -16px
+        overflow: auto
 </style>
 
 <script type="text/coffeescript">
@@ -75,12 +90,13 @@
             body
         })
         { token_type, access_token } = await response.json()
-        response = await fetch('https://oauth.reddit.com/best?limit=10', {
+        response = await fetch('https://oauth.reddit.com/best?limit=8', {
             method: 'GET'
             headers:
                 'Authorization': token_type + ' ' + access_token
         })
         { data } = await response.json()
+        console.log data
         popular_stories = data.children.map (child) -> {
             child.data...
             replies: []
