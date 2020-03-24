@@ -6,7 +6,7 @@
                 button Niche
             #stories-list
                 +each('popular_stories as story')
-                    article.story-brochure(on:click!='{() => {selected_story = story; read_stories.add(story.id); read_stories = read_stories}}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}')
+                    article.story-brochure(on:click='{select_story(story)}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}')
                         section
                             section.story-headline {story.title}
                             section.subreddit-label {story.subreddit}
@@ -15,17 +15,25 @@
                                 img.story-thumbnail(src='{story.thumbnail}')
             footer
                 button Load next 10
-        +if('selected_story.post_hint === "image"')
-            img(src='{selected_story.url}')
         article#comments
-            Replies(comment='{selected_story}')
+            Replies(comment='{selected_story}' collapsed_comments='{collapsed_comments}')
+        article#story
+            +if('selected_story.is_self')
+                p#story-text {selected_story.selftext || '[ no text ]'}
+            +if('selected_story.post_hint === "image"')
+                img#story-image(src='{selected_story.url}')
+            +if('selected_story.post_hint === "hosted:video"')
+                video#story-video(src='{selected_story.url}')
+            +if('selected_story.post_hint === "link"')
+                iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
 </template>
 
 <style type="text/stylus">
     #main
         display: flex
         height: 100%
-        font-family: sans-serif
+        font-family: Verdana, sans-serif
+        user-select: none
     nav
         display: flex
         flex-direction: column
@@ -38,7 +46,7 @@
         padding: 12px
         background: white
     #stories-list
-        width: 320px
+        width: 360px
         overflow: auto
     .story-brochure
         padding: 12px
@@ -61,11 +69,26 @@
         font-size: 12px
         background: lightgray
     .story-thumbnail
-        width: 80px
+        width: 96px
+        margin-left: 16px
     #comments
+        flex: 0 0 auto
         height: 100%
-        margin-left: -16px
         overflow: auto
+    #story
+        flex: 1 1 0
+    #story-text
+        padding: 16px
+        font-size: 16px
+        line-height: 1.2
+        word-break: break-word
+    #story-image
+    #story-video
+        max-width: 100%
+        max-height: 100%
+    #story-embedded-page
+        width: 100%
+        height: 100%
 </style>
 
 <script type="text/coffeescript">
@@ -75,6 +98,7 @@
     export selected_story =
         replies: []
     export read_stories = new Set()
+    export collapsed_comments = new Set()
     # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
     # docs: https://www.reddit.com/dev/api
     token_type = '';
@@ -90,7 +114,7 @@
             body
         })
         { token_type, access_token } = await response.json()
-        response = await fetch('https://oauth.reddit.com/best?limit=8', {
+        response = await fetch('https://oauth.reddit.com/best?limit=10', {
             method: 'GET'
             headers:
                 'Authorization': token_type + ' ' + access_token
@@ -109,7 +133,7 @@
             })
             [..., comments] = await response.json()
             story.replies = comments
-            streamline_reply_datastructs(story)
+            streamline_reply_datastructs story
     )()
     streamline_reply_datastructs = (comment) ->
         if comment.replies?.data?.children
@@ -121,4 +145,9 @@
                     streamline_reply_datastructs comment
         else
             comment.replies = []
+    select_story = (story) -> 
+        selected_story = story
+        document.querySelector('#comments').scrollTop = 0
+        read_stories.add story.id
+        read_stories = read_stories
 </script>
