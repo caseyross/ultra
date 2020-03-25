@@ -16,7 +16,7 @@
             footer
                 button Load next 10
         article#comments
-            Replies(comment='{selected_story}' collapsed_comments='{collapsed_comments}')
+            Replies(comment='{selected_story}' op_id='{selected_story.author_fullname}' collapsed_comments='{collapsed_comments}')
         article#story
             +if('selected_story.is_self')
                 p#story-text {selected_story.selftext || '[ no text ]'}
@@ -120,7 +120,6 @@
                 'Authorization': token_type + ' ' + access_token
         })
         { data } = await response.json()
-        console.log data
         popular_stories = data.children.map (child) -> {
             child.data...
             replies: []
@@ -134,6 +133,7 @@
             [..., comments] = await response.json()
             story.replies = comments
             streamline_reply_datastructs story
+        console.log popular_stories
     )()
     streamline_reply_datastructs = (comment) ->
         if comment.replies?.data?.children

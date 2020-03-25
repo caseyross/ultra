@@ -3,8 +3,8 @@
         +each('comment.replies as reply')
             +if('reply.body && !collapsed_comments.has(reply.id)')
                 article.comment
-                    p.comment-text(on:click|stopPropagation='{collapse_comment(reply)}') {reply.body}
-                    svelte:self(comment='{reply}' collapsed_comments='{collapsed_comments}')
+                    p.comment-text(on:click|stopPropagation='{collapse_comment(reply)}' class:op-comment-text='{reply.author_fullname === op_id}') {reply.body}
+                    svelte:self(comment='{reply}' op_id='{op_id}' collapsed_comments='{collapsed_comments}')
 </template>
 
 <style type="text/stylus">
@@ -17,11 +17,14 @@
         word-break: break-word
         padding: 12px
         cursor: pointer
+    .op-comment-text
+        color: blueviolet
 </style>
 
 <script type="text/coffeescript">
     export comment =
         replies: []
+    export op_id = undefined
     export collapsed_comments = new Set()
     collapse_comment = (comment) ->
         collapsed_comments.add comment.id
