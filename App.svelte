@@ -1,5 +1,16 @@
 <template lang="pug">
     #main
+        section#post
+            +if('selected_story.is_self && selected_story.selftext')
+                article#story-text {selected_story.selftext}
+            +if('selected_story.post_hint === "image"')
+                a(href='{selected_story.url}')
+                    img#story-image(src='{selected_story.url}')
+            +if('selected_story.post_hint === "hosted:video"')
+                a(href='{selected_story.url}')
+                    video#story-video(src='{selected_story.url}')
+            +if('selected_story.post_hint === "link"')
+                iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
         nav
             header
                 button Popular
@@ -7,49 +18,57 @@
             #stories-list
                 +each('popular_stories as story')
                     article.story-brochure(on:click='{select_story(story)}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}')
-                        section
-                            section.story-headline {story.title}
-                            section.subreddit-label {story.subreddit}
-                        section
+                        section.subreddit-label {story.subreddit}
+                        section.story-headline
                             +if('story.thumbnail !== "default" && story.thumbnail !== "self"')
                                 img.story-thumbnail(src='{story.thumbnail}')
+                            h1 {story.title}
             footer
                 button Load next 10
-        article#comments
-            Replies(comment='{selected_story}' op_id='{selected_story.author_fullname}' collapsed_comments='{collapsed_comments}')
-        article#story
-            +if('selected_story.is_self')
-                p#story-text {selected_story.selftext || '[ no text ]'}
-            +if('selected_story.post_hint === "image"')
-                img#story-image(src='{selected_story.url}')
-            +if('selected_story.post_hint === "hosted:video"')
-                video#story-video(src='{selected_story.url}')
-            +if('selected_story.post_hint === "link"')
-                iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
+        section#comments
+            Replies(comment='{selected_story}' op_id='{selected_story.author_fullname}')
 </template>
 
 <style type="text/stylus">
+    @font-face
+        font-family: IosevkaAile
+        font-style: normal
+        font-weight: 400
+        src:
+            url(iosevka-aile-regular.ttc)
     #main
         display: flex
         height: 100%
-        font-family: Verdana, sans-serif
+        font: 12px/1.2 IosevkaAile
         user-select: none
-    nav
+    #post
+        width: 480px
+        margin-right: 40px
         display: flex
-        flex-direction: column
+        flex-flow: column nowrap
+        justify-content: space-around
+        align-items: center
+    nav
+        width: 320px
+        display: flex
+        flex-flow: column nowrap
         justify-content: space-between
+    #comments
+        flex: 1
+        overflow: auto
+        white-space: pre-wrap
     header
         display: flex
     button
         width: 100%
-        font-size: 24px
-        padding: 12px
-        background: white
+        padding: 8px
+        font: inherit
+        background: black
+        color: white
+        cursor: pointer
     #stories-list
-        width: 360px
         overflow: auto
     .story-brochure
-        padding: 12px
         display: flex
         justify-content: space-between
         border: 1px solid black
@@ -60,28 +79,21 @@
         background: wheat
     .story-headline
         font-size: 14px
-        font-weight: bold
-        margin-right: 2px
-    .subreddit-label
-        display: inline-block
-        overflow: hidden
-        text-overflow: ellipsis
-        font-size: 12px
-        background: lightgray
     .story-thumbnail
-        width: 96px
-        margin-left: 16px
-    #comments
-        flex: 0 0 auto
-        height: 100%
-        overflow: auto
-    #story
-        flex: 1 1 0
+        float: right
+        width: 64px
+    .subreddit-label
+        position: relative
+        display: inline-block
+        background: lightgray
     #story-text
-        padding: 16px
-        font-size: 16px
-        line-height: 1.2
-        word-break: break-word
+        max-height: 100%
+        overflow: auto
+        margin: 40px
+        white-space: pre-wrap
+    a
+        max-height: 100%
+        text-align: right
     #story-image
     #story-video
         max-width: 100%
@@ -98,7 +110,6 @@
     export selected_story =
         replies: []
     export read_stories = new Set()
-    export collapsed_comments = new Set()
     # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
     # docs: https://www.reddit.com/dev/api
     token_type = '';
