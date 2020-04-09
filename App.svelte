@@ -15,8 +15,9 @@
             header
                 button Popular
                 button Niche
+                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 10 })}')
             #stories-list
-                +each('popular_stories as story')
+                +each('stories as story')
                     article.story-brochure(on:click='{select_story(story)}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}')
                         section.subreddit-label {story.subreddit}
                         section
@@ -24,7 +25,7 @@
                                 img.story-thumbnail(src='{story.thumbnail}')
                             h1.story-headline {story.title}
             footer
-                button(on:mousedown='{load_popular_stories({ count: 10, after: popular_stories[popular_stories.length - 1].name })}') Load next 10
+                button(on:mousedown='{load_stories({ count: 10, after: stories[stories.length - 1].name })}') Load next 10
         section#comments(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
             CommentTree(comment='{selected_story}' op_id='{selected_story.author_fullname}')
         figure#minimap(bind:this='{dom.minimap}')
@@ -45,7 +46,7 @@
         font: 12px/1.2 IosevkaAile
         user-select: none
     #post
-        width: 760px
+        width: 600px
         margin-right: 40px
         display: flex
         flex-flow: column nowrap
@@ -78,11 +79,13 @@
     header
         display: flex
     button
+    input
         width: 100%
         padding: 8px
         font: inherit
         background: black
         color: white
+    button
         cursor: pointer
     #stories-list
         overflow: auto
@@ -130,8 +133,8 @@
     export memories =
         previous_story_id: ''
         previous_comments_scrollheight: 0
-    export popular_stories = []
-    export niche_stories = []
+    export subreddit = ''
+    export stories = []
     export selected_story =
         id: ''
         replies: []
@@ -151,24 +154,24 @@
             body
         })
         { token_type, access_token } = await response.json()
-        load_popular_stories({ count: 10 })
+        load_stories({ count: 10 })
     )()
-    load_popular_stories = ({ count, after }) ->
-        response = await fetch('https://oauth.reddit.com/best?limit=' + count + '&after=' + after, {
+    load_stories = ({ count, after }) ->
+        response = await fetch("https://oauth.reddit.com/#{if subreddit then 'r/'+subreddit else ''}/hot?g=GLOBAL&limit=#{count}&after=#{after}", {
             method: 'GET'
             headers:
-                'Authorization': token_type + ' ' + access_token
+                'Authorization': "#{token_type} #{access_token}"
         })
         { data } = await response.json()
-        popular_stories = data.children.map (child) -> {
+        stories = data.children.map (child) -> {
             child.data...
             replies: []
         }
-        popular_stories.map (story) ->
-            response = await fetch('https://oauth.reddit.com/comments/' + story.id, {
+        stories.map (story) ->
+            response = await fetch("https://oauth.reddit.com/comments/#{story.id}", {
                 method: 'GET'
                 headers:
-                    'Authorization': token_type + ' ' + access_token
+                    'Authorization': "#{token_type} #{access_token}"
             })
             [..., comments] = await response.json()
             story.replies = comments
@@ -189,7 +192,7 @@
         read_stories.add story.id
         read_stories = read_stories
     move_minimap_cursor = () ->
-        dom.minimap_cursor.style.transform = 'translateY(' + dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34) + 'px)'
+        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34)}px)"
     teleport_via_minimap = (click) ->
         # If clicking on minimap, jump to that location in the comments
         if dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth 
@@ -202,7 +205,7 @@
         # Redraw minimap when comments change
         if selected_story.id != memories.previous_story_id or dom.comments.scrollHeight != memories.previous_comments_scrollheight
             # Resize cursor
-            dom.minimap_cursor.style.height = (dom.comments.clientHeight - 34) * dom.comments.clientHeight / dom.comments.scrollHeight + 'px'
+            dom.minimap_cursor.style.height = "#{(dom.comments.clientHeight - 34) * dom.comments.clientHeight / dom.comments.scrollHeight}px"
             # Clear minimap symbols
             ctx = dom.minimap_field.getContext '2d'
             ctx.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
