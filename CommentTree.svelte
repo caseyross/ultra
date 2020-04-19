@@ -6,14 +6,19 @@
                     .comment
                         .comment-meta
                             span.author-label(class:author-label-op='{reply.author_fullname === op_id}') {reply.author}
-                        .comment-text {reply.body}
+                        .comment-text {@html reply.body_html}
                     svelte:self(comment='{reply}' op_id='{op_id}')
 </template>
 
 
 <style type="text/stylus">
     .comment-tree
-        margin: 8px 32px
+        margin-left: 32px
+        margin-top: 8px
+        font-weight: normal
+        font-size: 12px
+        line-height: 1.2
+        word-break: break-word
     .comment-text
         width: 400px
     .author-label

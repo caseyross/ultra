@@ -1,8 +1,8 @@
 <template lang="pug">
     #main
         section#post
-            +if('selected_story.is_self && selected_story.selftext')
-                article#story-text {selected_story.selftext}
+            +if('selected_story.is_self && selected_story.selftext_html')
+                article#story-text(bind:this='{dom.story_text}') {@html decode_reddit_html_entities(selected_story.selftext_html.slice(43, selected_story.selftext_html.length - 34))}
             +if('selected_story.post_hint === "image"')
                 a(href='{selected_story.url}')
                     img#story-image(src='{selected_story.url}')
@@ -13,109 +13,97 @@
                 iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
         nav
             header
-                button Popular
-                button Niche
-                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 10 })}')
+                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 8 })}')
             #stories-list
                 +each('stories as story')
-                    article.story-brochure(on:click='{select_story(story)}' class:read-story-brochure='{read_stories.has(story.id)}' class:selected-story-brochure='{selected_story.id === story.id}')
-                        section.subreddit-label {story.subreddit}
-                        section
-                            +if('story.thumbnail !== "default" && story.thumbnail !== "self"')
-                                img.story-thumbnail(src='{story.thumbnail}')
-                            h1.story-headline {story.title}
+                    article.story-brochure(on:click='{select_story(story)}' class:story-brochure-stickied='{story.stickied}' class:story-brochure-read='{read_stories.has(story.id)}' class:story-brochure-selected='{selected_story.id === story.id}')
+                        h1.story-headline {decode_reddit_html_entities(story.title)}
             footer
-                button(on:mousedown='{load_stories({ count: 10, after: stories[stories.length - 1].name })}') Load next 10
-        section#comments(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
-            CommentTree(comment='{selected_story}' op_id='{selected_story.author_fullname}')
-        figure#minimap(bind:this='{dom.minimap}')
-            canvas#minimap-field(bind:this='{dom.minimap_field}')
-            mark#minimap-cursor(bind:this='{dom.minimap_cursor}')
+                button(on:mousedown='{load_stories({ count: 8, after: stories[stories.length - 1].name })}') next 8
+        section#comment-area
+            #comments(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
+                CommentTree(comment='{selected_story}' op_id='{selected_story.author_fullname}')
+            figure#minimap(bind:this='{dom.minimap}')
+                canvas#minimap-field(bind:this='{dom.minimap_field}')
+                mark#minimap-cursor(bind:this='{dom.minimap_cursor}')
 </template>
 
 <style type="text/stylus">
-    @font-face
-        font-family: IosevkaAile
-        font-style: normal
-        font-weight: 400
-        src:
-            url(iosevka-aile-regular.ttc)
     #main
-        display: flex
         height: 100%
-        font: 12px/1.2 IosevkaAile
-        user-select: none
+        display: flex
+        font: bold 16px/1 "Iosevka Aile"
     #post
-        width: 600px
-        margin-right: 40px
+        width: 640px
         display: flex
         flex-flow: column nowrap
         justify-content: space-around
         align-items: flex-end
+        background: #222
+        color: #ccc
     nav
         width: 320px
         display: flex
         flex-flow: column nowrap
         justify-content: space-between
-    #comments
+        background: #222
+        color: white
+        user-select: none
+    #comment-area
         flex: 1
-        overflow: auto
-        white-space: pre-wrap
-    #minimap
-        position: fixed
-        right: 15px
-        width: 105px
+        contain: strict
+        background: #fed
+    #comments
+        width: 100%
         height: 100%
-        margin: 17px 0
+        overflow: auto
+    #minimap
+        position: absolute
+        top: 0
+        right: 16px
+        width: 80px
+        height: 100%
+        padding: 17px 0
         pointer-events: none
     #minimap-cursor
         position: absolute
-        top: 0
-        display: block
+        top: 17px
         width: 100%
+        display: block
+        background: lightgray
         pointer-events: none
-        background: transparent
-        border-left: 1px solid orangered
-    header
-        display: flex
     button
     input
-        width: 100%
-        padding: 8px
-        font: inherit
-        background: black
-        color: white
-    button
-        cursor: pointer
+        padding: 24px
+        font-size: 32px
+        text-align: left
+        &:hover
+        &:focus
+            outline: none
+            color: royalblue
+        &:active
+            color: skyblue
     #stories-list
+        padding: 24px
         overflow: auto
     .story-brochure
-        border: 1px solid black
+        padding: 8px 0
         cursor: pointer
-    .read-story-brochure
-        background: lightgray
-    .selected-story-brochure
-        background: wheat
-    .story-headline
-        font-size: 14px
-    .story-thumbnail
-        float: right
-        width: 64px
-    .subreddit-label
-        display: inline-block
-        background: lightgray
+    .story-brochure-stickied
+        color: darkseagreen
+    .story-brochure-read
+        color: gray
+    .story-brochure-selected
+        color: wheat
     #story-text
         max-height: 100%
+        padding: 24px
         overflow: auto
-        margin: 40px
+        font-weight: normal
+        font-size: 14px
         white-space: pre-wrap
         word-break: break-word
     a
-        max-height: 100%
-        text-align: right
-    #story-image
-    #story-video
-        max-width: 100%
         max-height: 100%
     #story-embedded-page
         width: 100%
@@ -126,6 +114,7 @@
     import { onMount, afterUpdate } from 'svelte'
     import CommentTree from './CommentTree.svelte'
     export dom =
+        story_text: {}
         comments: {}
         minimap: {}
         minimap_field: {}
@@ -154,7 +143,7 @@
             body
         })
         { token_type, access_token } = await response.json()
-        load_stories({ count: 10 })
+        load_stories({ count: 8 })
     )()
     load_stories = ({ count, after }) ->
         response = await fetch("https://oauth.reddit.com/#{if subreddit then 'r/'+subreddit else ''}/hot?g=GLOBAL&limit=#{count}&after=#{after}", {
@@ -175,8 +164,11 @@
             })
             [..., comments] = await response.json()
             story.replies = comments
+            console.log(story)
             streamline_reply_datastructs story
     streamline_reply_datastructs = (comment) ->
+        if comment.body_html
+            comment.body_html = decode_reddit_html_entities comment.body_html.slice(22, comment.body_html.length - 13)
         if comment.replies?.data?.children
             if comment.replies.data.children.kind == 'more'
                 comment.replies = []
@@ -186,8 +178,16 @@
                     streamline_reply_datastructs comment
         else
             comment.replies = []
+    decode_reddit_html_entities = (text) ->
+        text
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
     select_story = (story) -> 
         selected_story = story
+        if dom.story_text
+            dom.story_text.scrollTop = 0
         dom.comments.scrollTop = 0
         read_stories.add story.id
         read_stories = read_stories
@@ -195,8 +195,8 @@
         dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34)}px)"
     teleport_via_minimap = (click) ->
         # If clicking on minimap, jump to that location in the comments
-        if dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth 
-            dom.comments.scrollTop = (click.y - 17) / (dom.minimap.clientHeight - 34) * dom.comments.scrollHeight
+        if 0 < dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth 
+            dom.comments.scrollTop = (click.layerY - 17) / (dom.minimap.clientHeight - 34) * dom.comments.scrollHeight - dom.minimap.clientHeight / 2
     onMount () ->
         # Size minimap, because canvas elements can't be sized properly with pure CSS
         dom.minimap_field.width = dom.minimap.clientWidth
@@ -210,8 +210,9 @@
             ctx = dom.minimap_field.getContext '2d'
             ctx.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
             # Draw new minimap symbols
+            ctx.fillStyle = 'gray'
             for comment in dom.comments.children
-                ctx.fillRect(0, Math.floor(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth - 5, 1)
+                ctx.fillRect(0, Math.floor(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth, 1)
             memories.previous_story_id = selected_story.id
             memories.previous_comments_scrollheight = dom.comments.scrollHeight
 </script>

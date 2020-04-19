@@ -1,0 +1,9 @@
+* + p,
+* + blockquote {
+    margin-top: 1.2em;
+}
+blockquote {
+    padding-left: 0.6em;
+    border-left: 4px solid lightgray;
+    color: gray;
+}
