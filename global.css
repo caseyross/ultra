@@ -7,3 +7,11 @@ blockquote {
     border-left: 4px solid lightgray;
     color: gray;
 }
+.md-spoiler-text {
+    color: transparent;
+    background: gray;
+}
+.md-spoiler-text:hover {
+    color: inherit;
+    background: inherit;
+}

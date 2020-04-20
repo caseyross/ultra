@@ -13,7 +13,7 @@
                 iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
         nav
             header
-                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 8 })}')
+                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 8 })}' placeholder='ALL')
             #stories-list
                 +each('stories as story')
                     article.story-brochure(on:click='{select_story(story)}' class:story-brochure-stickied='{story.stickied}' class:story-brochure-read='{read_stories.has(story.id)}' class:story-brochure-selected='{selected_story.id === story.id}')
@@ -33,6 +33,7 @@
         height: 100%
         display: flex
         font: bold 16px/1 "Iosevka Aile"
+        word-break: break-word
     #post
         width: 640px
         display: flex
@@ -76,13 +77,17 @@
     input
         padding: 24px
         font-size: 32px
-        text-align: left
+        transition: color 0.1s
         &:hover
         &:focus
             outline: none
             color: royalblue
         &:active
-            color: skyblue
+            color: cornflowerblue
+    button
+        text-align: right
+    input
+        text-transform: uppercase
     #stories-list
         padding: 24px
         overflow: auto
@@ -101,8 +106,6 @@
         overflow: auto
         font-weight: normal
         font-size: 14px
-        white-space: pre-wrap
-        word-break: break-word
     a
         max-height: 100%
     #story-embedded-page
