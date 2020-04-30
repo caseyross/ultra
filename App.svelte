@@ -3,17 +3,16 @@
         section#post
             +if('selected_story.is_self && selected_story.selftext_html')
                 article#story-text(bind:this='{dom.story_text}') {@html decode_reddit_html_entities(selected_story.selftext_html.slice(43, selected_story.selftext_html.length - 34))}
-            +if('selected_story.post_hint === "image"')
-                a(href='{selected_story.url}')
-                    img#story-image(src='{selected_story.url}')
-            +if('selected_story.post_hint === "hosted:video"')
-                a(href='{selected_story.url}')
-                    video#story-video(src='{selected_story.url}')
-            +if('selected_story.post_hint === "link"')
-                iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
+                +elseif('selected_story.post_hint === "image"')
+                    a(href='{selected_story.url}')
+                        img#story-image(src='{selected_story.url}')
+                +elseif('selected_story.post_hint === "hosted:video"')
+                    video#story-video(autoplay controls muted='false' src='{selected_story.media.reddit_video.fallback_url}')
+                +else
+                    iframe#story-embedded-page(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
         nav
             header
-                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 8 })}' placeholder='ALL')
+                input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 8 })}' placeholder='POPULAR')
             #stories-list
                 +each('stories as story')
                     article.story-brochure(on:click='{select_story(story)}' class:story-brochure-stickied='{story.stickied}' class:story-brochure-read='{read_stories.has(story.id)}' class:story-brochure-selected='{selected_story.id === story.id}')
@@ -149,7 +148,7 @@
         load_stories({ count: 8 })
     )()
     load_stories = ({ count, after }) ->
-        response = await fetch("https://oauth.reddit.com/#{if subreddit then 'r/'+subreddit else ''}/hot?g=GLOBAL&limit=#{count}&after=#{after}", {
+        response = await fetch("https://oauth.reddit.com#{if subreddit then '/r/'+subreddit else ''}/hot?g=GLOBAL&limit=#{count}&after=#{after}", {
             method: 'GET'
             headers:
                 'Authorization': "#{token_type} #{access_token}"
