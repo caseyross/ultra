@@ -43,6 +43,7 @@ button {
   letter-spacing: inherit;
   border: none;
   width: 100%;
+  padding: 0;
 }
 
 select,

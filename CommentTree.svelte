@@ -3,11 +3,11 @@
         +each('comment.replies as reply')
             +if('reply.body')
                 article.comment-tree
-                    .comment
+                    .comment(class:focus-comment='{reply.id === focus_comment_id}')
                         .comment-meta
                             span.author-label(class:author-label-op='{reply.author_fullname === op_id}') {reply.author}
                         .comment-text {@html reply.body_html}
-                    svelte:self(comment='{reply}' op_id='{op_id}')
+                    svelte:self(comment='{reply}' op_id='{op_id}' focus_comment_id='{focus_comment_id}')
 </template>
 
 
@@ -19,8 +19,13 @@
         font-size: 12px
         line-height: 1.2
         word-break: break-word
+    .comment-meta
+        color: #333
     .comment-text
         width: 400px
+        .focus-comment &
+            padding: 8px
+            background: #def
     .author-label
         background: lightgray
     .author-label-op
@@ -30,5 +35,6 @@
 <script type="text/coffeescript">
     export comment =
         replies: []
-    export op_id = undefined
+    export op_id = ''
+    export focus_comment_id = ''
 </script>

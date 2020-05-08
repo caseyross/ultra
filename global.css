@@ -15,3 +15,6 @@ blockquote {
     color: inherit;
     background: inherit;
 }
+.md-spoiler-text a {
+    color: inherit;
+}
