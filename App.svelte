@@ -98,9 +98,6 @@
         background: #333
         font-size: 32px
         font-weight: 900
-        &:focus
-            outline: none
-            background: #222
     button
         width: 80px
         height: 80px
@@ -110,6 +107,10 @@
             color: white
     input
         text-transform: uppercase
+        &:focus
+            outline: none
+            background: wheat
+            color: #333
     #stories-list
         overflow: auto
     .story-brochure
@@ -117,6 +118,8 @@
         display: flex
     .story-brochure-selected
         background: #333
+    .story-brochure-stickied
+        background: darkseagreen
     .story-colorbar
         flex: 0 0 8px
         background: white
@@ -128,9 +131,8 @@
             background: wheat
     .story-headline
         padding: 8px 16px 8px 16px
+        font-size: 16px
         font-weight: 300
-        .story-brochure-stickied &
-            color: darkseagreen
         .story-brochure-read &
             color: gray
         .story-brochure-selected &
