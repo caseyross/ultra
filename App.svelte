@@ -35,6 +35,9 @@
             figure#minimap(bind:this='{dom.minimap}')
                 canvas#minimap-field(bind:this='{dom.minimap_field}')
                 mark#minimap-cursor(bind:this='{dom.minimap_cursor}')
+    +if('show_debugger')
+        #debug-pane
+            DebugView(objects='{debug_objects}')
 </template>
 
 <style type="text/stylus">
@@ -164,11 +167,17 @@
         width: 100%
         height: 100%
         background: white
+    #debug-pane
+        position: fixed
+        top: 0
+        width: 100%
+        height: 100%
 </style>
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
     import CommentTree from './CommentTree.svelte'
+    import DebugView from './DebugView.svelte'
     export dom =
         story_text: {}
         story_reddit: {}
@@ -185,6 +194,9 @@
         id: ''
         replies: []
     export read_stories = new Set()
+    export held_keys = new Set()
+    export show_debugger = false
+    export debug_objects = []
     # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
     # docs: https://www.reddit.com/dev/api
     token_type = '';
@@ -258,13 +270,16 @@
         .replace(/&quot;/g, '"')
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
-    select_story = (story) -> 
-        selected_story = story
-        dom.story_reddit?.scrollTop = 0
-        dom.story_text?.scrollTop = 0
-        dom.comments.scrollTop = 0
-        read_stories.add story.id
-        read_stories = read_stories
+    select_story = (story) ->
+        if held_keys.has('Control')
+            debug_objects.push(story)
+        else
+            selected_story = story
+            dom.story_reddit?.scrollTop = 0
+            dom.story_text?.scrollTop = 0
+            dom.comments.scrollTop = 0
+            read_stories.add story.id
+            read_stories = read_stories
     move_minimap_cursor = () ->
         dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34)}px)"
     teleport_via_minimap = (click) ->
@@ -275,6 +290,19 @@
         # Size minimap, because canvas elements can't be sized properly with pure CSS
         dom.minimap_field.width = dom.minimap.clientWidth
         dom.minimap_field.height = dom.minimap.clientHeight - 34
+        # Add global event listeners
+        document.addEventListener('keydown', (e) ->
+            # Event repeats while key is held down, so don't process repeats
+            if !held_keys.has(e.key)
+                held_keys.add(e.key)
+                held_keys = held_keys
+                if e.key == 'Escape'
+                    show_debugger = !show_debugger
+        )
+        document.addEventListener('keyup', (e) ->
+            held_keys.delete(e.key)
+            held_keys = held_keys
+        )
     afterUpdate () ->
         # Redraw minimap when comments change
         if selected_story.id != memories.previous_story_id or dom.comments.scrollHeight != memories.previous_comments_scrollheight
