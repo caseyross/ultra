@@ -26,8 +26,10 @@
     .object-value
         flex: 0 0 288px
     ol
-        white-space: pre
+        margin: 0
+        padding: 0
         list-style: none
+        white-space: pre
 </style>
 
 <script type="text/coffeescript">

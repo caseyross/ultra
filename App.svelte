@@ -197,6 +197,7 @@
         height: 100%
         overflow: auto
     #story-text
+        width: 100%
         max-height: 100%
         padding: 20px 12px
         overflow: auto

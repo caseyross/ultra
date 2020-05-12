@@ -2,6 +2,12 @@
 * + blockquote {
     margin-top: 1.2em;
 }
+a {
+    color: steelblue;
+}
+a:visited {
+    color: mediumpurple;
+}
 blockquote {
     padding-left: 0.6em;
     border-left: 4px solid lightgray;
