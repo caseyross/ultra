@@ -228,6 +228,7 @@
     import { onMount, afterUpdate } from 'svelte'
     import CommentTree from './CommentTree.svelte'
     import DebugView from './DebugView.svelte'
+    import gfycat_adjectives from './gfycat-adjectives.json';
     export dom =
         story_text: {}
         story_reddit: {}
@@ -362,6 +363,28 @@
                     story_source = story.url[0...story.url.lastIndexOf('.')] + '.mp4'
                 else
                     switch story.domain
+                        when 'gfycat.com', 'redgifs.com'
+                            story_type = 'video'
+                            video_id = story.url[(story.url.lastIndexOf('/') + 1)...]
+                            adjective_1 = ''
+                            adjective_2 = ''
+                            animal = ''
+                            for word in gfycat_adjectives
+                                if video_id.startsWith word
+                                    adjective_1 = word
+                                    for word in gfycat_adjectives
+                                        if video_id[adjective_1.length...].startsWith word
+                                            adjective_2 = word
+                                            animal = video_id[(adjective_1.length + adjective_2.length)...]
+                            story_source =
+                                'https://giant.gfycat.com/' +
+                                adjective_1[0].toUpperCase() +
+                                adjective_1[1...] +
+                                adjective_2[0].toUpperCase() +
+                                adjective_2[1...] +
+                                animal[0].toUpperCase() +
+                                animal[1...] +
+                                '.webm'
                         when 'imgur.com'
                             story_type = 'image'
                             story_source = story.url[0...8] + 'i.' + story.url[8...] + '.jpg'
