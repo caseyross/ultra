@@ -4,26 +4,43 @@
             +if('selected_story.linked_story')
                 article#story-reddit(bind:this='{dom.story_reddit}')
                     CommentTree(comment='{selected_story.linked_story}' op_id='{selected_story.linked_story.author_fullname}' focus_comment_id='{selected_story.linked_story.focus_comment_id}')
-                +elseif('selected_story.is_self')
-                    +if('selected_story.selftext_html')
-                        article#story-text(bind:this='{dom.story_text}') {@html decode_reddit_html_entities(selected_story.selftext_html.slice(43, selected_story.selftext_html.length - 34))}
+                +elseif('story_type === "link"')
+                    iframe#story-embed(src='{story_source}' sandbox='allow-scripts allow-same-origin')
+                +elseif('story_type === "video"')
+                    video#story-video(autoplay controls muted='false' src='{story_source}')
+                +elseif('story_type === "image"')
+                    a(href='{story_source}' target='_blank')
+                        img#story-image(src='{story_source}')
+                +elseif('story_type === "text"')
+                    +if('story_source.length')
+                        article#story-text(bind:this='{dom.story_text}') {@html story_source}
                         +else
                             article#story-notext NO TEXT
-                +elseif('selected_story.post_hint === "image"')
-                    a(href='{selected_story.url}')
-                        img#story-image(src='{selected_story.url}')
-                +elseif('selected_story.post_hint === "hosted:video"')
-                    video#story-video(autoplay controls muted='false' src='{selected_story.media.reddit_video.fallback_url}')
-                +elseif('selected_story.url')
-                    iframe#story-embed(src='{selected_story.url}' sandbox='allow-scripts allow-same-origin')
         nav
             header
                 input(type='text' bind:value='{subreddit}' on:change='{load_stories({ count: 8 })}' placeholder='POPULAR')
             #stories-list
                 +each('stories as story')
-                    article.story-brochure(on:mousedown='{select_story(story)}' class:story-brochure-stickied='{story.stickied}' class:story-brochure-read='{read_stories.has(story.id)}' class:story-brochure-selected='{selected_story.id === story.id}')
-                        .story-colorbar
-                        h1.story-headline {decode_reddit_html_entities(story.title)}
+                    article.story-brochure(
+                        on:mousedown='{select_story(story)}'
+                        on:dblclick='{debug_objects.push(story)}'
+                        class:story-brochure-stickied='{story.stickied}'
+                        class:story-brochure-priority-1='{story.priority === 1}'
+                        class:story-brochure-priority-2='{story.priority === 2}'
+                        class:story-brochure-priority-3='{story.priority === 3}'
+                        class:story-brochure-priority-4='{story.priority === 4}'
+                        class:story-brochure-priority-5='{story.priority === 5}'
+                        class:story-brochure-priority-6='{story.priority === 6}'
+                        class:story-brochure-read='{read_stories.has(story.id)}'
+                        class:story-brochure-selected='{selected_story.id === story.id}'
+                    )
+                        .story-aux
+                            span.story-subreddit-label {story.subreddit}
+                            +if('story.link_flair_text')
+                                span.story-flair {story.link_flair_text}
+                        .story-main
+                            figure.story-colorbar
+                            h1.story-headline {decode_reddit_html_entities(story.title)}
             footer
                 button(on:mousedown='{load_stories({ count: 8, after: stories[stories.length - 1].name })}') +
         section#comments-pane
@@ -44,28 +61,24 @@
     #main
         height: 100%
         display: flex
-        font: 400 16px/1 "Iosevka Aile"
+        font: 300 13px/1 "Iosevka Aile"
         word-break: break-word
+        background: #222
+        color: white
     #story-pane
-        flex: 1 0 33%
+        flex: 0 0 40%
+        padding: 0 24px 0 0
         display: flex
         flex-flow: column nowrap
-        justify-content: space-around
         align-items: flex-end
-        background: #675e56
-        color: white
     nav
-        flex: 0 0 17%
+        flex: 0 0 20%
         display: flex
         flex-flow: column nowrap
-        justify-content: space-between
-        background: #675e56
-        color: white
         user-select: none
     #comments-pane
-        flex: 0 1 50%
+        flex: 0 0 40%
         contain: strict
-        background: #fed
     #comments
         width: 100%
         height: 100%
@@ -78,8 +91,9 @@
         justify-content: center
         align-items: center
         text-align: center
-        font-size: 120px
-        color: wheat
+        font-size: 14px
+        font-weight: 900
+        color: salmon
     #minimap
         position: absolute
         top: 0
@@ -115,31 +129,66 @@
             background: wheat
             color: #333
     #stories-list
+        flex: 1 1 auto
         overflow: auto
     .story-brochure
+        padding: 12px 0
         cursor: pointer
-        display: flex
+    .story-brochure-priority-1
+        color: salmon
+        & .story-subreddit-label
+        & .story-colorbar
+            background: salmon
+    .story-brochure-priority-2
+        color: lightsalmon
+        & .story-subreddit-label
+        & .story-colorbar
+            background: lightsalmon
+    .story-brochure-priority-3
+        color: wheat
+        & .story-subreddit-label
+        & .story-colorbar
+            background: wheat
+    .story-brochure-priority-4
+        color: white
+        & .story-subreddit-label
+        & .story-colorbar
+            background: white
+    .story-brochure-priority-5
+        color: lightgray
+        & .story-subreddit-label
+        & .story-colorbar
+            background: lightgray
+    .story-brochure-priority-6
+        color: gray
+        & .story-subreddit-label
+        & .story-colorbar
+            background: gray
     .story-brochure-selected
-        background: #333
+        background: #666
     .story-brochure-stickied
         background: darkseagreen
+    .story-aux
+        margin-bottom: 8px
+        font-size: 12px
+        font-weight: 900
+        color: #222
+    .story-flair
+        color: gray
+        margin-left: 16px
+    .story-main
+        display: flex
     .story-colorbar
-        flex: 0 0 8px
-        background: white
+        flex: 0 0 2px
         .story-brochure-stickied &
             background: darkseagreen
         .story-brochure-read &
-            background: gray
-        .story-brochure-selected &
-            background: wheat
+            visibility: hidden
     .story-headline
-        padding: 8px 16px 8px 16px
+        margin: 0 16px 0 8px
         font-size: 16px
-        font-weight: 300
-        .story-brochure-read &
-            color: gray
-        .story-brochure-selected &
-            color: wheat
+        .story-brochure-stickied &
+            color: white
     footer
         display: flex
         justify-content: center
@@ -147,20 +196,20 @@
         width: 100%
         height: 100%
         overflow: auto
-        background: #fed
-        color: black
     #story-text
         max-height: 100%
-        padding: 24px
+        padding: 20px 12px
         overflow: auto
-        font-weight: normal
-        font-size: 14px
-        line-height: 1.2
+        line-height: 1.3
     #story-notext
         width: 100%
-        text-align: center
-        font-size: 240px
-        color: #333
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        font-size: 14px
+        font-weight: 900
+        color: salmon
     a
         max-height: 100%
     #story-embed
@@ -190,6 +239,8 @@
         previous_comments_scrollheight: 0
     export subreddit = ''
     export stories = []
+    export story_type = 'unknown'
+    export story_source = ''
     export selected_story =
         id: ''
         replies: []
@@ -226,6 +277,21 @@
             replies: []
         }
         for story in stories
+            comment_affinity = if story.score then story.num_comments / story.score else 0.01
+            participation_affinity = if story.subreddit_subscribers then story.num_comments / story.subreddit_subscribers else 0.00001
+            story.priority = switch
+                when comment_affinity > 0.33
+                    1
+                when comment_affinity > 0.24
+                    2
+                when comment_affinity > 0.15
+                    3
+                when comment_affinity > 0.03
+                    4
+                when comment_affinity > 0.01
+                    5
+                else
+                    6
             load_comments story
             if story.domain.endsWith('reddit.com') and story.url.split('/')[6]
                 load_linked_story story
@@ -270,16 +336,53 @@
         .replace(/&quot;/g, '"')
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
-    select_story = (story) ->
-        if held_keys.has('Control')
-            debug_objects.push(story)
+    identify_story_type_and_source = (story) ->
+        if story.is_self
+            story_type = 'text'
+            story_source = if story.selftext_html
+                decode_reddit_html_entities(story.selftext_html.slice(43, story.selftext_html.length - 34))
+            else
+                ''
+        else if story.url
+            filetype = ''
+            [i, j, k] = [story.url.indexOf('.', story.url.indexOf('/', story.url.indexOf('//') + 2) + 1), story.url.indexOf('?'), story.url.indexOf('#')]
+            if j > -1
+                filetype = story.url[(i + 1)...j]
+            else if k > -1
+                filetype = story.url[(i + 1)...k]
+            else if i > -1
+                filetype = story.url[(i + 1)...]
+            switch filetype
+                when 'jpg', 'png', 'gif'
+                    story_type = 'image'
+                    story_source = story.url
+                when 'gifv'
+                    story_type = 'video'
+                    story_source = story.url[0...story.url.lastIndexOf('.')] + '.mp4'
+                else
+                    switch story.domain
+                        when 'imgur.com'
+                            story_type = 'image'
+                            story_source = story.url[0...8] + 'i.' + story.url[8...] + '.jpg'
+                        when 'v.redd.it'
+                            story_type = 'video'
+                            story_source = story.media.reddit_video.fallback_url
+                        else
+                            story_type = 'link'
+                            story_source = story.url
         else
-            selected_story = story
-            dom.story_reddit?.scrollTop = 0
-            dom.story_text?.scrollTop = 0
-            dom.comments.scrollTop = 0
-            read_stories.add story.id
-            read_stories = read_stories
+            story_type = 'unknown'
+            story_source = ''
+    select_story = (story) ->
+        identify_story_type_and_source(story)
+        selected_story = story
+        dom.story_reddit?.scrollTop = 0
+        dom.story_text?.scrollTop = 0
+        dom.comments.scrollTop = 0
+        read_stories.add story.id
+        read_stories = read_stories
+        debug_objects.length = 0
+        debug_objects.push(story)
     move_minimap_cursor = () ->
         dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34)}px)"
     teleport_via_minimap = (click) ->
@@ -292,16 +395,8 @@
         dom.minimap_field.height = dom.minimap.clientHeight - 34
         # Add global event listeners
         document.addEventListener('keydown', (e) ->
-            # Event repeats while key is held down, so don't process repeats
-            if !held_keys.has(e.key)
-                held_keys.add(e.key)
-                held_keys = held_keys
-                if e.key == 'Escape'
-                    show_debugger = !show_debugger
-        )
-        document.addEventListener('keyup', (e) ->
-            held_keys.delete(e.key)
-            held_keys = held_keys
+            if e.key == 'Escape'
+                show_debugger = !show_debugger
         )
     afterUpdate () ->
         # Redraw minimap when comments change

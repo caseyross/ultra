@@ -10,7 +10,7 @@
                             +each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
                                 svelte:self(key='{nestedKey}' value='{nestedValue}')
         +else
-            li(title='{value}' style='color: {color(value)}') {format(key, value)}
+            li(on:click='{navigator.clipboard.writeText(value)}' title='{value}' style='color: {color(value)}') {format(key, value)}
 </template>
 
 <style type="text/stylus">
