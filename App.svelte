@@ -6,11 +6,11 @@
                 input(type='text' bind:value='{subreddit}' on:change='{load_posts({ count: 8 })}' placeholder='POPULAR')
             PostList(posts='{posts}')
             footer
-                button(on:mousedown='{load_posts({ count: 8, after: posts[posts.length - 1].name })}') +
+                button(on:mousedown='{load_posts({ count: 8, after: posts[posts.length - 1].name })}') {$load.posts ? 'LOAD' : '+'}
         Comments(post='{$chosen.post}')
     +if('show_post_internals')
         #post-internals
-            ValueInspectorTree(value='{$chosen.post}')
+            ValueInspector(value='{$chosen.post}')
 </template>
 
 <style type="text/stylus">
@@ -61,20 +61,19 @@
 
 <script type="text/coffeescript">
     import { onMount } from 'svelte'
-    import { chosen, dom, history } from './core-state.js';
-    import { decode_reddit_html_entities } from './tools.js'
+    import { chosen, dom, load } from './core-state.coffee'
+    import { decode_reddit_html_entities, titlecase_gfycat_video_id } from './tools.coffee'
     import Post from './Post.svelte'
     import PostList from './PostList.svelte'
     import Comments from './Comments.svelte'
-    import ValueInspectorTree from './ValueInspectorTree.svelte'
-    import gfycat_adjectives from './gfycat-adjectives.json';
+    import ValueInspector from './ValueInspector.svelte'
     export subreddit = ''
     export posts = []
     export show_post_internals = false
     # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
     # docs: https://www.reddit.com/dev/api
-    token_type = '';
-    access_token = '';
+    token_type = ''
+    access_token = ''
     (() ->
         body = new FormData()
         body.append('grant_type', 'https://oauth.reddit.com/grants/installed_client')
@@ -89,6 +88,7 @@
         load_posts({ count: 8 })
     )()
     load_posts = ({ count, after }) ->
+        $load.posts = true
         response = await fetch("https://oauth.reddit.com#{if subreddit then '/r/'+subreddit else ''}/hot?g=GLOBAL&limit=#{count}&after=#{after}", {
             method: 'GET'
             headers:
@@ -126,26 +126,7 @@
                             switch post.domain
                                 when 'gfycat.com', 'redgifs.com'
                                     post.type = 'video'
-                                    video_id = post.url[(post.url.lastIndexOf('/') + 1)...]
-                                    adjective_1 = ''
-                                    adjective_2 = ''
-                                    animal = ''
-                                    for word in gfycat_adjectives
-                                        if video_id.startsWith word
-                                            adjective_1 = word
-                                            for word in gfycat_adjectives
-                                                if video_id[adjective_1.length...].startsWith word
-                                                    adjective_2 = word
-                                                    animal = video_id[(adjective_1.length + adjective_2.length)...]
-                                    post.source =
-                                        'https://giant.gfycat.com/' +
-                                        adjective_1[0].toUpperCase() +
-                                        adjective_1[1...] +
-                                        adjective_2[0].toUpperCase() +
-                                        adjective_2[1...] +
-                                        animal[0].toUpperCase() +
-                                        animal[1...] +
-                                        '.webm'
+                                    post.source = 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
                                 when 'imgur.com'
                                     post.type = 'image'
                                     post.source = post.url[0...8] + 'i.' + post.url[8...] + '.jpg'
@@ -178,6 +159,7 @@
             load_comments post
             if post.domain.endsWith('reddit.com') and post.url.split('/')[6]
                 load_linked_post post
+            $load.posts = false
     load_comments = (post) ->
         response = await fetch("https://oauth.reddit.com/comments/#{post.id}", {
             method: 'GET'

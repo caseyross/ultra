@@ -56,6 +56,6 @@
 </style>
 
 <script type="text/coffeescript">
-    import { dom } from './core-state.js';
+    import { dom } from './core-state.coffee';
     export post = {}
 </script>

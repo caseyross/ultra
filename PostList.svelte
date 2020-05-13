@@ -10,7 +10,7 @@
                 class:priority-5='{post.priority === 5}'
                 class:priority-6='{post.priority === 6}'
                 class:stickied='{post.stickied}'
-                class:read='{$history.read_posts.has(post.id)}'
+                class:read='{$memory.read_posts.has(post.id)}'
                 class:selected='{$chosen.post.id === post.id}'
             )
                 .aux
@@ -89,14 +89,14 @@
 </style>
 
 <script type="text/coffeescript">
-    import { chosen, dom, history } from './core-state.js';
-    import { decode_reddit_html_entities } from './tools.js'
+    import { chosen, dom, memory } from './core-state.coffee';
+    import { decode_reddit_html_entities } from './tools.coffee'
     export posts = []
     select_post = (post) ->
-        $history.previous_post_id = $chosen.post.id
+        $memory.previous_post_id = $chosen.post.id
         $chosen.post = post
-        $history.read_posts.add post.id
-        $history.read_posts = $history.read_posts
+        $memory.read_posts.add post.id
+        $memory.read_posts = $memory.read_posts
         $dom.post_reddit_comments?.scrollTop = 0
         $dom.post_self_text?.scrollTop = 0
         $dom.comments.scrollTop = 0

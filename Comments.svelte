@@ -49,7 +49,7 @@
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
-    import { chosen, dom, history } from './core-state.js';
+    import { chosen, dom, memory } from './core-state.coffee';
     import CommentTree from './CommentTree.svelte'
     export post = {}
     move_minimap_cursor = () ->
@@ -64,7 +64,7 @@
         $dom.minimap_field.height = $dom.minimap.clientHeight - 34
     afterUpdate () ->
         # Redraw minimap when comments change
-        if $chosen.post.id != $history.previous_post_id or $dom.comments.scrollHeight != $history.previous_comments_scrollheight
+        if $chosen.post.id != $memory.previous_post_id or $dom.comments.scrollHeight != $memory.previous_comments_scrollheight
             # Clear minimap symbols
             ctx = $dom.minimap_field.getContext '2d'
             ctx.clearRect(0, 0, $dom.minimap_field.width, $dom.minimap_field.height)
@@ -78,5 +78,5 @@
                     ctx.fillRect(0, Math.floor(comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth, 1)
             else
                 $dom.minimap_cursor.style.height = 0
-            $history.previous_comments_scrollheight = $dom.comments.scrollHeight
+            $memory.previous_comments_scrollheight = $dom.comments.scrollHeight
 </script>
