@@ -94,7 +94,6 @@
     export posts = []
     select_post = (post) ->
         $history.previous_post_id = $chosen.post.id
-        $history.previous_comments_scrollheight = $dom.comments.scrollHeight
         $chosen.post = post
         $history.read_posts.add post.id
         $history.read_posts = $history.read_posts

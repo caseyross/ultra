@@ -48,6 +48,7 @@
 </style>
 
 <script type="text/coffeescript">
+    import { onMount, afterUpdate } from 'svelte'
     import { chosen, dom, history } from './core-state.js';
     import CommentTree from './CommentTree.svelte'
     export post = {}
@@ -77,4 +78,5 @@
                     ctx.fillRect(0, Math.floor(comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth, 1)
             else
                 $dom.minimap_cursor.style.height = 0
+            $history.previous_comments_scrollheight = $dom.comments.scrollHeight
 </script>

@@ -60,7 +60,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { onMount, afterUpdate } from 'svelte'
+    import { onMount } from 'svelte'
     import { chosen, dom, history } from './core-state.js';
     import { decode_reddit_html_entities } from './tools.js'
     import Post from './Post.svelte'
