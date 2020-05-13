@@ -1,0 +1,61 @@
+<template lang="pug">
+    section
+        +if('!post.id')
+            article#error-text PAGE LOADED AT {Date().toLocaleString()}
+            +elseif('post.linked_post')
+                article#reddit-comments(bind:this='{$dom.post_reddit_comments}')
+                    CommentTree(comment='{post.linked_post}' op_id='{post.linked_post.author_fullname}' focus_comment_id='{post.linked_post.focus_comment_id}')
+            +elseif('post.type === "link"')
+                iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
+            +elseif('post.type === "video"')
+                video(autoplay controls muted='false' src='{post.source}')
+            +elseif('post.type === "image"')
+                a(href='{post.source}' target='_blank')
+                    img(src='{post.source}')
+            +elseif('post.type === "text"')
+                +if('post.source.length')
+                    article#self-text(bind:this='{$dom.post_self_text}') {@html post.source}
+                    +else
+                        article#error-text NO TEXT
+            +else
+                article#error-text CANNOT PARSE POST
+</template>
+
+<style type="text/stylus">
+    section
+        flex: 0 0 40%
+        padding: 0 24px 0 0
+        display: flex
+        flex-flow: column nowrap
+        align-items: flex-end
+    a
+        max-height: 100%
+    iframe
+        width: 100%
+        height: 100%
+        background: white
+    #reddit-comments
+        width: 100%
+        height: 100%
+        overflow: auto
+    #self-text
+        width: 100%
+        max-height: 100%
+        padding: 20px 12px
+        overflow: auto
+        line-height: 1.3
+    #error-text
+        width: 100%
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        font-size: 14px
+        font-weight: 900
+        color: salmon
+</style>
+
+<script type="text/coffeescript">
+    import { dom } from './core-state.js';
+    export post = {}
+</script>
