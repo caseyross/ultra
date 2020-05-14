@@ -6,7 +6,8 @@
                 input(type='text' bind:value='{subreddit}' on:change='{load_posts({ count: 8 })}' placeholder='POPULAR')
             PostList(posts='{posts}')
             footer
-                button(on:mousedown='{load_posts({ count: 8, after: posts[posts.length - 1].name })}') {$load.posts ? 'LOAD' : '+'}
+                button#back {'←'}
+                button#forward(on:mousedown='{load_posts({ count: 8, after: posts[posts.length - 1].name })}') {$load.posts ? 'LOAD' : '― 2 →'}
         Comments(post='{$chosen.post}')
     +if('show_post_internals')
         #post-internals
@@ -48,6 +49,11 @@
     footer
         display: flex
         justify-content: center
+    #back
+        flex: 0 0 33%
+        opacity: 0.5
+    #forward
+        flex: 0 0 67%
     #post-internals
         position: fixed
         top: 0
@@ -133,6 +139,9 @@
                                 when 'v.redd.it'
                                     post.type = 'video'
                                     post.source = post.media.reddit_video.fallback_url
+                                when 'youtu.be', 'youtube.com'
+                                    post.type = 'embed'
+                                    post.source = decode_reddit_html_entities post.secure_media.oembed.html
                                 else
                                     post.type = 'link'
                                     post.source = post.url

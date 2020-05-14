@@ -1,22 +1,24 @@
 <template lang="pug">
     section
         +if('!post.id')
-            article#error-text PAGE LOADED AT {Date().toLocaleString()}
+            article#error-text SELECT POST
             +elseif('post.linked_post')
                 article#reddit-comments(bind:this='{$dom.post_reddit_comments}')
                     CommentTree(comment='{post.linked_post}' op_id='{post.linked_post.author_fullname}' focus_comment_id='{post.linked_post.focus_comment_id}')
-            +elseif('post.type === "link"')
-                iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
-            +elseif('post.type === "video"')
-                video(autoplay controls muted='false' src='{post.source}')
+            +elseif('post.type === "embed"')
+                article#embed {@html post.source}
             +elseif('post.type === "image"')
                 a(href='{post.source}' target='_blank')
                     img(src='{post.source}')
+            +elseif('post.type === "link"')
+                iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
             +elseif('post.type === "text"')
                 +if('post.source.length')
                     article#self-text(bind:this='{$dom.post_self_text}') {@html post.source}
                     +else
                         article#error-text NO TEXT
+            +elseif('post.type === "video"')
+                video(autoplay controls muted src='{post.source}')
             +else
                 article#error-text CANNOT PARSE POST
 </template>
@@ -34,6 +36,9 @@
         width: 100%
         height: 100%
         background: white
+    #embed
+        width: 100%
+        height: 100%
     #reddit-comments
         width: 100%
         height: 100%
