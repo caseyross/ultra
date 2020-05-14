@@ -1,23 +1,21 @@
 <template lang="pug">
     ol
         +each('posts as post')
-            li(
-                on:mousedown='{select_post(post)}'
-                class:priority-1='{post.priority === 1}'
-                class:priority-2='{post.priority === 2}'
-                class:priority-3='{post.priority === 3}'
-                class:priority-4='{post.priority === 4}'
-                class:priority-5='{post.priority === 5}'
-                class:priority-6='{post.priority === 6}'
-                class:stickied='{post.stickied}'
-                class:read='{$memory.read_posts.has(post.id)}'
-                class:selected='{$chosen.post.id === post.id}'
-            )
-                .aux
-                    span.subreddit-label {post.subreddit}
-                    span.flair {post.link_flair_text}
-                .main
-                    figure.colorbar
+            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
+                figure
+                    .colorbar(
+                        class:priority-1='{post.priority === 1}'
+                        class:priority-2='{post.priority === 2}'
+                        class:priority-3='{post.priority === 3}'
+                        class:priority-4='{post.priority === 4}'
+                        class:priority-5='{post.priority === 5}'
+                        class:priority-6='{post.priority === 6}'
+                        class:stickied='{post.stickied}'
+                    )
+                article
+                    .meta
+                        span.subreddit-label {post.subreddit}
+                        span.flair {post.link_flair_text}
                     h1 {decode_reddit_html_entities(post.title)}
 </template>
 
@@ -29,63 +27,48 @@
         overflow: auto
         list-style: none
     li
-        padding: 12px 0
+        margin: 8px
+        display: flex
         cursor: pointer
     .priority-1
-        color: salmon
-        & .subreddit-label
-        & .colorbar
-            background: salmon
+        background: salmon
     .priority-2
-        color: lightsalmon
-        & .subreddit-label
-        & .colorbar
-            background: lightsalmon
+        background: lightsalmon
     .priority-3
-        color: wheat
-        & .subreddit-label
-        & .colorbar
-            background: wheat
+        background: wheat
     .priority-4
-        color: white
-        & .subreddit-label
-        & .colorbar
-            background: white
+        background: white
     .priority-5
-        color: lightgray
-        & .subreddit-label
-        & .colorbar
-            background: lightgray
+        background: lightgray
     .priority-6
-        color: gray
-        & .subreddit-label
-        & .colorbar
-            background: gray
-    .selected
-        background: #666
+        background: gray
     .stickied
         background: darkseagreen
-    .aux
-        margin-bottom: 8px
+    .selected
+        background: steelblue
+    .read
+        opacity: 0.5
+    figure
+        flex: 0 0 32px
+        margin-right: 8px
+    .colorbar
+        width: 100%
+        height: 16px
+        margin-top: 16px
+    article
+        flex: 1 1 auto
+        margin-right: 16px
+    .meta
+        margin-bottom: 4px
         font-size: 12px
         font-weight: 900
-        color: #222
     .flair
-        color: gray
         margin-left: 16px
-    .main
-        display: flex
-    .colorbar
-        flex: 0 0 2px
-        .stickied &
-            background: darkseagreen
-        .read &
-            visibility: hidden
+        color: gray
     h1
-        margin: 0 16px 0 8px
-        font-size: 16px
-        .stickied &
-            color: white
+        margin: 0
+        font-size: 14px
+        font-weight: 400
 </style>
 
 <script type="text/coffeescript">

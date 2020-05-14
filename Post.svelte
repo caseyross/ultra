@@ -1,7 +1,6 @@
 <template lang="pug">
     section
         +if('!post.id')
-            article#error-text SELECT POST
             +elseif('post.linked_post')
                 article#reddit-comments(bind:this='{$dom.post_reddit_comments}')
                     CommentTree(comment='{post.linked_post}' op_id='{post.linked_post.author_fullname}' focus_comment_id='{post.linked_post.focus_comment_id}')
