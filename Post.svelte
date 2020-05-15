@@ -1,5 +1,12 @@
 <template lang="pug">
     section
+        .meta
+            span posted-by: {post.author}
+            span score: {post.score}
+            span when:
+                span {time_since(post.created_utc).major.value} {time_since(post.created_utc).major.unit.abbr} 
+                +if('time_since(post.created_utc).minor')
+                    span {time_since(post.created_utc).minor.value} {time_since(post.created_utc).minor.unit.abbr}
         +if('!post.id')
             +elseif('post.linked_post')
                 article#reddit-comments(bind:this='{$dom.post_reddit_comments}')
@@ -28,7 +35,12 @@
         padding: 0 24px 0 0
         display: flex
         flex-flow: column nowrap
-        align-items: flex-end
+    .meta
+        flex: 0 0 40px
+        font-weight: 900
+        display: flex
+    span
+        margin: 8px
     a
         max-height: 100%
     iframe
@@ -61,5 +73,7 @@
 
 <script type="text/coffeescript">
     import { dom } from './core-state.coffee';
+    import { describe_duration } from './tools.coffee'
     export post = {}
+    time_since = (seconds) -> describe_duration(Date.now() - seconds * 1000)
 </script>
