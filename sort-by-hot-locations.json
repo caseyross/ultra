@@ -1,0 +1,334 @@
+[
+	{
+		"id": "GLOBAL",
+		"name": "Global"
+	},
+	{
+		"id": "AR",
+		"name": "Argentina"
+	},
+	{
+		"id": "AU",
+		"name": "Australia"
+	},
+	{
+		"id": "BG",
+		"name": "Bulgaria"
+	},
+	{
+		"id": "CA",
+		"name": "Canada"
+	},
+	{
+		"id": "CL",
+		"name": "Chile"
+	},
+	{
+		"id": "CO",
+		"name": "Columbia"
+	},
+	{
+		"id": "HR",
+		"name": "Croatia"
+	},
+	{
+		"id": "CZ",
+		"name": "Czechia"
+	},
+	{
+		"id": "FI",
+		"name": "Finland"
+	},
+	{
+		"id": "GR",
+		"name": "Greece"
+	},
+	{
+		"id": "HU",
+		"name": "Hungary"
+	},
+	{
+		"id": "IS",
+		"name": "Iceland"
+	},
+	{
+		"id": "IN",
+		"name": "India"
+	},
+	{
+		"id": "IE",
+		"name": "Ireland"
+	},
+	{
+		"id": "JP",
+		"name": "Japan"
+	},
+	{
+		"id": "MY",
+		"name": "Malaysia"
+	},
+	{
+		"id": "MX",
+		"name": "Mexico"
+	},
+	{
+		"id": "NZ",
+		"name": "New Zeal."
+	},
+	{
+		"id": "PH",
+		"name": "Philippines"
+	},
+	{
+		"id": "PL",
+		"name": "Poland"
+	},
+	{
+		"id": "PT",
+		"name": "Portugal"
+	},
+	{
+		"id": "PR",
+		"name": "Puerto Rico"
+	},
+	{
+		"id": "RO",
+		"name": "Romania"
+	},
+	{
+		"id": "RS",
+		"name": "Serbia"
+	},
+	{
+		"id": "SG",
+		"name": "Singapore"
+	},
+	{
+		"id": "SE",
+		"name": "Sweden"
+	},
+	{
+		"id": "TW",
+		"name": "Taiwan"
+	},
+	{
+		"id": "TH",
+		"name": "Thailand"
+	},
+	{
+		"id": "TR",
+		"name": "Turkey"
+	},
+	{
+		"id": "GB",
+		"name": "U.K."
+	},
+	{
+		"id": "US",
+		"name": "U.S.A."
+	},
+	{
+		"id": "US_AL",
+		"name": "Alabama"
+	},
+	{
+		"id": "US_AK",
+		"name": "Alaska"
+	},
+	{
+		"id": "US_AZ",
+		"name": "Arizona"
+	},
+	{
+		"id": "US_AR",
+		"name": "Arkansas"
+	},
+	{
+		"id": "US_CA",
+		"name": "California"
+	},
+	{
+		"id": "US_CO",
+		"name": "Colorado"
+	},
+	{
+		"id": "US_CT",
+		"name": "Conn."
+	},
+	{
+		"id": "US_DC",
+		"name": "D.C."
+	},
+	{
+		"id": "US_DE",
+		"name": "Delaware"
+	},
+	{
+		"id": "US_FL",
+		"name": "Florida"
+	},
+	{
+		"id": "US_GA",
+		"name": "Georgia"
+	},
+	{
+		"id": "US_HI",
+		"name": "Hawaii"
+	},
+	{
+		"id": "US_ID",
+		"name": "Idaho"
+	},
+	{
+		"id": "US_IL",
+		"name": "Illinois"
+	},
+	{
+		"id": "US_IN",
+		"name": "Indiana"
+	},
+	{
+		"id": "US_IA",
+		"name": "Iowa"
+	},
+	{
+		"id": "US_KS",
+		"name": "Kansas"
+	},
+	{
+		"id": "US_KY",
+		"name": "Kentucky"
+	},
+	{
+		"id": "US_LA",
+		"name": "Louisiana"
+	},
+	{
+		"id": "US_ME",
+		"name": "Maine"
+	},
+	{
+		"id": "US_MD",
+		"name": "Maryland"
+	},
+	{
+		"id": "US_MA",
+		"name": "Mass."
+	},
+	{
+		"id": "US_MI",
+		"name": "Michigan"
+	},
+	{
+		"id": "US_MN",
+		"name": "Minnesota"
+	},
+	{
+		"id": "US_MS",
+		"name": "Mississippi"
+	},
+	{
+		"id": "US_MO",
+		"name": "Missouri"
+	},
+	{
+		"id": "US_MT",
+		"name": "Montana"
+	},
+	{
+		"id": "US_NC",
+		"name": "N. Carolina"
+	},
+	{
+		"id": "US_ND",
+		"name": "N. Dakota"
+	},
+	{
+		"id": "US_NE",
+		"name": "New Engl."
+	},
+	{
+		"id": "US_NH",
+		"name": "New Hamp."
+	},
+	{
+		"id": "US_NJ",
+		"name": "New Jersey"
+	},
+	{
+		"id": "US_NM",
+		"name": "New Mexico"
+	},
+	{
+		"id": "US_NV",
+		"name": "Nevada"
+	},
+	{
+		"id": "US_NY",
+		"name": "New York"
+	},
+	{
+		"id": "US_OH",
+		"name": "Ohio"
+	},
+	{
+		"id": "US_OK",
+		"name": "Oklahoma"
+	},
+	{
+		"id": "US_OR",
+		"name": "Oregon"
+	},
+	{
+		"id": "US_PA",
+		"name": "Penn."
+	},
+	{
+		"id": "US_RI",
+		"name": "Rhode Is."
+	},
+	{
+		"id": "US_SC",
+		"name": "S. Carolina"
+	},
+	{
+		"id": "US_SD",
+		"name": "S. Dakota"
+	},
+	{
+		"id": "US_TN",
+		"name": "Tennessee"
+	},
+	{
+		"id": "US_TX",
+		"name": "Texas"
+	},
+	{
+		"id": "US_UT",
+		"name": "Utah"
+	},
+	{
+		"id": "US_VT",
+		"name": "Vermont"
+	},
+	{
+		"id": "US_VA",
+		"name": "Virginia"
+	},
+	{
+		"id": "US_WA",
+		"name": "Washington"
+	},
+	{
+		"id": "US_WV",
+		"name": "West Virg."
+	},
+	{
+		"id": "US_WI",
+		"name": "Wisconsin"
+	},
+	{
+		"id": "US_WY",
+		"name": "Wyoming"
+	}
+]

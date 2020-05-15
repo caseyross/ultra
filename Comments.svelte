@@ -4,7 +4,8 @@
             +if('post.num_comments > 0')
                 CommentTree(comment='{post}' op_id='{post.author_fullname}')
                 +elseif('post.num_comments === 0')
-                    #nocomments NO COMMENTS
+                    #nocomments
+                        button#add-first-comment ADD THE FIRST COMMENT
         figure(bind:this='{$dom.minimap}')
             canvas(bind:this='{$dom.minimap_field}')
             mark(bind:this='{$dom.minimap_cursor}')
@@ -30,6 +31,12 @@
         font-size: 14px
         font-weight: 900
         color: salmon
+    #add-first-comment
+        padding: 40px
+        border: 1px dotted
+        &:hover
+            border-style: solid
+            text-decoration: underline
     figure
         position: absolute
         top: 0

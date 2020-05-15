@@ -4,6 +4,18 @@
         nav
             header
                 input(type='text' bind:value='{subreddit}' on:change='{load_posts({ count: 8 })}' placeholder='POPULAR')
+                #sort-options
+                    button#sort-top Top
+                    button#sort-top-today T
+                    button#sort-top-week W
+                    button#sort-top-month M
+                    button#sort-top-year Y
+                    button#sort-top-all A
+                    button#sort-hot Hot
+                    select#sort-hot-geography
+                        +each('sort_by_hot_locations as location')
+                            option(id='{location.id}') {location.name}
+                    button#sort-new New
             PostList(posts='{posts}')
             footer
                 button#back {'←'}
@@ -34,7 +46,6 @@
         font-size: 32px
         font-weight: 900
     button
-        width: 80px
         height: 80px
         color: #ccc
         &:hover
@@ -46,6 +57,26 @@
             outline: none
             background: wheat
             color: #333
+    #sort-options
+        display: flex
+        & button
+            height: 20px
+            font-size: 12px
+    #sort-hot
+        flex: 0 0 12%
+    #sort-hot-geography
+        flex: 0 0 24%
+        background: #222
+    #sort-new
+        flex: 0 0 12%
+    #sort-top
+        flex: 0 0 12%
+    #sort-top-today
+    #sort-top-week
+    #sort-top-month
+    #sort-top-year
+    #sort-top-all
+        flex: 0 0 8%
     footer
         display: flex
         justify-content: center
@@ -73,6 +104,7 @@
     import PostList from './PostList.svelte'
     import Comments from './Comments.svelte'
     import ValueInspector from './ValueInspector.svelte'
+    import sort_by_hot_locations from './sort-by-hot-locations.json'
     export subreddit = ''
     export posts = []
     export show_post_internals = false
