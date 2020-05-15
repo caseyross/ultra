@@ -31,7 +31,7 @@
 
 <style type="text/stylus">
     section
-        flex: 0 0 40%
+        flex: 1
         padding: 0 24px 0 0
         display: flex
         flex-flow: column nowrap

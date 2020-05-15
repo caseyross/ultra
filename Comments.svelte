@@ -14,7 +14,7 @@
 
 <style type="text/stylus">
     section
-        flex: 0 0 40%
+        flex: 1
         contain: strict
     article
         width: 100%

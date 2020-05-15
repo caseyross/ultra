@@ -35,7 +35,7 @@
         background: #222
         color: white
     nav
-        flex: 0 0 20%
+        flex: 0 0 400px
         display: flex
         flex-flow: column nowrap
         user-select: none
