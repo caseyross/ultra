@@ -11,7 +11,6 @@
             mark(bind:this='{$dom.minimap_cursor}')
 </template>
 
-
 <style type="text/stylus">
     section
         flex: 1

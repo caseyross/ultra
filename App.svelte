@@ -2,20 +2,7 @@
     #main
         Post(post='{$chosen.post}')
         nav
-            header
-                input(type='text' bind:value='{subreddit}' on:change='{load_posts({ count: 8 })}' placeholder='POPULAR')
-                #sort-options
-                    button#sort-top Top
-                    button#sort-top-today T
-                    button#sort-top-week W
-                    button#sort-top-month M
-                    button#sort-top-year Y
-                    button#sort-top-all A
-                    button#sort-hot Hot
-                    select#sort-hot-geography
-                        +each('sort_by_hot_locations as location')
-                            option(id='{location.id}') {location.name}
-                    button#sort-new New
+            ListingNavigation
             PostList(posts='{posts}')
             footer
                 button#back {'←'}
@@ -40,43 +27,15 @@
         flex-flow: column nowrap
         user-select: none
     button
-    input
+        height: 80px
         text-align: center
-        background: #333
         font-size: 32px
         font-weight: 900
-    button
-        height: 80px
+        background: #333
         color: #ccc
         &:hover
             background: wheat
             color: white
-    input
-        text-transform: uppercase
-        &:focus
-            outline: none
-            background: wheat
-            color: #333
-    #sort-options
-        display: flex
-        & button
-            height: 20px
-            font-size: 12px
-    #sort-hot
-        flex: 0 0 12%
-    #sort-hot-geography
-        flex: 0 0 24%
-        background: #222
-    #sort-new
-        flex: 0 0 12%
-    #sort-top
-        flex: 0 0 12%
-    #sort-top-today
-    #sort-top-week
-    #sort-top-month
-    #sort-top-year
-    #sort-top-all
-        flex: 0 0 8%
     footer
         display: flex
         justify-content: center
@@ -100,12 +59,11 @@
     import { onMount } from 'svelte'
     import { chosen, dom, load } from './core-state.coffee'
     import { decode_reddit_html_entities, titlecase_gfycat_video_id } from './tools.coffee'
-    import Post from './Post.svelte'
+    import ListingNavigation from './ListingNavigation.svelte'
     import PostList from './PostList.svelte'
+    import Post from './Post.svelte'
     import Comments from './Comments.svelte'
     import ValueInspector from './ValueInspector.svelte'
-    import sort_by_hot_locations from './sort-by-hot-locations.json'
-    export subreddit = ''
     export posts = []
     export show_post_internals = false
     # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
@@ -127,11 +85,39 @@
     )()
     load_posts = ({ count, after }) ->
         $load.posts = true
-        response = await fetch("https://oauth.reddit.com#{if subreddit then '/r/'+subreddit else ''}/hot?g=GLOBAL&limit=#{count}&after=#{after}", {
-            method: 'GET'
-            headers:
-                'Authorization': "#{token_type} #{access_token}"
-        })
+        response = await fetch(
+            'https://oauth.reddit.com' +
+            (
+                if $chosen.listing.type == 'user' then '/user/' else '/r/'
+            ) +
+            $chosen.listing.name +
+            (
+                if $chosen.listing.type == 'user'
+                    switch $chosen.listing.rank_by.type
+                        when 'top'
+                            '?sort=top&t=' + $chosen.listing.rank_by.filter + '&'
+                        when 'hot'
+                            '?sort=hot&'
+                        else
+                            '?sort=new&'
+                else
+                    switch $chosen.listing.rank_by.type
+                        when 'top'
+                            '/top?t=' + $chosen.listing.rank_by.filter + '&'
+                        when 'new'
+                            '/new?'
+                        else 
+                            '/hot?' + if $chosen.listing.name == 'popular' then 'g=' + $chosen.listing.rank_by.filter + '&' else ''
+            ) +
+            'limit=' + $chosen.listing.page_size + '&' +
+            'count=' + $chosen.listing.seen + '&' +
+            if $chosen.listing.last_seen_post_id then 'after=' + $chosen.listing.last_seen_post_id else '',
+            {
+                method: 'GET'
+                headers:
+                    'Authorization': "#{token_type} #{access_token}"
+            }
+        )
         { data } = await response.json()
         posts = data.children.map (child) -> {
             child.data...
@@ -180,6 +166,7 @@
                 else
                     post.type = 'unknown'
                     post.source = ''
+            post.title = decode_reddit_html_entities post.title
             if !post.link_flair_text
                 post.link_flair_text = ''
             comment_affinity = if post.score then post.num_comments / post.score else 0.01
@@ -242,4 +229,5 @@
             if e.key == 'Escape'
                 show_post_internals = !show_post_internals
         )
+    $: console.log $chosen.listing.rank_by.type
 </script>

@@ -16,7 +16,7 @@
                     .meta
                         span.subreddit-label {post.subreddit}
                         span.flair {post.link_flair_text}
-                    h1 {decode_reddit_html_entities(post.title)}
+                    h1 {post.title}
 </template>
 
 <style type="text/stylus">
