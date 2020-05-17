@@ -22,7 +22,7 @@
         background: #222
         color: white
     nav
-        flex: 0 0 400px
+        flex: 0 0 440px
         display: flex
         flex-flow: column nowrap
         user-select: none
@@ -229,5 +229,4 @@
             if e.key == 'Escape'
                 show_post_internals = !show_post_internals
         )
-    $: console.log $chosen.listing.rank_by.type
 </script>

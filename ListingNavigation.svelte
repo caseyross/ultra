@@ -1,60 +1,98 @@
 <template lang="pug">
     header
         input(type='text' bind:value='{$chosen.listing.name}' placeholder='ALL')
-        #rank-by
-            label Top
-                input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='top')
-            label All
-                input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='all')
-            label Yr
-                input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='year')
-            label Mo
-                input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='month')
-            label Wk
-                input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='week')
-            label Day
-                input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='day')
-            label Hot
-                input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='hot')
-            select(bind:value='{$chosen.listing.rank_by.filter}')
-                +each('rank_by_hot_geofilters as geofilter')
-                    option(value='{geofilter.id}') {geofilter.name}
-            label New
-                input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='new')
+        ol
+            li#hot
+                label
+                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='hot')
+                    div Hot
+                +if('$chosen.listing.name === "popular" && $chosen.listing.type === "subreddit"')
+                    select(bind:value='{$chosen.listing.rank_by.filter}')
+                        +each('rank_by_hot_geofilters as geofilter')
+                            option(value='{geofilter.id}') {geofilter.name}
+            +if('$chosen.listing.name !== "popular" || $chosen.listing.type !== "subreddit"')
+                li#controversial
+                    label
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='controversial')
+                        div Controversial
+            li#top
+                label
+                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='top')
+                    div Top
+                #top-filters
+                    label(title='This hour')
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='hour')
+                        div H
+                    label(title='Last 24 hours')
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='day')
+                        div D
+                    label(title='This week')
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='week')
+                        div W
+                    label(title='This month')
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='month')
+                        div M
+                    label(title='This year')
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='year')
+                        div Y
+                    label(title='All time')
+                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='all')
+                        div A
+            li#new
+                label
+                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='new')
+                    div New
 </template>
 
 <style type="text/stylus">
-    input
+    header
+        font-size: 12px
+        font-weight: 900
+        background: #333
+    input[type=text]
+        width: 100%
         text-align: center
         font-size: 32px
-        font-weight: 900
         text-transform: uppercase
-        background: #333
-        &:hover
-            background: wheat
-            color: white
         &:focus
-            outline: none
-            background: wheat
-            color: #333
-    #rank-by
+            color: orangered
+    input[type=radio]
+        display: none
+    ol
+        margin: 0
+        padding: 0
+        display: flex
+        justify-content: space-between
+        color: #ccc
+        list-style: none
+    li
+        border: 1px solid gray
         display: flex
     label
+        width: 60px
         height: 20px
-        font-size: 12px
-    #rank-by-top
-    #rank-by-hot
-    #rank-by-new
-        flex: 0 0 12%
-    #rank-by-top-today
-    #rank-by-top-week
-    #rank-by-top-month
-    #rank-by-top-year
-    #rank-by-top-all
-        flex: 0 0 8%
+        cursor: pointer
+        :checked + div
+            background: orangered
+    #controversial
+        label
+            width: 111px
+    #top-filters
+        label
+            width: 20px
+        :checked + div
+            background: initial
+            color: orangered
+    div
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
     select
-        flex: 0 0 24%
-        background: #222
+        width: 120px
+        height: 20px
+        padding: 0px 0px 1px 4px
+        background: #333
 </style>
 
 <script type="text/coffeescript">

@@ -1,7 +1,7 @@
 [
 	{
 		"id": "GLOBAL",
-		"name": "Global"
+		"name": "World"
 	},
 	{
 		"id": "AR",
@@ -73,7 +73,7 @@
 	},
 	{
 		"id": "NZ",
-		"name": "New Zeal."
+		"name": "New Zealand"
 	},
 	{
 		"id": "PH",
@@ -121,11 +121,11 @@
 	},
 	{
 		"id": "GB",
-		"name": "U.K."
+		"name": "United Kingdom"
 	},
 	{
 		"id": "US",
-		"name": "U.S.A."
+		"name": "United States"
 	},
 	{
 		"id": "US_AL",
@@ -153,7 +153,7 @@
 	},
 	{
 		"id": "US_CT",
-		"name": "Conn."
+		"name": "Connecticut"
 	},
 	{
 		"id": "US_DC",
@@ -213,7 +213,7 @@
 	},
 	{
 		"id": "US_MA",
-		"name": "Mass."
+		"name": "Massachusetts"
 	},
 	{
 		"id": "US_MI",
@@ -237,19 +237,19 @@
 	},
 	{
 		"id": "US_NC",
-		"name": "N. Carolina"
+		"name": "North Carolina"
 	},
 	{
 		"id": "US_ND",
-		"name": "N. Dakota"
+		"name": "North Dakota"
 	},
 	{
 		"id": "US_NE",
-		"name": "New Engl."
+		"name": "New England"
 	},
 	{
 		"id": "US_NH",
-		"name": "New Hamp."
+		"name": "New Hampshire"
 	},
 	{
 		"id": "US_NJ",
@@ -281,19 +281,19 @@
 	},
 	{
 		"id": "US_PA",
-		"name": "Penn."
+		"name": "Pennsylvania"
 	},
 	{
 		"id": "US_RI",
-		"name": "Rhode Is."
+		"name": "Rhode Island"
 	},
 	{
 		"id": "US_SC",
-		"name": "S. Carolina"
+		"name": "South Carolina"
 	},
 	{
 		"id": "US_SD",
-		"name": "S. Dakota"
+		"name": "South Dakota"
 	},
 	{
 		"id": "US_TN",
@@ -321,7 +321,7 @@
 	},
 	{
 		"id": "US_WV",
-		"name": "West Virg."
+		"name": "West Virginia"
 	},
 	{
 		"id": "US_WI",

@@ -18,17 +18,11 @@ export chosen = writable
                     url_path[3] || 'hot'
             filter: switch url_path[1]
                 when 'user', 'u'
-                    if url_params.get('t') == 'hour'
-                        'day'
-                    else
-                        url_params.get('t') || 'all'
+                    url_params.get('t') || 'all'
                 else
                     switch url_path[3]
                         when 'top'
-                            if url_params.get('t') == 'hour'
-                                'day'
-                            else
-                                url_params.get('t') || 'day'
+                            url_params.get('t') || 'day'
                         else
                             url_params.get('geo_filter') || 'GLOBAL'
         seen: url_params.get('count') || 0

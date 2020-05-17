@@ -1,7 +1,7 @@
 <template lang="pug">
     ol
         +each('posts as post')
-            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
+            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}')
                 figure
                     .colorbar(
                         class:priority-1='{post.priority === 1}'
@@ -12,7 +12,7 @@
                         class:priority-6='{post.priority === 6}'
                         class:stickied='{post.stickied}'
                     )
-                article
+                article(class:selected='{$chosen.post.id === post.id}')
                     .meta
                         span.subreddit-label {post.subreddit}
                         span.flair {post.link_flair_text}

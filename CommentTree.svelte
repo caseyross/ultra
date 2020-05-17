@@ -5,7 +5,7 @@
                 article.comment-tree
                     .comment(class:focus-comment='{reply.id === focus_comment_id}')
                         .comment-meta
-                            span.author-label(class:author-label-op='{reply.author_fullname === op_id}') {reply.author}
+                            span.author-label(on:click='{view_user(reply.author)}' class:author-label-op='{reply.author_fullname === op_id}') {reply.author}
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
                         .comment-text {@html reply.body_html}
@@ -30,6 +30,7 @@
             background: #333
     .author-label
         background: lightgray
+        cursor: pointer
     .author-label-op
         background: lightblue
     .author-flair
@@ -38,8 +39,19 @@
 </style>
 
 <script type="text/coffeescript">
+    import { chosen } from './core-state.coffee'
     export comment =
         replies: []
     export op_id = ''
     export focus_comment_id = ''
+    view_user = (username) ->
+        $chosen.listing =
+            type: 'user'
+            name: username
+            rank_by:
+                type: 'new'
+                filter: ''
+            seen: 0
+            last_seen_post_id: ''
+            page_size: 10
 </script>
