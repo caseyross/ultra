@@ -1,10 +1,3 @@
-export decode_reddit_html_entities = (text) ->
-    text
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-
 durations =
     year:
         milliseconds: 1000 * 60 * 60 * 24 * 365

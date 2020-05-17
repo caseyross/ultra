@@ -73,7 +73,6 @@
 
 <script type="text/coffeescript">
     import { chosen, dom, memory } from './core-state.coffee';
-    import { decode_reddit_html_entities } from './tools.coffee'
     export posts = []
     select_post = (post) ->
         $memory.previous_post_id = $chosen.post.id

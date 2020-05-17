@@ -58,7 +58,7 @@
 <script type="text/coffeescript">
     import { onMount } from 'svelte'
     import { chosen, dom, load } from './core-state.coffee'
-    import { decode_reddit_html_entities, titlecase_gfycat_video_id } from './tools.coffee'
+    import { titlecase_gfycat_video_id } from './tools.coffee'
     import ListingNavigation from './ListingNavigation.svelte'
     import PostList from './PostList.svelte'
     import Post from './Post.svelte'
@@ -111,7 +111,11 @@
             ) +
             'limit=' + $chosen.listing.page_size + '&' +
             'count=' + $chosen.listing.seen + '&' +
-            if $chosen.listing.last_seen_post_id then 'after=' + $chosen.listing.last_seen_post_id else '',
+            (
+                if $chosen.listing.last_seen_post_id then 'after=' + $chosen.listing.last_seen_post_id + '&' else ''
+            ) +
+            'raw_json=1'
+            ,
             {
                 method: 'GET'
                 headers:
@@ -126,10 +130,7 @@
         for post in posts
             if post.is_self
                     post.type = 'text'
-                    post.source = if post.selftext_html
-                        decode_reddit_html_entities(post.selftext_html.slice(43, post.selftext_html.length - 34))
-                    else
-                        ''
+                    post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
                 else if post.url
                     filetype = ''
                     [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
@@ -159,14 +160,13 @@
                                     post.source = post.media.reddit_video.fallback_url
                                 when 'youtu.be', 'youtube.com'
                                     post.type = 'embed'
-                                    post.source = decode_reddit_html_entities post.secure_media.oembed.html
+                                    post.source = post.secure_media.oembed.html
                                 else
                                     post.type = 'link'
                                     post.source = post.url
                 else
                     post.type = 'unknown'
                     post.source = ''
-            post.title = decode_reddit_html_entities post.title
             if !post.link_flair_text
                 post.link_flair_text = ''
             comment_affinity = if post.score then post.num_comments / post.score else 0.01
@@ -189,7 +189,7 @@
                 load_linked_post post
             $load.posts = false
     load_comments = (post) ->
-        response = await fetch("https://oauth.reddit.com/comments/#{post.id}", {
+        response = await fetch("https://oauth.reddit.com/comments/#{post.id}?raw_json=1", {
             method: 'GET'
             headers:
                 'Authorization': "#{token_type} #{access_token}"
@@ -201,7 +201,7 @@
         linked_post_id = post.url.split('/')[6]
         linked_comment_id = post.url.split('/')[8]
         linked_comment_context = post.url.split("context=")[1]?.split('&')[0]
-        response = await fetch("https://oauth.reddit.com/comments/#{linked_post_id}?comment=#{linked_comment_id}&context=#{linked_comment_context}", {
+        response = await fetch("https://oauth.reddit.com/comments/#{linked_post_id}?comment=#{linked_comment_id}&context=#{linked_comment_context}&raw_json=1", {
             method: 'GET'
             headers:
                 'Authorization': "#{token_type} #{access_token}"
@@ -213,7 +213,7 @@
         streamline_reply_datastructs post.linked_post
     streamline_reply_datastructs = (comment) ->
         if comment.body_html
-            comment.body_html = decode_reddit_html_entities comment.body_html.slice(22, comment.body_html.length - 13)
+            comment.body_html = comment.body_html[16...-6]
         if comment.replies?.data?.children
             if comment.replies.data.children.kind == 'more'
                 comment.replies = []
