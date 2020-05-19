@@ -4,9 +4,6 @@
         nav
             ListingNavigation
             PostList(posts='{posts}')
-            footer
-                button#back {'←'}
-                button#forward(on:mousedown='{load_posts({ count: 8, after: posts[posts.length - 1].name })}') {$load.posts ? 'LOAD' : '― 2 →'}
         Comments(post='{$chosen.post}')
     +if('show_post_internals')
         #post-internals
@@ -17,7 +14,7 @@
     #main
         height: 100%
         display: flex
-        font: 300 13px/1 "Iosevka Aile"
+        font: 300 12px/1.2 "Iosevka Aile"
         word-break: break-word
         background: #222
         color: white
@@ -36,14 +33,6 @@
         &:hover
             background: wheat
             color: white
-    footer
-        display: flex
-        justify-content: center
-    #back
-        flex: 0 0 33%
-        opacity: 0.5
-    #forward
-        flex: 0 0 67%
     #post-internals
         position: fixed
         top: 0

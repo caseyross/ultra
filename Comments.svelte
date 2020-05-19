@@ -1,5 +1,6 @@
 <template lang="pug">
     section
+        header
         article(bind:this='{$dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
             +if('post.num_comments > 0')
                 CommentTree(comment='{post}' op_id='{post.author_fullname}')
@@ -13,15 +14,20 @@
 
 <style type="text/stylus">
     section
-        flex: 1
+        flex: 0 0 calc(50% - 220px)
+        display: flex
+        flex-flow: column nowrap
         contain: strict
+    header
+        flex: 0 0 53px
+        margin-left: 8px
+        border-bottom: 1px solid gray
+        display: flex
     article
-        width: 100%
-        height: 100%
-        padding-bottom: 16px
+        flex: 1
+        padding-bottom: 40px
         overflow: auto
     #nocomments
-        width: 100%
         height: 100%
         display: flex
         justify-content: center
@@ -38,10 +44,10 @@
             text-decoration: underline
     figure
         position: absolute
-        top: 0
+        top: 60px
         right: 16px
         width: 80px
-        height: 100%
+        height: calc(100% - 60px)
         padding: 17px 0
         pointer-events: none
     mark

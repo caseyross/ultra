@@ -5,7 +5,13 @@
                 article.comment-tree
                     .comment(class:focus-comment='{reply.id === focus_comment_id}')
                         .comment-meta
-                            span.author-label(on:click='{view_user(reply.author)}' class:author-label-op='{reply.author_fullname === op_id}') {reply.author}
+                            button.author-label(
+                                on:click='{view_user(reply.author)}'
+                                class:author-label-op!='{reply.author_fullname === op_id}'
+                                class:author-label-mod!='{reply.distinguished === "moderator"}'
+                                class:author-label-admin!='{reply.distinguished === "admin"}'
+                                class:author-label-special!='{reply.distinguished === "special"}'
+                            ) {reply.author}
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
                         .comment-text {@html reply.body_html}
@@ -15,24 +21,28 @@
 
 <style type="text/stylus">
     .comment-tree
-        margin-left: 32px
-        margin-top: 20px
+        padding: 12px 0 0 20px
         font-size: 12px
-        line-height: 1.2
         word-break: break-word
+        border-left: 1px solid #333
+        :not(.comment-tree) > &
+            border: 0
     .comment-meta
         margin-bottom: 4px
-        color: #222
     .comment-text
-        width: 400px
-        padding: 4px 0 0 4px
+        width: 480px
         .focus-comment &
             background: #333
     .author-label
-        background: lightgray
-        cursor: pointer
+        color: gray
     .author-label-op
-        background: lightblue
+        color: dodgerblue
+    .author-label-mod
+        color: lightgreen
+    .author-label-admin
+        color: orangered
+    .author-label-special
+        color: crimson
     .author-flair
         margin-left: 8px
         color: gray

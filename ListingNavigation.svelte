@@ -48,9 +48,9 @@
     header
         font-size: 12px
         font-weight: 900
-        background: #333
     input[type=text]
         width: 100%
+        height: 38px
         text-align: center
         font-size: 32px
         text-transform: uppercase
@@ -59,15 +59,15 @@
     input[type=radio]
         display: none
     ol
-        margin: 0
+        margin: 4px 0 0 0
         padding: 0
         display: flex
         justify-content: space-between
         color: #ccc
         list-style: none
     li
-        border: 1px solid gray
         display: flex
+        background: #333
     label
         width: 60px
         height: 20px

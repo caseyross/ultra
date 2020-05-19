@@ -1,17 +1,18 @@
 * + p,
 * + blockquote {
-    margin-top: 1.2em;
+    margin-top: 0.6em;
 }
 a {
-    color: steelblue;
+    color: lightskyblue;
 }
 a:visited {
-    color: mediumpurple;
+    color: lightsteelblue;
 }
 blockquote {
+    margin-left: -1em;
     padding-left: 0.6em;
-    border-left: 4px solid lightgray;
-    color: gray;
+    border-left: 4px solid gray;
+    color: #999;
 }
 .md-spoiler-text {
     color: transparent;

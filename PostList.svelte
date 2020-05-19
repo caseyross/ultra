@@ -1,18 +1,11 @@
 <template lang="pug">
     ol
         +each('posts as post')
-            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}')
+            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
                 figure
-                    .colorbar(
-                        class:priority-1='{post.priority === 1}'
-                        class:priority-2='{post.priority === 2}'
-                        class:priority-3='{post.priority === 3}'
-                        class:priority-4='{post.priority === 4}'
-                        class:priority-5='{post.priority === 5}'
-                        class:priority-6='{post.priority === 6}'
-                        class:stickied='{post.stickied}'
-                    )
-                article(class:selected='{$chosen.post.id === post.id}')
+                    button.upvote(class:voted!='{Math.random() < 0.5}') ▲
+                    button.downvote(class:voted!='{Math.random() < 0.1}') ▼
+                article
                     .meta
                         span.subreddit-label {post.subreddit}
                         span.flair {post.link_flair_text}
@@ -23,13 +16,46 @@
     ol
         flex: 1 1 auto
         margin: 0
-        padding: 0
+        padding: 8px
         overflow: auto
         list-style: none
+        color: gray
     li
-        margin: 8px
+        padding: 4px
         display: flex
+        border: 1px solid #222
         cursor: pointer
+    .stickied
+        color: darkseagreen
+    .read
+        opacity: 0.5
+    .selected
+        opacity: 1
+        border-color: white
+    figure
+        flex: 0 0 30px
+        margin-right: 6px
+    .upvote
+    .downvote
+        width: 20px
+        height: 20px
+    .upvote.voted
+        color: chartreuse
+    .downvote.voted
+        color: red
+    article
+        flex: 1
+    .meta
+        margin-bottom: 4px
+        font-size: 13px
+        font-weight: 900
+    .flair
+        margin-left: 16px
+    h1
+        margin: 0
+        font-size: 12px
+        font-weight: 400
+        color: white
     .priority-1
         background: salmon
     .priority-2
@@ -42,33 +68,6 @@
         background: lightgray
     .priority-6
         background: gray
-    .stickied
-        background: darkseagreen
-    .selected
-        background: steelblue
-    .read
-        opacity: 0.5
-    figure
-        flex: 0 0 32px
-        margin-right: 8px
-    .colorbar
-        width: 100%
-        height: 16px
-        margin-top: 16px
-    article
-        flex: 1 1 auto
-        margin-right: 16px
-    .meta
-        margin-bottom: 4px
-        font-size: 12px
-        font-weight: 900
-    .flair
-        margin-left: 16px
-        color: gray
-    h1
-        margin: 0
-        font-size: 14px
-        font-weight: 400
 </style>
 
 <script type="text/coffeescript">
