@@ -7,9 +7,10 @@
                     button.downvote(class:voted!='{Math.random() < 0.1}') ▼
                 article
                     .meta
-                        a.subreddit-label(href='/r/{post.subreddit}') {post.subreddit}
+                        time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
+                        +if('post.subreddit !== $chosen.listing.name')
+                            a.subreddit-label(href='/r/{post.subreddit}') {post.subreddit}
                         span.flair {post.link_flair_text}
-                        span.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr} 
                     h1(on:mousedown='{select_post(post)}') {post.title}
 </template>
 
@@ -50,12 +51,15 @@
         font-size: 13px
         font-weight: 900
     .subreddit-label
+        margin-right: 16px
         color: inherit
         text-decoration: none
     .flair
-        margin-left: 16px
+        font-size: 12px
+        font-weight: 400
     .time-since
-        float: right
+        display: inline-block
+        width: 30px
     h1
         margin: 0
         padding-right: 20px
