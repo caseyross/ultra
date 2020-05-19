@@ -61,6 +61,7 @@
     # docs: https://www.reddit.com/dev/api
     token_type = ''
     access_token = ''
+    expires_in = 0
     (() ->
         body = new FormData()
         body.append('grant_type', 'https://oauth.reddit.com/grants/installed_client')
@@ -71,7 +72,7 @@
                 'Authorization': 'Basic SjZVcUg0a1lRTkFFVWc6'
             body
         })
-        { token_type, access_token } = await response.json()
+        { token_type, access_token, expires_in } = await response.json()
         load_posts({ count: 8 })
     )()
     load_posts = ({ count, after }) ->

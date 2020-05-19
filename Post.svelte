@@ -4,9 +4,9 @@
             span posted-by: {post.author}
             span score: {post.score}
             span when:
-                span {time_since(post.created_utc).major.value} {time_since(post.created_utc).major.unit.abbr} 
-                +if('time_since(post.created_utc).minor')
-                    span {time_since(post.created_utc).minor.value} {time_since(post.created_utc).minor.unit.abbr}
+                span {describe_time_since(post.created_utc).major.value} {describe_time_since(post.created_utc).major.unit.abbr} 
+                +if('describe_time_since(post.created_utc).minor')
+                    span {describe_time_since(post.created_utc).minor.value} {describe_time_since(post.created_utc).minor.unit.abbr}
         article
             +if('!post.id')
                 +elseif('post.linked_post')
@@ -70,7 +70,6 @@
 
 <script type="text/coffeescript">
     import { dom } from './core-state.coffee';
-    import { describe_duration } from './tools.coffee'
+    import { describe_time_since } from './tools.coffee'
     export post = {}
-    time_since = (seconds) -> describe_duration(Date.now() - seconds * 1000)
 </script>

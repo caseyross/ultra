@@ -120,6 +120,7 @@ export describe_duration = (milliseconds) ->
                     value: milliseconds
                     unit: durations.millisecond
             }
+export describe_time_since = (seconds) -> describe_duration(Date.now() - seconds * 1000)
 
 import gfycat_adjectives from './gfycat-adjectives.json'
 import gfycat_animals from './gfycat-animals.json'

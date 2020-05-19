@@ -9,6 +9,7 @@
                     .meta
                         a.subreddit-label(href='/r/{post.subreddit}') {post.subreddit}
                         span.flair {post.link_flair_text}
+                        span.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr} 
                     h1(on:mousedown='{select_post(post)}') {post.title}
 </template>
 
@@ -53,8 +54,11 @@
         text-decoration: none
     .flair
         margin-left: 16px
+    .time-since
+        float: right
     h1
         margin: 0
+        padding-right: 20px
         font-size: 12px
         font-weight: 400
         color: white
@@ -75,6 +79,7 @@
 
 <script type="text/coffeescript">
     import { chosen, dom, memory } from './core-state.coffee';
+    import { describe_time_since } from './tools.coffee';
     export posts = []
     select_post = (post) ->
         $memory.previous_post_id = $chosen.post.id
