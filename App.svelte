@@ -5,6 +5,8 @@
             ListingNavigation
             PostList(posts='{posts}')
         Comments(post='{$chosen.post}')
+    svelte:head
+        title {($chosen.listing.type === 'user' ? 'u/' : 'r/') + $chosen.listing.name}
     +if('show_post_internals')
         #post-internals
             ValueInspector(value='{$chosen.post}')
