@@ -1,15 +1,15 @@
 <template lang="pug">
     ol
         +each('posts as post')
-            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
+            li(class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
                 figure
                     button.upvote(class:voted!='{Math.random() < 0.5}') ▲
                     button.downvote(class:voted!='{Math.random() < 0.1}') ▼
                 article
                     .meta
-                        span.subreddit-label {post.subreddit}
+                        a.subreddit-label(href='/r/{post.subreddit}') {post.subreddit}
                         span.flair {post.link_flair_text}
-                    h1 {post.title}
+                    h1(on:mousedown='{select_post(post)}') {post.title}
 </template>
 
 <style type="text/stylus">
@@ -24,7 +24,6 @@
         padding: 4px
         display: flex
         border: 1px solid #222
-        cursor: pointer
     .stickied
         color: darkseagreen
     .read
@@ -49,6 +48,9 @@
         margin-bottom: 4px
         font-size: 13px
         font-weight: 900
+    .subreddit-label
+        color: inherit
+        text-decoration: none
     .flair
         margin-left: 16px
     h1
@@ -56,6 +58,7 @@
         font-size: 12px
         font-weight: 400
         color: white
+        cursor: pointer
     .priority-1
         background: salmon
     .priority-2

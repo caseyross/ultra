@@ -5,8 +5,8 @@
                 article.comment-tree
                     .comment(class:focus-comment='{reply.id === focus_comment_id}')
                         .comment-meta
-                            button.author-label(
-                                on:click='{view_user(reply.author)}'
+                            a.author-label(
+                                href='/u/{reply.author}'
                                 class:author-label-op!='{reply.author_fullname === op_id}'
                                 class:author-label-mod!='{reply.distinguished === "moderator"}'
                                 class:author-label-admin!='{reply.distinguished === "admin"}'
@@ -35,6 +35,7 @@
             background: #333
     .author-label
         color: gray
+        text-decoration: none
     .author-label-op
         color: dodgerblue
     .author-label-mod
@@ -54,14 +55,4 @@
         replies: []
     export op_id = ''
     export focus_comment_id = ''
-    view_user = (username) ->
-        $chosen.listing =
-            type: 'user'
-            name: username
-            rank_by:
-                type: 'new'
-                filter: ''
-            seen: 0
-            last_seen_post_id: ''
-            page_size: 10
 </script>

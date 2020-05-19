@@ -4,7 +4,7 @@ url_path = window.location.pathname.split('/')
 url_params = new URLSearchParams window.location.search[1...]
 export chosen = writable
     listing: switch url_path[1]
-        when 'user', 'u'
+        when 'u', 'user'
             type: 'user'
             name: url_path[2] || ''
             rank_by:
