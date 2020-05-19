@@ -76,7 +76,6 @@
         load_posts({ count: 8 })
     )()
     load_posts = ({ count, after }) ->
-        $load.posts = true
         response = await fetch(
             'https://oauth.reddit.com' +
             (
@@ -90,6 +89,8 @@
                             '?sort=top&t=' + $chosen.listing.rank_by.filter + '&'
                         when 'hot'
                             '?sort=hot&'
+                        when 'controversial'
+                            '?sort=controversial&'
                         else
                             '?sort=new&'
                 else
@@ -98,6 +99,8 @@
                             '/top?t=' + $chosen.listing.rank_by.filter + '&'
                         when 'new'
                             '/new?'
+                        when 'controversial'
+                            '/controversial?'
                         else 
                             '/hot?' + if $chosen.listing.name == 'popular' then 'g=' + $chosen.listing.rank_by.filter + '&' else ''
             ) +
@@ -179,7 +182,6 @@
             load_comments post
             if post.domain.endsWith('reddit.com') and post.url.split('/')[6]
                 load_linked_post post
-            $load.posts = false
     load_comments = (post) ->
         response = await fetch("https://oauth.reddit.com/comments/#{post.id}?raw_json=1", {
             method: 'GET'

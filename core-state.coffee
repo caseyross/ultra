@@ -17,14 +17,12 @@ export chosen = writable
             type: 'subreddit'
             name: url_path[2] || 'popular'
             rank_by:
-                type: url_path[3] || 'hot'
-                filter: switch url_path[3]
+                type: url_params.get('sort') || url_path[3] || 'hot'
+                filter: switch url_params.get('sort') || url_path[3]
                     when 'top'
                         url_params.get('t') || 'day'
-                    when 'hot'
-                        url_params.get('geo_filter') || 'GLOBAL'
                     else
-                        ''
+                        url_params.get('geo_filter') || 'GLOBAL'
             seen: url_params.get('count') || 0
             last_seen_post_id: url_params.get('after') || ''
             page_size: url_params.get('limit') || 10
@@ -39,9 +37,6 @@ export dom = writable
     minimap: {}
     minimap_field: {}
     minimap_cursor: {}
-
-export load = writable
-    posts: false
 
 export memory = writable
     previous_post_id: ''

@@ -1,12 +1,12 @@
 durations =
     year:
         milliseconds: 1000 * 60 * 60 * 24 * 365
-        abbr: 'y'
+        abbr: 'yr'
         singular: 'year'
         plural: 'years'
     month:
         milliseconds: 1000 * 60 * 60 * 24 * 30.36
-        abbr: 'm'
+        abbr: 'mo'
         singular: 'month'
         plural: 'months'
     week:
@@ -52,17 +52,17 @@ export describe_duration = (milliseconds) ->
                     value: months
                     unit: durations.month
             }
-        when milliseconds > durations.month.milliseconds
-            months = Math.floor(milliseconds / durations.month.milliseconds)
-            weeks = Math.floor(milliseconds % durations.month.milliseconds / durations.week.milliseconds)
-            {
-                major:
-                    value: months
-                    unit: durations.month
-                minor:
-                    value: weeks
-                    unit: durations.week
-            }
+#        when milliseconds > durations.month.milliseconds
+#            months = Math.floor(milliseconds / durations.month.milliseconds)
+#            weeks = Math.floor(milliseconds % durations.month.milliseconds / durations.week.milliseconds)
+#            {
+#                major:
+#                    value: months
+#                    unit: durations.month
+#                minor:
+#                    value: weeks
+#                    unit: durations.week
+#            }
         when milliseconds > durations.week.milliseconds
             weeks = Math.floor(milliseconds / durations.week.milliseconds)
             days = Math.floor(milliseconds % durations.week.milliseconds / durations.day.milliseconds)
@@ -107,19 +107,19 @@ export describe_duration = (milliseconds) ->
                     value: seconds
                     unit: durations.second
             }
-        when milliseconds > durations.second.milliseconds
+        else
             seconds = Math.floor(milliseconds / durations.second.milliseconds)
             {
                 major:
                     value: seconds
                     unit: durations.second
             }
-        else
-            {
-                major:
-                    value: milliseconds
-                    unit: durations.millisecond
-            }
+#        else
+#            {
+#                major:
+#                    value: milliseconds
+#                    unit: durations.millisecond
+#            }
 export describe_time_since = (seconds) -> describe_duration(Date.now() - seconds * 1000)
 
 import gfycat_adjectives from './gfycat-adjectives.json'
