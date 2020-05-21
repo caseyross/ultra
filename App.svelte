@@ -21,7 +21,7 @@
         background: #222
         color: white
     nav
-        flex: 0 0 440px
+        flex: 0 0 480px
         display: flex
         flex-flow: column nowrap
         user-select: none
@@ -79,37 +79,13 @@
     load_posts = ({ count, after }) ->
         response = await fetch(
             'https://oauth.reddit.com' +
-            (
-                if $chosen.listing.type == 'user' then '/user/' else '/r/'
-            ) +
+            (if $chosen.listing.type == 'user' then '/user/' else '/r/') +
             $chosen.listing.name +
-            (
-                if $chosen.listing.type == 'user'
-                    switch $chosen.listing.rank_by.type
-                        when 'top'
-                            '?sort=top&t=' + $chosen.listing.rank_by.filter + '&'
-                        when 'hot'
-                            '?sort=hot&'
-                        when 'controversial'
-                            '?sort=controversial&'
-                        else
-                            '?sort=new&'
-                else
-                    switch $chosen.listing.rank_by.type
-                        when 'top'
-                            '/top?t=' + $chosen.listing.rank_by.filter + '&'
-                        when 'new'
-                            '/new?'
-                        when 'controversial'
-                            '/controversial?'
-                        else 
-                            '/hot?' + if $chosen.listing.name == 'popular' then 'g=' + $chosen.listing.rank_by.filter + '&' else ''
-            ) +
-            'limit=' + $chosen.listing.page_size + '&' +
-            'count=' + $chosen.listing.seen + '&' +
-            (
-                if $chosen.listing.last_seen_post_id then 'after=' + $chosen.listing.last_seen_post_id + '&' else ''
-            ) +
+            (if $chosen.listing.type == 'user' then "?sort=#{$chosen.listing.rank_by.type}&" else "/#{$chosen.listing.rank_by.type}?") +
+            (if $chosen.listing.rank_by.type == 'top' then "t=#{$chosen.listing.rank_by.filter}&" else '') +
+            (if $chosen.listing.page_size then "limit=#{$chosen.listing.page_size}&" else '') +
+            (if $chosen.listing.seen_count then "count=#{$chosen.listing.seen_count}&" else '') +
+            (if $chosen.listing.last_seen_id then "after=#{$chosen.listing.last_seen_id}&" else '') +
             'raw_json=1'
             ,
             {

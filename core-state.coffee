@@ -10,8 +10,8 @@ export chosen = writable
             rank_by:
                 type: url_params.get('sort') || 'new'
                 filter: url_params.get('t') || ''
-            seen: url_params.get('count') || 0
-            last_seen_post_id: url_params.get('after') || ''
+            seen_count: url_params.get('count') || 0
+            last_seen_id: url_params.get('after') || ''
             page_size: url_params.get('limit') || 10
         else
             type: 'subreddit'
@@ -23,8 +23,8 @@ export chosen = writable
                         url_params.get('t') || 'day'
                     else
                         url_params.get('geo_filter') || 'GLOBAL'
-            seen: url_params.get('count') || 0
-            last_seen_post_id: url_params.get('after') || ''
+            seen_count: url_params.get('count') || 0
+            last_seen_id: url_params.get('after') || ''
             page_size: url_params.get('limit') || 10
     post:
         id: '',

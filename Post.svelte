@@ -32,7 +32,7 @@
 
 <style type="text/stylus">
     section
-        flex: 0 0 calc(50% - 220px)
+        flex: 0 0 calc(50% - 240px)
         display: flex
         flex-flow: column nowrap
     header
@@ -57,6 +57,8 @@
         height: 100%
     #embed
         width: 100%
+    #self-text
+        padding-right: 20px
     #error-text
         width: 100%
         height: 100%

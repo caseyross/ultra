@@ -14,7 +14,7 @@
 
 <style type="text/stylus">
     section
-        flex: 0 0 calc(50% - 220px)
+        flex: 0 0 calc(50% - 240px)
         display: flex
         flex-flow: column nowrap
         contain: strict

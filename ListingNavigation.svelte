@@ -2,46 +2,45 @@
     header
         input(type='text' bind:value='{$chosen.listing.name}' on:change!='{e => window.location.pathname = "/r/" + e.target.value}' placeholder='ALL')
         ol
+            li#new
+                label
+                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='new')
+                    a(href='{window.location.pathname}?sort=new') New
+            li#rising
+                label
+                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='rising')
+                    a(href='{window.location.pathname}?sort=rising') Rising
+            li#controversial
+                label
+                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='controversial')
+                    a(href='{window.location.pathname}?sort=controversial') Controversial
             li#hot
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='hot')
                     a(href='{window.location.pathname}?sort=hot') Hot
-                +if('$chosen.listing.name === "popular" && $chosen.listing.type === "subreddit"')
-                    select(bind:value='{$chosen.listing.rank_by.filter}' on:change!='{e => window.location.search = "?sort=hot&geo_filter=" + e.target.value}')
-                        +each('rank_by_hot_geofilters as geofilter')
-                            option(value='{geofilter.id}') {geofilter.name}
-            +if('$chosen.listing.name !== "popular" || $chosen.listing.type !== "subreddit"')
-                li#controversial
-                    label
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='controversial')
-                        a(href='{window.location.pathname}?sort=controversial') Controversial
             li#top
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='top')
                     a(href='{window.location.pathname}?sort=top') Top
                 #top-filters
-                    label(title='This hour')
+                    label(title='Last 60 minutes')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='hour')
                         a(href='{window.location.pathname}?sort=top&t=hour') H
                     label(title='Last 24 hours')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='day')
                         a(href='{window.location.pathname}?sort=top&t=day') D
-                    label(title='This week')
+                    label(title='Last 7 days')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='week')
                         a(href='{window.location.pathname}?sort=top&t=week') W
-                    label(title='This month')
+                    label(title='Past month')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='month')
                         a(href='{window.location.pathname}?sort=top&t=month') M
-                    label(title='This year')
+                    label(title='Past 12 months')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='year')
                         a(href='{window.location.pathname}?sort=top&t=year') Y
                     label(title='All time')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='all')
                         a(href='{window.location.pathname}?sort=top&t=all') A
-            li#new
-                label
-                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='new')
-                    a(href='{window.location.pathname}?sort=new') New
 </template>
 
 <style type="text/stylus">
@@ -74,14 +73,11 @@
             background: orangered
     #controversial
         label
-            width: 111px
+            width: 120px
     #top-filters
         display: flex
         label
             width: 20px
-        :checked + a
-            background: initial
-            color: orangered
     a
         height: 100%
         display: flex
@@ -98,5 +94,4 @@
 
 <script type="text/coffeescript">
     import { chosen } from './core-state.coffee'
-    import rank_by_hot_geofilters from './rank-by-hot-geofilters.json'
 </script>
