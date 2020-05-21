@@ -70,7 +70,6 @@
         width: 60px
         height: 20px
         cursor: pointer
-        :hover + a
         :checked + a
             background: orangered
     #controversial
@@ -80,7 +79,6 @@
         display: flex
         label
             width: 20px
-        :hover + a
         :checked + a
             background: initial
             color: orangered

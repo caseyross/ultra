@@ -50,6 +50,7 @@
     import { onMount } from 'svelte'
     import { chosen, dom, load } from './core-state.coffee'
     import { titlecase_gfycat_video_id } from './tools.coffee'
+    import { keybinds } from './keybinds.coffee'
     import ListingNavigation from './ListingNavigation.svelte'
     import PostList from './PostList.svelte'
     import Post from './Post.svelte'
@@ -220,7 +221,7 @@
     onMount () ->
         # Add global event listeners
         document.addEventListener('keydown', (e) ->
-            if e.key == 'Escape'
+            if e.key == keybinds.DEBUG_INSPECTOR
                 show_post_internals = !show_post_internals
         )
 </script>
