@@ -88,13 +88,16 @@
                 for comment in $dom.comments.children
                     ctx.fillStyle = '#999'
                     ctx.fillRect(0, Math.floor(comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
-                    for l2_comment in comment.children
-                        console.dir(comment)
-                        ctx.fillStyle = '#666'
-                        ctx.fillRect($dom.minimap.clientWidth / 3 + 1, Math.floor(l2_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
-                        for l3_comment in l2_comment.children
-                            ctx.fillStyle = '#333'
-                            ctx.fillRect($dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                    if comment.children.length > 1
+                        for l2_comment, i in comment.children
+                            if (i > 0)
+                                ctx.fillStyle = '#666'
+                                ctx.fillRect($dom.minimap.clientWidth / 3 + 1, Math.floor(l2_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                            if l2_comment.children.length > 1
+                                for l3_comment, i in l2_comment.children
+                                    if (i > 0)
+                                        ctx.fillStyle = '#333'
+                                        ctx.fillRect($dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
             else
                 $dom.minimap_cursor.style.height = 0
             $memory.previous_comments_scrollheight = $dom.comments.scrollHeight
