@@ -1,17 +1,18 @@
 <template lang="pug">
     ol
         +each('posts as post')
-            li(class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
-                figure
-                    button.upvote(class:voted!='{Math.random() < 0.5}') ▲
-                    button.downvote(class:voted!='{Math.random() < 0.1}') ▼
-                article
-                    .meta
-                        time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
-                        +if('post.subreddit !== $chosen.listing.name')
-                            a.subreddit-label(href='/r/{post.subreddit}') {post.subreddit}
-                        span.flair {post.link_flair_text}
-                    h1(on:mousedown='{select_post(post)}') {post.title}
+            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
+                .meta
+                    button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.2}') ▲
+                    button {post.author}
+                    button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▼
+                    time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
+                .core
+                    h1 {post.title}
+                .meta
+                    +if('post.subreddit !== $chosen.listing.name')
+                        button.subreddit-label {post.subreddit}
+                    span.flair {post.link_flair_text}
 </template>
 
 <style type="text/stylus">
@@ -21,52 +22,38 @@
         padding: 8px
         overflow: auto
         list-style: none
-        color: gray
     li
         padding: 4px
-        display: flex
-        border: 1px solid #222
-    .stickied
-        color: darkseagreen
+        border: 1px solid transparent
     .read
         opacity: 0.5
     .selected
         opacity: 1
         border-color: white
-    figure
-        flex: 0 0 30px
-        margin-right: 6px
-    .upvote
-    .downvote
-        width: 20px
-        height: 20px
-    .upvote.voted
-        color: chartreuse
-    .downvote.voted
-        color: red
-    article
-        flex: 1
     .meta
-        margin-bottom: 4px
-        font-size: 13px
-        font-weight: 900
+        color: gray
     .subreddit-label
         margin-right: 16px
-        color: inherit
-        text-decoration: none
     .flair
         font-size: 12px
         font-weight: 400
     .time-since
         display: inline-block
         width: 30px
+    .core
+        display: flex
+    .upvote
+    .downvote
+        width: 20px
+        height: 20px
+    .upvote.voted
+        color: salmon
+    .downvote.voted
+        color: cornflowerblue
     h1
-        margin: 0
-        padding-right: 20px
-        font-size: 12px
-        font-weight: 400
-        color: white
-        cursor: pointer
+        margin: 4px 0
+        font-size: inherit
+        font-weight: inherit
     .priority-1
         background: salmon
     .priority-2

@@ -1,46 +1,46 @@
 <template lang="pug">
     header
-        input(type='text' bind:value='{$chosen.listing.name}' on:change!='{e => window.location.pathname = "/r/" + e.target.value}' placeholder='ALL')
+        input(type='text' bind:value='{$chosen.listing.name}' placeholder='ALL')
         ol
             li#new
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='new')
-                    a(href='{window.location.pathname}?sort=new') New
+                    span New
             li#rising
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='rising')
-                    a(href='{window.location.pathname}?sort=rising') Rising
+                    span Rising
             li#controversial
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='controversial')
-                    a(href='{window.location.pathname}?sort=controversial') Controversial
+                    span Controversial
             li#hot
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='hot')
-                    a(href='{window.location.pathname}?sort=hot') Hot
+                    span Hot
             li#top
                 label
                     input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='top')
-                    a(href='{window.location.pathname}?sort=top') Top
+                    span Top
                 #top-filters
                     label(title='Last 60 minutes')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='hour')
-                        a(href='{window.location.pathname}?sort=top&t=hour') H
+                        span H
                     label(title='Last 24 hours')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='day')
-                        a(href='{window.location.pathname}?sort=top&t=day') D
+                        span D
                     label(title='Last 7 days')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='week')
-                        a(href='{window.location.pathname}?sort=top&t=week') W
+                        span W
                     label(title='Past month')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='month')
-                        a(href='{window.location.pathname}?sort=top&t=month') M
+                        span M
                     label(title='Past 12 months')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='year')
-                        a(href='{window.location.pathname}?sort=top&t=year') Y
+                        span Y
                     label(title='All time')
                         input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='all')
-                        a(href='{window.location.pathname}?sort=top&t=all') A
+                        span A
 </template>
 
 <style type="text/stylus">
@@ -69,7 +69,7 @@
         width: 60px
         height: 20px
         cursor: pointer
-        :checked + a
+        :checked + span
             background: orangered
     #controversial
         label
@@ -78,7 +78,8 @@
         display: flex
         label
             width: 20px
-    a
+    span
+        width: 100%
         height: 100%
         display: flex
         justify-content: center

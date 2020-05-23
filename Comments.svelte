@@ -46,7 +46,7 @@
         position: absolute
         top: 60px
         right: 16px
-        width: 80px
+        width: 60px
         height: calc(100% - 60px)
         padding: 17px 0
         pointer-events: none
@@ -85,9 +85,16 @@
                 # Resize cursor
                 $dom.minimap_cursor.style.height = "#{($dom.comments.clientHeight - 34) * $dom.comments.clientHeight / $dom.comments.scrollHeight}px"
                 # Draw new minimap symbols
-                ctx.fillStyle = 'gray'
                 for comment in $dom.comments.children
-                    ctx.fillRect(0, Math.floor(comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth, 1)
+                    ctx.fillStyle = '#999'
+                    ctx.fillRect(0, Math.floor(comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                    for l2_comment in comment.children
+                        console.dir(comment)
+                        ctx.fillStyle = '#666'
+                        ctx.fillRect($dom.minimap.clientWidth / 3 + 1, Math.floor(l2_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                        for l3_comment in l2_comment.children
+                            ctx.fillStyle = '#333'
+                            ctx.fillRect($dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
             else
                 $dom.minimap_cursor.style.height = 0
             $memory.previous_comments_scrollheight = $dom.comments.scrollHeight

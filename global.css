@@ -9,7 +9,6 @@ a:visited {
     color: lightsteelblue;
 }
 blockquote {
-    margin-left: -1em;
     padding-left: 0.6em;
     border-left: 4px solid gray;
     color: #999;
