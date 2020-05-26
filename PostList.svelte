@@ -1,18 +1,24 @@
 <template lang="pug">
     ol
-        +each('posts as post')
-            li(on:mousedown='{select_post(post)}' class:read='{$memory.read_posts.has(post.id)}' class:selected='{$chosen.post.id === post.id}')
-                .meta
-                    button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.2}') ▲
-                    button {post.author}
-                    button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▼
-                    time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
-                .core
-                    h1 {post.title}
-                .meta
-                    +if('post.subreddit !== $chosen.listing.name')
-                        button.subreddit-label {post.subreddit}
-                    span.flair {post.link_flair_text}
+        +each('$promises.feed as promise')
+            +await('promise')
+                +then('post')
+                    li(on:mousedown='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
+                        .meta
+                            button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.2}') ▲
+                            button {post.author}
+                            button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▼
+                            time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
+                        .core
+                            h1 {post.title}
+                        .meta
+                            +if('post.subreddit !== $feed.name')
+                                button.subreddit-label {post.subreddit}
+                            span.flair {post.link_flair_text}
+                +catch('error')
+                    li {error}
+            +else
+                li Couldn't load posts
 </template>
 
 <style type="text/stylus">
@@ -54,29 +60,17 @@
         margin: 4px 0
         font-size: inherit
         font-weight: inherit
-    .priority-1
-        background: salmon
-    .priority-2
-        background: lightsalmon
-    .priority-3
-        background: wheat
-    .priority-4
-        background: white
-    .priority-5
-        background: lightgray
-    .priority-6
-        background: gray
 </style>
 
 <script type="text/coffeescript">
-    import { chosen, dom, memory } from './core-state.coffee';
+    import { feed, promises, dom } from './core-state.coffee';
     import { describe_time_since } from './tools.coffee';
-    export posts = []
+    export read_posts = new Set()
     select_post = (post) ->
-        $memory.previous_post_id = $chosen.post.id
-        $chosen.post = post
-        $memory.read_posts.add post.id
-        $memory.read_posts = $memory.read_posts
+        $feed.previous_selected = $feed.selected
+        $feed.selected = post
+        read_posts.add post.id
+        read_posts = read_posts
         $dom.post_reddit_comments?.scrollTop = 0
         $dom.post_self_text?.scrollTop = 0
         $dom.comments.scrollTop = 0

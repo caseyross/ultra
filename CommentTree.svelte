@@ -1,7 +1,7 @@
 <template lang="pug">
     +if('comment.replies.length > 0')
         +each('comment.replies as reply')
-            +if('reply.body')
+            +if('reply.body_html')
                 article.comment-tree
                     .comment(class:focus-comment='{reply.id === focus_comment_id}')
                         .comment-meta
@@ -56,7 +56,6 @@
 </style>
 
 <script type="text/coffeescript">
-    import { chosen } from './core-state.coffee'
     export comment =
         replies: []
     export op_id = ''

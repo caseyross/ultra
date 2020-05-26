@@ -1,8 +1,10 @@
 export keybinds =
-    UPVOTE: 'f'
-    DOWNVOTE: 'v'
+    UPVOTE: 'q'
+    DOWNVOTE: 'e'
     REPLY: 'r'
-    OPEN_POST_IN_NEW_TAB: 'q'
+    MAKE_VIDEO_FULLSCREEN: 'f'
+    OPEN_POST_IN_NEW_TAB: 't'
+    SHOW_ACTIONS_FOR_SELECTED_ITEM: 'v'
     GO_UP: 'w'
     GO_DOWN: 's'
     GO_LEFT: 'a'

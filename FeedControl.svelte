@@ -1,45 +1,45 @@
 <template lang="pug">
     header
-        input(type='text' bind:value='{$chosen.listing.name}' placeholder='ALL')
+        input(type='text' bind:value='{$feed.name}' placeholder='ALL')
         ol
             li#new
                 label
-                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='new')
+                    input(type='radio' bind:group='{$feed.rank_by.type}' value='new')
                     span New
             li#rising
                 label
-                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='rising')
+                    input(type='radio' bind:group='{$feed.rank_by.type}' value='rising')
                     span Rising
             li#controversial
                 label
-                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='controversial')
+                    input(type='radio' bind:group='{$feed.rank_by.type}' value='controversial')
                     span Controversial
             li#hot
                 label
-                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='hot')
+                    input(type='radio' bind:group='{$feed.rank_by.type}' value='hot')
                     span Hot
             li#top
                 label
-                    input(type='radio' bind:group='{$chosen.listing.rank_by.type}' value='top')
+                    input(type='radio' bind:group='{$feed.rank_by.type}' value='top')
                     span Top
                 #top-filters
                     label(title='Last 60 minutes')
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='hour')
+                        input(type='radio' bind:group='{$feed.rank_by.filter}' value='hour')
                         span H
                     label(title='Last 24 hours')
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='day')
+                        input(type='radio' bind:group='{$feed.rank_by.filter}' value='day')
                         span D
                     label(title='Last 7 days')
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='week')
+                        input(type='radio' bind:group='{$feed.rank_by.filter}' value='week')
                         span W
                     label(title='Past month')
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='month')
+                        input(type='radio' bind:group='{$feed.rank_by.filter}' value='month')
                         span M
                     label(title='Past 12 months')
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='year')
+                        input(type='radio' bind:group='{$feed.rank_by.filter}' value='year')
                         span Y
                     label(title='All time')
-                        input(type='radio' bind:group='{$chosen.listing.rank_by.filter}' value='all')
+                        input(type='radio' bind:group='{$feed.rank_by.filter}' value='all')
                         span A
 </template>
 
@@ -94,5 +94,5 @@
 </style>
 
 <script type="text/coffeescript">
-    import { chosen } from './core-state.coffee'
+    import { feed } from './core-state.coffee'
 </script>

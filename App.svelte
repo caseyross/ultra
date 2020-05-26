@@ -1,15 +1,15 @@
 <template lang="pug">
     #main
-        Post(post='{$chosen.post}')
+        Post(post='{$feed.selected}')
         nav
-            ListingNavigation
-            PostList(posts='{posts}')
-        Comments(post='{$chosen.post}')
+            FeedControl
+            PostList
+        Comments
     svelte:head
-        title {($chosen.listing.type === 'user' ? 'u/' : 'r/') + $chosen.listing.name}
+        title {($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
     +if('show_post_internals')
         #post-internals
-            ValueInspector(value='{$chosen.post}')
+            ValueInspector(value='{$feed.selected}')
 </template>
 
 <style type="text/stylus">
@@ -47,157 +47,22 @@
 </style>
 
 <script type="text/coffeescript">
-    import { onMount } from 'svelte'
-    import { chosen, dom, load } from './core-state.coffee'
-    import { titlecase_gfycat_video_id } from './tools.coffee'
+    import { feed, promises } from './core-state.coffee'
     import { keybinds } from './keybinds.coffee'
-    import ListingNavigation from './ListingNavigation.svelte'
+    import { load_feed, get_post_fragment } from './network.coffee'
+    import FeedControl from './FeedControl.svelte'
     import PostList from './PostList.svelte'
     import Post from './Post.svelte'
     import Comments from './Comments.svelte'
     import ValueInspector from './ValueInspector.svelte'
-    export posts = []
     export show_post_internals = false
-    # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
-    # docs: https://www.reddit.com/dev/api
-    token_type = ''
-    access_token = ''
-    expires_in = 0
+    document.addEventListener('keydown', (e) ->
+        if e.key == keybinds.DEBUG_INSPECTOR
+            show_post_internals = !show_post_internals
+    )
     (() ->
-        body = new FormData()
-        body.append('grant_type', 'https://oauth.reddit.com/grants/installed_client')
-        body.append('device_id', 'DO_NOT_TRACK_THIS_DEVICE')
-        response = await fetch('https://www.reddit.com/api/v1/access_token', {
-            method: 'POST'
-            headers:
-                'Authorization': 'Basic SjZVcUg0a1lRTkFFVWc6'
-            body
-        })
-        { token_type, access_token, expires_in } = await response.json()
-        load_posts({ count: 8 })
+        $promises.feed = load_feed($feed)
+        for promise in $promises.feed
+            promise.then((post) -> $promises.posts[post.id] = get_post_fragment post.id)
     )()
-    load_posts = ({ count, after }) ->
-        response = await fetch(
-            'https://oauth.reddit.com' +
-            (if $chosen.listing.type == 'user' then '/user/' else '/r/') +
-            $chosen.listing.name +
-            (if $chosen.listing.type == 'user' then "?sort=#{$chosen.listing.rank_by.type}&" else "/#{$chosen.listing.rank_by.type}?") +
-            (if $chosen.listing.rank_by.type == 'top' then "t=#{$chosen.listing.rank_by.filter}&" else '') +
-            (if $chosen.listing.page_size then "limit=#{$chosen.listing.page_size}&" else '') +
-            (if $chosen.listing.seen_count then "count=#{$chosen.listing.seen_count}&" else '') +
-            (if $chosen.listing.last_seen_id then "after=#{$chosen.listing.last_seen_id}&" else '') +
-            'raw_json=1'
-            ,
-            {
-                method: 'GET'
-                headers:
-                    'Authorization': "#{token_type} #{access_token}"
-            }
-        )
-        { data } = await response.json()
-        posts = data.children.map (child) -> {
-            child.data...
-            replies: []
-        }
-        for post in posts
-            if post.is_self
-                    post.type = 'text'
-                    post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
-                else if post.url
-                    filetype = ''
-                    [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
-                    if j > -1
-                        filetype = post.url[(i + 1)...j]
-                    else if k > -1
-                        filetype = post.url[(i + 1)...k]
-                    else if i > -1
-                        filetype = post.url[(i + 1)...]
-                    switch filetype
-                        when 'jpg', 'png', 'gif'
-                            post.type = 'image'
-                            post.source = post.url
-                        when 'gifv'
-                            post.type = 'video'
-                            post.source = post.url[0...post.url.lastIndexOf('.')] + '.mp4'
-                        else
-                            switch post.domain
-                                when 'gfycat.com', 'redgifs.com'
-                                    post.type = 'video'
-                                    post.source = 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
-                                when 'imgur.com'
-                                    post.type = 'image'
-                                    post.source = post.url[0...8] + 'i.' + post.url[8...] + '.jpg'
-                                when 'v.redd.it'
-                                    post.type = 'video'
-                                    post.source = post.media.reddit_video.fallback_url
-                                when 'youtu.be', 'youtube.com'
-                                    post.type = 'embed'
-                                    post.source = post.secure_media.oembed.html
-                                else
-                                    post.type = 'link'
-                                    post.source = post.url
-                else
-                    post.type = 'unknown'
-                    post.source = ''
-            if !post.link_flair_text
-                post.link_flair_text = ''
-            comment_affinity = if post.score then post.num_comments / post.score else 0.01
-            participation_affinity = if post.subreddit_subscribers then post.num_comments / post.subreddit_subscribers else 0.00001
-            post.priority = switch
-                when comment_affinity > 0.33
-                    1
-                when comment_affinity > 0.24
-                    2
-                when comment_affinity > 0.15
-                    3
-                when comment_affinity > 0.03
-                    4
-                when comment_affinity > 0.01
-                    5
-                else
-                    6
-            load_comments post
-            if post.domain.endsWith('reddit.com') and post.url.split('/')[6]
-                load_linked_post post
-    load_comments = (post) ->
-        response = await fetch("https://oauth.reddit.com/comments/#{post.id}?raw_json=1", {
-            method: 'GET'
-            headers:
-                'Authorization': "#{token_type} #{access_token}"
-        })
-        [..., comments] = await response.json()
-        post.replies = comments
-        streamline_reply_datastructs post
-    load_linked_post = (post) ->
-        linked_post_id = post.url.split('/')[6]
-        linked_comment_id = post.url.split('/')[8]
-        linked_comment_context = post.url.split("context=")[1]?.split('&')[0]
-        response = await fetch("https://oauth.reddit.com/comments/#{linked_post_id}?comment=#{linked_comment_id}&context=#{linked_comment_context}&raw_json=1", {
-            method: 'GET'
-            headers:
-                'Authorization': "#{token_type} #{access_token}"
-        })
-        [linked_post, linked_comments] = await response.json()
-        post.linked_post = linked_post.data.children[0].data
-        post.linked_post.replies = linked_comments
-        post.linked_post.focus_comment_id = linked_comment_id
-        streamline_reply_datastructs post.linked_post
-    streamline_reply_datastructs = (comment) ->
-        if comment.body_html
-            comment.body_html = comment.body_html[16...-6]
-        if comment.replies?.data?.children
-            if comment.replies.data.children.kind == 'more'
-                comment.replies = []
-            else
-                comment.replies = comment.replies.data.children.map (child) -> child.data
-                for comment in comment.replies
-                    streamline_reply_datastructs comment
-        else
-            comment.replies = []
-    onMount () ->
-        # Add global event listeners
-        document.addEventListener('keydown', (e) ->
-            if e.key == keybinds.DEBUG_INSPECTOR
-                show_post_internals = !show_post_internals
-        )
 </script>

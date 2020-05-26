@@ -2,11 +2,14 @@
     section
         header
         article(bind:this='{$dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
-            +if('post.num_comments > 0')
-                CommentTree(comment='{post}' op_id='{post.author_fullname}')
-                +elseif('post.num_comments === 0')
-                    #nocomments
-                        button#add-first-comment ADD THE FIRST COMMENT
+            +if('$feed.selected.id')
+                +await('$promises.posts[$feed.selected.id]')
+                    +then('post')
+                        +if('post.num_comments > 0')
+                            CommentTree(comment='{post}' op_id='{post.author_fullname}')
+                            +elseif('post.num_comments === 0')
+                                #nocomments
+                                    button#add-first-comment ADD THE FIRST COMMENT
         figure(bind:this='{$dom.minimap}')
             canvas(bind:this='{$dom.minimap_field}')
             mark(bind:this='{$dom.minimap_cursor}')
@@ -61,9 +64,9 @@
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
-    import { chosen, dom, memory } from './core-state.coffee';
+    import { feed, promises, dom } from './core-state.coffee';
     import CommentTree from './CommentTree.svelte'
-    export post = {}
+    previous_scrollHeight = 0
     move_minimap_cursor = () ->
         $dom.minimap_cursor.style.transform = "translateY(#{$dom.comments.scrollTop / $dom.comments.scrollHeight * ($dom.minimap.clientHeight - 34)}px)"
     teleport_via_minimap = (click) ->
@@ -76,7 +79,7 @@
         $dom.minimap_field.height = $dom.minimap.clientHeight - 34
     afterUpdate () ->
         # Redraw minimap when comments change
-        if $chosen.post.id != $memory.previous_post_id or $dom.comments.scrollHeight != $memory.previous_comments_scrollheight
+        if $feed.selected.id != $feed.previous_selected.id or $dom.comments.scrollHeight != previous_scrollHeight
             # Clear minimap symbols
             ctx = $dom.minimap_field.getContext '2d'
             ctx.clearRect(0, 0, $dom.minimap_field.width, $dom.minimap_field.height)
@@ -100,5 +103,5 @@
                                         ctx.fillRect($dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
             else
                 $dom.minimap_cursor.style.height = 0
-            $memory.previous_comments_scrollheight = $dom.comments.scrollHeight
+            previous_scrollHeight = $dom.comments.scrollHeight
 </script>
