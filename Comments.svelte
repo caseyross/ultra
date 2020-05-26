@@ -1,15 +1,16 @@
 <template lang="pug">
     section
-        header
         article(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
-            +if('$feed.selected.id')
-                +await('$promises.posts[$feed.selected.id]')
+            +if('promised_post')
+                +await('promised_post')
                     +then('post')
                         +if('post.num_comments > 0')
                             CommentTree(comment='{post}' op_id='{post.author_fullname}')
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT
+                    +catch('error')
+                        #nocomments {error}
         figure(bind:this='{dom.minimap}')
             canvas(bind:this='{dom.minimap_field}')
             mark(bind:this='{dom.minimap_cursor}')
@@ -17,19 +18,18 @@
 
 <style type="text/stylus">
     section
-        flex: 0 0 calc(50% - 240px)
+        width: 100%
+        height: 100%
+        position: relative
+    article
+        height: 100%
+        padding-bottom: 40px
         display: flex
         flex-flow: column nowrap
-        contain: strict
-    header
-        flex: 0 0 53px
-        margin-left: 8px
-        border-bottom: 1px solid gray
-        display: flex
-    article
-        flex: 1
-        padding-bottom: 40px
         overflow: auto
+        scrollbar-width: none
+        &::-webkit-scrollbar
+            display: none
     #nocomments
         height: 100%
         display: flex
@@ -47,15 +47,14 @@
             text-decoration: underline
     figure
         position: absolute
-        top: 53px
-        right: 16px
+        top: 0
+        right: 0
         width: 60px
-        height: calc(100% - 53px)
-        padding: 17px 0
+        height: 100%
         pointer-events: none
     mark
         position: absolute
-        top: 17px
+        top: 0
         width: 100%
         display: block
         background: lightgray
@@ -64,8 +63,9 @@
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
-    import { feed, promises } from './core-state.coffee';
+    import { feed } from './core-state.coffee';
     import CommentTree from './CommentTree.svelte'
+    export promised_post = undefined
     dom =
         comments: {}
         previous_comments_scrollheight: 0
@@ -73,15 +73,15 @@
         minimap_field: {}
         minimap_cursor: {}
     move_minimap_cursor = () ->
-        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34)}px)"
+        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * dom.minimap.clientHeight}px)"
     teleport_via_minimap = (click) ->
         # If clicking on minimap, jump to that location in the comments
         if 0 < dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth 
-            dom.comments.scrollTop = (click.layerY - 17) / (dom.minimap.clientHeight - 34) * dom.comments.scrollHeight - dom.minimap.clientHeight / 2
+            dom.comments.scrollTop = click.layerY / dom.minimap.clientHeight * dom.comments.scrollHeight - dom.minimap.clientHeight / 2
     onMount () ->
         # Size minimap, because canvas elements can't be sized properly with pure CSS
         dom.minimap_field.width = dom.minimap.clientWidth
-        dom.minimap_field.height = dom.minimap.clientHeight - 34
+        dom.minimap_field.height = dom.minimap.clientHeight
     afterUpdate () ->
         # Redraw minimap when comments change
         if $feed.selected.id != $feed.previous_selected.id or dom.comments.scrollHeight != dom.previous_comments_scrollheight
@@ -91,7 +91,7 @@
             # If comments don't all fit on screen, draw the minimap 
             if dom.comments.scrollHeight > dom.comments.clientHeight
                 # Resize cursor
-                dom.minimap_cursor.style.height = "#{(dom.comments.clientHeight - 34) * dom.comments.clientHeight / dom.comments.scrollHeight}px"
+                dom.minimap_cursor.style.height = "#{dom.comments.clientHeight * dom.comments.clientHeight / dom.comments.scrollHeight}px"
                 # Draw new minimap symbols
                 for comment in dom.comments.children
                     ctx.fillStyle = '#999'

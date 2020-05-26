@@ -47,6 +47,16 @@ process_post = (post) ->
     if post.is_self
             post.type = 'text'
             post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
+        else if post.domain.endsWith 'reddit.com'
+            post.type = 'reddit'
+            [_, _, _, _, _, _, id, _, comment_id, options] = post.url.split '/'
+            url_params = new URLSearchParams(options)
+            post.source = {
+                id
+                comment_id
+                context_level: url_params.get('context')
+            }
+            if comment_id then post.highlight = comment_id
         else if post.url
             filetype = ''
             [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
@@ -83,8 +93,8 @@ process_post = (post) ->
         else
             post.type = 'unknown'
             post.source = ''
-    if post.source.startsWith 'http://'
-        post.source = 'https://' + post.source[8...]
+    if typeof post.source == 'string' and post.source.startsWith 'http://'
+        post.source = 'https://' + post.source[7...]
     return post
 get_feed_fragment = (feed_config, num_posts) ->
     load = api_op('GET',

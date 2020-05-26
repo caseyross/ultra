@@ -1,50 +1,30 @@
 <template lang="pug">
-    section
-        header
-            span posted-by: {post.author}
-            span score: {post.score}
-            span when:
-                span {describe_time_since(post.created_utc).major.value} {describe_time_since(post.created_utc).major.unit.abbr} 
-                +if('describe_time_since(post.created_utc).minor')
-                    span {describe_time_since(post.created_utc).minor.value} {describe_time_since(post.created_utc).minor.unit.abbr}
-        article
-            +if('!post.id')
-                +elseif('post.linked_post')
-                    #reddit-comments
-                        CommentTree(comment='{post.linked_post}' op_id='{post.linked_post.author_fullname}' focus_comment_id='{post.linked_post.focus_comment_id}')
-                +elseif('post.type === "embed"')
-                    #embed {@html post.source}
-                +elseif('post.type === "image"')
-                    a(href='{post.source}' target='_blank')
-                        img(src='{post.source}')
-                +elseif('post.type === "link"')
-                    iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
-                +elseif('post.type === "text"')
-                    +if('post.source.length')
-                        #self-text {@html post.source}
+    +if('post.id')
+        +if('post.type === "reddit"')
+            Comments(promised_post='{$promises.source_posts[post.id]}')
+            +else
+                article
+                    +if('post.type === "text"')
+                        +if('post.source.length')
+                            #self-text {@html post.source}
+                            +else
+                                #error-text NO TEXT
+                        +elseif('post.type === "link"')
+                            iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
+                        +elseif('post.type === "embed"')
+                            #embed {@html post.source}
+                        +elseif('post.type === "video"')
+                            video(autoplay controls muted src='{post.source}')
+                        +elseif('post.type === "image"')
+                            a(href='{post.source}' target='_blank')
+                                img(src='{post.source}')
                         +else
-                            #error-text NO TEXT
-                +elseif('post.type === "video"')
-                    video(autoplay controls muted src='{post.source}')
-                +else
-                    #error-text CANNOT PARSE POST
+                            #error-text CANNOT PARSE POST
 </template>
 
 <style type="text/stylus">
-    section
-        flex: 0 0 calc(50% - 240px)
-        display: flex
-        flex-flow: column nowrap
-    header
-        flex: 0 0 53px
-        margin-right: 8px
-        font-weight: 900
-        border-bottom: 1px solid gray
-        display: flex
-    span
-        margin: 8px
     article
-        flex: 1
+        height: calc(100% - 40px)
         margin: 20px
         display: flex
         justify-content: flex-end
@@ -71,6 +51,8 @@
 </style>
 
 <script type="text/coffeescript">
+    import { promises } from './core-state.coffee'
     import { describe_time_since } from './tools.coffee'
+    import Comments from './Comments.svelte'
     export post = {}
 </script>

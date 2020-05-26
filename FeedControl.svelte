@@ -1,5 +1,5 @@
 <template lang="pug">
-    header
+    nav
         input(type='text' bind:value='{$feed.name}' placeholder='ALL')
         ol
             li#hot
@@ -44,8 +44,6 @@
 </template>
 
 <style type="text/stylus">
-    header
-        font-size: 12px
     input[type=text]
         width: 100%
         height: 38px
@@ -82,13 +80,6 @@
         display: flex
         justify-content: center
         align-items: center
-        text-decoration: none
-        color: inherit
-    select
-        width: 120px
-        height: 20px
-        padding: 0px 0px 1px 4px
-        background: #333
 </style>
 
 <script type="text/coffeescript">

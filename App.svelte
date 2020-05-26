@@ -1,10 +1,13 @@
 <template lang="pug">
+    header
+        FeedControl
     #main
-        Post(post='{$feed.selected}')
+        section
+            Post(post='{$feed.selected}')
         nav
-            FeedControl
             PostList
-        Comments
+        section
+            Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
         title {($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
     +if('show_post_internals')
@@ -13,28 +16,21 @@
 </template>
 
 <style type="text/stylus">
-    #main
-        height: 100%
+    header
+        flex: 0 0 62px
+        border-bottom: 1px solid gray
         display: flex
-        font: 300 12px/1.2 "Iosevka Aile"
-        word-break: break-word
-        background: #222
-        color: white
+        justify-content: center
+    #main
+        height: calc(100% - 63px)
+        display: flex
+    section
+        flex: 0 0 calc(50% - 240px)
     nav
         flex: 0 0 480px
         display: flex
         flex-flow: column nowrap
         user-select: none
-    button
-        height: 80px
-        text-align: center
-        font-size: 32px
-        font-weight: 900
-        background: #333
-        color: #ccc
-        &:hover
-            background: wheat
-            color: white
     #post-internals
         position: fixed
         top: 0
@@ -63,6 +59,9 @@
     (() ->
         $promises.feed = load_feed($feed)
         for promise in $promises.feed
-            promise.then((post) -> $promises.posts[post.id] = get_post_fragment post.id)
+            promise.then (post) ->
+                $promises.posts[post.id] = get_post_fragment post.id
+                if post.type == 'reddit'
+                    $promises.source_posts[post.id] = get_post_fragment post.source.id, post.source.comment_id, post.source.context_level
     )()
 </script>
