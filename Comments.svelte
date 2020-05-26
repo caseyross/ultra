@@ -1,7 +1,7 @@
 <template lang="pug">
     section
         header
-        article(bind:this='{$dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
+        article(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
             +if('$feed.selected.id')
                 +await('$promises.posts[$feed.selected.id]')
                     +then('post')
@@ -10,9 +10,9 @@
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT
-        figure(bind:this='{$dom.minimap}')
-            canvas(bind:this='{$dom.minimap_field}')
-            mark(bind:this='{$dom.minimap_cursor}')
+        figure(bind:this='{dom.minimap}')
+            canvas(bind:this='{dom.minimap_field}')
+            mark(bind:this='{dom.minimap_cursor}')
 </template>
 
 <style type="text/stylus">
@@ -64,44 +64,49 @@
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
-    import { feed, promises, dom } from './core-state.coffee';
+    import { feed, promises } from './core-state.coffee';
     import CommentTree from './CommentTree.svelte'
-    previous_scrollHeight = 0
+    dom =
+        comments: {}
+        previous_comments_scrollheight: 0
+        minimap: {}
+        minimap_field: {}
+        minimap_cursor: {}
     move_minimap_cursor = () ->
-        $dom.minimap_cursor.style.transform = "translateY(#{$dom.comments.scrollTop / $dom.comments.scrollHeight * ($dom.minimap.clientHeight - 34)}px)"
+        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * (dom.minimap.clientHeight - 34)}px)"
     teleport_via_minimap = (click) ->
         # If clicking on minimap, jump to that location in the comments
-        if 0 < $dom.comments.clientWidth - click.layerX < $dom.minimap.clientWidth 
-            $dom.comments.scrollTop = (click.layerY - 17) / ($dom.minimap.clientHeight - 34) * $dom.comments.scrollHeight - $dom.minimap.clientHeight / 2
+        if 0 < dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth 
+            dom.comments.scrollTop = (click.layerY - 17) / (dom.minimap.clientHeight - 34) * dom.comments.scrollHeight - dom.minimap.clientHeight / 2
     onMount () ->
         # Size minimap, because canvas elements can't be sized properly with pure CSS
-        $dom.minimap_field.width = $dom.minimap.clientWidth
-        $dom.minimap_field.height = $dom.minimap.clientHeight - 34
+        dom.minimap_field.width = dom.minimap.clientWidth
+        dom.minimap_field.height = dom.minimap.clientHeight - 34
     afterUpdate () ->
         # Redraw minimap when comments change
-        if $feed.selected.id != $feed.previous_selected.id or $dom.comments.scrollHeight != previous_scrollHeight
+        if $feed.selected.id != $feed.previous_selected.id or dom.comments.scrollHeight != dom.previous_comments_scrollheight
             # Clear minimap symbols
-            ctx = $dom.minimap_field.getContext '2d'
-            ctx.clearRect(0, 0, $dom.minimap_field.width, $dom.minimap_field.height)
+            ctx = dom.minimap_field.getContext '2d'
+            ctx.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
             # If comments don't all fit on screen, draw the minimap 
-            if $dom.comments.scrollHeight > $dom.comments.clientHeight
+            if dom.comments.scrollHeight > dom.comments.clientHeight
                 # Resize cursor
-                $dom.minimap_cursor.style.height = "#{($dom.comments.clientHeight - 34) * $dom.comments.clientHeight / $dom.comments.scrollHeight}px"
+                dom.minimap_cursor.style.height = "#{(dom.comments.clientHeight - 34) * dom.comments.clientHeight / dom.comments.scrollHeight}px"
                 # Draw new minimap symbols
-                for comment in $dom.comments.children
+                for comment in dom.comments.children
                     ctx.fillStyle = '#999'
-                    ctx.fillRect(0, Math.floor(comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                    ctx.fillRect(0, Math.floor(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth / 3, 1)
                     if comment.children.length > 1
                         for l2_comment, i in comment.children
                             if (i > 0)
                                 ctx.fillStyle = '#666'
-                                ctx.fillRect($dom.minimap.clientWidth / 3 + 1, Math.floor(l2_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                                ctx.fillRect(dom.minimap.clientWidth / 3 + 1, Math.floor(l2_comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth / 3, 1)
                             if l2_comment.children.length > 1
                                 for l3_comment, i in l2_comment.children
                                     if (i > 0)
                                         ctx.fillStyle = '#333'
-                                        ctx.fillRect($dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / $dom.comments.scrollHeight * $dom.minimap.clientHeight), $dom.minimap.clientWidth / 3, 1)
+                                        ctx.fillRect(dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth / 3, 1)
             else
-                $dom.minimap_cursor.style.height = 0
-            previous_scrollHeight = $dom.comments.scrollHeight
+                dom.minimap_cursor.style.height = 0
+            dom.previous_comments_scrollheight = dom.comments.scrollHeight
 </script>

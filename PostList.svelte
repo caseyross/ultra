@@ -63,7 +63,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, promises, dom } from './core-state.coffee';
+    import { feed, promises } from './core-state.coffee';
     import { describe_time_since } from './tools.coffee';
     export read_posts = new Set()
     select_post = (post) ->
@@ -71,7 +71,4 @@
         $feed.selected = post
         read_posts.add post.id
         read_posts = read_posts
-        $dom.post_reddit_comments?.scrollTop = 0
-        $dom.post_self_text?.scrollTop = 0
-        $dom.comments.scrollTop = 0
 </script>

@@ -36,11 +36,3 @@ export promises = writable
     feed: []
     posts: {}
     source_posts: {}
-
-export dom = writable
-    post_reddit_comments: {}
-    post_self_text: {}
-    comments: {}
-    minimap: {}
-    minimap_field: {}
-    minimap_cursor: {}

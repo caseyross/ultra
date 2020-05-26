@@ -10,7 +10,7 @@
         article
             +if('!post.id')
                 +elseif('post.linked_post')
-                    #reddit-comments(bind:this='{$dom.post_reddit_comments}')
+                    #reddit-comments
                         CommentTree(comment='{post.linked_post}' op_id='{post.linked_post.author_fullname}' focus_comment_id='{post.linked_post.focus_comment_id}')
                 +elseif('post.type === "embed"')
                     #embed {@html post.source}
@@ -21,7 +21,7 @@
                     iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
                 +elseif('post.type === "text"')
                     +if('post.source.length')
-                        #self-text(bind:this='{$dom.post_self_text}') {@html post.source}
+                        #self-text {@html post.source}
                         +else
                             #error-text NO TEXT
                 +elseif('post.type === "video"')
@@ -71,7 +71,6 @@
 </style>
 
 <script type="text/coffeescript">
-    import { dom } from './core-state.coffee';
     import { describe_time_since } from './tools.coffee'
     export post = {}
 </script>
