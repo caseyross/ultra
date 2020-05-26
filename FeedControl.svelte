@@ -2,6 +2,10 @@
     header
         input(type='text' bind:value='{$feed.name}' placeholder='ALL')
         ol
+            li#hot
+                label
+                    input(type='radio' bind:group='{$feed.rank_by.type}' value='hot')
+                    span Hot
             li#new
                 label
                     input(type='radio' bind:group='{$feed.rank_by.type}' value='new')
@@ -14,10 +18,6 @@
                 label
                     input(type='radio' bind:group='{$feed.rank_by.type}' value='controversial')
                     span Controversial
-            li#hot
-                label
-                    input(type='radio' bind:group='{$feed.rank_by.type}' value='hot')
-                    span Hot
             li#top
                 label
                     input(type='radio' bind:group='{$feed.rank_by.type}' value='top')
@@ -46,12 +46,12 @@
 <style type="text/stylus">
     header
         font-size: 12px
-        font-weight: 900
     input[type=text]
         width: 100%
         height: 38px
         text-align: center
         font-size: 32px
+        font-weight: 800
         text-transform: uppercase
     input[type=radio]
         display: none
@@ -62,22 +62,20 @@
         justify-content: space-between
         color: #ccc
         list-style: none
-    li
-        display: flex
-        background: #333
     label
-        width: 60px
+        display: inline-block
         height: 20px
+        padding: 0 16px
         cursor: pointer
         :checked + span
-            background: orangered
-    #controversial
-        label
-            width: 120px
-    #top-filters
+            color: white
+            font-weight: 800
+    #top
         display: flex
+    #top-filters
         label
-            width: 20px
+            padding: 0 8px
+            color: gray
     span
         width: 100%
         height: 100%

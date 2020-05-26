@@ -47,10 +47,10 @@
             text-decoration: underline
     figure
         position: absolute
-        top: 60px
+        top: 53px
         right: 16px
         width: 60px
-        height: calc(100% - 60px)
+        height: calc(100% - 53px)
         padding: 17px 0
         pointer-events: none
     mark
