@@ -56,7 +56,6 @@ process_post = (post) ->
                 comment_id
                 context_level: url_params.get('context')
             }
-            if comment_id then post.highlight = comment_id
         else if post.url
             filetype = ''
             [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
@@ -146,6 +145,7 @@ export get_post_fragment = (post_id, comment_id, context_level) ->
         post_fragment = {
             ...post.data.children[0].data
             replies: comments
+            fragment_center: comment_id
         }
         streamline_reply_datastructs post_fragment
         return post_fragment

@@ -5,7 +5,7 @@
                 +await('promised_post')
                     +then('post')
                         +if('post.num_comments > 0')
-                            CommentTree(comment='{post}' op_id='{post.author_fullname}')
+                            CommentTree(comment='{post}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}')
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT

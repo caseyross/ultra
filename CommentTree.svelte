@@ -3,7 +3,7 @@
         +each('comment.replies as reply')
             +if('reply.body_html')
                 article.comment-tree
-                    .comment(class:focus-comment='{reply.id === focus_comment_id}')
+                    .comment
                         .comment-meta
                             button.upvote(title='{reply.score} points' class:voted!='{Math.random() < 0.5}') ▲
                             button.author-label(
@@ -15,8 +15,8 @@
                             button.downvote(title='{reply.score} points' class:voted!='{Math.random() < 0.1}') ▼
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
-                        .comment-text {@html reply.body_html}
-                    svelte:self(comment='{reply}' op_id='{op_id}' focus_comment_id='{focus_comment_id}')
+                        .comment-text(class:comment-text-highlighted='{reply.id === highlight_id}') {@html reply.body_html}
+                    svelte:self(comment='{reply}' op_id='{op_id}' highlight_id='{highlight_id}')
 </template>
 
 
@@ -33,8 +33,8 @@
         color: gray
     .comment-text
         width: 480px
-        .focus-comment &
-            background: #333
+    .comment-text-highlighted
+        color: wheat
     .author-label
         text-decoration: none
     .author-label-op
@@ -59,5 +59,5 @@
     export comment =
         replies: []
     export op_id = ''
-    export focus_comment_id = ''
+    export highlight_id = ''
 </script>
