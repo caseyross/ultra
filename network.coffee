@@ -79,7 +79,7 @@ process_post = (post) ->
                             post.source = 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
                         when 'imgur.com'
                             post.type = 'image'
-                            post.source = post.url[0...8] + 'i.' + post.url[8...] + '.jpg'
+                            post.source = post.url + '.jpg'
                         when 'v.redd.it'
                             post.type = 'video'
                             post.source = post.media.reddit_video.fallback_url
