@@ -1,12 +1,12 @@
 <template lang="pug">
-    header
+    section.top
         FeedControl
-    #main
-        section
+    section.bottom
+        section.left
             Post(post='{$feed.selected}')
-        nav
+        section.center
             PostList
-        section
+        section.right
             Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
         title {($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
@@ -16,21 +16,19 @@
 </template>
 
 <style type="text/stylus">
-    header
+    .top
         flex: 0 0 62px
         border-bottom: 1px solid gray
         display: flex
         justify-content: center
-    #main
+    .bottom
         height: calc(100% - 63px)
         display: flex
-    section
+    .left
+    .right
         flex: 0 0 calc(50% - 240px)
-    nav
+    .center
         flex: 0 0 480px
-        display: flex
-        flex-flow: column nowrap
-        user-select: none
     #post-internals
         position: fixed
         top: 0

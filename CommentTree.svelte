@@ -3,7 +3,7 @@
         +each('comment.replies as reply')
             +if('reply.body_html')
                 article.comment-tree
-                    .comment
+                    .comment(class:comment-highlighted='{reply.id === highlight_id}')
                         .comment-meta
                             button.upvote(title='{reply.score} points' class:voted!='{Math.random() < 0.5}') ▲
                             button.author-label(
@@ -15,7 +15,7 @@
                             button.downvote(title='{reply.score} points' class:voted!='{Math.random() < 0.1}') ▼
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
-                        .comment-text(class:comment-text-highlighted='{reply.id === highlight_id}') {@html reply.body_html}
+                        | {@html reply.body_html}
                     svelte:self(comment='{reply}' op_id='{op_id}' highlight_id='{highlight_id}')
 </template>
 
@@ -28,13 +28,13 @@
         border-left: 1px solid #333
         :not(.comment-tree) > &
             border: 0
+    .comment
+        width: 480px
+    .comment-highlighted
+        color: wheat
     .comment-meta
         margin-bottom: 4px
         color: gray
-    .comment-text
-        width: 480px
-    .comment-text-highlighted
-        color: wheat
     .author-label
         text-decoration: none
     .author-label-op
@@ -49,10 +49,16 @@
     .downvote
         width: 20px
         height: 20px
-    .upvote.voted
-        color: salmon
-    .downvote.voted
-        color: cornflowerblue
+        &:focus
+            outline: none
+    .upvote
+        &:hover
+        &.voted
+            color: salmon
+    .downvote
+        &:hover
+        &.voted
+            color: cornflowerblue
 </style>
 
 <script type="text/coffeescript">

@@ -13,8 +13,8 @@
                             iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
                         +elseif('post.type === "embed"')
                             #embed {@html post.source}
-                        +elseif('post.type === "video"')
-                            video(autoplay controls muted src='{post.source}')
+                        +elseif('post.type === "audiovideo"')
+                            MediaPlayer(audio_src='{post.source.audio}' video_src='{post.source.video}' mini_video_src='{post.source.mini_video}')
                         +elseif('post.type === "image"')
                             a(href='{post.source}' target='_blank')
                                 img(src='{post.source}')
@@ -30,13 +30,7 @@
         justify-content: flex-end
         overflow: auto
     iframe
-        width: 100%
-        height: 100%
         background: white
-    video
-        height: 100%
-    #embed
-        width: 100%
     #self-text
         padding-right: 20px
     #error-text
@@ -54,5 +48,6 @@
     import { promises } from './core-state.coffee'
     import { describe_time_since } from './tools.coffee'
     import Comments from './Comments.svelte'
+    import MediaPlayer from './MediaPlayer.svelte'
     export post = {}
 </script>

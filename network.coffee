@@ -70,19 +70,27 @@ process_post = (post) ->
                     post.type = 'image'
                     post.source = post.url
                 when 'gifv'
-                    post.type = 'video'
-                    post.source = post.url[0...post.url.lastIndexOf('.')] + '.mp4'
+                    post.type = 'audiovideo'
+                    post.source = {
+                        video: post.url[0...post.url.lastIndexOf('.')] + '.mp4'
+                    }
                 else
                     switch post.domain
                         when 'gfycat.com', 'redgifs.com'
-                            post.type = 'video'
-                            post.source = 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+                            post.type = 'audiovideo'
+                            post.source = {
+                                video: 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+                            }
                         when 'imgur.com'
                             post.type = 'image'
                             post.source = post.url + '.jpg'
                         when 'v.redd.it'
-                            post.type = 'video'
-                            post.source = post.media.reddit_video.fallback_url
+                            post.type = 'audiovideo'
+                            post.source = {
+                                audio: post.secure_media.reddit_video.fallback_url[...post.secure_media.reddit_video.fallback_url.lastIndexOf('/')] + '/audio'
+                                video: post.secure_media.reddit_video.fallback_url.split('?')[0]
+                                mini_video: post.secure_media.reddit_video.scrubber_media_url
+                            }
                         when 'youtu.be', 'youtube.com'
                             post.type = 'embed'
                             post.source = post.secure_media.oembed.html

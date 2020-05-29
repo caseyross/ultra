@@ -122,6 +122,46 @@ export describe_duration = (milliseconds) ->
 #            }
 export describe_time_since = (seconds) -> describe_duration(Date.now() - seconds * 1000)
 
+hours_minutes_seconds = (duration_seconds) ->
+    hours = 0
+    minutes = 0
+    seconds = Math.floor(duration_seconds)
+    if seconds > 60 * 60
+        hours = Math.floor(seconds / 60 * 60)
+        seconds = seconds % (60 * 60)
+    if seconds > 60
+        minutes = Math.floor(seconds / 60)
+        seconds = seconds % 60
+    [hours, minutes, seconds]
+export minimal_duration_readout = (duration_seconds) ->
+    [hours, minutes, seconds] = hours_minutes_seconds duration_seconds
+    readout = ''
+    if hours > 0
+        readout += hours + ':'
+        if minutes < 10
+            readout += '0'
+        readout += minutes + ':'
+        if seconds < 10
+            readout += '0'
+        readout += seconds
+    else if minutes > 0
+        readout += minutes + ':'
+        if seconds < 10
+            readout += '0'
+        readout += seconds
+    else
+        readout += seconds
+    readout
+export full_duration_readout = (duration_seconds) ->
+    [hours, minutes, seconds] = hours_minutes_seconds duration_seconds
+    [hours, minutes, seconds]
+        .map (duration) ->
+            if duration < 10
+                '0' + duration
+            else
+                '' + duration
+        .join(':')
+
 import gfycat_adjectives from './gfycat-adjectives.json'
 import gfycat_animals from './gfycat-animals.json'
 export titlecase_gfycat_video_id = (video_id) ->
