@@ -1,20 +1,19 @@
 <template lang="pug">
-    nav
+    ol
         +each('$promises.feed as promise')
             +await('promise')
                 +then('post')
-                    button.post-brochure(tabindex=0 on:click='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
-                        .meta
-                            button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.2}') ▲
-                            button {post.author}
-                            button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▼
-                            time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
-                        .core
-                            h1 {post.title}
-                        .meta
+                    li.post-brochure(tabindex=0 on:click='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
+                        h1.title {post.title}
+                        p.meta
                             +if('post.subreddit !== $feed.name')
-                                button.subreddit-label {post.subreddit}
-                            span.flair {post.link_flair_text}
+                                button.subreddit {post.subreddit}
+                            +if('post.link_flair_text')
+                                span.link-flair {post.link_flair_text}
+                            button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▲
+                            button.author {post.author}
+                            button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.01}') ▼
+                            time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
                 +catch('error')
                     li {error}
             +else
@@ -22,35 +21,42 @@
 </template>
 
 <style type="text/stylus">
-    nav
-        height: 100%
-        padding: 8px
+    ol
+        padding-right: 4px
         overflow: auto
+        &::-webkit-scrollbar
+            width: 1px
+            background: transparent
+        &::-webkit-scrollbar-thumb
+            background: white
     .post-brochure
-        width: 100%
-        padding: 4px 8px 8px 8px
-        text-align: left
+        padding: 8px 8px 4px 8px
+        cursor: default
+        user-select: none
     .read
-        opacity: 0.5
+        color: #999
     .selected
-        opacity: 1
-        background: #333
+        background: darkkhaki
+        color: white
+    .title
+        margin: 0
+        font-size: 18px
     .meta
-        color: gray
-    .subreddit-label
-        margin-right: 16px
-    .flair
-        font-size: 12px
-        font-weight: 400
+        opacity: 0.5
+    .subreddit
+        margin-right: 8px
+        background: #333
+        &:hover
+        &:focus
+            text-decoration: underline
+    .link-flair
+        margin-right: 8px
+    .author:hover
+    .author:focus
+        text-decoration: underline
     .time-since
         display: inline-block
-        width: 30px
-    .core
-        display: flex
-    h1
-        margin: 4px 0
-        font-size: inherit
-        font-weight: inherit
+        margin-right: 8px
 </style>
 
 <script type="text/coffeescript">

@@ -5,14 +5,14 @@
                 article.comment-tree
                     .comment(tabindex=0 on:click='{select_comment(reply)}' class:highlighted='{reply.id === highlight_id}' class:selected='{reply.id === selected_id}')
                         .comment-meta
-                            button.upvote(title='{reply.score} points' class:voted!='{Math.random() < 0.5}') ▲
-                            button.author-label(
+                            button.upvote(title='{reply.score} points' class:voted!='{Math.random() < 0.1}') ▲
+                            button.author(
                                 class:op!='{reply.author_fullname === op_id}'
                                 class:mod!='{reply.distinguished === "moderator"}'
                                 class:admin!='{reply.distinguished === "admin"}'
                                 class:special!='{reply.distinguished === "special"}'
                             ) {reply.author}
-                            button.downvote(title='{reply.score} points' class:voted!='{Math.random() < 0.1}') ▼
+                            button.downvote(title='{reply.score} points' class:voted!='{Math.random() < 0.01}') ▼
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
                         | {@html reply.body_html}
@@ -38,8 +38,9 @@
     .comment-meta
         margin-bottom: -0.2em
         color: gray
-    .author-label
-        text-decoration: none
+    .author:hover
+    .author:focus
+        text-decoration: underline
     .op
         color: dodgerblue
     .mod

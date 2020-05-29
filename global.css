@@ -1,5 +1,5 @@
-* + p,
-* + blockquote {
+* + blockquote,
+* + p {
     margin-top: 0.6em;
 }
 a {
@@ -13,31 +13,20 @@ blockquote {
     border-left: 4px solid gray;
     color: #999;
 }
-button:focus {
-    outline: none;
-}
-div:focus {
+*:focus {
     outline: none;
 }
 main {
     height: 100%;
-    font: 300 12px/1.2 "Iosevka Aile";
+    font: 400 12px/1.2 "Iosevka Aile";
     word-break: break-word;
     background: #222;
     color: white;
 }
+.downvote,
 .upvote {
-    margin-left: -4px
-}
-.upvote,
-.downvote {
     width: 20px;
     height: 20px;
-}
-.upvote:hover,
-.upvote:focus,
-.upvote.voted {
-    color: salmon
 }
 .downvote:hover,
 .downvote:focus,
@@ -45,15 +34,20 @@ main {
     color: cornflowerblue
 }
 .md-spoiler-text {
-    color: transparent;
+    opacity: 0;
     background: gray;
 }
 .md-spoiler-text:hover {
-    color: inherit;
+    opacity: 1;
     background: inherit;
 }
-.md-spoiler-text a {
-    color: inherit;
+.upvote {
+    margin-left: -4px
+}
+.upvote:hover,
+.upvote:focus,
+.upvote.voted {
+    color: salmon
 }
 #embed iframe {
     width: 100%;
@@ -72,20 +66,20 @@ main {
     width: 100%;
     height: 100%;
     background-image:
-        linear-gradient(to right, darkkhaki 20px, transparent 20px),
-        linear-gradient(to right, darkkhaki 20px, transparent 20px),
-        linear-gradient(to bottom, darkkhaki 20px, transparent 20px),
-        linear-gradient(to bottom, darkkhaki 20px, transparent 20px);
+        linear-gradient(to right, darkkhaki 24px, transparent 24px),
+        linear-gradient(to right, darkkhaki 24px, transparent 24px),
+        linear-gradient(to bottom, darkkhaki 24px, transparent 24px),
+        linear-gradient(to bottom, darkkhaki 24px, transparent 24px);
     background-size:
         100% 1px,
         100% 1px,
         1px 100%,
         1px 100%;
     background-position:
-        -10px 0%,
-        -10px 100%,
-        0% -10px,
-        100% -10px;
+        -12px 0%,
+        -12px 100%,
+        0% -12px,
+        100% -12px;
     background-repeat:
         repeat-x,
         repeat-x,

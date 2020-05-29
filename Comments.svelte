@@ -23,13 +23,16 @@
         position: relative
     article
         height: 100%
-        padding-bottom: 40px
+        padding: 12px 0 40px 0
         display: flex
         flex-flow: column nowrap
         overflow: auto
         scrollbar-width: none
         &::-webkit-scrollbar
             display: none
+        &::-webkit-scrollbar-thumb
+            width: 1px
+            background: white
     #nocomments
         height: 100%
         display: flex
@@ -43,6 +46,7 @@
         padding: 40px
         border: 1px dotted
         &:hover
+        &:focus
             border-style: solid
             text-decoration: underline
     figure
@@ -57,8 +61,8 @@
         top: 0
         width: 100%
         display: block
-        background: lightgray
         pointer-events: none
+        background: rgba(0, 0, 0, 0.5)
 </style>
 
 <script type="text/coffeescript">

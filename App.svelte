@@ -1,10 +1,11 @@
 <template lang="pug">
-    section.top
-        FeedControl
-    section.bottom
+    section.all
         section.left
-            Post(post='{$feed.selected}')
+            section.top
+            section.bottom
+                Post(post='{$feed.selected}')
         section.center
+            FeedControl
             PostList
         section.right
             Comments(promised_post='{$promises.posts[$feed.selected.id]}')
@@ -16,19 +17,23 @@
 </template>
 
 <style type="text/stylus">
-    .top
-        flex: 0 0 62px
-        border-bottom: 1px solid gray
+    .all
+        height: 100%
         display: flex
-        justify-content: center
-    .bottom
-        height: calc(100% - 63px)
+    .center
+        flex: 0 0 480px
         display: flex
+        flex-flow: column nowrap
     .left
     .right
         flex: 0 0 calc(50% - 240px)
-    .center
-        flex: 0 0 480px
+        display: flex
+        flex-flow: column nowrap
+    .top
+        height: 80px
+        border-bottom: 1px solid #333
+    .bottom
+        height: calc(100% - 80px)
     #post-internals
         position: fixed
         top: 0
