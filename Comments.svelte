@@ -21,9 +21,10 @@
         width: 100%
         height: 100%
         position: relative
+        padding-top: 12px
     article
         height: 100%
-        padding: 12px 0 40px 0
+        padding-bottom: 40px
         display: flex
         flex-flow: column nowrap
         overflow: auto

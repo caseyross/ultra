@@ -6,7 +6,7 @@
                     li.post-brochure(tabindex=0 on:click='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
                         h1.title {post.title}
                         p.meta
-                            +if('post.subreddit !== $feed.name')
+                            +if('post.subreddit.toLowerCase() !== $feed.name.toLowerCase()')
                                 button.subreddit {post.subreddit}
                             +if('post.link_flair_text')
                                 span.link-flair {post.link_flair_text}

@@ -76,7 +76,7 @@ process_post = (post) ->
                     }
                 else
                     switch post.domain
-                        when 'gfycat.com', 'redgifs.com'
+                        when 'gfycat.com'
                             post.type = 'audiovideo'
                             post.source = {
                                 video: 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
@@ -84,6 +84,11 @@ process_post = (post) ->
                         when 'imgur.com'
                             post.type = 'image'
                             post.source = post.url + '.jpg'
+                        when 'redgifs.com'
+                            post.type = 'audiovideo'
+                            post.source = {
+                                video: 'https://thumbs1.redgifs.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+                            }
                         when 'v.redd.it'
                             post.type = 'audiovideo'
                             post.source = {
@@ -91,7 +96,7 @@ process_post = (post) ->
                                 video: post.secure_media.reddit_video.fallback_url.split('?')[0]
                                 mini_video: post.secure_media.reddit_video.scrubber_media_url
                             }
-                        when 'youtu.be', 'youtube.com'
+                        when 'youtube.com', 'youtu.be' 
                             post.type = 'embed'
                             post.source = post.secure_media.oembed.html
                         else

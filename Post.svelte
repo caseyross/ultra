@@ -31,6 +31,8 @@
         overflow: auto
     iframe
         background: white
+    #embed
+        width: 100%
     #self-text
         padding-right: 20px
     #error-text
