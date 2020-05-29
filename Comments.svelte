@@ -5,7 +5,7 @@
                 +await('promised_post')
                     +then('post')
                         +if('post.num_comments > 0')
-                            CommentTree(comment='{post}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}')
+                            CommentTree(comment='{post}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT
@@ -66,6 +66,10 @@
     import { feed } from './core-state.coffee';
     import CommentTree from './CommentTree.svelte'
     export promised_post = undefined
+    selected =
+        id: ''
+    select_comment = (comment) ->
+        selected = comment
     dom =
         comments: {}
         previous_comments_scrollheight: 0

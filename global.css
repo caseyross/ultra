@@ -1,10 +1,3 @@
-main {
-    height: 100%;
-    font: 300 12px/1.2 "Iosevka Aile";
-    word-break: break-word;
-    background: #222;
-    color: white;
-}
 * + p,
 * + blockquote {
     margin-top: 0.6em;
@@ -20,6 +13,37 @@ blockquote {
     border-left: 4px solid gray;
     color: #999;
 }
+button:focus {
+    outline: none;
+}
+div:focus {
+    outline: none;
+}
+main {
+    height: 100%;
+    font: 300 12px/1.2 "Iosevka Aile";
+    word-break: break-word;
+    background: #222;
+    color: white;
+}
+.upvote {
+    margin-left: -4px
+}
+.upvote,
+.downvote {
+    width: 20px;
+    height: 20px;
+}
+.upvote:hover,
+.upvote:focus,
+.upvote.voted {
+    color: salmon
+}
+.downvote:hover,
+.downvote:focus,
+.downvote.voted {
+    color: cornflowerblue
+}
 .md-spoiler-text {
     color: transparent;
     background: gray;
@@ -34,4 +58,41 @@ blockquote {
 #embed iframe {
     width: 100%;
     height: 100%;
+}
+[tabindex='0'] {
+    position: relative;
+}
+[tabindex='0']::after {
+    opacity: 0;
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(to right, darkkhaki 20px, transparent 20px),
+        linear-gradient(to right, darkkhaki 20px, transparent 20px),
+        linear-gradient(to bottom, darkkhaki 20px, transparent 20px),
+        linear-gradient(to bottom, darkkhaki 20px, transparent 20px);
+    background-size:
+        100% 1px,
+        100% 1px,
+        1px 100%,
+        1px 100%;
+    background-position:
+        -10px 0%,
+        -10px 100%,
+        0% -10px,
+        100% -10px;
+    background-repeat:
+        repeat-x,
+        repeat-x,
+        repeat-y,
+        repeat-y;
+}
+[tabindex='0']:hover::after,
+[tabindex='0']:focus::after {
+    opacity: 1
 }
