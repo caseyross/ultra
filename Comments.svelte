@@ -65,13 +65,14 @@
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
-    import { feed } from './state.coffee';
+    import { feed, debug } from './state.coffee';
     import CommentTree from './CommentTree.svelte'
     export promised_post = undefined
     selected =
         id: ''
     select_comment = (comment) ->
         selected = comment
+        $debug.inspector.object = comment
     dom =
         comments: {}
         previous_comments_scrollheight: 0

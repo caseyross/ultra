@@ -13,9 +13,9 @@ keybinds =
     JUMP_TO_POST: 'z'
     JUMP_TO_POSTLIST: 'x'
     JUMP_TO_COMMENTS: 'c'
-    DEBUG_INSPECTOR: 'F2'
-    DEBUG_STATS: 'F4'
+    DEBUG_INSPECT_OBJECT: 'F2'
+    DEBUG_F4: 'F4'
     DEBUG_F7: 'F7'
     DEBUG_F8: 'F8'
-    DEBUG_F9: 'F9'
+    DEBUG_INSPECT_FEED: 'F9'
 export default keybinds

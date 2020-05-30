@@ -21,5 +21,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { promises } from './state.coffee'
+    import { promises, debug } from './state.coffee'
+    $promises.feed_meta.then (feed_meta) ->
+        $debug.inspector.feed = feed_meta
 </script>

@@ -9,7 +9,7 @@
                             +if('post.subreddit.toLowerCase() !== $feed.name.toLowerCase()')
                                 button.subreddit {post.subreddit}
                             +if('post.link_flair_text')
-                                span.link-flair(style='background-color: {post.link_flair_background_color}') {post.link_flair_text}
+                                span.link-flair(style='color: {post.link_flair_background_color}') {post.link_flair_text}
                             button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▲
                             button.author {post.author}
                             button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.01}') ▼
@@ -70,7 +70,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, promises } from './state.coffee';
+    import { feed, promises, debug } from './state.coffee';
     import { describe_time_since } from './tools.coffee';
     export read_posts = new Set()
     select_post = (post) ->
@@ -82,4 +82,5 @@
             $feed.selected = post
         read_posts.add post.id
         read_posts = read_posts
+        $debug.inspector.object = $feed.selected
 </script>

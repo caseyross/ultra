@@ -14,9 +14,12 @@
             Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
         title {$feed.name === '' ? 'frontpage' : $feed.name}
-    +if('show_post_internals')
-        #post-internals
-            ValueInspector(value='{$feed.selected}')
+    +if('$debug.inspector.mode === "object"')
+        #inspector
+            Inspector(value='{$debug.inspector.object}')
+        +elseif('$debug.inspector.mode === "feed"')
+            #inspector
+                Inspector(value='{$debug.inspector.feed}')
 </template>
 
 <style type="text/stylus">
@@ -37,7 +40,7 @@
         border-bottom: 1px solid #333
     .bottom
         height: calc(100% - 80px)
-    #post-internals
+    #inspector
         position: fixed
         top: 0
         width: 100%
@@ -49,17 +52,24 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, promises } from './state.coffee'
+    import { feed, promises, debug } from './state.coffee'
     import keybinds from './keybinds.coffee'
     import FeedControl from './FeedControl.svelte'
     import FeedDetails from './FeedDetails.svelte'
     import PostList from './PostList.svelte'
     import Post from './Post.svelte'
     import Comments from './Comments.svelte'
-    import ValueInspector from './ValueInspector.svelte'
-    export show_post_internals = false
+    import Inspector from './Inspector.svelte'
     document.addEventListener('keydown', (e) ->
-        if e.key == keybinds.DEBUG_INSPECTOR
-            show_post_internals = !show_post_internals
+        if e.key == keybinds.DEBUG_INSPECT_OBJECT
+            if $debug.inspector.mode == 'object'
+                $debug.inspector.mode = 'none'
+            else
+                $debug.inspector.mode = 'object'
+        if e.key == keybinds.DEBUG_INSPECT_FEED
+            if $debug.inspector.mode == 'feed'
+                $debug.inspector.mode = 'none'
+            else
+                $debug.inspector.mode = 'feed'
     )
 </script>
