@@ -15,9 +15,19 @@
                             button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.01}') ▼
                             time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
                 +catch('error')
-                    li {error}
+                    li.post-brochure
+                        p FAILED TO LOAD POST
+                        p ERROR DETAILS:
+                        +if('error instanceof TypeError && error.message === "Failed to fetch"')
+                            blockquote Can't connect to Reddit servers
+                            +else
+                                blockquote {error}
             +else
-                li Couldn't load posts
+                li.post-brochure
+                    +if('$feed.type === "user"')
+                        p THIS USER HAS NO POSTS
+                        +else
+                            p THIS SUBREDDIT HAS NO POSTS
 </template>
 
 <style type="text/stylus">

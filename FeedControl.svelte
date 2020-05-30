@@ -1,9 +1,9 @@
 <template lang="pug">
     nav
         +await('$promises.feed_meta')
-            input(type='text' value='{$feed.name}' placeholder='')
+            input(type='text' value='{$feed.name}' placeholder='frontpage')
             +then('feed_meta')
-                input(type='text' value='{$feed.name}' placeholder='' style='background-image: url({feed_meta.banner_background_image})')
+                input(type='text' value='{$feed.name}' placeholder='frontpage' style='background-image: url({feed_meta.banner_background_image})')
         ol
             li
                 button Hot
