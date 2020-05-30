@@ -3,14 +3,17 @@
         section.left
             section.top
             section.bottom
-                Post(post='{$feed.selected}')
+                +if('$feed.selected.id')
+                    Post(post='{$feed.selected}')
+                    +else
+                        FeedDetails
         section.center
             FeedControl
             PostList
         section.right
             Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
-        title {($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
+        title {$feed.name === '' ? 'frontpage' : $feed.name}
     +if('show_post_internals')
         #post-internals
             ValueInspector(value='{$feed.selected}')
@@ -46,10 +49,10 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, promises } from './core-state.coffee'
-    import { keybinds } from './keybinds.coffee'
-    import { load_feed, get_post_fragment } from './network.coffee'
+    import { feed, promises } from './state.coffee'
+    import keybinds from './keybinds.coffee'
     import FeedControl from './FeedControl.svelte'
+    import FeedDetails from './FeedDetails.svelte'
     import PostList from './PostList.svelte'
     import Post from './Post.svelte'
     import Comments from './Comments.svelte'
@@ -59,12 +62,4 @@
         if e.key == keybinds.DEBUG_INSPECTOR
             show_post_internals = !show_post_internals
     )
-    (() ->
-        $promises.feed = load_feed($feed)
-        for promise in $promises.feed
-            promise.then (post) ->
-                $promises.posts[post.id] = get_post_fragment post.id
-                if post.type == 'reddit'
-                    $promises.source_posts[post.id] = get_post_fragment post.source.id, post.source.comment_id, post.source.context_level
-    )()
 </script>

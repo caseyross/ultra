@@ -31,9 +31,6 @@
         scrollbar-width: none
         &::-webkit-scrollbar
             display: none
-        &::-webkit-scrollbar-thumb
-            width: 1px
-            background: white
     #nocomments
         height: 100%
         display: flex
@@ -68,7 +65,7 @@
 
 <script type="text/coffeescript">
     import { onMount, afterUpdate } from 'svelte'
-    import { feed } from './core-state.coffee';
+    import { feed } from './state.coffee';
     import CommentTree from './CommentTree.svelte'
     export promised_post = undefined
     selected =

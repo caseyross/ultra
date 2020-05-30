@@ -107,15 +107,21 @@ process_post = (post) ->
             post.source = ''
     if typeof post.source == 'string' and post.source.startsWith 'http://'
         post.source = 'https://' + post.source[7...]
-    return post
+    post
 get_feed_fragment = (feed_config, num_posts) ->
     load = api_op('GET',
-        (if feed_config.type == 'user' then 'user/' else 'r/') +
-        feed_config.name +
-        (if feed_config.type == 'user' then "?sort=#{feed_config.rank_by.type}&" else "/#{feed_config.rank_by.type}?") +
+        (if feed_config.name == ''
+            "#{feed_config.rank_by.type}?"
+        else
+            (if feed_config.type == 'user'
+                "user/#{feed_config.name}?sort=#{feed_config.rank_by.type}&"
+            else
+                "r/#{feed_config.name}/#{feed_config.rank_by.type}?"
+            )
+        ) +
         (if feed_config.rank_by.type == 'top' then "t=#{feed_config.rank_by.filter}&" else '') +
         (if feed_config.last_seen then "after=#{feed_config.last_seen}&" else '') +
-        (if feed_config.seen_count then "count=#{feed_config.seen_count}" else '') +
+        (if feed_config.seen_count then "count=#{feed_config.seen_count}&" else '') +
         "limit=#{num_posts}"
     )
     [0...num_posts].map (i) ->
@@ -161,4 +167,19 @@ export get_post_fragment = (post_id, comment_id, context_level) ->
             fragment_center: comment_id
         }
         streamline_reply_datastructs post_fragment
-        return post_fragment
+        post_fragment
+
+export get_feed_meta = (feed_config) ->
+    if feed_config.name == ''
+        new Promise (resolve, reject) -> resolve({ description_html: '' })
+    else
+        api_op('GET',
+            "#{if feed_config.type == 'user' then 'user' else 'r'}/#{feed_config.name}/about"
+        ).then (response) ->
+            if response.data
+                feed_meta = {
+                    ...response.data
+                    description_html: response.data.description_html[31...-20]
+                }
+            else
+                { description_html: '' }

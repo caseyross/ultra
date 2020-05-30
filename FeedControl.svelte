@@ -1,6 +1,9 @@
 <template lang="pug">
     nav
-        input(type='text' bind:value='{$feed.name}' placeholder='ALL')
+        +await('$promises.feed_meta')
+            input(type='text' value='{$feed.name}' placeholder='')
+            +then('feed_meta')
+                input(type='text' value='{$feed.name}' placeholder='' style='background-image: url({feed_meta.banner_background_image})')
         ol
             li
                 button Hot
@@ -27,6 +30,8 @@
         height: 60px
         font-size: 36px
         font-weight: 800
+        background-position: center
+        background-size: cover
     ol
         margin: 0
         padding: 0
@@ -49,5 +54,5 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed } from './core-state.coffee'
+    import { feed, promises } from './state.coffee'
 </script>

@@ -1,4 +1,4 @@
-export keybinds =
+keybinds =
     UPVOTE: 'q'
     DOWNVOTE: 'e'
     REPLY: 'r'
@@ -18,3 +18,4 @@ export keybinds =
     DEBUG_F7: 'F7'
     DEBUG_F8: 'F8'
     DEBUG_F9: 'F9'
+export default keybinds
