@@ -20,8 +20,8 @@ main {
     height: 100%;
     font: 400 12px/1.2 "Iosevka Aile";
     word-break: break-word;
-    background: #222;
-    color: white;
+    background: #fed;
+    color: black;
 }
 .downvote,
 .upvote {

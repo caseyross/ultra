@@ -4,16 +4,18 @@
             +await('promise')
                 +then('post')
                     li.post-brochure(tabindex=0 on:click='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
-                        h1.title {post.title}
+                        h2.title {post.title}
                         p.meta
                             +if('post.subreddit.toLowerCase() !== $feed.name.toLowerCase()')
                                 button.subreddit {post.subreddit}
                             +if('post.link_flair_text')
-                                span.link-flair(style='color: {post.link_flair_background_color}') {post.link_flair_text}
-                            button.upvote(title='{post.score} points' class:voted!='{Math.random() < 0.1}') ▲
-                            button.author {post.author}
-                            button.downvote(title='{post.score} points' class:voted!='{Math.random() < 0.01}') ▼
-                            time.time-since {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
+                                span.link-flair(style!='background: {post.link_flair_background_color}; color: {post.link_flair_text_color === "light" ? "white" : "black"}') {post.link_flair_text}
+                            button.domain {post.domain}
+                            button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
+                            span(title!='{post.hide_score ? "score hidden" : "score (upvotes minus downvotes)"}') {post.hide_score ? '-' : post.score}
+                            button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
+                            time.time-since(title='posted at {(new Date(post.created_utc * 1000)).toLocaleString()}') {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
+                            button.author u/{post.author}
                 +catch('error')
                     li.post-brochure
                         p FAILED TO LOAD POST
@@ -52,14 +54,19 @@
         margin: 0
         font-size: 18px
     .meta
-        opacity: 0.5
+        color: gray
     .subreddit
         margin-right: 8px
         background: #333
+        color: #ccc
         &:hover
         &:focus
             text-decoration: underline
     .link-flair
+        margin-right: 8px
+        background: lightgray
+        color: black
+    .domain
         margin-right: 8px
     .author:hover
     .author:focus

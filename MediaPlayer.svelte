@@ -26,7 +26,7 @@
         position: absolute
         left: 0
         bottom: 0
-        background: #222
+        background: #b5a390
     #scrubber
     #buttons
         height: 40px
