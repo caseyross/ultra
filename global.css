@@ -1,6 +1,5 @@
-* + blockquote,
-* + p {
-    margin-top: 0.6em;
+*:focus {
+    outline: none;
 }
 a {
     color: lightskyblue;
@@ -9,12 +8,10 @@ a:visited {
     color: lightsteelblue;
 }
 blockquote {
+    margin: 8px 0;
     padding-left: 0.6em;
     border-left: 4px solid gray;
     color: #999;
-}
-*:focus {
-    outline: none;
 }
 main {
     height: 100%;
@@ -23,15 +20,20 @@ main {
     background: #fed;
     color: black;
 }
+p + p {
+    margin-top: 8px
+}
+pre {
+    white-space: pre-wrap;
+}
 .downvote,
 .upvote {
-    width: 20px;
-    height: 20px;
+    padding: 2px;
 }
 .downvote:hover,
 .downvote:focus,
 .downvote.voted {
-    color: cornflowerblue
+    color: cornflowerblue;
 }
 .md-spoiler-text {
     opacity: 0;
@@ -41,13 +43,22 @@ main {
     opacity: 1;
     background: inherit;
 }
-.upvote {
-    margin-left: -4px
+.recency-1 {
+    color: #ff6205;
+}
+.recency-2 {
+    color: #bd6340
+}
+.recency-3 {
+    color: #775948;
+}
+.score {
+    padding: 2px 0;
 }
 .upvote:hover,
 .upvote:focus,
 .upvote.voted {
-    color: salmon
+    color: salmon;
 }
 #embed iframe {
     width: 100%;

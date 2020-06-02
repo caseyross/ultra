@@ -3,25 +3,25 @@
         +each('comment.replies as reply')
             +if('reply.body_html')
                 article.comment-tree
-                    .comment(tabindex=0 on:click='{select_comment(reply)}' class:highlighted='{reply.id === highlight_id}' class:selected='{reply.id === selected_id}')
+                    .comment(
+                        tabindex=0
+                        on:click='{select_comment(reply)}'
+                        class:highlighted='{reply.id === highlight_id}'
+                        class:selected='{reply.id === selected_id}'
+                        title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}'
+                    )
                         .comment-meta
-                            button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
-                            span.score(
-                                title!='{reply.score_hidden ? "score hidden" : "score (upvotes minus downvotes)"}'
-                                class:op!='{reply.author_fullname === op_id}'
-                                class:mod!='{reply.distinguished === "moderator"}'
-                                class:admin!='{reply.distinguished === "admin"}'
-                                class:special!='{reply.distinguished === "special"}'
-                            ) {reply.score_hidden ? '-' : reply.score}
-                            +if('reply.total_awards_received > 0')
-                                span.awards(title='{awards_description(reply.all_awardings)}')
-                                    | &nbsp;
-                                    +each('Object.entries(award_buckets(reply.all_awardings)) as bucket')
-                                        +if('bucket[1].length')
-                                            span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
-                            button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
-                            time(title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}') {describe_time_since(reply.created_utc).major.value}{describe_time_since(reply.created_utc).major.unit.abbr}
-                            button.author(
+                            span.votes
+                                button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
+                                span.score(title!='{reply.score_hidden ? "score hidden" : "score (upvotes minus downvotes)"}') {reply.score_hidden ? '-' : reply.score}
+                                +if('reply.total_awards_received > 0')
+                                    span.awards(title='{awards_description(reply.all_awardings)}')
+                                        | &nbsp;
+                                        +each('Object.entries(award_buckets(reply.all_awardings)) as bucket')
+                                            +if('bucket[1].length')
+                                                span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
+                                button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
+                            a.author(
                                 class:op!='{reply.author_fullname === op_id}'
                                 class:mod!='{reply.distinguished === "moderator"}'
                                 class:admin!='{reply.distinguished === "admin"}'
@@ -38,9 +38,8 @@
     .comment-tree
         padding: 4px 0 0 20px
         word-break: break-word
-        border-left: 1px solid #333
-        :not(.comment-tree) > &
-            border: 0
+        & > &
+            border-left: 1px solid #333
     .comment
         width: 480px
         padding: 4px 4px 8px 8px
@@ -50,14 +49,25 @@
         background: #333
         color: white
     .comment-meta
-        margin-bottom: -0.2em
+        margin-bottom: 4px
         color: gray
         cursor: default
-    time
-        margin: 0 16px
-    .author:hover
-    .author:focus
-        text-decoration: underline
+    a
+        color: inherit
+        &:hover
+        &:focus
+            text-decoration: underline
+    .time-since
+        display: inline-block
+        margin-right: 8px
+        padding: 2px 4px
+        background: #e6ccb0
+        color: black
+    .votes
+        margin-left: -2px
+        margin-right: 8px
+    .author
+        margin-right: 8px
     .op
         color: dodgerblue
     .mod

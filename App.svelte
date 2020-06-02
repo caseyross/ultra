@@ -13,7 +13,10 @@
         section.right
             Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
-        title {$feed.name === '' ? 'frontpage' : $feed.name}
+        +await('$promises.feed_meta')
+            title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
+            +then('feed_meta')
+                title {feed_meta.title}
     +if('$debug.inspector.mode === "object"')
         #inspector
             Inspector(value='{$debug.inspector.object}')

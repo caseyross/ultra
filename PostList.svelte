@@ -5,17 +5,19 @@
                 +then('post')
                     li.post-brochure(tabindex=0 on:click='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
                         h2.title {post.title}
-                        p.meta
-                            +if('post.subreddit.toLowerCase() !== $feed.name.toLowerCase()')
-                                button.subreddit {post.subreddit}
-                            +if('post.link_flair_text')
-                                span.link-flair(style!='background: {post.link_flair_background_color}; color: {post.link_flair_text_color === "light" ? "white" : "black"}') {post.link_flair_text}
-                            button.domain {post.domain}
-                            button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
-                            span(title!='{post.hide_score ? "score hidden" : "score (upvotes minus downvotes)"}') {post.hide_score ? '-' : post.score}
-                            button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
+                        .meta
+                            a.domain {post.domain}
+                            +if('post.subreddit.toLowerCase() === $feed.name.toLowerCase()')
+                                +if('post.link_flair_text')
+                                    span.link-flair(style!='background: {post.link_flair_background_color}; color: {post.link_flair_text_color === "light" ? "white" : "black"}') {post.link_flair_text}
+                                +else
+                                    a.subreddit {post.subreddit}
+                            span.votes
+                                button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
+                                button.score(title!='{post.hide_score ? "score hidden" : "score (upvotes minus downvotes)"}') {post.hide_score ? '-' : post.score}
+                                button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
                             time.time-since(title='posted at {(new Date(post.created_utc * 1000)).toLocaleString()}') {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
-                            button.author u/{post.author}
+                            a.author u/{post.author}
                 +catch('error')
                     li.post-brochure
                         p FAILED TO LOAD POST
@@ -41,6 +43,7 @@
             background: transparent
         &::-webkit-scrollbar-thumb
             background: white
+            background: #333
     .post-brochure
         padding: 8px 8px 4px 8px
         cursor: default
@@ -54,25 +57,35 @@
         margin: 0
         font-size: 18px
     .meta
+        margin-top: 1px
         color: gray
-    .subreddit
-        margin-right: 8px
-        background: #333
-        color: #ccc
+    a
+        color: inherit
         &:hover
         &:focus
             text-decoration: underline
+    .subreddit
+        margin-right: 8px
+        padding: 2px 4px
+        background: #b5a390
+        color: white
     .link-flair
         margin-right: 8px
+        padding: 2px 4px
         background: lightgray
         color: black
     .domain
         margin-right: 8px
-    .author:hover
-    .author:focus
-        text-decoration: underline
     .time-since
         display: inline-block
+        margin-right: 8px
+        padding: 2px 4px
+        background: #e6ccb0
+        color: black
+    .votes
+        margin-right: 8px
+        background: lightgray
+    .author
         margin-right: 8px
 </style>
 
@@ -82,11 +95,7 @@
     export read_posts = new Set()
     select_post = (post) ->
         $feed.previous_selected = $feed.selected
-        if post.id == $feed.selected.id
-            $feed.selected =
-                id: ''
-        else
-            $feed.selected = post
+        $feed.selected = post
         read_posts.add post.id
         read_posts = read_posts
         $debug.inspector.object = $feed.selected
