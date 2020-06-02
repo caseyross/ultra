@@ -56,8 +56,9 @@
     .title
         margin: 0
         font-size: 18px
+        line-height: 1
     .meta
-        margin-top: 1px
+        margin-top: 2px
         color: gray
     a
         color: inherit
