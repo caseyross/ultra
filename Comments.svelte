@@ -51,7 +51,7 @@
         position: absolute
         top: 0
         right: 0
-        width: 60px
+        width: 64px
         height: 100%
         pointer-events: none
     mark
@@ -75,45 +75,45 @@
         $debug.inspector.object = comment
     dom =
         comments: {}
-        previous_comments_scrollheight: 0
+        previous_comments_height: 0
         minimap: {}
         minimap_field: {}
         minimap_cursor: {}
+        minimap_drawing_context: {}
     move_minimap_cursor = () ->
-        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * dom.minimap.clientHeight}px)"
+        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * dom.minimap.scrollHeight}px)"
     teleport_via_minimap = (click) ->
         # If clicking on minimap, jump to that location in the comments
-        if 0 < dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth 
-            dom.comments.scrollTop = click.layerY / dom.minimap.clientHeight * dom.comments.scrollHeight - dom.minimap.clientHeight / 2
+        if 0 < dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth
+            dom.comments.scrollTop = click.layerY / dom.minimap.scrollHeight * dom.comments.scrollHeight - dom.minimap.scrollHeight / 2
     onMount () ->
         # Size minimap, because canvas elements can't be sized properly with pure CSS
         dom.minimap_field.width = dom.minimap.clientWidth
         dom.minimap_field.height = dom.minimap.clientHeight
+        dom.minimap_drawing_context = dom.minimap_field.getContext '2d'
     afterUpdate () ->
         # Redraw minimap when comments change
-        if $feed.selected.id != $feed.previous_selected.id or dom.comments.scrollHeight != dom.previous_comments_scrollheight
-            # Clear minimap symbols
-            ctx = dom.minimap_field.getContext '2d'
-            ctx.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
-            # If comments don't all fit on screen, draw the minimap 
-            if dom.comments.scrollHeight > dom.comments.clientHeight
-                # Resize cursor
-                dom.minimap_cursor.style.height = "#{dom.comments.clientHeight * dom.comments.clientHeight / dom.comments.scrollHeight}px"
-                # Draw new minimap symbols
-                for comment in dom.comments.children
-                    ctx.fillStyle = '#999'
-                    ctx.fillRect(0, Math.floor(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth / 3, 1)
-                    if comment.children.length > 1
-                        for l2_comment, i in comment.children
-                            if (i > 0)
-                                ctx.fillStyle = '#666'
-                                ctx.fillRect(dom.minimap.clientWidth / 3 + 1, Math.floor(l2_comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth / 3, 1)
-                            if l2_comment.children.length > 1
-                                for l3_comment, i in l2_comment.children
-                                    if (i > 0)
-                                        ctx.fillStyle = '#333'
-                                        ctx.fillRect(dom.minimap.clientWidth / 3 * 2 + 1, Math.floor(l3_comment.offsetTop / dom.comments.scrollHeight * dom.minimap.clientHeight), dom.minimap.clientWidth / 3, 1)
-            else
-                dom.minimap_cursor.style.height = 0
-            dom.previous_comments_scrollheight = dom.comments.scrollHeight
+        if $feed.selected.id != $feed.previous_selected.id or dom.comments.scrollHeight != dom.previous_comments_height
+            draw_minimap()
+            dom.previous_comments_height = dom.comments.scrollHeight
+    draw_minimap = () ->
+        # Clear minimap symbols
+        dom.minimap_drawing_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
+        # If comments don't all fit on screen, draw the minimap
+        if dom.comments.scrollHeight > dom.comments.clientHeight
+            dom.minimap_cursor.style.height = "#{dom.minimap.scrollHeight * dom.comments.clientHeight / dom.comments.scrollHeight}px"
+            for comment_tree in dom.comments.children
+                draw_child_minimap_symbols(comment_tree, 1, 7)
+        else
+            dom.minimap_cursor.style.height = 0
+    draw_child_minimap_symbols = (comment_tree, depth, max_depth) ->
+        if depth > max_depth
+            return
+        comment = comment_tree.children[0]
+        dom.minimap_drawing_context.fillStyle = comment.getAttribute('minimap-symbol-color') || 'gray'
+        dom.minimap_drawing_context.fillRect(dom.minimap.scrollWidth / (max_depth + 1) * (depth - 1), Math.floor(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), 2 * (dom.minimap.scrollWidth / (max_depth + 1)), comment.clientHeight * (dom.minimap.scrollHeight / dom.comments.scrollHeight) - 2)
+        for child in comment_tree.children
+            if child.classList.contains 'comment-tree'
+                draw_child_minimap_symbols(child, depth + 1, max_depth)
+
 </script>

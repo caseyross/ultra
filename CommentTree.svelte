@@ -8,7 +8,7 @@
                         on:click='{select_comment(reply)}'
                         class:highlighted='{reply.id === highlight_id}'
                         class:selected='{reply.id === selected_id}'
-                        title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}'
+                        minimap-symbol-color='{distinguish_color(reply)}'
                     )
                         .comment-meta
                             span.votes
@@ -22,10 +22,8 @@
                                                 span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
                                 button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
                             a.author(
-                                class:op!='{reply.author_fullname === op_id}'
-                                class:mod!='{reply.distinguished === "moderator"}'
-                                class:admin!='{reply.distinguished === "admin"}'
-                                class:special!='{reply.distinguished === "special"}'
+                                style='color: {distinguish_color(reply)}'
+                                title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}'
                             ) u/{reply.author}
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
@@ -68,15 +66,6 @@
         margin-right: 8px
     .author
         margin-right: 8px
-    .op
-        color: dodgerblue
-    .mod
-        color: lightgreen
-        color: forestgreen
-    .admin
-        color: orangered
-    .special
-        color: crimson
     .argentium
         color: goldenrod
         background: white
@@ -98,6 +87,25 @@
     export highlight_id = ''
     export selected_id = ''
     export select_comment = () -> {}
+    distinguish_colors =
+        op: 'deepskyblue'
+        mod: 'lightgreen'
+        mod: 'forestgreen'
+        admin: 'orangered'
+        special: 'crimson'
+    distinguish_color = (reply) ->
+        switch reply.distinguished
+            when 'moderator'
+                distinguish_colors.mod
+            when 'admin'
+                distinguish_colors.admin
+            when 'special'
+                distinguish_colors.special
+            else
+                if reply.author_fullname == op_id
+                    distinguish_colors.op
+                else
+                    null
     award_buckets = (awards) ->
         buckets =
             argentium: []

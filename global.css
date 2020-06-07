@@ -2,10 +2,7 @@
     outline: none;
 }
 a {
-    color: lightskyblue;
-}
-a:visited {
-    color: lightsteelblue;
+    color: cadetblue;
 }
 blockquote {
     margin: 8px 0;
