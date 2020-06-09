@@ -38,6 +38,7 @@
         display: flex
         justify-content: space-between
         align-items: center
+        background: #333
         color: #ccc
         list-style: none
     button

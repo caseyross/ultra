@@ -11,7 +11,9 @@
             FeedControl
             PostList
         section.right
-            Comments(promised_post='{$promises.posts[$feed.selected.id]}')
+            section.top
+            section.bottom
+                Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
         +await('$promises.feed_meta')
             title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
@@ -30,14 +32,15 @@
         height: 100%
         display: flex
     .center
-        flex: 0 0 480px
+        flex: 0 0 540px
         display: flex
         flex-flow: column nowrap
     .left
     .right
-        flex: 0 0 calc(50% - 240px)
+        flex: 0 0 calc(50% - 270px)
         display: flex
         flex-flow: column nowrap
+        overflow: auto
     .top
         height: 80px
         border-bottom: 1px solid #333

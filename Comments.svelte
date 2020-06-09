@@ -20,8 +20,8 @@
     section
         width: 100%
         height: 100%
+        padding: 12px 0 0 8px
         position: relative
-        padding-top: 12px
     article
         height: 100%
         padding-bottom: 40px

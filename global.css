@@ -57,6 +57,10 @@ pre {
 .upvote.voted {
     color: salmon;
 }
+.votes {
+    padding: 1px 3px;
+    border: 1px solid;
+}
 #embed iframe {
     width: 100%;
     height: 100%;

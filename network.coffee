@@ -128,19 +128,25 @@ get_feed_fragment = (feed_config, num_posts) ->
         load.then ({ data }) -> process_post data.children[i].data
 export load_feed = (feed_config) ->
     stage_1 = get_feed_fragment(feed_config, 1)
-    stage_2 = get_feed_fragment(feed_config, 3)
-    stage_3 = get_feed_fragment(feed_config, 10)
+    stage_2 = get_feed_fragment(feed_config, 4)
+    stage_3 = get_feed_fragment(feed_config, 16)
     [
         Promise.race([stage_1[0], stage_2[0], stage_3[0]])
         Promise.race([stage_2[1], stage_3[1]])
         Promise.race([stage_2[2], stage_3[2]])
-        stage_3[3]
+        Promise.race([stage_2[3], stage_3[3]])
         stage_3[4]
         stage_3[5]
         stage_3[6]
         stage_3[7]
         stage_3[8]
         stage_3[9]
+        stage_3[10]
+        stage_3[11]
+        stage_3[12]
+        stage_3[13]
+        stage_3[14]
+        stage_3[15]
     ]
 
 streamline_reply_datastructs = (comment) ->

@@ -13,7 +13,7 @@
                         .comment-meta
                             span.votes
                                 button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
-                                span.score(title!='{reply.score_hidden ? "score hidden" : "score (upvotes minus downvotes)"}') {reply.score_hidden ? '-' : reply.score}
+                                span.score(title!='{reply.score_hidden ? "score hidden" : "score (upvotes minus downvotes)"}') {reply.score_hidden ? '-' : reply.score}/{Math.floor(reply.score / ((Date.now() - reply.created_utc * 1000) / 3600000))}
                                 +if('reply.total_awards_received > 0')
                                     span.awards(title='{awards_description(reply.all_awardings)}')
                                         | &nbsp;
@@ -21,10 +21,8 @@
                                             +if('bucket[1].length')
                                                 span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
                                 button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
-                            a.author(
-                                style='color: {distinguish_color(reply)}'
-                                title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}'
-                            ) u/{reply.author}
+                            a.author(style='color: {distinguish_color(reply)}') u/{reply.author}
+                            time.time-since(title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}') {describe_time_since(reply.created_utc).major.value}{describe_time_since(reply.created_utc).major.unit.abbr}
                             +if('reply.author_flair_text')
                                 span.author-flair {reply.author_flair_text}
                         | {@html reply.body_html}
@@ -41,6 +39,7 @@
     .comment
         width: 480px
         padding: 4px 4px 8px 8px
+        font: 14px/1.2 Charter
     .highlighted
         color: wheat
     .selected
@@ -48,6 +47,7 @@
         color: white
     .comment-meta
         margin-bottom: 4px
+        font: 12px/1.2 "Iosevka Aile"
         color: gray
         cursor: default
     a
@@ -58,19 +58,18 @@
     .time-since
         display: inline-block
         margin-right: 8px
-        padding: 2px 4px
-        background: #e6ccb0
-        color: black
+        padding: 2px 6px 1px 6px
+        border: 1px solid
     .votes
         margin-left: -2px
-        margin-right: 8px
     .author
-        margin-right: 8px
+        padding: 1px 8px
     .argentium
-        color: goldenrod
-        background: white
+        background: orangered
+        color: black
     .platinum
-        color: white
+        background: white
+        color: black
     .gold
         color: goldenrod
     .silver

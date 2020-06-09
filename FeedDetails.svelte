@@ -13,11 +13,12 @@
         margin: 20px
         padding-right: 20px
         overflow: auto
+        font: 14px/1.2 Charter
         &::-webkit-scrollbar
             width: 1px
             background: transparent
         &::-webkit-scrollbar-thumb
-            background: white
+            background: rgba(0, 0, 0, 0.1)
 </style>
 
 <script type="text/coffeescript">

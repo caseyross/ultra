@@ -6,7 +6,7 @@
                     li.post-brochure(tabindex=0 on:click='{select_post(post)}' class:read='{read_posts.has(post.id)}' class:selected='{$feed.selected.id === post.id}')
                         h2.title {post.title}
                         .meta
-                            a.domain {post.domain}
+                            a.domain(href='{post.url}' target='_blank' title='{post.url}') {post.domain}
                             +if('post.subreddit.toLowerCase() === $feed.name.toLowerCase()')
                                 +if('post.link_flair_text')
                                     span.link-flair(style!='background: {post.link_flair_background_color}; color: {post.link_flair_text_color === "light" ? "white" : "black"}') {post.link_flair_text}
@@ -16,8 +16,8 @@
                                 button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
                                 button.score(title!='{post.hide_score ? "score hidden" : "score (upvotes minus downvotes)"}') {post.hide_score ? '-' : post.score}
                                 button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
-                            time.time-since(title='posted at {(new Date(post.created_utc * 1000)).toLocaleString()}') {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
                             a.author u/{post.author}
+                            time.time-since(title='{(new Date(post.created_utc * 1000)).toLocaleString()}') {describe_time_since(post.created_utc).major.value}{describe_time_since(post.created_utc).major.unit.abbr}
                 +catch('error')
                     li.post-brochure
                         p FAILED TO LOAD POST
@@ -36,16 +36,18 @@
 
 <style type="text/stylus">
     ol
-        padding-right: 4px
+        margin: 0
+        padding-top: 8px
+        padding-left: 20px
         overflow: auto
         &::-webkit-scrollbar
-            width: 1px
+            display: none
+            width: 8px
             background: transparent
         &::-webkit-scrollbar-thumb
-            background: white
-            background: #333
+            background: rgba(0, 0, 0, 0.2)
     .post-brochure
-        padding: 8px 8px 4px 8px
+        padding: 8px
         cursor: default
         user-select: none
     .read
@@ -55,39 +57,38 @@
         color: white
     .title
         margin: 0
+        font-family: Charter
         font-size: 18px
         line-height: 1
     .meta
-        margin-top: 2px
+        margin-top: 4px
         color: gray
     a
         color: inherit
         &:hover
         &:focus
             text-decoration: underline
-    .subreddit
-        margin-right: 8px
-        padding: 2px 4px
-        background: #b5a390
-        color: white
-    .link-flair
-        margin-right: 8px
-        padding: 2px 4px
-        background: lightgray
-        color: black
     .domain
-        margin-right: 8px
+        padding: 1px 6px
+        border: 1px solid gray
+        color: black
+        text-decoration: none
+    .subreddit
+        padding: 1px 6px
+        border: 1px solid gray
+        background: #f9dbc5
+        color: black
+    .link-flair
+        padding: 1px 6px
+        border: 1px solid gray
+        background: #f9dbc5
+        color: black
+    .author
+        padding: 1px 8px
     .time-since
         display: inline-block
-        margin-right: 8px
-        padding: 2px 4px
-        background: #e6ccb0
-        color: black
-    .votes
-        margin-right: 8px
-        background: lightgray
-    .author
-        margin-right: 8px
+        padding: 2px 6px 1px 6px
+        border: 1px solid
 </style>
 
 <script type="text/coffeescript">

@@ -32,13 +32,14 @@
             width: 1px
             background: transparent
         &::-webkit-scrollbar-thumb
-            background: white
+            background: rgba(0, 0, 0, 0.1)
     iframe
         background: white
     #embed
         width: 100%
     #self-text
         padding-right: 20px
+        font: 14px/1.2 Charter
     #error-text
         width: 100%
         height: 100%
