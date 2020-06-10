@@ -25,7 +25,7 @@ pre {
 }
 .downvote,
 .upvote {
-    padding: 2px;
+    color: lightgray;
 }
 .downvote:hover,
 .downvote:focus,
@@ -33,12 +33,12 @@ pre {
     color: cornflowerblue;
 }
 .md-spoiler-text {
-    opacity: 0;
     background: gray;
+    color: gray;
 }
 .md-spoiler-text:hover {
-    opacity: 1;
     background: inherit;
+    color: inherit;
 }
 .recency-1 {
     color: #ff6205;
@@ -49,17 +49,10 @@ pre {
 .recency-3 {
     color: #775948;
 }
-.score {
-    padding: 2px 0;
-}
 .upvote:hover,
 .upvote:focus,
 .upvote.voted {
     color: salmon;
-}
-.votes {
-    padding: 1px 3px;
-    border: 1px solid;
 }
 #embed iframe {
     width: 100%;

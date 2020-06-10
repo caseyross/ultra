@@ -10,60 +10,68 @@
                         class:selected='{reply.id === selected_id}'
                         minimap-symbol-color='{distinguish_color(reply)}'
                     )
-                        .comment-meta
-                            span.votes
-                                button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
-                                span.score(title!='{reply.score_hidden ? "score hidden" : "score (upvotes minus downvotes)"}') {reply.score_hidden ? '-' : reply.score}/{Math.floor(reply.score / ((Date.now() - reply.created_utc * 1000) / 3600000))}
+                        .voting
+                            button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
+                            button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
+                        .main
+                            .meta
+                                time.time-since(title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}') {describe_time_since(reply.created_utc).major.value}{describe_time_since(reply.created_utc).major.unit.abbr}
                                 +if('reply.total_awards_received > 0')
                                     span.awards(title='{awards_description(reply.all_awardings)}')
-                                        | &nbsp;
                                         +each('Object.entries(award_buckets(reply.all_awardings)) as bucket')
                                             +if('bucket[1].length')
                                                 span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
-                                button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
-                            a.author(style='color: {distinguish_color(reply)}') u/{reply.author}
-                            time.time-since(title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}') {describe_time_since(reply.created_utc).major.value}{describe_time_since(reply.created_utc).major.unit.abbr}
-                            +if('reply.author_flair_text')
-                                span.author-flair {reply.author_flair_text}
-                        | {@html reply.body_html}
+                                a.author(style='color: {distinguish_color(reply)}') {reply.author}
+                                +if('reply.author_flair_text')
+                                    span.author-flair {reply.author_flair_text}
+                            | {@html reply.body_html}
                     svelte:self(comment='{reply}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
 </template>
 
 
 <style type="text/stylus">
-    .comment-tree
-        padding: 4px 0 0 20px
-        word-break: break-word
-        & > &
-            border-left: 1px solid #333
-    .comment
-        width: 480px
-        padding: 4px 4px 8px 8px
-        font: 14px/1.2 Charter
-    .highlighted
-        color: wheat
-    .selected
-        background: #333
-        color: white
-    .comment-meta
-        margin-bottom: 4px
-        font: 12px/1.2 "Iosevka Aile"
-        color: gray
-        cursor: default
     a
         color: inherit
         &:hover
         &:focus
             text-decoration: underline
+    .comment-tree
+        padding: 4px 0 0 20px
+        word-break: break-word
+        & > &
+            border-left: 1px solid #ccc
+    .comment
+        width: 480px
+        padding: 4px 4px 8px 8px
+        font: 14px/18px Charter
+        display: flex
+    .highlighted
+        color: wheat
+    .selected
+        background: #333
+        color: white
+    .voting
+        flex: 0 0 12px
+        margin-right: 8px
+        font-size: 12px
+        display: flex
+        flex-flow: column nowrap
+    .meta
+        margin-bottom: 3px
+        font: 12px/1 "Iosevka Aile"
+        color: gray
+        cursor: default
     .time-since
         display: inline-block
-        margin-right: 8px
+        margin-right: 6px
         padding: 2px 6px 1px 6px
         border: 1px solid
-    .votes
-        margin-left: -2px
-    .author
-        padding: 1px 8px
+    .awards
+        margin-right: 8px
+        font-weight: 700
+    .author-flair
+        margin-left: 6px
+        font-style: italic
     .argentium
         background: orangered
         color: black
