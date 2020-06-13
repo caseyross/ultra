@@ -12,20 +12,14 @@ blockquote {
 }
 main {
     height: 100%;
-    font: 400 12px/1.2 "Iosevka Aile";
+    font: 400 14px/1.3 Arial;
     word-break: break-word;
-    background: #fed;
-    color: black;
 }
 p + p {
     margin-top: 8px
 }
 pre {
     white-space: pre-wrap;
-}
-.downvote,
-.upvote {
-    color: lightgray;
 }
 .downvote:hover,
 .downvote:focus,

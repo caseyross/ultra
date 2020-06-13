@@ -1,17 +1,18 @@
 <template lang="pug">
     section
-        article(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}' on:mousedown='{teleport_via_minimap}')
+        article(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}')
             +if('promised_post')
                 +await('promised_post')
                     +then('post')
                         +if('post.num_comments > 0')
-                            CommentTree(comment='{post}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
+                            +each('post.replies as comment')
+                                CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT
                     +catch('error')
                         #nocomments {error}
-        figure(bind:this='{dom.minimap}')
+        figure(bind:this='{dom.minimap}' on:mousedown='{teleport_via_minimap}')
             canvas(bind:this='{dom.minimap_field}')
             mark(bind:this='{dom.minimap_cursor}')
 </template>
@@ -20,14 +21,15 @@
     section
         width: 100%
         height: 100%
-        padding: 12px 0 0 8px
-        position: relative
+        display: flex
     article
         height: 100%
-        padding-bottom: 40px
+        width: calc(100% - 64px)
+        padding: 20px 0
         display: flex
         flex-flow: column nowrap
         overflow: auto
+        will-change: transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
         scrollbar-width: none
         &::-webkit-scrollbar
             display: none
@@ -48,19 +50,17 @@
             border-style: solid
             text-decoration: underline
     figure
-        position: absolute
-        top: 0
-        right: 0
-        width: 64px
         height: 100%
-        pointer-events: none
+        width: 64px
+        position: relative
     mark
         position: absolute
         top: 0
         width: 100%
         display: block
+        background: transparent
+        border-right: 4px solid black
         pointer-events: none
-        background: rgba(0, 0, 0, 0.5)
 </style>
 
 <script type="text/coffeescript">
@@ -83,9 +83,7 @@
     move_minimap_cursor = () ->
         dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * dom.minimap.scrollHeight}px)"
     teleport_via_minimap = (click) ->
-        # If clicking on minimap, jump to that location in the comments
-        if 0 < dom.comments.clientWidth - click.layerX < dom.minimap.clientWidth
-            dom.comments.scrollTop = click.layerY / dom.minimap.scrollHeight * dom.comments.scrollHeight - dom.minimap.scrollHeight / 2
+        dom.comments.scrollTop = click.layerY / dom.minimap.scrollHeight * dom.comments.scrollHeight - dom.minimap.scrollHeight / 2
     onMount () ->
         # Size minimap, because canvas elements can't be sized properly with pure CSS
         dom.minimap_field.width = dom.minimap.clientWidth
@@ -102,18 +100,13 @@
         # If comments don't all fit on screen, draw the minimap
         if dom.comments.scrollHeight > dom.comments.clientHeight
             dom.minimap_cursor.style.height = "#{dom.minimap.scrollHeight * dom.comments.clientHeight / dom.comments.scrollHeight}px"
-            for comment_tree in dom.comments.children
-                draw_child_minimap_symbols(comment_tree, 1, 7)
+            max_depth = 7
+            for comment in dom.comments.children
+                depth = 1 + comment.children[0].scrollWidth / 32
+                if (depth <= max_depth)
+                    dom.minimap_drawing_context.fillStyle = comment.getAttribute('minimap-symbol-color')
+                    dom.minimap_drawing_context.fillRect(dom.minimap.scrollWidth / (max_depth + 1) * (depth - 1), Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), 2 * (dom.minimap.scrollWidth / (max_depth + 1)), 2)
         else
             dom.minimap_cursor.style.height = 0
-    draw_child_minimap_symbols = (comment_tree, depth, max_depth) ->
-        if depth > max_depth
-            return
-        comment = comment_tree.children[0]
-        dom.minimap_drawing_context.fillStyle = comment.getAttribute('minimap-symbol-color') || 'gray'
-        dom.minimap_drawing_context.fillRect(dom.minimap.scrollWidth / (max_depth + 1) * (depth - 1), Math.floor(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), 2 * (dom.minimap.scrollWidth / (max_depth + 1)), comment.clientHeight * (dom.minimap.scrollHeight / dom.comments.scrollHeight) - 2)
-        for child in comment_tree.children
-            if child.classList.contains 'comment-tree'
-                draw_child_minimap_symbols(child, depth + 1, max_depth)
 
 </script>

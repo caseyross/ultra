@@ -38,9 +38,10 @@
         display: flex
         justify-content: space-between
         align-items: center
-        background: #333
         color: #ccc
         list-style: none
+    li
+        border: 1px solid gray
     button
     select
         height: 20px

@@ -21,12 +21,14 @@
         width: 100%
         height: 100%
         position: relative
+        background: #222
     nav
-        width: 100%
         position: absolute
-        left: 0
-        bottom: 0
-        background: #b5a390
+        left: 20px
+        bottom: 20px
+        background: #222
+        color: white
+        border: 1px solid white
     #scrubber
     #buttons
         height: 40px

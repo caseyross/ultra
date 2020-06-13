@@ -1,19 +1,16 @@
 <template lang="pug">
     section.all
         section.left
-            section.top
-            section.bottom
-                +if('$feed.selected.id')
-                    Post(post='{$feed.selected}')
-                    +else
-                        FeedDetails
+            +if('$feed.selected.id')
+                Post(post='{$feed.selected}')
         section.center
             FeedControl
             PostList
         section.right
-            section.top
-            section.bottom
+            +if('$feed.selected.id')
                 Comments(promised_post='{$promises.posts[$feed.selected.id]}')
+                +else
+                    Sidebar
     svelte:head
         +await('$promises.feed_meta')
             title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
@@ -33,6 +30,7 @@
         display: flex
     .center
         flex: 0 0 540px
+        padding: 0 32px
         display: flex
         flex-flow: column nowrap
     .left
@@ -41,11 +39,6 @@
         display: flex
         flex-flow: column nowrap
         overflow: auto
-    .top
-        height: 80px
-        border-bottom: 1px solid #333
-    .bottom
-        height: calc(100% - 80px)
     #inspector
         position: fixed
         top: 0
@@ -61,7 +54,7 @@
     import { feed, promises, debug } from './state.coffee'
     import keybinds from './keybinds.coffee'
     import FeedControl from './FeedControl.svelte'
-    import FeedDetails from './FeedDetails.svelte'
+    import Sidebar from './Sidebar.svelte'
     import PostList from './PostList.svelte'
     import Post from './Post.svelte'
     import Comments from './Comments.svelte'

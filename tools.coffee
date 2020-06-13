@@ -1,49 +1,44 @@
 durations =
     year:
-        milliseconds: 1000 * 60 * 60 * 24 * 365
+        seconds: 60 * 60 * 24 * 365
         abbr: 'yr'
         singular: 'year'
         plural: 'years'
     month:
-        milliseconds: 1000 * 60 * 60 * 24 * 30.36
+        seconds: 60 * 60 * 24 * 30.36
         abbr: 'mo'
         singular: 'month'
         plural: 'months'
     week:
-        milliseconds: 1000 * 60 * 60 * 24 * 7
+        seconds: 60 * 60 * 24 * 7
         abbr: 'w'
         singular: 'week'
         plural: 'weeks'
     day:
-        milliseconds: 1000 * 60 * 60 * 24
+        seconds: 60 * 60 * 24
         abbr: 'd'
         singular: 'day'
         plural: 'days'
     hour:
-        milliseconds: 1000 * 60 * 60
+        seconds: 60 * 60
         abbr: 'h'
         singular: 'hour'
         plural: 'hours'
     minute:
-        milliseconds: 1000 * 60
+        seconds: 60
         abbr: 'm'
         singular: 'minute'
         plural: 'minutes'
     second:
-        milliseconds: 1000
+        seconds: 1
         abbr: 's'
         singular: 'second'
         plural: 'seconds'
-    millisecond:
-        milliseconds: 1
-        abbr: 'ms'
-        singular: 'millisecond'
-        plural: 'milliseconds'
-export describe_duration = (milliseconds) ->
+duration_description = (seconds) ->
     switch
-        when milliseconds > durations.year.milliseconds
-            years = Math.floor(milliseconds / durations.year.milliseconds)
-            months = Math.floor(milliseconds % durations.year.milliseconds / durations.month.milliseconds)
+        when seconds > durations.year.seconds
+            years = Math.trunc(seconds / durations.year.seconds)
+            months = Math.trunc(seconds % durations.year.seconds / durations.month.seconds)
             {
                 major:
                     value: years
@@ -52,20 +47,9 @@ export describe_duration = (milliseconds) ->
                     value: months
                     unit: durations.month
             }
-#        when milliseconds > durations.month.milliseconds
-#            months = Math.floor(milliseconds / durations.month.milliseconds)
-#            weeks = Math.floor(milliseconds % durations.month.milliseconds / durations.week.milliseconds)
-#            {
-#                major:
-#                    value: months
-#                    unit: durations.month
-#                minor:
-#                    value: weeks
-#                    unit: durations.week
-#            }
-        when milliseconds > durations.week.milliseconds
-            weeks = Math.floor(milliseconds / durations.week.milliseconds)
-            days = Math.floor(milliseconds % durations.week.milliseconds / durations.day.milliseconds)
+        when seconds > durations.week.seconds
+            weeks = Math.trunc(seconds / durations.week.seconds)
+            days = Math.trunc(seconds % durations.week.seconds / durations.day.seconds)
             {
                 major:
                     value: weeks
@@ -74,9 +58,9 @@ export describe_duration = (milliseconds) ->
                     value: days
                     unit: durations.day
             }
-        when milliseconds > durations.day.milliseconds
-            days = Math.floor(milliseconds / durations.day.milliseconds)
-            hours = Math.floor(milliseconds % durations.day.milliseconds / durations.hour.milliseconds)
+        when seconds > durations.day.seconds
+            days = Math.trunc(seconds / durations.day.seconds)
+            hours = Math.trunc(seconds % durations.day.seconds / durations.hour.seconds)
             {
                 major:
                     value: days
@@ -85,9 +69,9 @@ export describe_duration = (milliseconds) ->
                     value: hours
                     unit: durations.hour
             }
-        when milliseconds > durations.hour.milliseconds
-            hours = Math.floor(milliseconds / durations.hour.milliseconds)
-            minutes = Math.floor(milliseconds % durations.hour.milliseconds / durations.minute.milliseconds)
+        when seconds > durations.hour.seconds
+            hours = Math.trunc(seconds / durations.hour.seconds)
+            minutes = Math.trunc(seconds % durations.hour.seconds / durations.minute.seconds)
             {
                 major:
                     value: hours
@@ -96,9 +80,9 @@ export describe_duration = (milliseconds) ->
                     value: minutes
                     unit: durations.minute
             }
-        when milliseconds > durations.minute.milliseconds
-            minutes = Math.floor(milliseconds / durations.minute.milliseconds)
-            seconds = Math.floor(milliseconds % durations.minute.milliseconds / durations.second.milliseconds)
+        when seconds > durations.minute.seconds
+            minutes = Math.trunc(seconds / durations.minute.seconds)
+            seconds = Math.trunc(seconds % durations.minute.seconds / durations.second.seconds)
             {
                 major:
                     value: minutes
@@ -108,29 +92,55 @@ export describe_duration = (milliseconds) ->
                     unit: durations.second
             }
         else
-            seconds = Math.floor(milliseconds / durations.second.milliseconds)
             {
                 major:
                     value: seconds
                     unit: durations.second
             }
-#        else
-#            {
-#                major:
-#                    value: milliseconds
-#                    unit: durations.millisecond
-#            }
-export describe_time_since = (seconds) -> describe_duration(Date.now() - seconds * 1000)
+export ago_description = (epoch_seconds) ->
+    d = duration_description(Date.now() / 1000 - epoch_seconds)
+    (if d.major.value < 10 then '&nbsp;' else '') + d.major.value + d.major.unit.abbr
+export ago_description_long = (epoch_seconds) ->
+    d = duration_description(Date.now() / 1000 - epoch_seconds)
+    d.major.value + d.major.unit.abbr + (if d.minor then (' ' + d.minor.value + d.minor.unit.abbr) else '')
+export recency_category = (epoch_seconds) ->
+    time_since = Date.now() / 1000 - epoch_seconds
+    switch
+        when time_since < durations.hour.seconds
+            {
+                symbol: '●'
+                value: 1
+            }
+        when time_since < 4 * durations.hour.seconds
+            {
+                symbol: '◕'
+                value: 0.75
+            }
+        when time_since < 12 * durations.hour.seconds
+            {
+                symbol: '◑'
+                value: 0.5
+            }
+        when time_since < 2 * durations.day.seconds
+            {
+                symbol: '◔'
+                value: 0.25
+            }
+        else
+            {
+                symbol: '○'
+                value: 0
+            }
 
 hours_minutes_seconds = (duration_seconds) ->
     hours = 0
     minutes = 0
-    seconds = Math.floor(duration_seconds)
+    seconds = Math.trunc(duration_seconds)
     if seconds > 60 * 60
-        hours = Math.floor(seconds / 60 * 60)
+        hours = Math.trunc(seconds / 60 * 60)
         seconds = seconds % (60 * 60)
     if seconds > 60
-        minutes = Math.floor(seconds / 60)
+        minutes = Math.trunc(seconds / 60)
         seconds = seconds % 60
     [hours, minutes, seconds]
 export minimal_duration_readout = (duration_seconds) ->

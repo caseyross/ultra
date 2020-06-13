@@ -6,10 +6,10 @@
     "coffeescript": "^2.5.1",
     "parcel": "^1.12.4",
     "parcel-plugin-svelte": "^4.0.6",
-    "pug": "^2.0.4",
+    "pug": "^3.0.0",
     "stylus": "^0.54.7",
-    "svelte": "^3.22.3",
-    "svelte-preprocess": "^3.7.4"
+    "svelte": "^3.23.2",
+    "svelte-preprocess": "^3.9.7"
   },
   "scripts": {
     "hack": "parcel index.html --no-cache",

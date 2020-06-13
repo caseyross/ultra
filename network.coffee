@@ -43,7 +43,7 @@ api_op = (http_method, resource_path) ->
 
 import { titlecase_gfycat_video_id } from './tools.coffee'
 process_post = (post) ->
-    if !post.link_flair_text then post.link_flair_text = ''
+    if not post.link_flair_text then post.link_flair_text = ''
     if post.is_self
             post.type = 'text'
             post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
@@ -105,21 +105,21 @@ process_post = (post) ->
         else
             post.type = 'unknown'
             post.source = ''
-    if typeof post.source == 'string' and post.source.startsWith 'http://'
+    if typeof post.source is 'string' and post.source.startsWith 'http://'
         post.source = 'https://' + post.source[7...]
     post
 get_feed_fragment = (feed_config, num_posts) ->
     load = api_op('GET',
-        (if feed_config.name == ''
+        (if feed_config.name is ''
             "#{feed_config.rank_by.type}?"
         else
-            (if feed_config.type == 'user'
+            (if feed_config.type is 'user'
                 "user/#{feed_config.name}?sort=#{feed_config.rank_by.type}&"
             else
                 "r/#{feed_config.name}/#{feed_config.rank_by.type}?"
             )
         ) +
-        (if feed_config.rank_by.type == 'top' then "t=#{feed_config.rank_by.filter}&" else '') +
+        (if feed_config.rank_by.type is 'top' then "t=#{feed_config.rank_by.filter}&" else '') +
         (if feed_config.last_seen then "after=#{feed_config.last_seen}&" else '') +
         (if feed_config.seen_count then "count=#{feed_config.seen_count}&" else '') +
         "limit=#{num_posts}"
@@ -149,38 +149,68 @@ export load_feed = (feed_config) ->
         stage_3[15]
     ]
 
-streamline_reply_datastructs = (comment) ->
-    if comment.body_html
-        comment.body_html = comment.body_html[16...-6]
-    if comment.replies?.data?.children
-        if comment.replies.data.children.kind == 'more'
-            comment.replies = []
+process_replies = (replies_listing) ->
+    if not replies_listing.data # No replies
+        []
+    else if replies_listing.data.children[0].data.count is 0 # Sometimes reddit fucks up and gives us a "more" with nothing in it
+        []
+    else replies_listing.data.children.map (child) ->
+        if child.kind is 'more'
+            {
+                ...child.data
+                body: ''
+                is_more: true
+                replies: []
+                score_per_hour: 0
+            }
         else
-            comment.replies = comment.replies.data.children.map (child) -> child.data
-            for comment in comment.replies
-                streamline_reply_datastructs comment
-    else
-        comment.replies = []
+            {
+                ...child.data
+                body_html: child.data.body_html[16...-6]
+                is_more: false
+                replies: process_replies child.data.replies
+                score: child.data.score - 1 # Don't count the built-in upvote from the commenter
+                score_per_hour: (child.data.score - 1) * 3600 / (Date.now() / 1000 - child.data.created_utc)
+            }
+subtree_score_per_hour = (comment) ->
+    Math.abs(comment.score_per_hour) + comment.replies.reduce(((sum, reply) -> sum + subtree_score_per_hour(reply)), 0)
+subtree_character_count = (comment) ->
+    comment.body.length + comment.replies.reduce(((sum, reply) -> sum + subtree_character_count(reply)), 0)
+set_interest_properties = (total_score_per_hour, total_character_count, comment) ->
+    if not comment.is_more
+        comment.score_per_hour_percentage = Math.trunc(comment.score_per_hour / total_score_per_hour * 100)
+        comment.character_count_percentage = Math.trunc(comment.body.length / total_character_count * 100)
+        if comment.score_hidden
+            comment.estimated_interest = '---'
+        else
+            comment.estimated_interest = comment.score_per_hour_percentage + comment.character_count_percentage
+        for reply in comment.replies
+            set_interest_properties(total_score_per_hour, total_character_count, reply)
 export get_post_fragment = (post_id, comment_id, context_level) ->
     api_op('GET',
         "comments/#{post_id}" +
         (if comment_id then "?comment=#{comment_id}" else '') +
         (if context_level then "&context=#{context_level}" else '')
-    ).then ( [post, comments] ) ->
+    ).then ( [post_listing, replies_listing] ) ->
         post_fragment = {
-            ...post.data.children[0].data
-            replies: comments
+            ...post_listing.data.children[0].data
+            body: ''
             fragment_center: comment_id
+            replies: process_replies replies_listing
+            score_per_hour: 0
         }
-        streamline_reply_datastructs post_fragment
+        post_fragment.total_score_per_hour = subtree_score_per_hour post_fragment
+        post_fragment.total_character_count = subtree_character_count post_fragment
+        for comment in post_fragment.replies
+            set_interest_properties(post_fragment.total_score_per_hour, post_fragment.total_character_count, comment)
         post_fragment
 
 export get_feed_meta = (feed_config) ->
-    if feed_config.name == ''
+    if feed_config.name is ''
         new Promise (resolve, reject) -> resolve({ description_html: '' })
     else
         api_op('GET',
-            "#{if feed_config.type == 'user' then 'user' else 'r'}/#{feed_config.name}/about"
+            "#{if feed_config.type is 'user' then 'user' else 'r'}/#{feed_config.name}/about"
         ).then (response) ->
             if response.data
                 feed_meta = {

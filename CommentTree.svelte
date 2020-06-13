@@ -1,31 +1,32 @@
 <template lang="pug">
-    +if('comment.replies.length > 0')
-        +each('comment.replies as reply')
-            +if('reply.body_html')
-                article.comment-tree
-                    .comment(
-                        tabindex=0
-                        on:click='{select_comment(reply)}'
-                        class:highlighted='{reply.id === highlight_id}'
-                        class:selected='{reply.id === selected_id}'
-                        minimap-symbol-color='{distinguish_color(reply)}'
-                    )
-                        .voting
-                            button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
-                            button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
-                        .main
-                            .meta
-                                time.time-since(title='posted at {(new Date(reply.created_utc * 1000)).toLocaleString()}') {describe_time_since(reply.created_utc).major.value}{describe_time_since(reply.created_utc).major.unit.abbr}
-                                +if('reply.total_awards_received > 0')
-                                    span.awards(title='{awards_description(reply.all_awardings)}')
-                                        +each('Object.entries(award_buckets(reply.all_awardings)) as bucket')
-                                            +if('bucket[1].length')
-                                                span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
-                                a.author(style='color: {distinguish_color(reply)}') {reply.author}
-                                +if('reply.author_flair_text')
-                                    span.author-flair {reply.author_flair_text}
-                            | {@html reply.body_html}
-                    svelte:self(comment='{reply}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
+    .comment(minimap-symbol-color!='{distinguish_color(comment) || "black"}')
+        .spacer(style='flex: 0 0 {20 * depth}px')
+        .voting
+            +if('!comment.is_more')
+                button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
+                button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
+        .body(
+            tabindex=0
+            on:click='{select_comment(comment)}'
+            class:highlighted='{comment.id === highlight_id}'
+            class:selected='{comment.id === selected_id}'
+        )
+            +if('comment.is_more')
+                .meta + {comment.count} more
+                +else
+                    .meta
+                        time(title!='{ago_description_long(comment.created_utc) + " ago - " + (new Date(comment.created_utc * 1000)).toLocaleString()}') {comment.estimated_interest}
+                        +if('comment.total_awards_received > 0')
+                            span.awards(title='{awards_description(comment.all_awardings)}')
+                                +each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
+                                    +if('bucket[1].length')
+                                        span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
+                        a.author(style='color: {distinguish_color(comment)}') {comment.author}
+                        +if('comment.author_flair_text')
+                            span.author-flair {comment.author_flair_text}
+                    | {@html comment.body_html}
+    +each('comment.replies as comment')
+        svelte:self(comment='{comment}' depth='{depth + 1}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
 </template>
 
 
@@ -35,36 +36,26 @@
         &:hover
         &:focus
             text-decoration: underline
-    .comment-tree
-        padding: 4px 0 0 20px
-        word-break: break-word
-        & > &
-            border-left: 1px solid #ccc
     .comment
-        width: 480px
-        padding: 4px 4px 8px 8px
-        font: 14px/18px Charter
         display: flex
-    .highlighted
-        color: wheat
-    .selected
-        background: #333
-        color: white
     .voting
-        flex: 0 0 12px
-        margin-right: 8px
-        font-size: 12px
+        flex: 0 0 14px
+        margin-top: 8px
         display: flex
         flex-flow: column nowrap
+    .body
+        flex: 0 1 480px
+        padding: 8px 4px 8px 8px
     .meta
-        margin-bottom: 3px
-        font: 12px/1 "Iosevka Aile"
+        font-size: 12px
         color: gray
         cursor: default
-    .time-since
-        display: inline-block
+        display: flex
+    time
         margin-right: 6px
-        padding: 2px 6px 1px 6px
+        width: 27px
+        height: 16px
+        text-align: center
         border: 1px solid
     .awards
         margin-right: 8px
@@ -84,18 +75,24 @@
         color: #ccc
     .bronze
         color: rosybrown
+    .highlighted
+        color: wheat
+    .selected
+        background: #333
+        color: white
 </style>
 
 <script type="text/coffeescript">
-    import { describe_time_since } from './tools.coffee'
+    import { ago_description_long, recency_category } from './tools.coffee'
     export comment =
         replies: []
+    export depth = 0
     export op_id = ''
     export highlight_id = ''
     export selected_id = ''
     export select_comment = () -> {}
     distinguish_colors =
-        op: 'deepskyblue'
+        op: 'royalblue'
         mod: 'lightgreen'
         mod: 'forestgreen'
         admin: 'orangered'

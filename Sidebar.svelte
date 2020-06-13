@@ -9,16 +9,15 @@
 
 <style type="text/stylus">
     article
-        height: calc(100% - 40px)
-        margin: 20px
-        padding-right: 20px
+        height: 100%
+        padding: 20px
         overflow: auto
-        font: 14px/1.2 Charter
+        background: #eee
         &::-webkit-scrollbar
-            width: 1px
-            background: transparent
+            width: 4px
+            background: white
         &::-webkit-scrollbar-thumb
-            background: rgba(0, 0, 0, 0.1)
+            background: black
 </style>
 
 <script type="text/coffeescript">
