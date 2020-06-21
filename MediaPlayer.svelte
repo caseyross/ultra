@@ -1,14 +1,22 @@
 <template lang="pug">
     #player(bind:this='{dom.player}')
         +if('audio_src || video_src')
-            video(bind:this='{dom.video}' src='{video_src}')
-            audio(bind:this='{dom.audio}' src='{audio_src}')
+            video(
+                src='{video_src}'
+                bind:duration='{v.duration}'
+                bind:currentTime='{v.time}'
+                bind:paused='{v.paused}'
+            )
+            audio(
+                src='{audio_src}'
+                bind:paused='{a.paused}'
+            )
             nav
                 #scrubber
-                    .time-readout {minimal_duration_readout(meta.time)}
+                    .time-readout {minimal_duration_readout(v.time)}
                     #scrubber-track
-                        #scrubber-fill(bind:this='{dom.scrubber_fill}')
-                    .time-readout {minimal_duration_readout(meta.duration)}
+                        #scrubber-fill(style!='transform: scaleX({ v.time / v.duration })')
+                    .time-readout {minimal_duration_readout(v.duration)}
                 #buttons
                     button(on:mousedown='{play_or_pause()}') PLAY / PAUSE
                     button(on:mousedown='{fullscreen()}') FULLSCREEN
@@ -18,10 +26,7 @@
 
 <style type="text/stylus">
     #player
-        width: 100%
-        height: 100%
         position: relative
-        background: #222
     nav
         position: absolute
         left: 20px
@@ -58,35 +63,24 @@
 </style>
 
 <script type="text/coffeescript">
-    import { onMount } from 'svelte'
     import { minimal_duration_readout } from './tools.coffee'
     export audio_src = ''
     export video_src = ''
     export mini_video_src = ''
     dom =
         player: {}
-        video: {}
-        audio: {}
-        scrubber_fill: {}
-    meta =
+    a =
+        paused: true
+    v =
         duration: 0
         time: 0
+        paused: true
     play_or_pause = () ->
-        if dom.video.paused
-            dom.video.play()
-            dom.audio.play()
-        else
-            dom.video.pause()
-            dom.audio.pause()
+        v.paused = not v.paused
+        a.paused = not a.paused
     fullscreen = () ->
         if document.fullscreenElement
             document.exitFullscreen()
         else
             dom.player.requestFullscreen()
-    onMount () ->
-        dom.video.ondurationchange = () ->
-            meta.duration = dom.video.duration
-        dom.video.ontimeupdate = () ->
-            meta.time = dom.video.currentTime
-            dom.scrubber_fill.style.transform = "scaleX(#{ meta.time / meta.duration })"
 </script>

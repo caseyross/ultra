@@ -12,11 +12,9 @@ blockquote {
 }
 main {
     height: 100%;
-    font: 400 14px/1.3 Arial;
-    word-break: break-word;
 }
 p + p {
-    margin-top: 8px
+    margin-top: 8px;
 }
 pre {
     white-space: pre-wrap;
@@ -38,7 +36,7 @@ pre {
     color: #ff6205;
 }
 .recency-2 {
-    color: #bd6340
+    color: #bd6340;
 }
 .recency-3 {
     color: #775948;
@@ -47,10 +45,6 @@ pre {
 .upvote:focus,
 .upvote.voted {
     color: salmon;
-}
-#embed iframe {
-    width: 100%;
-    height: 100%;
 }
 [tabindex='0'] {
     position: relative;

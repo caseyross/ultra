@@ -18,39 +18,36 @@ dd {
   padding: 0;
 }
 
+button,
 input,
 textarea,
-select,
-button {
-  color: inherit;
+select {
+  padding: 0;
   background: inherit;
+  border: none;
+  color: inherit;
   font: inherit;
   line-height: inherit;
   letter-spacing: inherit;
-  border: none;
-  padding: 0;
 }
 
-select,
-button {
+button,
+select {
   cursor: pointer;
 }
 
 img,
 svg {
-  display: inline-block;
   max-width: 100%;
   max-height: 100%;
 }
 
-video,
-iframe,
-object,
-embed {
+iframe {
   display: block;
-  width: 100%;
   height: 100%;
+  width: 100%;
   border: none;
+  background: white;
 }
 
 table {

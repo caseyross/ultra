@@ -1,30 +1,30 @@
 <template lang="pug">
-    .comment(minimap-symbol-color!='{distinguish_color(comment) || "black"}')
-        .spacer(style='flex: 0 0 {20 * depth}px')
-        .voting
-            +if('!comment.is_more')
-                button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
-                button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
-        .body(
-            tabindex=0
-            on:click='{select_comment(comment)}'
-            class:highlighted='{comment.id === highlight_id}'
-            class:selected='{comment.id === selected_id}'
-        )
-            +if('comment.is_more')
-                .meta + {comment.count} more
-                +else
-                    .meta
-                        time(title!='{ago_description_long(comment.created_utc) + " ago - " + (new Date(comment.created_utc * 1000)).toLocaleString()}') {comment.estimated_interest}
+    .comment(
+        tabindex=0
+        on:click='{select_comment(comment)}'
+        style='margin-left: {32 * (depth - 1)}px'
+        class:highlighted='{comment.id === highlight_id}'
+        class:selected='{comment.id === selected_id}'
+        data-depth='{depth}'
+        data-color='{distinguish_color(comment)}'
+    )
+        +if('comment.is_more')
+            .meta + {comment.count} more
+            +else
+                .meta
+                    a.author(style='background: {distinguish_color(comment)}') {comment.author}
+                    +if('comment.author_flair_text')
+                        span.author-flair {comment.author_flair_text}
+                    .voting
+                        button.upvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.1}') ▲
+                        span.score {comment.score}/{comment.estimated_interest}
                         +if('comment.total_awards_received > 0')
                             span.awards(title='{awards_description(comment.all_awardings)}')
                                 +each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
                                     +if('bucket[1].length')
                                         span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
-                        a.author(style='color: {distinguish_color(comment)}') {comment.author}
-                        +if('comment.author_flair_text')
-                            span.author-flair {comment.author_flair_text}
-                    | {@html comment.body_html}
+                        button.downvote(on:click|stopPropagation!='{() => null}' class:voted!='{Math.random() < 0.01}') ▼
+                | {@html comment.body_html}
     +each('comment.replies as comment')
         svelte:self(comment='{comment}' depth='{depth + 1}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
 </template>
@@ -36,20 +36,18 @@
         &:hover
         &:focus
             text-decoration: underline
-    .comment
-        display: flex
     .voting
-        flex: 0 0 14px
-        margin-top: 8px
-        display: flex
-        flex-flow: column nowrap
-    .body
+        background: #ddd
+        padding: 0 4px
+    .score
+        padding: 0 4px
+    .comment
         flex: 0 1 480px
         padding: 8px 4px 8px 8px
-    .meta
         font-size: 12px
+        line-height: 14px
+    .meta
         color: gray
-        cursor: default
         display: flex
     time
         margin-right: 6px
@@ -60,9 +58,10 @@
     .awards
         margin-right: 8px
         font-weight: 700
+    .author
+        background: lightgray
     .author-flair
-        margin-left: 6px
-        font-style: italic
+        padding: 0 8px
     .argentium
         background: orangered
         color: black
@@ -76,7 +75,7 @@
     .bronze
         color: rosybrown
     .highlighted
-        color: wheat
+        background: lightgoldenrodyellow
     .selected
         background: #333
         color: white
@@ -86,19 +85,19 @@
     import { ago_description_long, recency_category } from './tools.coffee'
     export comment =
         replies: []
-    export depth = 0
+    export depth = 1
     export op_id = ''
     export highlight_id = ''
     export selected_id = ''
     export select_comment = () -> {}
     distinguish_colors =
-        op: 'royalblue'
-        mod: 'lightgreen'
-        mod: 'forestgreen'
+        op: 'black'
+        mod: 'darkseagreen'
         admin: 'orangered'
-        special: 'crimson'
-    distinguish_color = (reply) ->
-        switch reply.distinguished
+        special: 'crimson',
+        highlight: 'goldenrod'
+    distinguish_color = (comment) ->
+        switch comment.distinguished
             when 'moderator'
                 distinguish_colors.mod
             when 'admin'
@@ -106,10 +105,12 @@
             when 'special'
                 distinguish_colors.special
             else
-                if reply.author_fullname == op_id
+                if comment.author_fullname == op_id
                     distinguish_colors.op
+                else if comment.id == selected_id
+                    distinguish_colors.highlight
                 else
-                    null
+                    ''
     award_buckets = (awards) ->
         buckets =
             argentium: []

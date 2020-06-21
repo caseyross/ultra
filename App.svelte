@@ -1,16 +1,23 @@
 <template lang="pug">
     section.all
-        section.left
-            +if('$feed.selected.id')
-                Post(post='{$feed.selected}')
         section.center
             FeedControl
             PostList
-        section.right
+        section.left
             +if('$feed.selected.id')
-                Comments(promised_post='{$promises.posts[$feed.selected.id]}')
+                Post(post='{$feed.selected}')
                 +else
                     Sidebar
+        section.right
+            +if('$feed.selected.id')
+                #rank-by
+                    button#new(class:selected!='{$feed.rank_by.type === "new"}') old
+                    button#hot(class:selected!='{$feed.rank_by.type === "hot"}') new
+                    button#rising(class:selected!='{$feed.rank_by.type === "rising"}') score
+                    button#best(class:selected!='{$feed.rank_by.type === "best"}') quality
+                    #spacer-2
+                    button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') ctvrsl
+                Comments(promised_post='{$promises.posts[$feed.selected.id]}')
     svelte:head
         +await('$promises.feed_meta')
             title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
@@ -27,10 +34,14 @@
 <style type="text/stylus">
     .all
         height: 100%
+        background: #eee
+        font: 400 14px/18px "Iosevka Aile"
+        word-break: break-word;
         display: flex
     .center
         flex: 0 0 540px
-        padding: 0 32px
+        background: white
+        border-right: 1px solid gray
         display: flex
         flex-flow: column nowrap
     .left
@@ -39,6 +50,29 @@
         display: flex
         flex-flow: column nowrap
         overflow: auto
+    .left
+        display: flex
+        flex-flow: column wrap
+        align-items: flex-end
+        justify-content: center
+    #rank-by
+        display: flex
+        align-items: center
+    #spacer-2
+        flex: 1
+    button
+        flex: 0 0 auto
+        height: 24px
+        padding: 0 12px
+        background: #ddd
+        border: 1px solid gray
+        border-right-width: 0
+    #best
+    #controversial
+    #all
+        border-right-width: 1px
+    .selected
+        background: white
     #inspector
         position: fixed
         top: 0

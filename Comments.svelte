@@ -1,38 +1,44 @@
 <template lang="pug">
     section
-        article(bind:this='{dom.comments}' on:scroll='{move_minimap_cursor()}')
+        #comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
             +if('promised_post')
                 +await('promised_post')
+                    #nocomments LOADING...
                     +then('post')
                         +if('post.num_comments > 0')
-                            +each('post.replies as comment')
-                                CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
+                            article(use:draw_minimap)
+                                +each('post.replies as comment')
+                                    CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT
                     +catch('error')
                         #nocomments {error}
-        figure(bind:this='{dom.minimap}' on:mousedown='{teleport_via_minimap}')
+        figure(bind:this='{dom.minimap}')
             canvas(bind:this='{dom.minimap_field}')
-            mark(bind:this='{dom.minimap_cursor}')
 </template>
 
 <style type="text/stylus">
     section
+        contain: strict
         width: 100%
         height: 100%
         display: flex
-    article
-        height: 100%
-        width: calc(100% - 64px)
-        padding: 20px 0
-        display: flex
         flex-flow: column nowrap
+    #comments
+        height: 100%
+        width: 100%
+        padding-right: 64px
         overflow: auto
         will-change: transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
-        scrollbar-width: none
+        background: white
         &::-webkit-scrollbar
-            display: none
+            width: 4px
+            background: transparent
+        &::-webkit-scrollbar-thumb
+            background: black
+    article
+        padding: 32px
     #nocomments
         height: 100%
         display: flex
@@ -52,19 +58,14 @@
     figure
         height: 100%
         width: 64px
-        position: relative
-    mark
         position: absolute
         top: 0
-        width: 100%
-        display: block
-        background: transparent
-        border-right: 4px solid black
+        right: 0
         pointer-events: none
 </style>
 
 <script type="text/coffeescript">
-    import { onMount, afterUpdate } from 'svelte'
+    import { onMount } from 'svelte'
     import { feed, debug } from './state.coffee';
     import CommentTree from './CommentTree.svelte'
     export promised_post = undefined
@@ -75,38 +76,25 @@
         $debug.inspector.object = comment
     dom =
         comments: {}
-        previous_comments_height: 0
         minimap: {}
         minimap_field: {}
-        minimap_cursor: {}
-        minimap_drawing_context: {}
-    move_minimap_cursor = () ->
-        dom.minimap_cursor.style.transform = "translateY(#{dom.comments.scrollTop / dom.comments.scrollHeight * dom.minimap.scrollHeight}px)"
     teleport_via_minimap = (click) ->
-        dom.comments.scrollTop = click.layerY / dom.minimap.scrollHeight * dom.comments.scrollHeight - dom.minimap.scrollHeight / 2
+        if dom.comments.clientWidth - click.layerX < 64
+            dom.comments.scrollTop = click.layerY / dom.minimap.scrollHeight * dom.comments.scrollHeight - dom.minimap.scrollHeight / 2
     onMount () ->
-        # Size minimap, because canvas elements can't be sized properly with pure CSS
+        # <canvas> can't be sized properly in static CSS (only scaled)
         dom.minimap_field.width = dom.minimap.clientWidth
         dom.minimap_field.height = dom.minimap.clientHeight
-        dom.minimap_drawing_context = dom.minimap_field.getContext '2d'
-    afterUpdate () ->
-        # Redraw minimap when comments change
-        if $feed.selected.id != $feed.previous_selected.id or dom.comments.scrollHeight != dom.previous_comments_height
-            draw_minimap()
-            dom.previous_comments_height = dom.comments.scrollHeight
     draw_minimap = () ->
-        # Clear minimap symbols
-        dom.minimap_drawing_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
-        # If comments don't all fit on screen, draw the minimap
+        canvas_context = dom.minimap_field.getContext '2d'
+        # Clear symbols
+        canvas_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
+        # If comments don't all fit on screen, draw symbols
         if dom.comments.scrollHeight > dom.comments.clientHeight
-            dom.minimap_cursor.style.height = "#{dom.minimap.scrollHeight * dom.comments.clientHeight / dom.comments.scrollHeight}px"
-            max_depth = 7
-            for comment in dom.comments.children
-                depth = 1 + comment.children[0].scrollWidth / 32
+            max_depth = 8
+            for comment in dom.comments.firstChild.children
+                depth = comment.dataset.depth
                 if (depth <= max_depth)
-                    dom.minimap_drawing_context.fillStyle = comment.getAttribute('minimap-symbol-color')
-                    dom.minimap_drawing_context.fillRect(dom.minimap.scrollWidth / (max_depth + 1) * (depth - 1), Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), 2 * (dom.minimap.scrollWidth / (max_depth + 1)), 2)
-        else
-            dom.minimap_cursor.style.height = 0
-
+                    canvas_context.fillStyle = comment.dataset.color || "rgba(0, 0, 0, #{1 - depth * 0.1})"
+                    canvas_context.fillRect(dom.minimap.scrollWidth / max_depth * (depth - 1), Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), dom.minimap.scrollWidth / max_depth, comment.scrollHeight / dom.comments.scrollHeight * dom.minimap.scrollHeight)
 </script>
