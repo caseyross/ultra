@@ -6,7 +6,7 @@
                     #nocomments LOADING...
                     +then('post')
                         +if('post.num_comments > 0')
-                            article(use:draw_minimap)
+                            article(use:reset_scroll use:draw_minimap)
                                 +each('post.replies as comment')
                                     CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
                             +elseif('post.num_comments === 0')
@@ -85,6 +85,8 @@
         # <canvas> can't be sized properly in static CSS (only scaled)
         dom.minimap_field.width = dom.minimap.clientWidth
         dom.minimap_field.height = dom.minimap.clientHeight
+    reset_scroll = () ->
+        dom.comments.scrollTop = 0
     draw_minimap = () ->
         canvas_context = dom.minimap_field.getContext '2d'
         # Clear symbols

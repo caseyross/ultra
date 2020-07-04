@@ -3,21 +3,20 @@
         section.center
             FeedControl
             PostList
-        section.left
-            +if('$feed.selected.id')
+        +if('$feed.selected.id')
+            section.left
                 Post(post='{$feed.selected}')
-                +else
-                    Sidebar
-        section.right
-            +if('$feed.selected.id')
+            section.right
                 #rank-by
-                    button#new(class:selected!='{$feed.rank_by.type === "new"}') old
-                    button#hot(class:selected!='{$feed.rank_by.type === "hot"}') new
-                    button#rising(class:selected!='{$feed.rank_by.type === "rising"}') score
-                    button#best(class:selected!='{$feed.rank_by.type === "best"}') quality
-                    #spacer-2
+                    button#old(class:selected!='{$feed.rank_by.type === "old"}') old
+                    button#new(class:selected!='{$feed.rank_by.type === "new"}') new
+                    button#score(class:selected!='{$feed.rank_by.type === "hot"}') score
+                    button#quality(class:selected!='{$feed.rank_by.type === "best"}') quality
+                    button#op(class:selected!='{$feed.rank_by.type === "op"}') op
                     button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') ctvrsl
                 Comments(promised_post='{$promises.posts[$feed.selected.id]}')
+            +else
+                Sidebar
     svelte:head
         +await('$promises.feed_meta')
             title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
@@ -57,9 +56,6 @@
         justify-content: center
     #rank-by
         display: flex
-        align-items: center
-    #spacer-2
-        flex: 1
     button
         flex: 0 0 auto
         height: 24px
@@ -67,9 +63,7 @@
         background: #ddd
         border: 1px solid gray
         border-right-width: 0
-    #best
     #controversial
-    #all
         border-right-width: 1px
     .selected
         background: white

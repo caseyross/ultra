@@ -1,16 +1,19 @@
 <template lang="pug">
-    article
+    #sidebar
         +await('$promises.feed_meta')
             +then('feed_meta')
-                | {@html feed_meta.description_html}
+                img(src='{feed_meta.banner_background_image}')
+                article {@html feed_meta.description_html}
             +catch('error')
-                | {error}
+                article {error}
 </template>
 
 <style type="text/stylus">
-    article
+    #sidebar
         height: 100%
-        padding: 20px
+        display: flex
+        flex-flow: column nowrap
+        align-items: flex-start
         overflow: auto
         background: #eee
         &::-webkit-scrollbar
@@ -18,6 +21,11 @@
             background: white
         &::-webkit-scrollbar-thumb
             background: black
+    img
+        flex: 0 0 auto
+    article
+        flex: 1
+        padding: 20px
 </style>
 
 <script type="text/coffeescript">

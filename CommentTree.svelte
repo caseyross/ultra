@@ -56,7 +56,6 @@
         text-align: center
         border: 1px solid
     .awards
-        margin-right: 8px
         font-weight: 700
     .author
         background: lightgray

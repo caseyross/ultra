@@ -29,14 +29,14 @@
         position: relative
     nav
         position: absolute
-        left: 20px
-        bottom: 20px
-        background: #222
-        color: white
-        border: 1px solid white
+        left: 0
+        bottom: 0
+        width: 100%
+        background: white
+        border: 1px solid
     #scrubber
     #buttons
-        height: 40px
+        height: 24px
         display: flex
         justify-content: space-between
         align-items: center

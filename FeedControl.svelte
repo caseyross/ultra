@@ -12,9 +12,9 @@
             button#hot(class:selected!='{$feed.rank_by.type === "hot"}') hot
             button#rising(class:selected!='{$feed.rank_by.type === "rising"}') rising
             button#best(class:selected!='{$feed.rank_by.type === "best"}') best
-            #spacer-2
+            .spacer
             button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') ctvrsl
-            #spacer-3
+            .spacer
             span#top top:
             button#hour(class:selected!='{$feed.rank_by.filter === "hour"}') h
             button#day(class:selected!='{$feed.rank_by.filter === "day"}') d
@@ -52,8 +52,7 @@
     #rank-by
         display: flex
         align-items: center
-    #spacer-2
-    #spacer-3
+    .spacer
         flex: 1
     button
         flex: 0 0 auto

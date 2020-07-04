@@ -150,10 +150,15 @@ export load_feed = (feed_config) ->
     ]
 
 process_replies = (replies_listing) ->
-    if not replies_listing.data # No replies
+    # No replies
+    if not replies_listing?.data?.children
         []
-    else if replies_listing.data.children[0].data.count is 0 # Sometimes reddit fucks up and gives us a "more" with nothing in it
+    # Ill-formed response structures
+    else if not replies_listing.data.children.length # Very rare: empty array
         []
+    else if replies_listing.data.children[0].data.count is 0 # Rare: "more" with 0 replies in it
+        []
+    # Replies, or "more"
     else replies_listing.data.children.map (child) ->
         if child.kind is 'more'
             {
@@ -206,8 +211,10 @@ export get_post_fragment = (post_id, comment_id, context_level) ->
         post_fragment
 
 export get_feed_meta = (feed_config) ->
+    feed_meta =
+        description_html: ''
     if feed_config.name is ''
-        new Promise (resolve, reject) -> resolve({ description_html: '' })
+        new Promise (resolve, reject) -> resolve(feed_meta)
     else
         api_op('GET',
             "#{if feed_config.type is 'user' then 'user' else 'r'}/#{feed_config.name}/about"
@@ -215,7 +222,6 @@ export get_feed_meta = (feed_config) ->
             if response.data
                 feed_meta = {
                     ...response.data
-                    description_html: response.data.description_html[31...-20]
+                    description_html: if response.data.description_html then response.data.description_html[31...-20] else ''
                 }
-            else
-                { description_html: '' }
+            feed_meta

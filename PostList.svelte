@@ -1,10 +1,10 @@
 <template lang="pug">
     ol
-        +each('$promises.feed as promise, i')
+        +each('$promises.feed as promise')
             +await('promise')
                 +then('post')
                     li.post-brochure(tabindex=0 on:mousedown='{select_post(post)}' class:read!='{read_posts.has(post.id) && $feed.selected.id !== post.id}' class:selected='{$feed.selected.id === post.id}')
-                        h2.headline {post.title}
+                        h2.headline(class:stickied!='{post.stickied || post.pinned}') {post.title}
                         .meta
                             +if('post.domain !== "self." + post.subreddit')
                                 a.domain(href='{post.url}' target='_blank' title='{post.url}') {post.domain}
@@ -48,6 +48,8 @@
         font-size: 18px
     .meta
         display: flex
+    .stickied
+        color: darkseagreen
     .read
         opacity: 0.5
     .selected
