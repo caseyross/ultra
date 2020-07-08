@@ -1,16 +1,20 @@
 <template lang="pug">
     nav
         #feed-select
+            +await('$promises.feed_meta')
+                img
+                +then('feed_meta')
+                    +if('feed_meta.community_icon')
+                        img(src='{feed_meta.community_icon}')
+                        +elseif('feed_meta.icon_img')
+                            img(src='{feed_meta.icon_img}')
+                        +else
+                            img
             input(type='text' value='{$feed.name}' placeholder='frontpage')
-            +await('$promises.feed_meta then feed_meta')
-                +if('feed_meta.community_icon')
-                    img(src='{feed_meta.community_icon}')
-                    +elseif('feed_meta.icon_img')
-                        img(src='{feed_meta.icon_img}')
         #rank-by
             button#new(class:selected!='{$feed.rank_by.type === "new"}') new
-            button#hot(class:selected!='{$feed.rank_by.type === "hot"}') hot
             button#rising(class:selected!='{$feed.rank_by.type === "rising"}') rising
+            button#hot(class:selected!='{$feed.rank_by.type === "hot"}') hot
             button#best(class:selected!='{$feed.rank_by.type === "best"}') best
             .spacer
             button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') ctvrsl
@@ -26,7 +30,6 @@
 
 <style type="text/stylus">
     nav
-        padding-left: 48px
         border-bottom: 1px solid gray
     #feed-select
         display: flex
@@ -36,10 +39,11 @@
         width: 100%
         height: 48px
         font-size: 32px
-        font-weight: 700
+        font-weight: 600
     img
         height: 32px
-        width: 32px
+        flex: 0 0 32px
+        margin: 0 8px
         clip-path: circle()
     ol
         margin: 0
@@ -50,6 +54,7 @@
         color: #ccc
         list-style: none
     #rank-by
+        padding-left: 48px
         display: flex
         align-items: center
     .spacer

@@ -122,6 +122,7 @@ get_feed_fragment = (feed_config, num_posts) ->
         (if feed_config.rank_by.type is 'top' then "t=#{feed_config.rank_by.filter}&" else '') +
         (if feed_config.last_seen then "after=#{feed_config.last_seen}&" else '') +
         (if feed_config.seen_count then "count=#{feed_config.seen_count}&" else '') +
+        "sr_detail=true" +
         "limit=#{num_posts}"
     )
     [0...num_posts].map (i) ->

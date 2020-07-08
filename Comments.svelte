@@ -37,15 +37,12 @@
             background: transparent
         &::-webkit-scrollbar-thumb
             background: black
-    article
-        padding: 32px
     #nocomments
         height: 100%
         display: flex
         justify-content: center
         align-items: center
         text-align: center
-        font-size: 14px
         font-weight: 900
         color: salmon
     #add-first-comment

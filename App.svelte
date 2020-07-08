@@ -1,20 +1,24 @@
 <template lang="pug">
-    section.all
-        section.center
+    #app
+        #center
             FeedControl
             PostList
         +if('$feed.selected.id')
-            section.left
-                Post(post='{$feed.selected}')
-            section.right
-                #rank-by
-                    button#old(class:selected!='{$feed.rank_by.type === "old"}') old
-                    button#new(class:selected!='{$feed.rank_by.type === "new"}') new
-                    button#score(class:selected!='{$feed.rank_by.type === "hot"}') score
-                    button#quality(class:selected!='{$feed.rank_by.type === "best"}') quality
-                    button#op(class:selected!='{$feed.rank_by.type === "op"}') op
-                    button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') ctvrsl
-                Comments(promised_post='{$promises.posts[$feed.selected.id]}')
+            #left
+                .top
+                .bottom
+                    Post(post='{$feed.selected}')
+            #right
+                .top
+                    #rank-by
+                        button#best(class:selected!='{$feed.rank_by.type === "best"}') reddit default
+                        button#top(class:selected!='{$feed.rank_by.type === "top"}') score
+                        button#new(class:selected!='{$feed.rank_by.type === "new"}') recent
+                        button#qa(class:selected!='{$feed.rank_by.type === "op"}') op responses
+                        button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') controversial
+                        button#magic(class:selected!='{$feed.rank_by.type === "magic"}') magic
+                .bottom
+                    Comments(promised_post='{$promises.posts[$feed.selected.id]}')
             +else
                 Sidebar
     svelte:head
@@ -31,29 +35,29 @@
 </template>
 
 <style type="text/stylus">
-    .all
+    #app
         height: 100%
-        background: #eee
-        font: 400 14px/18px "Iosevka Aile"
-        word-break: break-word;
-        display: flex
-    .center
-        flex: 0 0 540px
         background: white
+        font: 400 12px/1.5 "Iosevka Aile"
+        word-break: break-word
+        display: flex
+    .top
+        flex: 0 0 73px
+        border-bottom: 1px solid gray
+    .bottom
+        flex: 0 0 calc(100% - 73px)
+        display: flex
+    #center
+        flex: 0 0 28%
         border-right: 1px solid gray
         display: flex
         flex-flow: column nowrap
-    .left
-    .right
-        flex: 0 0 calc(50% - 270px)
+    #left
+    #right
+        flex: 0 0 36%
         display: flex
         flex-flow: column nowrap
         overflow: auto
-    .left
-        display: flex
-        flex-flow: column wrap
-        align-items: flex-end
-        justify-content: center
     #rank-by
         display: flex
     button
@@ -63,7 +67,7 @@
         background: #ddd
         border: 1px solid gray
         border-right-width: 0
-    #controversial
+    #magic
         border-right-width: 1px
     .selected
         background: white

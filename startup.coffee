@@ -9,6 +9,8 @@ universal_feed_config =
         id: ''
     previous_selected:
         id: ''
+    background_color: 'white'
+    button_color: '#ddd'
 variable_feed_config = switch url_path[1]
     when 'u', 'user'
         type: 'user'

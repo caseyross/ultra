@@ -1,7 +1,5 @@
 <template lang="pug">
-    section
-        +if('post.type !== "text"')
-            a(href='{post.url}' target='_blank') {post.url}
+    #post
         +if('post.type === "reddit"')
             Comments(promised_post='{$promises.source_posts[post.id]}')
             +elseif('post.type === "link"')
@@ -12,7 +10,11 @@
                 #audiovideo
                     MediaPlayer(audio_src='{post.source.audio}' video_src='{post.source.video}' mini_video_src='{post.source.mini_video}')
             +elseif('post.type === "image"')
-                img(src='{post.source}')
+                a#image(href='{post.source}')
+                    img(use:calculate_scale src='{post.source}')
+                    data.numbering
+                    data.scale {dom.image ? dom.image.naturalWidth : ''}
+                    data.src-url {post.source}
             +elseif('post.type === "text"')
                 article
                         +if('post.source.length')
@@ -24,26 +26,38 @@
 </template>
 
 <style type="text/stylus">
-    section
+    #post
         height: 100%
         width: 100%
         display: flex
         flex-flow: column nowrap
-        justify-content: center
-        align-items: center
-    a
-        line-height: 24px
-        padding: 0 12px
-        border: 1px solid gray
-        background: #ddd
-        color: inherit
+    #image
+        position: relative
+        &:hover > .src-url
+            opacity: 1 
+    data
+        position: absolute
+        background: black
+        color: white
+    .numbering
+        top: 0
+        left: 0
+    .scale
+        top: 0
+        right: 0
+    .src-url
+        bottom: 0
+        left: 0
         text-decoration: none
+        opacity: 0
     #embed
+        width: 100%
         height: 100%
     #audiovideo
+        width: 100%
         height: 100%
     article
-        max-height: 100%
+        height: 100%
         padding: 32px
         overflow: auto
         background: white
@@ -63,4 +77,8 @@
     import Comments from './Comments.svelte'
     import MediaPlayer from './MediaPlayer.svelte'
     export post = {}
+    dom =
+        image: {}
+    calculate_scale = (image) ->
+        console.log(image)
 </script>
