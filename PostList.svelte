@@ -3,26 +3,27 @@
         +each('$promises.feed as promise')
             +await('promise')
                 +then('post')
-                    li.post-brochure(tabindex=0 on:mousedown='{select_post(post)}' style='{post_style(post)}' class:read!='{read_posts.has(post.id) && $feed.selected.id !== post.id}')
-                        .right
-                            .stamp {stamp_number++}
+                    li.brochure(tabindex=0 on:mousedown='{select_post(post)}' class:read!='{read_posts.has(post.id) && $feed.selected.id !== post.id}')
+                        .basket(title='{ago_description_long(post.created_utc)} / {post.link_flair_text}')
+                            .fruit(style='{fruit_style(post)}')
+                            .peel(style='{peel_style(post)}')
+                            +if('post.stickied || post.pinned')
+                                .sticky-tag STICKY
+                            +if('post.over_18')
+                                .nsfw-tag NSFW
+                            +if('post.spoiler')
+                                .spoiler-tag SPOIL
                         h1.headline {post.title}
-                        .left
-                            +if('post.subreddit.toLowerCase() === $feed.name.toLowerCase()')
-                                +if('post.link_flair_text')
-                                    a.tag {post.link_flair_text}
-                                +else
-                                    a.tag(href='/r/{post.subreddit}') {post.subreddit}
+                        +if('post.subreddit.toLowerCase() !== $feed.name.toLowerCase()')
+                            .left
+                                a.tag(href='/r/{post.subreddit}') {post.subreddit}
                 +catch('error')
-                    li.post-brochure
-                        p FAILED TO LOAD POST:
-                        +if('error instanceof TypeError && error.message === "Failed to fetch"')
-                            blockquote Can't connect to Reddit servers
-                            +else
-                                blockquote {error}
+                    li.brochure
+                        .basket(style='position: relative')
+                            .error-tag ERROR
+                        h1.headline(style='color: red') {error instanceof TypeError && error.message === "Failed to fetch" ? "Can't connect to Reddit servers" : error}
             +else
-                li.post-brochure
-                    p THIS {$feed.type === 'user' ? 'USER' : 'SUBREDDIT'} HAS NO POSTS
+                p THIS {$feed.type === 'user' ? 'USER' : 'SUBREDDIT'} HAS NO POSTS
 </template>
 
 <style type="text/stylus">
@@ -33,14 +34,46 @@
         will-change: transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
         &::-webkit-scrollbar
             display: none
-    .post-brochure
-        padding-bottom: 8px
+    .brochure
+        margin: 8px
         user-select: none
         display: flex
+    .basket
+        flex: 0 0 32px
+    .fruit
+        width: 32px
+        height: 32px
+        border-radius: 50%
+    .peel
+        position: absolute
+        top: 0
+        left: 0
+        width: 32px
+        height: 32px
+        border: 1px solid
+        border-radius: 50%
+        pointer-events: none
+    .sticky-tag
+    .nsfw-tag
+    .spoiler-tag
+    .error-tag
+        position: absolute
+        top: 0
+        left: 0
+        padding: 0 1px
+        background: black
+        color: white
+        font-size: 10px
+        font-weight: 700
+    .sticky-tag
+        background: forestgreen
+    .error-tag
+        background: red
     .left
         flex: 0 0 auto
         text-align: right
     .headline
+        position: relative
         flex: 1 1 auto
         margin: 0
         padding: 0 8px
@@ -50,10 +83,6 @@
     .right
         flex: 0 0 16px
         text-align: right
-    .stamp
-        font-size: 12px
-        background: black
-        color: white
     .read
         opacity: 0.2
     a
@@ -66,32 +95,18 @@
 
 <script type="text/coffeescript">
     import { feed, promises, debug } from './state.coffee';
-    import { contrast_color, shade_color, ago_description, ago_description_long, recency_category } from './tools.coffee';
+    import { contrast_color, shade_color, ago_description, ago_description_long, recency_scale } from './tools.coffee';
     export read_posts = new Set()
-    post_style = (post) ->
+    post_color = (post) ->
         if post.subreddit.toLowerCase() is $feed.name.toLowerCase()
-            background = post.link_flair_background_color or 'inherit'
+            post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or 'black'
         else
-            background = post.sr_detail.primary_color or post.sr_detail.key_color or 'inherit'
-        color = contrast_color(background)
-        "background: #{background}; color: #{color};"
-    stamp_number = 0
-    stamp = (post) ->
-        if post.stickied or post.pinned
-            'STICKY'
-        else
-            stamp_number += 1
-            switch
-                when post.over_18
-                    'NSFW'
-                when post.spoiler
-                    'SPOILER'
-                when post.locked
-                    'LOCKED'
-                when post.archived
-                    'ARCHIVED'
-                else
-                    stamp_number
+            post.sr_detail.primary_color or post.sr_detail.key_color or 'black'
+    fruit_style = (post) ->
+        "background: #{post_color(post)}; transform: scale(#{recency_scale(post.created_utc)});"
+    peel_style = (post) ->
+        comments_per_hour_per_subscriber = post.num_comments / ((Date.now() / 1000 - post.created_utc) / 3600) / post.subreddit_subscribers
+        "color: #{post_color(post)}; transform: scale(#{Math.log(1 + 14400 * comments_per_hour_per_subscriber)});"
     select_post = (post) ->
         $feed.previous_selected = $feed.selected
         $feed.selected = post

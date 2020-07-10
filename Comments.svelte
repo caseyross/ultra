@@ -54,7 +54,7 @@
             text-decoration: underline
     figure
         height: 100%
-        width: 64px
+        width: 40px
         position: absolute
         top: 0
         right: 0
@@ -94,6 +94,6 @@
             for comment in dom.comments.firstChild.children
                 depth = comment.dataset.depth
                 if (depth <= max_depth)
-                    canvas_context.fillStyle = comment.dataset.color || "rgba(0, 0, 0, #{1 - depth * 0.1})"
+                    canvas_context.fillStyle = comment.dataset.color
                     canvas_context.fillRect(dom.minimap.scrollWidth / max_depth * (depth - 1), Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), dom.minimap.scrollWidth / max_depth, comment.scrollHeight / dom.comments.scrollHeight * dom.minimap.scrollHeight)
 </script>

@@ -2,25 +2,27 @@
     .comment(
         tabindex=0
         on:click='{select_comment(comment)}'
-        style!='margin-left: {32 * (depth - 1)}px; border: {comment.estimated_interest > 0 ? "1px solid red" : "none"}; background: {distinguish_color(comment)}; color: {distinguish_color(comment) ? contrast_color(distinguish_color(comment)) : "inherit"}'
+        style='margin-left: {32 * (depth - 1)}px'
         class:selected='{comment.id === selected_id}'
         data-depth='{depth}'
-        data-color='{distinguish_color(comment)}'
+        data-color='{comment_color(comment)}'
     )
         +if('comment.is_more')
             .meta + {comment.count} more
             +else
-                | {@html comment.body_html}
-                +if('comment.id === selected_id')
-                    .meta
-                        a.author {comment.author}
-                        +if('comment.author_flair_text')
-                            span.author-flair {comment.author_flair_text}
-                        +if('comment.total_awards_received > 0')
-                            span.awards(title='{awards_description(comment.all_awardings)}')
-                                +each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
-                                    +if('bucket[1].length')
-                                        span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
+                .icon(title='{ago_description_long(comment.created_utc)}')
+                    .fruit(style='{fruit_style(comment)}')
+                .text {@html comment.body_html}
+                    +if('comment.id === selected_id')
+                        .meta
+                            a.author {comment.author}
+                            +if('comment.author_flair_text')
+                                span.author-flair {comment.author_flair_text}
+                            +if('comment.total_awards_received > 0')
+                                span.awards(title='{awards_description(comment.all_awardings)}')
+                                    +each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
+                                        +if('bucket[1].length')
+                                            span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
     +each('comment.replies as comment')
         svelte:self(comment='{comment}' depth='{depth + 1}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
 </template>
@@ -35,15 +37,15 @@
     .comment
         flex: 0 1 480px
         padding: 8px 4px 8px 8px
-        &::before
-            content: ''
-            display: block
-            height: 4px
-            width: 4px
-            background: black
-            position: absolute
-            top: 0
-            left: 0
+        display: flex
+        line-height: 1
+    .icon
+        flex: 0 0 32px
+    .fruit
+        height: 24px
+        width: 24px
+        border: 1px solid
+        border-radius: 50%
     .meta
         color: gray
         display: flex
@@ -69,7 +71,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { contrast_color, ago_description_long, recency_category } from './tools.coffee'
+    import { contrast_color, ago_description_long, recency_scale } from './tools.coffee'
     export comment =
         replies: []
     export depth = 1
@@ -77,13 +79,15 @@
     export highlight_id = ''
     export selected_id = ''
     export select_comment = () -> {}
+    fruit_style = (comment) ->
+        "background: #{comment_color(comment)}; transform: scale(#{recency_scale(comment.created_utc)});"
     distinguish_colors =
         op: 'lightskyblue'
         mod: 'darkseagreen'
         admin: 'orangered'
         special: 'crimson',
         highlight: 'lightgoldenrodyellow'
-    distinguish_color = (comment) ->
+    comment_color = (comment) ->
         switch comment.distinguished
             when 'moderator'
                 distinguish_colors.mod
@@ -97,8 +101,7 @@
                 else if comment.id == selected_id
                     distinguish_colors.highlight
                 else
-                    '#' + (215 + comment.depth * 8).toString(16) + (215 + comment.depth * 8).toString(16) + (215 + comment.depth * 8).toString(16)
-                    ''
+                    '#bbb'
     award_buckets = (awards) ->
         buckets =
             argentium: []

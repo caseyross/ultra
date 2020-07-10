@@ -10,7 +10,7 @@
                 #audiovideo
                     MediaPlayer(audio_src='{post.source.audio}' video_src='{post.source.video}' mini_video_src='{post.source.mini_video}')
             +elseif('post.type === "image"')
-                a#image(href='{post.source}')
+                a#image(href='{post.source}' target='_blank')
                     img(use:calculate_scale src='{post.source}')
                     data.numbering
                     data.scale {dom.image ? dom.image.naturalWidth : ''}
@@ -20,7 +20,7 @@
                         +if('post.source.length')
                             #self-text {@html post.source}
                             +else
-                                #error-text NO TEXT
+                                #error-text {'NO TEXT '.repeat(64)}
             +else
                 #error-text CANNOT PARSE POST
 </template>
@@ -67,9 +67,10 @@
         &::-webkit-scrollbar-thumb
             background: black
     #error-text
-        font-size: 14px
+        font-size: 64px
         font-weight: 900
-        color: salmon
+        color: #eee
+        transform: rotate(-45deg)
 </style>
 
 <script type="text/coffeescript">

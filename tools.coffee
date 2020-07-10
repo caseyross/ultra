@@ -124,35 +124,21 @@ export ago_description = (epoch_seconds) ->
 export ago_description_long = (epoch_seconds) ->
     d = duration_description(Date.now() / 1000 - epoch_seconds)
     d.major.value + d.major.unit.abbr + (if d.minor then (' ' + d.minor.value + d.minor.unit.abbr) else '')
-export recency_category = (epoch_seconds) ->
+export recency_scale = (epoch_seconds) ->
     time_since = Date.now() / 1000 - epoch_seconds
     switch
         when time_since < durations.hour.seconds
-            {
-                symbol: '●'
-                value: 1
-            }
-        when time_since < 4 * durations.hour.seconds
-            {
-                symbol: '◕'
-                value: 0.75
-            }
-        when time_since < 12 * durations.hour.seconds
-            {
-                symbol: '◑'
-                value: 0.5
-            }
-        when time_since < 2 * durations.day.seconds
-            {
-                symbol: '◔'
-                value: 0.25
-            }
+            1- 0.1 * (time_since / durations.hour.seconds)
+        when time_since < durations.day.seconds
+            0.9 - 0.4 * ((time_since - durations.hour.seconds) / (durations.day.seconds - durations.hour.seconds))
+        when time_since < durations.week.seconds
+            0.5 - 0.1 * ((time_since - durations.day.seconds) / (durations.week.seconds - durations.day.seconds))
+        when time_since < durations.month.seconds
+            0.4 - 0.1 * ((time_since - durations.week.seconds) / (durations.month.seconds - durations.week.seconds))
+        when time_since < durations.year.seconds
+            0.3 - 0.1 * ((time_since - durations.month.seconds) / (durations.year.seconds - durations.month.seconds))
         else
-            {
-                symbol: '○'
-                value: 0
-            }
-
+            0.2
 hours_minutes_seconds = (duration_seconds) ->
     hours = 0
     minutes = 0
