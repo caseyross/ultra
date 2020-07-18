@@ -13,7 +13,7 @@
                     Sidebar
     svelte:head
         +await('$feed.info_pending')
-            title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
+            title {$feed.type + '/' + $feed.name}
             +then('info')
                 title {info.title}
     +if('$inspector.mode === "object"')

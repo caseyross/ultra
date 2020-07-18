@@ -4,12 +4,12 @@ window.feed = {
     name: url_path[2] || ''
     ...(switch url_path[1]
         when 'u', 'user'
-            type: 'user'
+            type: 'u'
             rank_by:
                 type: url_params.get('sort') || 'new'
                 filter: url_params.get('t') || ''
         else
-            type: 'subreddit'
+            type: 'r'
             rank_by:
                 type: if url_path[2] then url_params.get('sort') || url_path[3] || 'hot' else 'best'
                 filter: switch url_params.get('sort') || url_path[3]

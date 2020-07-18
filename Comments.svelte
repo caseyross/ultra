@@ -32,7 +32,7 @@
             background: transparent
         &::-webkit-scrollbar-thumb
             background: transparent
-            border: 1px solid red
+            border: 1px solid yellow
     #nocomments
         height: 100%
         display: flex

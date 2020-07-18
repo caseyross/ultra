@@ -1,7 +1,7 @@
 <template lang="pug">
     nav
         #feed-select
-            input(type='text' value='{$feed.name}' placeholder='frontpage')
+            input(type='text' value='{$feed.type}/{$feed.name}')
             +await('$feed.info_pending')
                 img(src='{img_reddit_logo}')
                 +then('info')
@@ -17,28 +17,32 @@
             button#hot(class:selected!='{$feed.rank_by.type === "hot"}') Hot
             button#best(class:selected!='{$feed.rank_by.type === "best"}') Best
             button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') Ctvsl
-            select
-                option Top (past 60 min)
-                option Top (past 24 hrs)
-                option Top (past 7 days)
-                option Top (past month)
-                option Top (past year)
-                option Top (all time)
+            #rank-by-top
+                button#top(class:selected!='{$feed.rank_by.type === "top"}') Top
+                select
+                    option (60 min)
+                    option (24 hrs)
+                    option (7 days)
+                    option (month)
+                    option (year)
+                    option (all time)
 </template>
 
 <style type="text/stylus">
+    nav
+        margin-bottom: 16px
     #feed-select
-        height: 88px
+        padding-top: 20px
+        margin-bottom: 8px
         display: flex
         justify-content: space-between
-        align-items: center
     input[type=text]
         width: 100%
         padding: 0 8px
         font-size: 24px
         height: 36px
         background: black
-        border: 2px solid gray
+        border: 1px solid
         &:hover
             color: red
     img
@@ -51,16 +55,15 @@
         margin: 0
         padding: 0
         display: flex
+        justify-content: space-between
         align-items: center
     button
         flex: 0 0 auto
         height: 100%
-        width: 32px
-        border: 1px solid gray
-        border-width: 1px 0 0 1px
-        background: #eee
+        &:hover
+            color: red
+    option
         color: black
-        font-weight: 700
     #hour
     #day
     #month
@@ -69,7 +72,7 @@
     #all
         width: 24px
     .selected
-        background: white
+        color: yellow
 </style>
 
 <script type="text/coffeescript">

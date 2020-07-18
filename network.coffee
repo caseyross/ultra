@@ -46,7 +46,7 @@ export fetch_feed_page = (feed) ->
         (if feed.name is ''
             "#{feed.rank_by.type}?"
         else
-            (if feed.type is 'user'
+            (if feed.type is 'u'
                 "user/#{feed.name}?sort=#{feed.rank_by.type}&"
             else
                 "r/#{feed.name}/#{feed.rank_by.type}?"
@@ -87,7 +87,7 @@ export fetch_feed_info = (feed) ->
         new Promise (resolve, reject) -> resolve(info)
     else
         api_op('GET',
-            "#{if feed.type is 'user' then 'user' else 'r'}/#{feed.name}/about"
+            "#{if feed.type is 'u' then 'user' else 'r'}/#{feed.name}/about"
         ).then (response) ->
             if response.data
                 info = {

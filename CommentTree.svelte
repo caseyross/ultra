@@ -3,54 +3,50 @@
         tabindex=0
         on:click='{select_comment(comment)}'
         style='margin-left: {32 * (depth - 1)}px'
-        class:selected='{comment.id === highlight_id}'
+        class:selected='{comment.id === selected_id}'
+        class:highlighted='{comment.id === highlight_id}'
         data-depth='{depth}'
         data-color='{comment_color(comment)}'
     )
         +if('comment.is_more')
             .meta + {comment.count} more
             +else
+                .meta
+                    a.author
+                        mark {comment.author}
+                    +if('comment.author_flair_text')
+                        span.author-flair {comment.author_flair_text}
+                    +if('comment.total_awards_received > 0')
+                        span.awards(title='{awards_description(comment.all_awardings)}')
+                            +each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
+                                +if('bucket[1].length')
+                                    span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
                 .text {@html comment.body_html}
-                    +if('comment.id === selected_id')
-                        .meta
-                            a.author {comment.author}
-                            +if('comment.author_flair_text')
-                                span.author-flair {comment.author_flair_text}
-                            +if('comment.total_awards_received > 0')
-                                span.awards(title='{awards_description(comment.all_awardings)}')
-                                    +each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
-                                        +if('bucket[1].length')
-                                            span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
     +each('comment.replies as comment')
         svelte:self(comment='{comment}' depth='{depth + 1}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
 </template>
 
 
 <style type="text/stylus">
-    a
-        color: inherit
-        &:hover
-        &:focus
-            text-decoration: underline
     .comment
         flex: 0 1 480px
         padding: 8px 4px 8px 8px
-        display: flex
-        line-height: 1
-    .icon
-        flex: 0 0 32px
-    .fruit
-        height: 24px
-        width: 24px
-        border: 1px solid
-        border-radius: 50%
+        line-height: 1.2
     .meta
+        margin-bottom: 4px
+        font-weight: 600
         color: gray
         display: flex
+    a
+        color: inherit
+        cursor: pointer
+    mark
+        &:hover
+            background: red
     .awards
-        font-weight: 700
+        margin: 0 8px
     .author-flair
-        padding: 0 8px
+        margin: 0 8px
     .argentium
         background: orangered
         color: black
