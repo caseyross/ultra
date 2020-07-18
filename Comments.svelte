@@ -1,8 +1,8 @@
 <template lang="pug">
     section
         #comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
-            +if('promised_post')
-                +await('promised_post')
+            +if('pending_post')
+                +await('pending_post')
                     #nocomments LOADING...
                     +then('post')
                         +if('post.num_comments > 0')
@@ -20,23 +20,19 @@
 
 <style type="text/stylus">
     section
-        contain: strict
-        width: 100%
         height: 100%
-        display: flex
-        flex-flow: column nowrap
+        contain: strict
     #comments
         height: 100%
         width: 100%
-        padding-right: 64px
         overflow: auto
         will-change: transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
-        background: white
         &::-webkit-scrollbar
-            width: 4px
+            width: 8%
             background: transparent
         &::-webkit-scrollbar-thumb
-            background: black
+            background: transparent
+            border: 1px solid red
     #nocomments
         height: 100%
         display: flex
@@ -54,7 +50,7 @@
             text-decoration: underline
     figure
         height: 100%
-        width: 40px
+        width: 6%
         position: absolute
         top: 0
         right: 0
@@ -63,14 +59,14 @@
 
 <script type="text/coffeescript">
     import { onMount } from 'svelte'
-    import { feed, debug } from './state.coffee';
+    import { feed, inspector } from './state.coffee';
     import CommentTree from './CommentTree.svelte'
-    export promised_post = undefined
+    export pending_post = undefined
     selected =
         id: ''
     select_comment = (comment) ->
         selected = comment
-        $debug.inspector.object = comment
+        $inspector.object = comment
     dom =
         comments: {}
         minimap: {}
@@ -90,7 +86,7 @@
         canvas_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
         # If comments don't all fit on screen, draw symbols
         if dom.comments.scrollHeight > dom.comments.clientHeight
-            max_depth = 8
+            max_depth = 10
             for comment in dom.comments.firstChild.children
                 depth = comment.dataset.depth
                 if (depth <= max_depth)

@@ -1,63 +1,53 @@
 <template lang="pug">
     #app
+        #left
+            +if('$feed.selected_post.id')
+                Post(post='{$feed.selected_post}')
         #center
             FeedControl
             PostList
-        +if('$feed.selected.id')
-            #left
-                .top
-                .bottom
-                    Post(post='{$feed.selected}')
-            #right
-                .top
-                    #rank-by
-                        button#best(class:selected!='{$feed.rank_by.type === "best"}') reddit default
-                        button#top(class:selected!='{$feed.rank_by.type === "top"}') score
-                        button#new(class:selected!='{$feed.rank_by.type === "new"}') recent
-                        button#qa(class:selected!='{$feed.rank_by.type === "op"}') op responses
-                        button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') controversial
-                        button#magic(class:selected!='{$feed.rank_by.type === "magic"}') magic
-                .bottom
-                    Comments(promised_post='{$promises.posts[$feed.selected.id]}')
-            +else
-                Sidebar
+        #right
+            +if('$feed.selected_post.id')
+                Comments(pending_post='{$feed.posts_pending[$feed.selected_post.id]}')
+                +else
+                    Sidebar
     svelte:head
-        +await('$promises.feed_meta')
+        +await('$feed.info_pending')
             title {$feed.name === '' ? 'frontpage' : ($feed.type === 'user' ? 'u/' : 'r/') + $feed.name}
-            +then('feed_meta')
-                title {feed_meta.title}
-    +if('$debug.inspector.mode === "object"')
+            +then('info')
+                title {info.title}
+    +if('$inspector.mode === "object"')
         #inspector
-            Inspector(value='{$debug.inspector.object}')
-        +elseif('$debug.inspector.mode === "feed"')
+            Inspector(value='{$inspector.object}')
+        +elseif('$inspector.mode === "feed"')
             #inspector
-                Inspector(value='{$debug.inspector.feed}')
+                Inspector(value='{$inspector.feed}')
 </template>
 
 <style type="text/stylus">
     #app
         height: 100%
-        background: white
+        background: #222
+        color: white
         font: 400 12px/1.5 "Iosevka Aile"
         word-break: break-word
         display: flex
     .top
-        flex: 0 0 73px
+        flex: 0 0 80px
         border-bottom: 1px solid gray
     .bottom
-        flex: 0 0 calc(100% - 73px)
-        display: flex
+        flex: 0 0 calc(100% - 80px)
     #center
-        flex: 0 0 28%
-        border-right: 1px solid gray
+        flex: 0 0 20%
+        padding: 0 16px
         display: flex
         flex-flow: column nowrap
     #left
     #right
-        flex: 0 0 36%
+        flex: 0 0 40%
+        padding: 24px
         display: flex
         flex-flow: column nowrap
-        overflow: auto
     #rank-by
         display: flex
     button
@@ -83,7 +73,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, promises, debug } from './state.coffee'
+    import { feed, inspector } from './state.coffee'
     import keybinds from './keybinds.coffee'
     import FeedControl from './FeedControl.svelte'
     import Sidebar from './Sidebar.svelte'
@@ -93,14 +83,14 @@
     import Inspector from './Inspector.svelte'
     document.addEventListener('keydown', (e) ->
         if e.key == keybinds.DEBUG_INSPECT_OBJECT
-            if $debug.inspector.mode == 'object'
-                $debug.inspector.mode = 'none'
+            if $inspector.mode == 'object'
+                $inspector.mode = 'none'
             else
-                $debug.inspector.mode = 'object'
+                $inspector.mode = 'object'
         if e.key == keybinds.DEBUG_INSPECT_FEED
-            if $debug.inspector.mode == 'feed'
-                $debug.inspector.mode = 'none'
+            if $inspector.mode == 'feed'
+                $inspector.mode = 'none'
             else
-                $debug.inspector.mode = 'feed'
+                $inspector.mode = 'feed'
     )
 </script>

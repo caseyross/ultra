@@ -1,9 +1,9 @@
 <template lang="pug">
     #sidebar
-        +await('$promises.feed_meta')
-            +then('feed_meta')
-                img(src='{feed_meta.banner_background_image}')
-                article {@html feed_meta.description_html}
+        +await('$feed.info_pending')
+            +then('info')
+                img(src='{info.banner_background_image}')
+                article {@html info.description_html}
             +catch('error')
                 article {error}
 </template>
@@ -13,14 +13,6 @@
         height: 100%
         display: flex
         flex-flow: column nowrap
-        align-items: flex-start
-        overflow: auto
-        background: #eee
-        &::-webkit-scrollbar
-            width: 4px
-            background: white
-        &::-webkit-scrollbar-thumb
-            background: black
     img
         flex: 0 0 auto
     article
@@ -29,7 +21,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { promises, debug } from './state.coffee'
-    $promises.feed_meta.then (feed_meta) ->
-        $debug.inspector.feed = feed_meta
+    import { feed, inspector } from './state.coffee'
+    $feed.info_pending.then (info) ->
+        $inspector.feed = info
 </script>

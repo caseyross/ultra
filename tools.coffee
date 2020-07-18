@@ -124,6 +124,20 @@ export ago_description = (epoch_seconds) ->
 export ago_description_long = (epoch_seconds) ->
     d = duration_description(Date.now() / 1000 - epoch_seconds)
     d.major.value + d.major.unit.abbr + (if d.minor then (' ' + d.minor.value + d.minor.unit.abbr) else '')
+export heat_color = (heat) ->
+    switch
+        when heat > 2
+            'salmon'
+        when heat > 2
+            'lightsalmon'
+        when heat > 2
+            'wheat'
+        when heat > 2
+            'white'
+        when heat > 2
+            '#ccc'
+        else
+            'gray'
 export recency_scale = (epoch_seconds) ->
     time_since = Date.now() / 1000 - epoch_seconds
     switch

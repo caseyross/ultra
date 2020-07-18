@@ -3,15 +3,13 @@
         tabindex=0
         on:click='{select_comment(comment)}'
         style='margin-left: {32 * (depth - 1)}px'
-        class:selected='{comment.id === selected_id}'
+        class:selected='{comment.id === highlight_id}'
         data-depth='{depth}'
         data-color='{comment_color(comment)}'
     )
         +if('comment.is_more')
             .meta + {comment.count} more
             +else
-                .icon(title='{ago_description_long(comment.created_utc)}')
-                    .fruit(style='{fruit_style(comment)}')
                 .text {@html comment.body_html}
                     +if('comment.id === selected_id')
                         .meta
@@ -68,6 +66,8 @@
     .selected
         background: #333
         color: white
+    .highlighted
+        background: lightgoldenrodyellow
 </style>
 
 <script type="text/coffeescript">
@@ -79,14 +79,11 @@
     export highlight_id = ''
     export selected_id = ''
     export select_comment = () -> {}
-    fruit_style = (comment) ->
-        "background: #{comment_color(comment)}; transform: scale(#{recency_scale(comment.created_utc)});"
     distinguish_colors =
         op: 'lightskyblue'
         mod: 'darkseagreen'
         admin: 'orangered'
         special: 'crimson',
-        highlight: 'lightgoldenrodyellow'
     comment_color = (comment) ->
         switch comment.distinguished
             when 'moderator'
@@ -98,8 +95,6 @@
             else
                 if comment.author_fullname == op_id
                     distinguish_colors.op
-                else if comment.id == selected_id
-                    distinguish_colors.highlight
                 else
                     '#bbb'
     award_buckets = (awards) ->

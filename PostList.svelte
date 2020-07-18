@@ -1,58 +1,62 @@
 <template lang="pug">
     ol
-        +each('$promises.feed as promise')
-            +await('promise')
-                +then('post')
-                    li.brochure(tabindex=0 on:mousedown='{select_post(post)}' class:read!='{read_posts.has(post.id) && $feed.selected.id !== post.id}')
-                        .basket(title='{ago_description_long(post.created_utc)} / {post.link_flair_text}')
-                            .fruit(style='{fruit_style(post)}')
-                            .peel(style='{peel_style(post)}')
-                            +if('post.stickied || post.pinned')
-                                .sticky-tag STICKY
+        +each('$feed.page_pending as post_pending')
+            li.brochure(tabindex=0)
+                +await('post_pending')
+                    +then('post')
+                        .gutter
+                            .upvote ▲
+                            .downvote ▼
+                            .flair-block(style='background: {post_color(post)}')
                             +if('post.over_18')
                                 .nsfw-tag NSFW
-                            +if('post.spoiler')
-                                .spoiler-tag SPOIL
-                        h1.headline {post.title}
-                        +if('post.subreddit.toLowerCase() !== $feed.name.toLowerCase()')
-                            .left
-                                a.tag(href='/r/{post.subreddit}') {post.subreddit}
-                +catch('error')
-                    li.brochure
-                        .basket(style='position: relative')
+                        h1.headline(on:mousedown='{select_post(post)}' title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}')
+                            mark(
+                                class:stickied!='{post.stickied || post.pinned}'
+                                class:spoiler!='{post.spoiler}'
+                                class:read!='{read_posts.has(post.id) && $feed.selected_post.id !== post.id}'
+                            ) {post.title}
+                    +catch('error')
+                        .gutter(style='position: relative')
                             .error-tag ERROR
-                        h1.headline(style='color: red') {error instanceof TypeError && error.message === "Failed to fetch" ? "Can't connect to Reddit servers" : error}
-            +else
-                p THIS {$feed.type === 'user' ? 'USER' : 'SUBREDDIT'} HAS NO POSTS
+                        h1.headline
+                            mark(style='background: red') {error instanceof TypeError && error.message === "Failed to fetch" ? "Can't connect to Reddit servers" : error}
 </template>
 
 <style type="text/stylus">
     ol
         margin: 0
         padding: 0
+        height: 100%
         overflow: auto
+        list-style: none
+        display: flex
+        flex-flow: column nowrap
+        user-select: none
+        cursor: pointer
         will-change: transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
         &::-webkit-scrollbar
             display: none
     .brochure
-        margin: 8px
-        user-select: none
         display: flex
-    .basket
-        flex: 0 0 32px
-    .fruit
-        width: 32px
-        height: 32px
-        border-radius: 50%
-    .peel
-        position: absolute
-        top: 0
-        left: 0
-        width: 32px
-        height: 32px
-        border: 1px solid
-        border-radius: 50%
-        pointer-events: none
+    .gutter
+        flex: 0 0 auto
+        padding: 6px 0
+        display: flex
+        flex-flow: column nowrap
+        align-items: flex-end
+        display: none
+    .flair-block
+        width: 9px
+        height: 9px
+    .upvote
+    .downvote
+        width: 24px
+        height: 16px
+        padding-right: 6px
+        text-align: center
+        background: yellow
+        color: black
     .sticky-tag
     .nsfw-tag
     .spoiler-tag
@@ -65,8 +69,12 @@
         color: white
         font-size: 10px
         font-weight: 700
-    .sticky-tag
-        background: forestgreen
+    .stickied
+        background: darkseagreen
+    .spoiler
+        color: transparent
+        &:hover
+            color: initial
     .error-tag
         background: red
     .left
@@ -76,10 +84,14 @@
         position: relative
         flex: 1 1 auto
         margin: 0
-        padding: 0 8px
-        font-size: 16px
-        font-weight: 700
-        line-height: 1
+        padding: 7px 0
+        font-size: 14px
+        font-weight: 600
+        line-height: 20px
+    mark
+        padding: 1px 4px
+        &:hover
+            background: red
     .right
         flex: 0 0 16px
         text-align: right
@@ -94,23 +106,18 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, promises, debug } from './state.coffee';
-    import { contrast_color, shade_color, ago_description, ago_description_long, recency_scale } from './tools.coffee';
+    import { feed, inspector } from './state.coffee';
+    import { contrast_color, shade_color, ago_description, ago_description_long, recency_scale, heat_color } from './tools.coffee';
     export read_posts = new Set()
     post_color = (post) ->
         if post.subreddit.toLowerCase() is $feed.name.toLowerCase()
-            post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or 'black'
+            return post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
+            post.link_flair_background_color or 'transparent'
         else
-            post.sr_detail.primary_color or post.sr_detail.key_color or 'black'
-    fruit_style = (post) ->
-        "background: #{post_color(post)}; transform: scale(#{recency_scale(post.created_utc)});"
-    peel_style = (post) ->
-        comments_per_hour_per_subscriber = post.num_comments / ((Date.now() / 1000 - post.created_utc) / 3600) / post.subreddit_subscribers
-        "color: #{post_color(post)}; transform: scale(#{Math.log(1 + 14400 * comments_per_hour_per_subscriber)});"
+            post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
     select_post = (post) ->
-        $feed.previous_selected = $feed.selected
-        $feed.selected = post
+        $feed.selected_post = post
         read_posts.add post.id
         read_posts = read_posts
-        $debug.inspector.object = $feed.selected
+        $inspector.object = $feed.selected_post
 </script>

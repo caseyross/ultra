@@ -27,7 +27,7 @@ pre {
 .downvote:hover,
 .downvote:focus,
 .downvote.voted {
-    color: cornflowerblue;
+    color: red;
 }
 .md-spoiler-text {
     background: gray;
@@ -49,7 +49,7 @@ pre {
 .upvote:hover,
 .upvote:focus,
 .upvote.voted {
-    color: salmon;
+    color: chartreuse;
 }
 [tabindex='0'] {
     position: relative;
@@ -86,5 +86,5 @@ pre {
 }
 [tabindex='0']:hover::after,
 [tabindex='0']:focus::after {
-    opacity: 1
+    opacity: 0
 }
