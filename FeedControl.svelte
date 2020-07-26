@@ -1,7 +1,7 @@
 <template lang="pug">
     nav
         #feed-select
-            input(type='text' value='{$feed.type}/{$feed.name}')
+            input(type='text' value='{$feed.type}/{$feed.name}' on:change!='{(e) => feed.go("/" + e.target.value)}')
             +await('$feed.info_pending')
                 img(src='{img_reddit_logo}')
                 +then('info')
@@ -12,20 +12,18 @@
                         +else
                             img(src='{img_reddit_logo}')
         #rank-by
+            button#hot(class:selected!='{$feed.rank_by.type === "hot"}') Hot
             button#new(class:selected!='{$feed.rank_by.type === "new"}') New
             button#rising(class:selected!='{$feed.rank_by.type === "rising"}') Rising
-            button#hot(class:selected!='{$feed.rank_by.type === "hot"}') Hot
-            button#best(class:selected!='{$feed.rank_by.type === "best"}') Best
-            button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') Ctvsl
+            button#controversial(class:selected!='{$feed.rank_by.type === "controversial"}') Controversial
             #rank-by-top
-                button#top(class:selected!='{$feed.rank_by.type === "top"}') Top
-                select
-                    option (60 min)
-                    option (24 hrs)
-                    option (7 days)
-                    option (month)
-                    option (year)
-                    option (all time)
+                button#top(class:selected!='{$feed.rank_by.type === "top"}') Top:
+                button#hour(class:selected!='{$feed.rank_by.type === "top" && $feed.rank_by.filter === "hour"}') H
+                button#day(class:selected!='{$feed.rank_by.type === "top" && $feed.rank_by.filter === "day"}') D
+                button#week(class:selected!='{$feed.rank_by.type === "top" && $feed.rank_by.filter === "week"}') W
+                button#month(class:selected!='{$feed.rank_by.type === "top" && $feed.rank_by.filter === "month"}') M
+                button#year(class:selected!='{$feed.rank_by.type === "top" && $feed.rank_by.filter === "year"}') Y
+                button#all(class:selected!='{$feed.rank_by.type === "top" && $feed.rank_by.filter === "all"}') A
 </template>
 
 <style type="text/stylus">
@@ -38,41 +36,32 @@
         justify-content: space-between
     input[type=text]
         width: 100%
-        padding: 0 8px
         font-size: 24px
         height: 36px
-        background: black
-        border: 1px solid
+        &:focus
         &:hover
-            color: red
+            color: salmon
     img
         height: 48px
         flex: 0 0 auto
         margin-left: 8px
     #rank-by
-        height: 24px
-        width: 100%
         margin: 0
         padding: 0
         display: flex
         justify-content: space-between
         align-items: center
-    button
-        flex: 0 0 auto
-        height: 100%
-        &:hover
-            color: red
-    option
-        color: black
+    #top
+        width: 32px
     #hour
     #day
     #month
     #week
     #year
     #all
-        width: 24px
+        width: 16px
     .selected
-        color: yellow
+        text-decoration: underline
 </style>
 
 <script type="text/coffeescript">

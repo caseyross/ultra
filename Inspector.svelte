@@ -25,6 +25,7 @@
         border-bottom-right-radius: 12px
     .object-value
         flex: 0 0 288px
+        cursor: default
     ol
         margin: 0
         padding: 0

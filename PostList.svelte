@@ -4,18 +4,14 @@
             li.brochure(tabindex=0)
                 +await('post_pending')
                     +then('post')
-                        .gutter
-                            .upvote ▲
-                            .downvote ▼
-                            .flair-block(style='background: {post_color(post)}')
-                            +if('post.over_18')
-                                .nsfw-tag NSFW
-                        h1.headline(on:mousedown='{select_post(post)}' title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}')
-                            mark(
-                                class:stickied!='{post.stickied || post.pinned}'
-                                class:spoiler!='{post.spoiler}'
-                                class:read!='{read_posts.has(post.id) && $feed.selected_post.id !== post.id}'
-                            ) {post.title}
+                        .flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.link_flair_text : post.subreddit}
+                        h1.headline(
+                            class:stickied!='{post.stickied || post.pinned}'
+                            class:md-spoiler-text!='{post.spoiler}'
+                            class:read!='{read_posts.has(post.id) && $selected.post.id !== post.id}'
+                            on:click='{select_post(post)}'
+                            title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
+                        ) {post.title}
                     +catch('error')
                         .gutter(style='position: relative')
                             .error-tag ERROR
@@ -38,25 +34,10 @@
         &::-webkit-scrollbar
             display: none
     .brochure
+        padding: 8px 0
+    .meta
+        color: gray
         display: flex
-    .gutter
-        flex: 0 0 auto
-        padding: 6px 0
-        display: flex
-        flex-flow: column nowrap
-        align-items: flex-end
-        display: none
-    .flair-block
-        width: 9px
-        height: 9px
-    .upvote
-    .downvote
-        width: 24px
-        height: 16px
-        padding-right: 6px
-        text-align: center
-        background: yellow
-        color: black
     .sticky-tag
     .nsfw-tag
     .spoiler-tag
@@ -71,27 +52,12 @@
         font-weight: 700
     .stickied
         background: darkseagreen
-    .spoiler
-        color: transparent
-        &:hover
-            color: initial
     .error-tag
         background: red
-    .left
-        flex: 0 0 auto
-        text-align: right
     .headline
-        position: relative
-        flex: 1 1 auto
-        margin: 0
-        padding: 7px 0
-        font-size: 14px
-        font-weight: 600
-        line-height: 20px
-    mark
-        padding: 1px 4px
-        &:hover
-            background: red
+        display: inline
+        font-size: 18px
+        background: var(--tc-m)
     .right
         flex: 0 0 16px
         text-align: right
@@ -100,24 +66,16 @@
     a
         color: inherit
         text-decoration: none
-        &:hover
-        &:focus
-            text-decoration: underline
 </style>
 
 <script type="text/coffeescript">
-    import { feed, inspector } from './state.coffee';
+    import { feed, selected } from './state.coffee';
     import { contrast_color, shade_color, ago_description, ago_description_long, recency_scale, heat_color } from './tools.coffee';
     export read_posts = new Set()
     post_color = (post) ->
-        if post.subreddit.toLowerCase() is $feed.name.toLowerCase()
-            return post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
-            post.link_flair_background_color or 'transparent'
-        else
-            post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
+        post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
     select_post = (post) ->
-        $feed.selected_post = post
+        $selected.post = post
         read_posts.add post.id
         read_posts = read_posts
-        $inspector.object = $feed.selected_post
 </script>

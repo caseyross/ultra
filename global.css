@@ -2,7 +2,7 @@
     outline: none;
 }
 a {
-    color: cadetblue;
+    color: var(--tc-m);
 }
 blockquote {
     padding-left: 0.6em;
@@ -14,6 +14,11 @@ blockquote + p {
 }
 main {
     height: 100%;
+    --tc-g: #222;
+    --tc-f: #775948;
+    --tc-m: #bd6340;
+    --tc-c: #ccc;
+    --tc-s: white;
 }
 p + blockquote {
     margin-top: 8px;
@@ -24,11 +29,6 @@ p + p {
 pre {
     white-space: pre-wrap;
 }
-.downvote:hover,
-.downvote:focus,
-.downvote.voted {
-    color: red;
-}
 .md-spoiler-text {
     background: gray;
     color: gray;
@@ -36,55 +36,4 @@ pre {
 .md-spoiler-text:hover {
     background: inherit;
     color: inherit;
-}
-.recency-1 {
-    color: #ff6205;
-}
-.recency-2 {
-    color: #bd6340;
-}
-.recency-3 {
-    color: #775948;
-}
-.upvote:hover,
-.upvote:focus,
-.upvote.voted {
-    color: chartreuse;
-}
-[tabindex='0'] {
-    position: relative;
-}
-[tabindex='0']::after {
-    opacity: 0;
-    content: '';
-    pointer-events: none;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-        linear-gradient(to right, darkkhaki 24px, transparent 24px),
-        linear-gradient(to right, darkkhaki 24px, transparent 24px),
-        linear-gradient(to bottom, darkkhaki 24px, transparent 24px),
-        linear-gradient(to bottom, darkkhaki 24px, transparent 24px);
-    background-size:
-        100% 1px,
-        100% 1px,
-        1px 100%,
-        1px 100%;
-    background-position:
-        -12px 0%,
-        -12px 100%,
-        0% -12px,
-        100% -12px;
-    background-repeat:
-        repeat-x,
-        repeat-x,
-        repeat-y,
-        repeat-y;
-}
-[tabindex='0']:hover::after,
-[tabindex='0']:focus::after {
-    opacity: 0
 }

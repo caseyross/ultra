@@ -41,7 +41,54 @@ api_op = (http_method, resource_path) ->
         response.json()
     )
 
-export fetch_feed_page = (feed) ->
+export sync_url = (new_url = '') ->
+    # Enter new URL if provided
+    if new_url
+        history.pushState({}, new_url, new_url)
+    # Read in feed configuration from URL path
+    url_path = window.location.pathname.split('/')
+    url_params = new URLSearchParams window.location.search[1...]
+    feed = {
+        name: url_path[2] || ''
+        ...(switch url_path[1]
+            when 'u', 'user'
+                type: 'u'
+                rank_by:
+                    type: url_params.get('sort') || 'new'
+                    filter: url_params.get('t') || ''
+            else
+                type: 'r'
+                rank_by:
+                    type: if url_path[2] then url_params.get('sort') || url_path[3] || 'hot' else 'best'
+                    filter: switch url_params.get('sort') || url_path[3]
+                        when 'top'
+                            url_params.get('t') || 'day'
+                        else
+                            url_params.get('geo_filter') || 'GLOBAL'
+        )
+        seen_count: url_params.get('count') || 0
+        last_seen: url_params.get('after') || ''
+        page_size: url_params.get('limit') || 10
+        info_pending: {}
+        page_pending: []
+        posts_pending: {}
+        sources_pending: {}
+    }
+    # Fetch feed posts, comments, and metadata
+    page_pending_stage_1 = fetch_feed_page(feed, 1)
+    page_pending_stage_2 = fetch_feed_page(feed, Math.trunc(Math.sqrt(feed.page_size)))
+    page_pending_stage_3 = fetch_feed_page(feed, feed.page_size)
+    feed.page_pending = [0...feed.page_size].map (i) ->
+        Promise.race([page_pending_stage_1[i] || new Promise((resolve, reject) -> {}), page_pending_stage_2[i] || new Promise((resolve, reject) -> {}), page_pending_stage_3[i]])
+    for post_pending in feed.page_pending
+        post_pending.then (post) ->
+            feed.posts_pending[post.id] = fetch_post post.id
+            if post.type == 'reddit'
+                feed.sources_pending[post.id] = fetch_post post.source.id, post.source.comment_id, post.source.context_level
+    feed.info_pending = fetch_feed_info(feed)
+    feed
+
+fetch_feed_page = (feed, post_count = 25) ->
     load = api_op('GET',
         (if feed.name is ''
             "#{feed.rank_by.type}?"
@@ -55,13 +102,13 @@ export fetch_feed_page = (feed) ->
         (if feed.rank_by.type is 'top' then "t=#{feed.rank_by.filter}&" else '') +
         (if feed.last_seen then "after=#{feed.last_seen}&" else '') +
         (if feed.seen_count then "count=#{feed.seen_count}&" else '') +
-        "limit=#{feed.page_size}&" +
+        "limit=#{post_count}&" +
         "sr_detail=true&"
     )
-    [0...feed.page_size].map (i) ->
+    [0...post_count].map (i) ->
         load.then ({ data }) -> process_post data.children[i].data
 
-export fetch_post = (post_id, comment_id, context_level) ->
+fetch_post = (post_id, comment_id, context_level) ->
     api_op('GET',
         "comments/#{post_id}" +
         (if comment_id then "?comment=#{comment_id}" else '') +
@@ -80,7 +127,7 @@ export fetch_post = (post_id, comment_id, context_level) ->
             set_interest_properties(post.total_score_per_hour, post.total_character_count, comment)
         post
 
-export fetch_feed_info = (feed) ->
+fetch_feed_info = (feed) ->
     info =
         description_html: ''
     if feed.name is ''
@@ -121,7 +168,7 @@ process_post = (post) ->
             else if i > -1
                 filetype = post.url[(i + 1)...]
             switch filetype
-                when 'jpg', 'png', 'gif'
+                when 'gif', 'jpg',  'jpeg', 'png', 'webp'
                     post.type = 'image'
                     post.source = post.url
                 when 'gifv'

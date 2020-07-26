@@ -1,35 +1,47 @@
 <template lang="pug">
     #post
-        +if('post.type === "reddit"')
-            Comments(pending_post='{$feed.sources_pending[post.id]}')
-            +elseif('post.type === "link"')
-                iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
-            +elseif('post.type === "embed"')
-                #embed {@html post.source}
-            +elseif('post.type === "audiovideo"')
-                #audiovideo
-                    MediaPlayer(audio_src='{post.source.audio}' video_src='{post.source.video}' mini_video_src='{post.source.mini_video}')
-            +elseif('post.type === "image"')
-                a#image(href='{post.source}' target='_blank')
-                    img(use:calculate_scale src='{post.source}')
-                    data.numbering
-                    data.scale {dom.image ? dom.image.naturalWidth : ''}
-                    data.src-url {post.source}
-            +elseif('post.type === "text"')
-                article
-                    +if('post.source.length')
-                        #self-text {@html post.source}
-                        +else
-                            #error-text {'NO TEXT '.repeat(64)}
-            +else
-                #error-text CANNOT PARSE POST
+        +if('post.id')
+            #meta
+                a#author {post.author}
+            #content
+                +if('post.type === "reddit"')
+                    Comments(pending_post='{$feed.sources_pending[post.id]}')
+                    +elseif('post.type === "link"')
+                        iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
+                    +elseif('post.type === "embed"')
+                        #embed {@html post.source}
+                    +elseif('post.type === "audiovideo"')
+                        #audiovideo
+                            MediaPlayer(audio_src='{post.source.audio}' video_src='{post.source.video}' mini_video_src='{post.source.mini_video}')
+                    +elseif('post.type === "image"')
+                        img( src='{post.source}')
+                    +elseif('post.type === "text"')
+                        +if('post.source.length')
+                            #self-text {@html post.source}
+                            +else
+                                #error-text {'NO TEXT '.repeat(64)}
+                    +else
+                        #error-text CANNOT PARSE POST
 </template>
 
 <style type="text/stylus">
     #post
-        width: 100%
         height: 100%
-        border: 4px solid yellow
+        padding: 24px
+    #meta
+        height: 24px
+        display: flex
+        justify-content: flex-end
+        align-items: flex-end
+    #content
+        height: calc(100% - 24px)
+        overflow: auto
+        display: flex
+        flex-flow: column nowrap
+        align-items: flex-end
+    #author
+        background: var(--tc-m)
+        color: var(--tc-s)
     #image
         position: relative
         &:hover > .src-url
@@ -49,19 +61,15 @@
         left: 0
         text-decoration: none
         opacity: 0
-    #embed
-        width: 100%
-        height: 100%
-    #audiovideo
-        width: 100%
-        height: 100%
-    article
-        height: 100%
+    iframe
+    img
+        border: 4px solid var(--tc-m)
     #self-text
         height: 100%
-        padding: 24px
+        padding-right: 24px
         overflow: auto
-        background: #333
+        font-size: 13px
+        line-height: 1.5
         &::-webkit-scrollbar
             width: 4px
             background: transparent
@@ -81,6 +89,16 @@
     export post = {}
     dom =
         image: {}
-    calculate_scale = (image) ->
-        console.log(image)
+    scale_percent = (image) ->
+        if not image.naturalWidth and image.naturalHeight then return ''
+        width_fraction = image.naturalWidth / window.innerWidth * 0.4
+        height_fraction = image.naturalHeight / window.innerHeight - 80
+        if width_fraction > 1 and height_fraction > 1
+            scale_percent = Math.trunc(Math.min(1 / width_fraction, 1 / height_fraction) * 100) + '%'
+        else if width_fraction > 1
+            scale_percent = Math.trunc(1 / width_fraction * 100) + '%'
+        else if height_fraction > 1
+            scale_percent = Math.trunc(1 / height_fraction * 100) + '%'
+        else
+            scale_percent = ''
 </script>

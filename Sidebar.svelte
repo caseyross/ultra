@@ -21,7 +21,5 @@
 </style>
 
 <script type="text/coffeescript">
-    import { feed, inspector } from './state.coffee'
-    $feed.info_pending.then (info) ->
-        $inspector.feed = info
+    import { feed } from './state.coffee'
 </script>

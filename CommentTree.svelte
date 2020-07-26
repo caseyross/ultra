@@ -12,8 +12,7 @@
             .meta + {comment.count} more
             +else
                 .meta
-                    a.author
-                        mark {comment.author}
+                    a.author(on:click!='{() => feed.go("/u/" + comment.author)}') {comment.author}
                     +if('comment.author_flair_text')
                         span.author-flair {comment.author_flair_text}
                     +if('comment.total_awards_received > 0')
@@ -31,28 +30,31 @@
     .comment
         flex: 0 1 480px
         padding: 8px 4px 8px 8px
-        line-height: 1.2
+        border: 1px solid transparent
+        &:focus
+            background: #333
+            color: white
     .meta
-        margin-bottom: 4px
-        font-weight: 600
         color: gray
         display: flex
-    a
-        color: inherit
+    .text
+        margin-top: 6px
+    .author
+        background: var(--tc-m)
+        color: var(--tc-s)
         cursor: pointer
-    mark
-        &:hover
-            background: red
-    .awards
-        margin: 0 8px
     .author-flair
-        margin: 0 8px
+        margin-left: 6px
+    .awards
+        margin-left: 6px
     .argentium
         background: orangered
         color: black
+        border: 1px solid
     .platinum
         background: white
         color: black
+        border: 1px solid
     .gold
         color: goldenrod
     .silver
@@ -60,13 +62,13 @@
     .bronze
         color: rosybrown
     .selected
+    .highlighted
         background: #333
         color: white
-    .highlighted
-        background: lightgoldenrodyellow
 </style>
 
 <script type="text/coffeescript">
+    import { feed } from './state.coffee'
     import { contrast_color, ago_description_long, recency_scale } from './tools.coffee'
     export comment =
         replies: []
@@ -118,9 +120,9 @@
             if bucket[1].length
                 "#{bucket[0].toUpperCase()} AWARDS\n" +
                 bucket[1].map(
-                    (award) -> "#{award.count}x #{award.name}"
+                    (award) -> "(#{award.count}) #{award.name}"
                 ).join('\n')
             else
                 ''
-        ).join('\n\n')
+        ).filter((x) -> x).join('\n\n')
 </script>

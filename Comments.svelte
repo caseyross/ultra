@@ -8,7 +8,7 @@
                         +if('post.num_comments > 0')
                             article(use:reset_scroll use:draw_minimap)
                                 +each('post.replies as comment')
-                                    CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{selected.id}' select_comment='{select_comment}')
+                                    CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{$selected.comment.id}' select_comment='{select_comment}')
                             +elseif('post.num_comments === 0')
                                 #nocomments
                                     button#add-first-comment ADD THE FIRST COMMENT
@@ -31,8 +31,7 @@
             width: 8%
             background: transparent
         &::-webkit-scrollbar-thumb
-            background: transparent
-            border: 1px solid yellow
+            background: rgba(0, 0, 0, 0.5)
     #nocomments
         height: 100%
         display: flex
@@ -59,14 +58,11 @@
 
 <script type="text/coffeescript">
     import { onMount } from 'svelte'
-    import { feed, inspector } from './state.coffee';
+    import { feed, selected } from './state.coffee';
     import CommentTree from './CommentTree.svelte'
     export pending_post = undefined
-    selected =
-        id: ''
     select_comment = (comment) ->
-        selected = comment
-        $inspector.object = comment
+        $selected.comment = comment
     dom =
         comments: {}
         minimap: {}
