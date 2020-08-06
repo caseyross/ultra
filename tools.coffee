@@ -162,34 +162,22 @@ hours_minutes_seconds = (duration_seconds) ->
         minutes = Math.trunc(seconds / 60)
         seconds = seconds % 60
     [hours, minutes, seconds]
-export minimal_duration_readout = (duration_seconds) ->
+export duration_readout = (duration_seconds, max_duration_seconds) ->
     [hours, minutes, seconds] = hours_minutes_seconds duration_seconds
-    readout = ''
-    if hours > 0
-        readout += hours + ':'
-        if minutes < 10
-            readout += '0'
-        readout += minutes + ':'
+    [max_hours, max_minutes, max_seconds] = hours_minutes_seconds max_duration_seconds
+    if max_minutes < 10
         if seconds < 10
-            readout += '0'
-        readout += seconds
-    else if minutes > 0
-        readout += minutes + ':'
-        if seconds < 10
-            readout += '0'
-        readout += seconds
+            "#{minutes}:0#{seconds}"
+        else
+            "#{minutes}:#{seconds}"
     else
-        readout += seconds
-    readout
-export full_duration_readout = (duration_seconds) ->
-    [hours, minutes, seconds] = hours_minutes_seconds duration_seconds
-    [hours, minutes, seconds]
-        .map (duration) ->
-            if duration < 10
-                '0' + duration
-            else
-                '' + duration
-        .join(':')
+        [hours, minutes, seconds]
+            .map (duration) ->
+                if duration < 10
+                    '0' + duration
+                else
+                    '' + duration
+            .join(':')
 
 import gfycat_adjectives from './gfycat-adjectives.json'
 import gfycat_animals from './gfycat-animals.json'

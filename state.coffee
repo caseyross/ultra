@@ -7,11 +7,9 @@ default_selected = {
     inspect_mode: ''
 }
 export selected = writable default_selected
-export feed = (() ->
-    { subscribe, set, update } = writable sync_url()
-    {
-        subscribe,
-        go: (new_url) ->
-            selected.set default_selected
-            set sync_url(new_url)
-    })()
+_feed = writable window.feed
+export feed =
+    subscribe: _feed.subscribe
+    go: (new_url) ->
+        selected.set default_selected
+        _feed.set sync_url(new_url)

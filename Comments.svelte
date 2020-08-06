@@ -1,19 +1,16 @@
 <template lang="pug">
     section
         #comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
-            +if('pending_post')
-                +await('pending_post')
-                    #nocomments LOADING...
-                    +then('post')
-                        +if('post.num_comments > 0')
-                            article(use:reset_scroll use:draw_minimap)
-                                +each('post.replies as comment')
-                                    CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.fragment_center}' selected_id='{$selected.comment.id}' select_comment='{select_comment}')
-                            +elseif('post.num_comments === 0')
-                                #nocomments
-                                    button#add-first-comment ADD THE FIRST COMMENT
-                    +catch('error')
-                        #nocomments {error}
+            +await('post.COMMENTS')
+                #nocomments Loading...
+                +then('comments')
+                    +if('post.num_comments > 0')
+                        article(use:reset_scroll use:draw_minimap)
+                            +each('comments as comment')
+                                CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}' selected_id='{$selected.comment.id}' select_comment='{select_comment}')
+                        +else
+                            #nocomments
+                                button#add-first-comment ADD THE FIRST COMMENT
         figure(bind:this='{dom.minimap}')
             canvas(bind:this='{dom.minimap_field}')
 </template>
@@ -24,7 +21,6 @@
         contain: strict
     #comments
         height: 100%
-        width: 100%
         overflow: auto
         will-change: transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
         &::-webkit-scrollbar
@@ -60,7 +56,7 @@
     import { onMount } from 'svelte'
     import { feed, selected } from './state.coffee';
     import CommentTree from './CommentTree.svelte'
-    export pending_post = undefined
+    export post = {}
     select_comment = (comment) ->
         $selected.comment = comment
     dom =

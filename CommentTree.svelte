@@ -30,7 +30,6 @@
     .comment
         flex: 0 1 480px
         padding: 8px 4px 8px 8px
-        border: 1px solid transparent
         &:focus
             background: #333
             color: white

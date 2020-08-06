@@ -2,7 +2,7 @@
     nav
         #feed-select
             input(type='text' value='{$feed.type}/{$feed.name}' on:change!='{(e) => feed.go("/" + e.target.value)}')
-            +await('$feed.info_pending')
+            +await('$feed.METADATA')
                 img(src='{img_reddit_logo}')
                 +then('info')
                     +if('info.community_icon')

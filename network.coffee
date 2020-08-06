@@ -1,46 +1,3 @@
-# docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
-# docs: https://www.reddit.com/dev/api
-
-token_type = localStorage.token_type || ''
-access_token = localStorage.access_token || ''
-token_expire_date = localStorage.token_expire_date || 0
-refresh_api_access_token = () ->
-    body = new FormData()
-    body.append('grant_type', 'https://oauth.reddit.com/grants/installed_client')
-    body.append('device_id', 'DO_NOT_TRACK_THIS_DEVICE')
-    fetch('https://www.reddit.com/api/v1/access_token', {
-        method: 'POST'
-        headers:
-            'Authorization': 'Basic SjZVcUg0a1lRTkFFVWc6'
-        body
-    }).then((response) ->
-        response.json()
-    ).then((json_data) ->
-        { token_type, access_token, expires_in } = json_data
-        token_expire_date = Date.now() + expires_in * 999
-        localStorage.token_type = token_type
-        localStorage.access_token = access_token
-        localStorage.token_expire_date = token_expire_date
-    )
-
-api_op = (http_method, resource_path) ->
-    # If access token is already expired, block while getting a new one.
-    # If access token is expiring soon, don't block the current operation, but pre-emptively request a new token.
-    if Date.now() > token_expire_date
-        await refresh_api_access_token()
-    else if Date.now() > token_expire_date - 600000
-        refresh_api_access_token()
-    fetch(
-        'https://oauth.reddit.com/' + resource_path + (if resource_path.includes('?') then '&' else '?') + 'raw_json=1' ,
-        {
-            method: http_method
-            headers:
-                'Authorization': "#{token_type} #{access_token}"
-        }
-    ).then((response) ->
-        response.json()
-    )
-
 export sync_url = (new_url = '') ->
     # Enter new URL if provided
     if new_url
@@ -67,29 +24,54 @@ export sync_url = (new_url = '') ->
                             url_params.get('geo_filter') || 'GLOBAL'
         )
         seen_count: url_params.get('count') || 0
-        last_seen: url_params.get('after') || ''
-        page_size: url_params.get('limit') || 10
-        info_pending: {}
-        page_pending: []
-        posts_pending: {}
-        sources_pending: {}
+        after_id: url_params.get('after') || ''
+        page_size: url_params.get('limit') || 25
     }
-    # Fetch feed posts, comments, and metadata
-    page_pending_stage_1 = fetch_feed_page(feed, 1)
-    page_pending_stage_2 = fetch_feed_page(feed, Math.trunc(Math.sqrt(feed.page_size)))
-    page_pending_stage_3 = fetch_feed_page(feed, feed.page_size)
-    feed.page_pending = [0...feed.page_size].map (i) ->
-        Promise.race([page_pending_stage_1[i] || new Promise((resolve, reject) -> {}), page_pending_stage_2[i] || new Promise((resolve, reject) -> {}), page_pending_stage_3[i]])
-    for post_pending in feed.page_pending
-        post_pending.then (post) ->
-            feed.posts_pending[post.id] = fetch_post post.id
-            if post.type == 'reddit'
-                feed.sources_pending[post.id] = fetch_post post.source.id, post.source.comment_id, post.source.context_level
-    feed.info_pending = fetch_feed_info(feed)
-    feed
+    feed.DATA = FETCH_FEED_DATA(feed)
+    feed.METADATA = FETCH_FEED_METADATA(feed)
+    return feed
 
-fetch_feed_page = (feed, post_count = 25) ->
-    load = api_op('GET',
+# docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
+# docs: https://www.reddit.com/dev/api
+token_type = localStorage.token_type || ''
+access_token = localStorage.access_token || ''
+token_expire_date = localStorage.token_expire_date || 0
+REFRESH_API_TOKEN = () ->
+    body = new FormData()
+    body.append('grant_type', 'https://oauth.reddit.com/grants/installed_client')
+    body.append('device_id', 'DO_NOT_TRACK_THIS_DEVICE')
+    fetch('https://www.reddit.com/api/v1/access_token', {
+        method: 'POST'
+        headers:
+            'Authorization': 'Basic SjZVcUg0a1lRTkFFVWc6'
+        body
+    }).then((response) ->
+        response.json()
+    ).then((json_data) ->
+        { token_type, access_token, expires_in } = json_data
+        token_expire_date = Date.now() + expires_in * 999
+        localStorage.token_type = token_type
+        localStorage.access_token = access_token
+        localStorage.token_expire_date = token_expire_date
+    )
+GET_FROM_API = (endpoint) ->
+    # If access token is already expired, block while getting a new one.
+    # If access token is expiring soon, don't block the current operation, but pre-emptively request a new token.
+    if Date.now() > token_expire_date
+        await REFRESH_API_TOKEN()
+    else if Date.now() > token_expire_date - 600000
+        REFRESH_API_TOKEN()
+    fetch(
+        'https://oauth.reddit.com/' + endpoint + (if endpoint.includes('?') then '&' else '?') + 'raw_json=1' ,
+        {
+            method: 'GET'
+            headers:
+                'Authorization': "#{token_type} #{access_token}"
+        }
+    ).then (response) ->
+        response.json()
+FETCH_FEED_DATA = (feed) ->
+    GET_FROM_API(
         (if feed.name is ''
             "#{feed.rank_by.type}?"
         else
@@ -99,158 +81,161 @@ fetch_feed_page = (feed, post_count = 25) ->
                 "r/#{feed.name}/#{feed.rank_by.type}?"
             )
         ) +
+        "limit=#{feed.page_size}&" +
         (if feed.rank_by.type is 'top' then "t=#{feed.rank_by.filter}&" else '') +
-        (if feed.last_seen then "after=#{feed.last_seen}&" else '') +
+        (if feed.after_id then "after=#{feed.after_id}&" else '') +
         (if feed.seen_count then "count=#{feed.seen_count}&" else '') +
-        "limit=#{post_count}&" +
-        "sr_detail=true&"
-    )
-    [0...post_count].map (i) ->
-        load.then ({ data }) -> process_post data.children[i].data
-
-fetch_post = (post_id, comment_id, context_level) ->
-    api_op('GET',
+        "sr_detail=true"
+    ).then (posts_listing) ->
+        rectified_posts(posts_listing)
+FETCH_FEED_METADATA = (feed) ->
+    if feed.name is '' then return new Promise (fulfill, reject) -> fulfill({})
+    GET_FROM_API(
+        "#{if feed.type is 'u' then 'user' else 'r'}/#{feed.name}/about"
+    ).then ({ data }) -> ({
+            ...data
+            description_html: if data?.description_html then data.description_html[31...-20] else ''
+    })
+FETCH_COMMENTS = (post_id) ->
+    GET_FROM_API(
+        "comments/#{post_id}"
+    ).then ( [_, comments_listing] ) ->
+        rectified_comments(comments_listing)
+FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_context_level) ->
+    GET_FROM_API(
         "comments/#{post_id}" +
-        (if comment_id then "?comment=#{comment_id}" else '') +
-        (if context_level then "&context=#{context_level}" else '')
-    ).then ( [post_listing, replies_listing] ) ->
-        post = process_post {
-            ...post_listing.data.children[0].data
-            body: ''
-            fragment_center: comment_id
-            replies: process_replies(replies_listing)
-            score_per_hour: 0
-        }
-        post.total_score_per_hour = subtree_score_per_hour post
-        post.total_character_count = subtree_character_count post
-        for comment in post.replies
-            set_interest_properties(post.total_score_per_hour, post.total_character_count, comment)
-        post
-
-fetch_feed_info = (feed) ->
-    info =
-        description_html: ''
-    if feed.name is ''
-        new Promise (resolve, reject) -> resolve(info)
-    else
-        api_op('GET',
-            "#{if feed.type is 'u' then 'user' else 'r'}/#{feed.name}/about"
-        ).then (response) ->
-            if response.data
-                info = {
-                    ...response.data
-                    description_html: if response.data.description_html then response.data.description_html[31...-20] else ''
-                }
-            info
+        (if focal_comment_id then "?comment=#{focal_comment_id}" else '') +
+        (if focal_comment_context_level then "&context=#{focal_comment_context_level}" else '')
+    ).then ( [posts_listing, comments_listing] ) -> ({
+            ...rectified_posts(posts_listing)[0]
+            COMMENTS: new Promise (fulfill, reject) -> fulfill(rectified_comments(comments_listing))
+            comments_fetch_time: Date.now()
+    })
 
 import { titlecase_gfycat_video_id } from './tools.coffee'
-process_post = (post) ->
-    if not post.link_flair_text then post.link_flair_text = ''
-    if post.is_self
-            post.type = 'text'
-            post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
-        else if post.domain.endsWith 'reddit.com'
-            post.type = 'reddit'
-            [_, _, _, _, _, _, id, _, comment_id, options] = post.url.split '/'
-            url_params = new URLSearchParams(options)
-            post.source = {
-                id
-                comment_id
-                context_level: url_params.get('context')
-            }
-        else if post.url
-            filetype = ''
-            [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
-            if j > -1
-                filetype = post.url[(i + 1)...j]
-            else if k > -1
-                filetype = post.url[(i + 1)...k]
-            else if i > -1
-                filetype = post.url[(i + 1)...]
-            switch filetype
-                when 'gif', 'jpg',  'jpeg', 'png', 'webp'
-                    post.type = 'image'
-                    post.source = post.url
-                when 'gifv'
-                    post.type = 'audiovideo'
-                    post.source = {
-                        video: post.url[0...post.url.lastIndexOf('.')] + '.mp4'
-                    }
+rectified_posts = (posts_listing) ->
+    posts_listing.data.children.map (child) ->
+        post = child.data
+        post.COMMENTS = new Promise (fulfill, reject) -> {}
+        post.comments_fetch_time = null
+        post.fetch_comments = () ->
+            if not post.comments_fetch_time
+                post.COMMENTS = FETCH_COMMENTS(post.id)
+                post.comments_fetch_time = Date.now()
+        post.link_flair_text = post.link_flair_text || ''
+        if post.is_self
+                post.type = 'text'
+                post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
+            else if post.domain.endsWith 'reddit.com'
+                if post.is_gallery
+                    post.type = 'gallery'
                 else
-                    switch post.domain
-                        when 'gfycat.com'
-                            post.type = 'audiovideo'
-                            post.source = {
-                                video: 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
-                            }
-                        when 'imgur.com'
-                            post.type = 'image'
-                            post.source = post.url + '.jpg'
-                        when 'redgifs.com'
-                            post.type = 'audiovideo'
-                            post.source = {
-                                video: 'https://thumbs1.redgifs.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
-                            }
-                        when 'v.redd.it'
-                            post.type = 'audiovideo'
-                            post.source = {
-                                audio: post.secure_media.reddit_video.fallback_url[...post.secure_media.reddit_video.fallback_url.lastIndexOf('/')] + '/audio'
-                                video: post.secure_media.reddit_video.fallback_url.split('?')[0]
-                                mini_video: post.secure_media.reddit_video.scrubber_media_url
-                            }
-                        when 'youtube.com', 'youtu.be' 
-                            post.type = 'embed'
-                            post.source = post.secure_media.oembed.html
-                        else
-                            post.type = 'link'
-                            post.source = post.url
-        else
-            post.type = 'unknown'
-            post.source = ''
-    if typeof post.source is 'string' and post.source.startsWith 'http://'
-        post.source = 'https://' + post.source[7...]
-    post
-
-subtree_score_per_hour = (comment) ->
-    Math.abs(comment.score_per_hour) + comment.replies.reduce(((sum, reply) -> sum + subtree_score_per_hour(reply)), 0)
-subtree_character_count = (comment) ->
-    comment.body.length + comment.replies.reduce(((sum, reply) -> sum + subtree_character_count(reply)), 0)
-set_interest_properties = (total_score_per_hour, total_character_count, comment) ->
-    if not comment.is_more
+                    post.type = 'reddit'
+                    [_, _, _, _, _, _, id, _, comment_id, options] = post.url.split '/'
+                    url_params = new URLSearchParams(options)
+                    post.source = {
+                        id
+                        comment_id
+                        context_level: url_params.get('context')
+                    }
+                    post.SOURCE = FETCH_POST_AND_COMMENTS(post.source.id, post.source.comment_id, post.source.context_level)
+            else if post.url
+                filetype = ''
+                [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
+                if j > -1
+                    filetype = post.url[(i + 1)...j]
+                else if k > -1
+                    filetype = post.url[(i + 1)...k]
+                else if i > -1
+                    filetype = post.url[(i + 1)...]
+                switch filetype
+                    when 'gif', 'jpg',  'jpeg', 'png', 'webp'
+                        post.type = 'image'
+                        post.source = post.url
+                    when 'gifv'
+                        post.type = 'audiovideo'
+                        post.source = {
+                            video: post.url[0...post.url.lastIndexOf('.')] + '.mp4'
+                        }
+                    else
+                        switch post.domain
+                            when 'gfycat.com'
+                                post.type = 'audiovideo'
+                                post.source = {
+                                    video: 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+                                }
+                            when 'imgur.com'
+                                post.type = 'image'
+                                post.source = post.url + '.jpg'
+                            when 'redgifs.com'
+                                post.type = 'audiovideo'
+                                post.source = {
+                                    video: 'https://thumbs1.redgifs.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+                                }
+                            when 'v.redd.it'
+                                post.type = 'audiovideo'
+                                post.source = {
+                                    audio: post.secure_media.reddit_video.fallback_url[...post.secure_media.reddit_video.fallback_url.lastIndexOf('/')] + '/audio'
+                                    video: post.secure_media.reddit_video.fallback_url.split('?')[0]
+                                    mini_video: post.secure_media.reddit_video.scrubber_media_url
+                                }
+                            when 'youtube.com', 'youtu.be' 
+                                post.type = 'embed'
+                                post.source = post.secure_media.oembed.html
+                            else
+                                post.type = 'link'
+                                post.source = post.url
+            else
+                post.type = 'unknown'
+                post.source = ''
+        if typeof post.source is 'string' and post.source.startsWith 'http://'
+            post.source = 'https://' + post.source[7...]
+        return post
+rectified_comments = (comments_listing) ->
+    restructured_comments = (comments_listing) ->
+        # No replies
+        if not comments_listing?.data?.children
+            []
+        # Ill-formed response structures
+        else if not comments_listing.data.children.length # Very rare: empty array
+            []
+        else if comments_listing.data.children[0].data.count is 0 # Rare: "more" with 0 replies in it
+            []
+        # Replies, or "more"
+        else comments_listing.data.children.map (child) ->
+            if child.kind is 'more'
+                {
+                    ...child.data
+                    is_more: true
+                    replies: []
+                    body: ''
+                    score_per_hour: 0
+                }
+            else
+                {
+                    ...child.data
+                    is_more: false
+                    replies: restructured_comments(child.data.replies)
+                    body_html: child.data.body_html[16...-6]
+                    score: child.data.score - 1 # Don't count the built-in upvote from the commenter
+                    score_per_hour: (child.data.score - 1) * 3600 / (Date.now() / 1000 - child.data.created_utc)
+                }
+    post_skeleton = {
+        score_per_hour: 0
+        body: ''
+        replies: restructured_comments(comments_listing)
+    }
+    comment_tree_score_per_hour = (comment) ->
+        Math.abs(comment.score_per_hour) + comment.replies.reduce(((sum, reply) -> sum + comment_tree_score_per_hour(reply)), 0)
+    total_score_per_hour = comment_tree_score_per_hour(post_skeleton)
+    comment_tree_character_count = (comment) ->
+        comment.body.length + comment.replies.reduce(((sum, reply) -> sum + comment_tree_character_count(reply)), 0)
+    total_character_count = comment_tree_character_count(post_skeleton)
+    estimate_interest = (comment) ->
         comment.score_per_hour_percentage = Math.trunc(comment.score_per_hour / total_score_per_hour * 100)
         comment.character_count_percentage = Math.trunc(comment.body.length / total_character_count * 100)
-        if comment.score_hidden
-            comment.estimated_interest = 1
-        else
-            comment.estimated_interest = comment.score_per_hour_percentage + comment.character_count_percentage
+        comment.estimated_interest = if comment.score_hidden then 2 else comment.score_per_hour_percentage + comment.character_count_percentage
         for reply in comment.replies
-            set_interest_properties(total_score_per_hour, total_character_count, reply)
-
-process_replies = (replies_listing) ->
-    # No replies
-    if not replies_listing?.data?.children
-        []
-    # Ill-formed response structures
-    else if not replies_listing.data.children.length # Very rare: empty array
-        []
-    else if replies_listing.data.children[0].data.count is 0 # Rare: "more" with 0 replies in it
-        []
-    # Replies, or "more"
-    else replies_listing.data.children.map (child) ->
-        if child.kind is 'more'
-            {
-                ...child.data
-                body: ''
-                is_more: true
-                replies: []
-                score_per_hour: 0
-            }
-        else
-            {
-                ...child.data
-                body_html: child.data.body_html[16...-6]
-                is_more: false
-                replies: process_replies(child.data.replies)
-                score: child.data.score - 1 # Don't count the built-in upvote from the commenter
-                score_per_hour: (child.data.score - 1) * 3600 / (Date.now() / 1000 - child.data.created_utc)
-            }
+            estimate_interest(reply)
+    estimate_interest(post_skeleton)
+    return post_skeleton.replies

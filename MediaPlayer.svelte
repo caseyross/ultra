@@ -12,14 +12,14 @@
                 bind:paused='{a.paused}'
             )
             nav
-                #scrubber
-                    .time-readout {minimal_duration_readout(v.time)}
-                    #scrubber-track
-                        #scrubber-fill(style!='transform: scaleX({ v.time / v.duration })')
-                    .time-readout {minimal_duration_readout(v.duration)}
-                #buttons
-                    button(on:mousedown='{play_or_pause()}') PLAY / PAUSE
-                    button(on:mousedown='{fullscreen()}') FULLSCREEN
+                button#mute MUTE
+                #volume
+                    #volume-needle
+                #action
+                button#fullscreen(on:mousedown!='{() => fullscreen()}') [ ]
+                #position
+                    button#play(on:mousedown!='{() => play_or_pause()}') ▶
+                    #time(style!='transform: translateX({v.time / v.duration * 100}%)') {duration_readout(v.time, v.duration)}
             +else
                 div CANNOT LOAD AUDIO/VIDEO
 </template>
@@ -27,43 +27,66 @@
 <style type="text/stylus">
     #player
         position: relative
+        overflow: hidden
     nav
-        position: absolute
-        left: 0
-        bottom: 0
-        width: 100%
-        background: white
-        border: 1px solid
-    #scrubber
-    #buttons
-        height: 24px
-        display: flex
-        justify-content: space-between
-        align-items: center
-    #scrubber-track
-        flex: 1
-        position: relative
-        height: 4px
-        margin: 0 8px
-        background: #333
-    #scrubber-fill
         position: absolute
         top: 0
         left: 0
         width: 100%
         height: 100%
-        background: white
-        transform-origin: left
-        transform: scaleX(0)
-    .time-readout
-        padding: 0 16px
-    button
-        height: 40px
-        padding: 0 16px
+    #action
+        position: absolute
+        top: 0
+        right: 0
+        width: 80%
+        height: 90%
+        display: flex
+        justify-content: center
+        align-items: center
+        font-size: 48px
+        color: red
+    #mute
+        position: absolute
+        top: 0
+        left: 0
+        padding: 8px
+        background: red
+    #volume
+        position: absolute
+        top: 0
+        left: 0
+        height: 90%
+        width: 48px
+    #volume-needle
+        position: absolute
+        top: 50%
+        right: 0
+        height: 4px
+        width: 100%
+        background: red
+    #fullscreen
+        position: absolute
+        bottom: 0
+        right: 0
+        padding: 8px
+        background: black
+    #position
+        position: absolute
+        bottom: 0
+        left: 0
+        width: 48px
+        height: 100%
+        display: flex
+        align-items: flex-end
+    #play
+    #pause
+    #stop
+    #time
+        background: black
 </style>
 
 <script type="text/coffeescript">
-    import { minimal_duration_readout } from './tools.coffee'
+    import { duration_readout } from './tools.coffee'
     export audio_src = ''
     export video_src = ''
     export mini_video_src = ''

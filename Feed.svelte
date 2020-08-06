@@ -1,9 +1,9 @@
 <template lang="pug">
-    ol
-        +each('$feed.page_pending as post_pending')
-            li.brochure(tabindex=0)
-                +await('post_pending')
-                    +then('post')
+    +await('$feed.DATA')
+        +then('items')
+            ol
+                +each('items as post')
+                    li.brochure(tabindex=0)
                         .flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.link_flair_text : post.subreddit}
                         h1.headline(
                             class:stickied!='{post.stickied || post.pinned}'
@@ -12,11 +12,9 @@
                             on:click='{select_post(post)}'
                             title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
                         ) {post.title}
-                    +catch('error')
-                        .gutter(style='position: relative')
-                            .error-tag ERROR
-                        h1.headline
-                            mark(style='background: red') {error instanceof TypeError && error.message === "Failed to fetch" ? "Can't connect to Reddit servers" : error}
+        +catch('error')
+            .error-tag ERROR LOADING FEED
+            .error-message {error}
 </template>
 
 <style type="text/stylus">
@@ -42,22 +40,16 @@
     .nsfw-tag
     .spoiler-tag
     .error-tag
-        position: absolute
-        top: 0
-        left: 0
         padding: 0 1px
         background: black
         color: white
         font-size: 10px
         font-weight: 700
-    .stickied
-        background: darkseagreen
     .error-tag
         background: red
     .headline
-        display: inline
-        font-size: 18px
-        background: var(--tc-m)
+        margin: 0
+        font-size: 16px
     .right
         flex: 0 0 16px
         text-align: right
@@ -75,6 +67,7 @@
     post_color = (post) ->
         post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
     select_post = (post) ->
+        post.fetch_comments()
         $selected.post = post
         read_posts.add post.id
         read_posts = read_posts
