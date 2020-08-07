@@ -112,84 +112,27 @@ FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_context_leve
             comments_fetch_time: Date.now()
     })
 
-import { titlecase_gfycat_video_id } from './tools.coffee'
+import { classify_post_content } from './content-utils.coffee'
 rectified_posts = (posts_listing) ->
     posts_listing.data.children.map (child) ->
         post = child.data
+        # Setup for loading comments
         post.COMMENTS = new Promise (fulfill, reject) -> {}
         post.comments_fetch_time = null
         post.fetch_comments = () ->
             if not post.comments_fetch_time
                 post.COMMENTS = FETCH_COMMENTS(post.id)
                 post.comments_fetch_time = Date.now()
-        post.link_flair_text = post.link_flair_text || ''
-        if post.is_self
-                post.type = 'text'
-                post.source = if post.selftext_html then post.selftext_html[31...-20] else ''
-            else if post.domain.endsWith 'reddit.com'
-                if post.is_gallery
-                    post.type = 'gallery'
-                else
-                    post.type = 'reddit'
-                    [_, _, _, _, _, _, id, _, comment_id, options] = post.url.split '/'
-                    url_params = new URLSearchParams(options)
-                    post.source = {
-                        id
-                        comment_id
-                        context_level: url_params.get('context')
-                    }
-                    post.SOURCE = FETCH_POST_AND_COMMENTS(post.source.id, post.source.comment_id, post.source.context_level)
-            else if post.url
-                filetype = ''
-                [i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
-                if j > -1
-                    filetype = post.url[(i + 1)...j]
-                else if k > -1
-                    filetype = post.url[(i + 1)...k]
-                else if i > -1
-                    filetype = post.url[(i + 1)...]
-                switch filetype
-                    when 'gif', 'jpg',  'jpeg', 'png', 'webp'
-                        post.type = 'image'
-                        post.source = post.url
-                    when 'gifv'
-                        post.type = 'audiovideo'
-                        post.source = {
-                            video: post.url[0...post.url.lastIndexOf('.')] + '.mp4'
-                        }
-                    else
-                        switch post.domain
-                            when 'gfycat.com'
-                                post.type = 'audiovideo'
-                                post.source = {
-                                    video: 'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
-                                }
-                            when 'imgur.com'
-                                post.type = 'image'
-                                post.source = post.url + '.jpg'
-                            when 'redgifs.com'
-                                post.type = 'audiovideo'
-                                post.source = {
-                                    video: 'https://thumbs1.redgifs.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
-                                }
-                            when 'v.redd.it'
-                                post.type = 'audiovideo'
-                                post.source = {
-                                    audio: post.secure_media.reddit_video.fallback_url[...post.secure_media.reddit_video.fallback_url.lastIndexOf('/')] + '/audio'
-                                    video: post.secure_media.reddit_video.fallback_url.split('?')[0]
-                                    mini_video: post.secure_media.reddit_video.scrubber_media_url
-                                }
-                            when 'youtube.com', 'youtu.be' 
-                                post.type = 'embed'
-                                post.source = post.secure_media.oembed.html
-                            else
-                                post.type = 'link'
-                                post.source = post.url
-            else
-                post.type = 'unknown'
-                post.source = ''
-        if typeof post.source is 'string' and post.source.startsWith 'http://'
-            post.source = 'https://' + post.source[7...]
+        # Identify content of post
+        if post.crosspost_parent
+            post.is_xpost = true
+            post.xpost_from = post.crosspost_parent_list[0].subreddit
+            post.content = classify_post_content(post.crosspost_parent_list[0])
+        else
+            post.is_xpost = false
+            post.content = classify_post_content(post)
+        # Standardize properties
+        post.flair = post.link_flair_text || ''
         return post
 rectified_comments = (comments_listing) ->
     restructured_comments = (comments_listing) ->

@@ -4,7 +4,9 @@
             ol
                 +each('items as post')
                     li.brochure(tabindex=0)
-                        .flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.link_flair_text : post.subreddit}
+                        .flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.flair : post.subreddit}
+                        +if('post.is_xpost')
+                            .xpost-tag X-POST from r/{post.xpost_from}
                         h1.headline(
                             class:stickied!='{post.stickied || post.pinned}'
                             class:md-spoiler-text!='{post.spoiler}'
@@ -36,6 +38,7 @@
     .meta
         color: gray
         display: flex
+    .xpost-tag
     .sticky-tag
     .nsfw-tag
     .spoiler-tag
@@ -62,7 +65,7 @@
 
 <script type="text/coffeescript">
     import { feed, selected } from './state.coffee';
-    import { contrast_color, shade_color, ago_description, ago_description_long, recency_scale, heat_color } from './tools.coffee';
+    import { contrast_color } from './color-utils.coffee';
     export read_posts = new Set()
     post_color = (post) ->
         post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'

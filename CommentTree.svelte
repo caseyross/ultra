@@ -68,7 +68,6 @@
 
 <script type="text/coffeescript">
     import { feed } from './state.coffee'
-    import { contrast_color, ago_description_long, recency_scale } from './tools.coffee'
     export comment =
         replies: []
     export depth = 1

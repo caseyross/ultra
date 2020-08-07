@@ -1,14 +1,14 @@
 <template lang="pug">
     #player(bind:this='{dom.player}')
-        +if('audio_src || video_src')
+        +if('audio_url || video_url')
             video(
-                src='{video_src}'
+                src='{video_url}'
                 bind:duration='{v.duration}'
                 bind:currentTime='{v.time}'
                 bind:paused='{v.paused}'
             )
             audio(
-                src='{audio_src}'
+                src='{audio_url}'
                 bind:paused='{a.paused}'
             )
             nav
@@ -86,10 +86,10 @@
 </style>
 
 <script type="text/coffeescript">
-    import { duration_readout } from './tools.coffee'
-    export audio_src = ''
-    export video_src = ''
-    export mini_video_src = ''
+    import { duration_readout } from './time-utils.coffee'
+    export audio_url = ''
+    export video_url = ''
+    export video_preview_url = ''
     dom =
         player: {}
     a =

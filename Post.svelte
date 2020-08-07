@@ -1,22 +1,22 @@
 <template lang="pug">
-    +if('post.id')
+    +if('post.content')
         #post
-            +if('post.type === "reddit"')
-                +await('post.SOURCE then source_post')
-                    Comments(post='{source_post}')
-                +elseif('post.type === "link"')
-                    iframe(src='{post.source}' sandbox='allow-scripts allow-same-origin')
-                +elseif('post.type === "embed"')
-                    #embed {@html post.source}
-                +elseif('post.type === "audiovideo"')
-                    MediaPlayer(audio_src='{post.source.audio}' video_src='{post.source.video}' mini_video_src='{post.source.mini_video}')
-                +elseif('post.type === "image"')
-                    img( src='{post.source}')
-                +elseif('post.type === "text"')
-                    +if('post.source.length')
-                        #self-text {@html post.source}
-                        +else
-                            #error-text {'NO TEXT '.repeat(64)}
+            +if('post.content.type === "html"')
+                +if('post.content.html.length')
+                    #self-text {@html post.content.html}
+                    +else
+                        #error-text {'NO TEXT '.repeat(64)}
+                +elseif('post.content.type === "image"')
+                    img(src='{post.content.url}')
+                +elseif('post.content.type === "images"')
+                    Gallery(images='{post.content.images}')
+                +elseif('post.content.type === "video"')
+                    MediaPlayer(audio_url='{post.content.audio_url}' video_url='{post.content.url}' video_preview_url='{post.content.preview_url}')
+                +elseif('post.content.type === "post"')
+                    +await('post.content.POST then content_post')
+                        Comments(post='{content_post}')
+                +elseif('post.content.type === "link"')
+                    iframe(src='{post.content.url}' sandbox='allow-scripts allow-same-origin')
                 +else
                     #error-text CANNOT PARSE POST
 </template>
@@ -69,8 +69,9 @@
 
 <script type="text/coffeescript">
     import { feed } from './state.coffee'
-    import Comments from './Comments.svelte'
+    import Gallery from './Gallery.svelte'
     import MediaPlayer from './MediaPlayer.svelte'
+    import Comments from './Comments.svelte'
     export post = {}
     dom =
         image: {}

@@ -1,22 +1,3 @@
-export contrast_color = (css_hex_color) ->
-    if not (css_hex_color.startsWith('#') and css_hex_color.length is 7) then return 'inherit'
-    red = Number.parseInt(css_hex_color[1..2], 16) / 255
-    green = Number.parseInt(css_hex_color[3..4], 16) / 255
-    blue = Number.parseInt(css_hex_color[5..6], 16) / 255
-    if (green + red / 8 + blue / 8) > 0.7 then 'black' else 'white'
-
-export tint_color = (css_hex_color) ->
-    red = Math.trunc(Number.parseInt(css_hex_color[1..2], 16) / 5)
-    green = Math.trunc(Number.parseInt(css_hex_color[3..4], 16) / 5)
-    blue = Math.trunc(Number.parseInt(css_hex_color[5..6], 16) / 5)
-    "##{if red < 16 then '0' else ''}#{red.toString(16)}#{if green < 16 then '0' else ''}#{green.toString(16)}#{if blue < 16 then '0' else ''}#{blue.toString(16)}"
-
-export shade_color = (css_hex_color) ->
-    red = Math.trunc(Number.parseInt(css_hex_color[1..2], 16) / 5)
-    green = Math.trunc(Number.parseInt(css_hex_color[3..4], 16) / 5)
-    blue = Math.trunc(Number.parseInt(css_hex_color[5..6], 16) / 5)
-    "##{if red < 16 then '0' else ''}#{red.toString(16)}#{if green < 16 then '0' else ''}#{green.toString(16)}#{if blue < 16 then '0' else ''}#{blue.toString(16)}"
-
 durations =
     year:
         seconds: 60 * 60 * 24 * 365
@@ -122,20 +103,6 @@ export ago_description = (epoch_seconds) ->
 export ago_description_long = (epoch_seconds) ->
     d = duration_description(Date.now() / 1000 - epoch_seconds)
     d.major.value + d.major.unit.abbr + (if d.minor then (' ' + d.minor.value + d.minor.unit.abbr) else '')
-export heat_color = (heat) ->
-    switch
-        when heat > 2
-            'salmon'
-        when heat > 2
-            'lightsalmon'
-        when heat > 2
-            'wheat'
-        when heat > 2
-            'white'
-        when heat > 2
-            '#ccc'
-        else
-            'gray'
 export recency_scale = (epoch_seconds) ->
     time_since = Date.now() / 1000 - epoch_seconds
     switch
@@ -178,24 +145,3 @@ export duration_readout = (duration_seconds, max_duration_seconds) ->
                 else
                     '' + duration
             .join(':')
-
-import gfycat_adjectives from './gfycat-adjectives.json'
-import gfycat_animals from './gfycat-animals.json'
-export titlecase_gfycat_video_id = (video_id) ->
-    match_words = () ->
-        for adjective_1 in gfycat_adjectives
-            if video_id.startsWith adjective_1
-                for adjective_2 in gfycat_adjectives
-                    if video_id[adjective_1.length...].startsWith adjective_2
-                        for animal in gfycat_animals
-                            if video_id[(adjective_1.length + adjective_2.length)...] == animal
-                                return [adjective_1, adjective_2, animal]
-        return ['', '', '']
-    [adjective_1, adjective_2, animal] = match_words()
-    if not (adjective_1 and adjective_2 and animal)
-        gfycat_adjectives.reverse()
-        [adjective_1, adjective_2, animal] = match_words()
-        gfycat_adjectives.reverse()
-    if not (adjective_1 and adjective_2 and animal)
-        return ''
-    adjective_1[0].toUpperCase() + adjective_1[1...] + adjective_2[0].toUpperCase() + adjective_2[1...] + animal[0].toUpperCase() + animal[1...]
