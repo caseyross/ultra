@@ -1,13 +1,10 @@
+import { FETCH_POST_AND_COMMENTS } from './network.coffee'
 export classify_post_content = (post) ->
 	content = null
 	if post.is_self
 		content =
 			type: 'html'
 			html: if post.selftext_html then post.selftext_html[31...-20] else ''
-	else if post.media?.oembed
-		content =
-			type: 'html'
-			html: post.media.oembed.html
 	else if post.is_gallery
 		content =
 			type: 'images'
@@ -43,6 +40,11 @@ export classify_post_content = (post) ->
 							type: 'post'
 							POST: FETCH_POST_AND_COMMENTS(id, comment_id, url_params.get('context'))
 					else switch post.domain
+						when 'clips.twitch.tv'
+							clip_id = (new URL(post.url)).pathname[1..]
+							content =
+								type: 'html'
+								html: "<iframe src='https://clips.twitch.tv/embed?clip=#{clip_id}&parent=localhost' allowfullscreen='true'></iframe>"
 						when 'gfycat.com'
 							content =
 								type: 'video'
@@ -65,16 +67,17 @@ export classify_post_content = (post) ->
 							video_id = (new URL(post.url)).pathname[1..]
 							content =
 								type: 'html'
-								html: "<iframe src='https://www.youtube.com/embed/#{video_id}?feature=oembed&amp;enablejsapi=1' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen=''></iframe>"
+								html: "<iframe src='https://www.youtube.com/embed/#{video_id}?feature=oembed&amp;enablejsapi=1' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='true'></iframe>"
 						when 'youtube.com'
 							video_id = (new URL(post.url)).searchParams.get('v')
 							content =
 								type: 'html'
-								html: "<iframe src='https://www.youtube.com/embed/#{video_id}?feature=oembed&amp;enablejsapi=1' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen=''></iframe>"
+								html: "<iframe src='https://www.youtube.com/embed/#{video_id}?feature=oembed&amp;enablejsapi=1' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='true'></iframe>"
 						else
 							content =
 								type: 'link'
 								url: post.url
+								#HTML: fetch(post.url).then((response) -> response.text())
 	# Rewrite HTTP URLs to use HTTPS
 	if content?.url?.startsWith 'http://'
 		content.url = 'https://' + content.url[7..]

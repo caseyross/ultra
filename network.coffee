@@ -101,7 +101,7 @@ FETCH_COMMENTS = (post_id) ->
         "comments/#{post_id}"
     ).then ( [_, comments_listing] ) ->
         rectified_comments(comments_listing)
-FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_context_level) ->
+export FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_context_level) ->
     GET_FROM_API(
         "comments/#{post_id}" +
         (if focal_comment_id then "?comment=#{focal_comment_id}" else '') +
