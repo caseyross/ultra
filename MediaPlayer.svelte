@@ -19,7 +19,7 @@
                 button#fullscreen(on:mousedown!='{() => fullscreen()}') [ ]
                 #position
                     button#play(on:mousedown!='{() => play_or_pause()}') ▶
-                    #time(style!='transform: translateX({v.time / v.duration * 100}%)') {duration_readout(v.time, v.duration)}
+                    #time(style!='transform: translateX({v.time / v.duration * 100}%)') {duration(v.time)}
             +else
                 div CANNOT LOAD AUDIO/VIDEO
 </template>
@@ -86,7 +86,7 @@
 </style>
 
 <script type="text/coffeescript">
-    import { duration_readout } from './time-utils.coffee'
+    import { duration } from './time-utils.coffee'
     export audio_url = ''
     export video_url = ''
     export video_preview_url = ''
