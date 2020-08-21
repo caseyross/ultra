@@ -1,39 +1,39 @@
 *:focus {
-    outline: none;
+	outline: none;
 }
 a {
-    color: var(--tc-m);
+	color: var(--tc-m);
 }
 blockquote {
-    padding-left: 0.6em;
-    border-left: 4px solid #ccc;
-    color: #999;
+	padding-left: 0.6em;
+	border-left: 4px solid #ccc;
+	color: #999;
 }
 blockquote + p {
-    margin-top: 8px;
+	margin-top: 8px;
 }
 main {
-    height: 100%;
-    --tc-g: #222;
-    --tc-f: #775948;
-    --tc-m: #bd6340;
-    --tc-c: #ccc;
-    --tc-s: white;
+	height: 100%;
+	--tc-g: #222;
+	--tc-f: #775948;
+	--tc-m: #bd6340;
+	--tc-c: #ccc;
+	--tc-s: white;
 }
 p + blockquote {
-    margin-top: 8px;
+	margin-top: 8px;
 }
 p + p {
-    margin-top: 8px;
+	margin-top: 8px;
 }
 pre {
-    white-space: pre-wrap;
+	white-space: pre-wrap;
 }
 .md-spoiler-text {
-    background: gray;
-    color: gray;
+	background: gray;
+	color: gray;
 }
 .md-spoiler-text:hover {
-    background: inherit;
-    color: inherit;
+	background: inherit;
+	color: inherit;
 }

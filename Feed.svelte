@@ -1,77 +1,77 @@
-<template lang="pug">
-    +await('$feed.DATA')
-        +then('items')
-            ol
-                +each('items as post')
-                    li.brochure(tabindex=0)
-                        .flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.flair : post.subreddit}
-                        +if('post.is_xpost')
-                            .xpost-tag X-POST from r/{post.xpost_from}
-                        h1.headline(
-                            class:stickied!='{post.stickied || post.pinned}'
-                            class:md-spoiler-text!='{post.spoiler}'
-                            class:read!='{read_posts.has(post.id) && $selected.post.id !== post.id}'
-                            on:click='{select_post(post)}'
-                            title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
-                        ) {post.title}
-        +catch('error')
-            .error-tag ERROR LOADING FEED
-            .error-message {error}
+<template>
++await('$feed.DATA')
+	+then('items')
+		ol
+			+each('items as post')
+				li.brochure(tabindex=0)
+					.flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.flair : post.subreddit}
+					+if('post.is_xpost')
+						.xpost-tag X-POST from r/{post.xpost_from}
+					h1.headline(
+						class:stickied!='{post.stickied || post.pinned}'
+						class:md-spoiler-text!='{post.spoiler}'
+						class:read!='{read_posts.has(post.id) && $selected.post.id !== post.id}'
+						on:click='{select_post(post)}'
+						title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
+					) {post.title}
+	+catch('error')
+		.error-tag ERROR LOADING FEED
+		.error-message {error}
 </template>
 
-<style type="text/stylus">
-    ol
-        margin: 0
-        padding: 0
-        height: 100%
-        overflow: auto
-        list-style: none
-        display: flex
-        flex-flow: column nowrap
-        user-select: none
-        cursor: pointer
-        will-change: transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
-        &::-webkit-scrollbar
-            display: none
-    .brochure
-        padding: 8px 0
-    .meta
-        color: gray
-        display: flex
-    .xpost-tag
-    .sticky-tag
-    .nsfw-tag
-    .spoiler-tag
-    .error-tag
-        padding: 0 1px
-        background: black
-        color: white
-        font-size: 10px
-        font-weight: 700
-    .error-tag
-        background: red
-    .headline
-        margin: 0
-        font-size: 16px
-    .right
-        flex: 0 0 16px
-        text-align: right
-    .read
-        opacity: 0.2
-    a
-        color: inherit
-        text-decoration: none
+<style>
+	ol
+		margin: 0
+		padding: 0
+		height: 100%
+		overflow: auto
+		list-style: none
+		display: flex
+		flex-flow: column nowrap
+		user-select: none
+		cursor: pointer
+		will-change: transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
+		&::-webkit-scrollbar
+			display: none
+	.brochure
+		padding: 8px 0
+	.meta
+		color: gray
+		display: flex
+	.xpost-tag
+	.sticky-tag
+	.nsfw-tag
+	.spoiler-tag
+	.error-tag
+		padding: 0 1px
+		background: black
+		color: white
+		font-size: 10px
+		font-weight: 700
+	.error-tag
+		background: red
+	.headline
+		margin: 0
+		font-size: 16px
+	.right
+		flex: 0 0 16px
+		text-align: right
+	.read
+		opacity: 0.2
+	a
+		color: inherit
+		text-decoration: none
 </style>
 
-<script type="text/coffeescript">
-    import { feed, selected } from './state.coffee';
-    import { contrast_color } from './color-utils.coffee';
-    export read_posts = new Set()
-    post_color = (post) ->
-        post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
-    select_post = (post) ->
-        post.fetch_comments()
-        $selected.post = post
-        read_posts.add post.id
-        read_posts = read_posts
+<script>
+	import { feed, selected } from './state.coffee';
+	import { contrast_color } from './color-utils.coffee';
+	export read_posts = new Set()
+	post_color = (post) ->
+		post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
+	select_post = (post) ->
+		post.fetch_comments()
+		$selected.post = post
+		read_posts.add post.id
+		read_posts = read_posts
 </script>
