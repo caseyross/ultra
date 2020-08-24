@@ -18,7 +18,7 @@ svelte:head
 			title {info.title}
 +if('$selected.inspect_mode')
 	#inspector
-		+if('$selected.inspect_mode === "internals"')
+		+if('$selected.inspect_mode === "state"')
 			Inspector(value='{$feed}')
 			+elseif('$selected.inspect_mode === "post"')
 				Inspector(value='{$selected.post}')
@@ -70,13 +70,13 @@ svelte:head
 		height: 100%
 		display: flex
 		overflow: auto
-		font: 700 12px/1.2 Iosevka
+		font: 700 12px/1.2 monospace
 		background: #fed
 </style>
 
 <script>
 	import { feed, selected } from './state.coffee'
-	import keys from './keys.coffee'
+	import keymap from './keymap.coffee'
 	import FeedControl from './FeedControl.svelte'
 	import Sidebar from './Sidebar.svelte'
 	import Feed from './Feed.svelte'
@@ -89,25 +89,25 @@ svelte:head
 	)
 	document.addEventListener('keydown', (e) ->
 		switch e.key
-			when keys.INSPECT_INTERNALS
-				if $selected.inspect_mode is 'internals'
-					$selected.inspect_mode = ''
-				else
-					$selected.inspect_mode = 'internals'
-			when keys.INSPECT_POST
+			when keymap.inspect.post
 				if $selected.inspect_mode is 'post'
 					$selected.inspect_mode = ''
 				else
 					$selected.inspect_mode = 'post'
-			when keys.INSPECT_COMMENT
-				if $selected.inspect_mode is 'comment'
-					$selected.inspect_mode = ''
-				else
-					$selected.inspect_mode = 'comment'
-			when keys.INSPECT_FEED
+			when keymap.inspect.feed
 				if $selected.inspect_mode is 'feed'
 					$selected.inspect_mode = ''
 				else
 					$selected.inspect_mode = 'feed'
+			when keymap.inspect.comment
+				if $selected.inspect_mode is 'comment'
+					$selected.inspect_mode = ''
+				else
+					$selected.inspect_mode = 'comment'
+			when keymap.inspect.state
+				if $selected.inspect_mode is 'state'
+					$selected.inspect_mode = ''
+				else
+					$selected.inspect_mode = 'state'
 	)
 </script>

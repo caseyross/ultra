@@ -112,7 +112,7 @@ export FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_conte
 			comments_fetch_time: Date.now()
 	})
 
-import { classify_post_content } from './content-utils.coffee'
+import { classify_post_content } from './content.coffee'
 rectified_posts = (posts_listing) ->
 	posts_listing.data.children.map (child) ->
 		post = child.data
@@ -132,7 +132,7 @@ rectified_posts = (posts_listing) ->
 			post.is_xpost = false
 			post.content = classify_post_content(post)
 		# Standardize properties
-		post.flair = post.link_flair_text || ''
+		post.flair = post.link_flair_text || '[no flair]'
 		return post
 rectified_comments = (comments_listing) ->
 	restructured_comments = (comments_listing) ->

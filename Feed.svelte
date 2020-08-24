@@ -4,16 +4,16 @@
 		ol
 			+each('items as post')
 				li.brochure(tabindex=0)
-					.flair(style='background: {post_color(post)}; color: {contrast_color(post_color(post))}') {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.flair : post.subreddit}
-					+if('post.is_xpost')
-						.xpost-tag X-POST from r/{post.xpost_from}
 					h1.headline(
 						class:stickied!='{post.stickied || post.pinned}'
 						class:md-spoiler-text!='{post.spoiler}'
 						class:read!='{read_posts.has(post.id) && $selected.post.id !== post.id}'
 						on:click='{select_post(post)}'
 						title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
-					) {post.title}
+					) 
+						.flair-color(style='background: {post_color(post)}' title!='{post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.flair : post.subreddit}')
+						| {post.title}
+					
 	+catch('error')
 		.error-tag ERROR LOADING FEED
 		.error-message {error}
@@ -53,9 +53,11 @@
 	.headline
 		margin: 0
 		font-size: 16px
-	.right
-		flex: 0 0 16px
-		text-align: right
+	.flair-color
+		display: inline-block
+		width: 16px
+		height: 16px
+		margin-right: 4px
 	.read
 		opacity: 0.2
 	a
@@ -65,7 +67,7 @@
 
 <script>
 	import { feed, selected } from './state.coffee';
-	import { contrast_color } from './color-utils.coffee';
+	import { contrast_color } from './color.coffee';
 	export read_posts = new Set()
 	post_color = (post) ->
 		post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
