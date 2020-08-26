@@ -24,7 +24,7 @@ section
 		overflow: auto
 		will-change: transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 		&::-webkit-scrollbar
-			width: 8%
+			width: 48px
 			background: transparent
 		&::-webkit-scrollbar-thumb
 			background: rgba(0, 0, 0, 0.5)
@@ -45,7 +45,7 @@ section
 			text-decoration: underline
 	figure
 		height: 100%
-		width: 6%
+		width: 48px
 		position: absolute
 		top: 0
 		right: 0

@@ -12,7 +12,7 @@
 		.meta + {comment.count} more
 		+else
 			.meta
-				a.author(on:click!='{() => feed.go("/u/" + comment.author)}') {comment.author}
+				a.author(on:click!='{() => feed.go("/u/" + comment.author)}' style!='background: {comment_color(comment)}; color: {contrast_color(comment_color(comment))}') {comment.author}
 				+if('comment.author_flair_text')
 					span.author-flair {comment.author_flair_text}
 				+if('comment.total_awards_received > 0')
@@ -39,8 +39,6 @@
 	.text
 		margin-top: 6px
 	.author
-		background: #666
-		color: white
 		cursor: pointer
 	.author-flair
 		margin-left: 6px
@@ -68,6 +66,7 @@
 
 <script>
 	import { feed } from './state.coffee'
+	import { contrast_color } from './color.coffee'
 	export comment =
 		replies: []
 	export depth = 1
@@ -92,7 +91,7 @@
 				if comment.author_fullname == op_id
 					distinguish_colors.op
 				else
-					'#bbb'
+					'#666'
 	award_buckets = (awards) ->
 		buckets =
 			argentium: []

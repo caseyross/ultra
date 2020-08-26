@@ -2,7 +2,6 @@
 #sidebar
 	+await('$feed.METADATA')
 		+then('info')
-			img(src='{info.banner_background_image}')
 			article {@html info.description_html}
 		+catch('error')
 			article {error}
@@ -19,8 +18,6 @@
 			background: transparent
 		&::-webkit-scrollbar-thumb
 			background: gray
-	article
-		padding: 20px
 </style>
 
 <script>

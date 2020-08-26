@@ -51,7 +51,7 @@
 		opacity: 0
 	#self-text
 		height: 100%
-		padding-right: 24px
+		padding: 16px
 		overflow: auto
 		font-size: 13px
 		line-height: 1.5

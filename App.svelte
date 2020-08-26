@@ -1,15 +1,20 @@
 <template>
 #app
+	+await('$feed.METADATA')
+		img
+		+then('info')
+			img(src='{info.banner_background_image}')
 	#left
-		Post(post='{$selected.post}')
+		+if('$selected.post.id')
+			Post(post='{$selected.post}')
+			+else
+				Sidebar
 	#center
 		FeedControl
 		Feed
 	#right
 		+if('$selected.post.id')
 			Comments(post='{$selected.post}')
-			+else
-				Sidebar
 	MouseMenu
 svelte:head
 	+await('$feed.METADATA')
@@ -36,33 +41,28 @@ svelte:head
 		color: white
 		font: 400 12px/1.2 monospace
 		word-break: break-word
-		display: flex
-	.top
-		height: 80px
-		border-bottom: 1px solid gray
-	.bottom
-		height: calc(100% - 80px)
+	img
+		width: 100%
 	#center
-		flex: 0 0 20%
+		position: absolute
+		top: 16px
+		left: 16px
+		width: 384px
+		height: calc(100% - 16px)
 		padding: 0 16px
+		background: #333
 		display: flex
 		flex-flow: column nowrap
 	#left
 	#right
-		flex: 0 0 40%
-	#rank-by
-		display: flex
-	button
-		flex: 0 0 auto
-		height: 24px
-		padding: 0 12px
-		background: #ddd
-		border: 1px solid gray
-		border-right-width: 0
-	#magic
-		border-right-width: 1px
-	.selected
-		background: white
+		position: absolute
+		top: 16px
+		width: calc(40% - 32px)
+	#left
+		left: 416px
+		max-height: calc(100% - 16px)
+	#right
+		right: 0
 	#inspector
 		position: fixed
 		top: 0
