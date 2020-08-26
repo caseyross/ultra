@@ -39,8 +39,8 @@
 	.text
 		margin-top: 6px
 	.author
-		background: var(--tc-m)
-		color: var(--tc-s)
+		background: #666
+		color: white
 		cursor: pointer
 	.author-flair
 		margin-left: 6px

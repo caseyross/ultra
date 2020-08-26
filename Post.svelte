@@ -5,7 +5,7 @@
 			+if('post.content.html.length')
 				#self-text {@html post.content.html}
 				+else
-					#error-text {'NO TEXT '.repeat(64)}
+					#error-text NO TEXT
 			+elseif('post.content.type === "image"')
 				img(src='{post.content.url}')
 			+elseif('post.content.type === "images"')
