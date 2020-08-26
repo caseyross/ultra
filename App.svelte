@@ -57,12 +57,14 @@ svelte:head
 	#right
 		position: absolute
 		top: 16px
-		width: calc(40% - 32px)
+		width: calc((100% - 400px) / 2 - 16px)
+		height: calc(100% - 32px)
 	#left
 		left: 416px
-		max-height: calc(100% - 16px)
 	#right
 		right: 0
+		padding: 8px 0 0 8px
+		background: #333
 	#inspector
 		position: fixed
 		top: 0
