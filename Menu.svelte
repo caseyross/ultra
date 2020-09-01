@@ -20,7 +20,6 @@
 		align-items: center
 		font-size: 24px
 		cursor: crosshair
-		transform: scale(0.25)
 	#inner
 		position: absolute
 		width: 48px
@@ -48,6 +47,7 @@
 </style>
 
 <script>
+	import { Key } from './input.coffee'
 	export x = 0
 	export y = 0
 	export dir = ''
@@ -79,5 +79,15 @@
 	)
 	document.addEventListener('mouseup', (e) ->
 		show_menu = false
+	)
+	document.addEventListener('keydown', (e) ->
+		switch e.code
+			when Key.LShift
+				show_menu = true
+	)
+	document.addEventListener('keyup', (e) ->
+		switch e.code
+			when Key.LShift
+				show_menu = false
 	)
 </script>

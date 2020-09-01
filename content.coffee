@@ -2,9 +2,10 @@ import { FETCH_POST_AND_COMMENTS } from './network.coffee'
 export classify_post_content = (post) ->
 	content = null
 	if post.is_self
-		content =
-			type: 'html'
-			html: if post.selftext_html then post.selftext_html[31...-20] else ''
+		if post.selftext_html
+			content =
+				type: 'html'
+				html: post.selftext_html[31...-20]
 	else if post.is_gallery
 		content =
 			type: 'images'

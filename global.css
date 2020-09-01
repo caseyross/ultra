@@ -1,6 +1,12 @@
 *:focus {
 	outline: none;
 }
+*:focus::before {
+	content: '>';
+	position: absolute;
+	font-weight: bold;
+	font-size: 16px;
+}
 a {
 	color: lightblue;
 }

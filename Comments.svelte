@@ -7,7 +7,7 @@ section
 				+if('post.num_comments > 0')
 					article(use:reset_scroll use:draw_minimap)
 						+each('comments as comment')
-							CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}' selected_id='{$selected.comment.id}' select_comment='{select_comment}')
+							CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}' selected_id='{$selected.comment?.id}' select_comment='{select_comment}')
 					+else
 						#nocomments
 							button#add-first-comment ADD THE FIRST COMMENT
@@ -19,6 +19,7 @@ section
 	section
 		height: 100%
 		contain: strict
+		background: #333
 	#comments
 		height: 100%
 		overflow: auto

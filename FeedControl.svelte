@@ -29,6 +29,7 @@ nav
 <style>
 	nav
 		margin-bottom: 16px
+		padding: 0 12px
 	#feed-select
 		padding-top: 20px
 		margin-bottom: 8px

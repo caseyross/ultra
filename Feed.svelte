@@ -3,18 +3,21 @@
 	+then('items')
 		ol
 			+each('items as post, i')
-				li.brochure(tabindex=0)
-					+if('post.subreddit.toLowerCase() === $feed.name.toLowerCase()')
-						.flair-color(style!='background: {post_color(post)}; color: {contrast_color(post_color(post))}' title='{post.flair}') {i < num_stickies(items) ? 'S' : i - num_stickies(items) + 1}
-						+else
-							.flair-color(style!='background: {post_color(post)}; color: {contrast_color(post_color(post))}' title='{post.subreddit}') {i + 1}
-					h1.headline(
-						class:sticky!='{post.stickied || post.pinned}'
-						class:md-spoiler-text!='{post.spoiler}'
-						class:read!='{read_posts.has(post.id) && $selected.post.id !== post.id}'
-						on:click='{select_post(post)}'
-						title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
-					) {post.title}
+				li.envelope(
+					tabindex=0
+					on:click='{select_post(post)}'
+					style!='background: {post_color(post)}; color: {contrast_color(post_color(post))}'
+				)
+					.stamp(
+						style!='background: {post_color(post)}; color: {contrast_color(post_color(post))}'
+					) {i < num_stickies(items) ? 'S' : i - num_stickies(items) + 1}
+					.address
+						h1.headline(
+							class:md-spoiler-text!='{post.spoiler}'
+							class:read!='{read_posts.has(post.id) && $selected.post.id !== post.id}'
+							title='{Math.trunc(1000000 * post.score / post.subreddit_subscribers)} / {Math.trunc(1000000 * post.num_comments / post.subreddit_subscribers)}'
+						) {post.title}
+						span {post.subreddit.toLowerCase() === $feed.name.toLowerCase() ? post.flair : post.subreddit}
 	+catch('error')
 		.error-tag ERROR LOADING FEED
 		.error-message {error}
@@ -23,7 +26,7 @@
 <style>
 	ol
 		margin: 0
-		padding: 0
+		padding: 0 12px
 		height: 100%
 		overflow: auto
 		list-style: none
@@ -34,7 +37,7 @@
 		will-change: transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 		&::-webkit-scrollbar
 			display: none
-	.brochure
+	.envelope
 		padding: 8px 0
 		display: flex
 	.meta
@@ -55,15 +58,16 @@
 	.headline
 		margin: 0
 		font-size: 16px
-	.sticky
-		color: darkseagreen
-	.flair-color
-		flex: 0 0 32px
-		height: 16px
-		margin-right: 8px
+	.stamp
+		flex: 0 0 28px
+		height: 100%
+		padding: 2px
+		font-weight: bold
 		display: flex
 		justify-content: flex-end
-		align-items: center
+		align-items: flex-start
+	.address
+		padding: 0 0 0 8px
 	.read
 		opacity: 0.2
 	a
@@ -76,7 +80,7 @@
 	import { contrast_color } from './color.coffee';
 	export read_posts = new Set()
 	num_stickies = (items) ->
-		items.reduce(((sum, item) -> sum + (item.stickied or item.pinned)), 0)
+		items.reduce(((sum, item) -> sum + item.is_sticky), 0)
 	post_color = (post) ->
 		post.link_flair_background_color or post.sr_detail.primary_color or post.sr_detail.key_color or '#000000'
 	select_post = (post) ->

@@ -132,7 +132,8 @@ rectified_posts = (posts_listing) ->
 			post.is_xpost = false
 			post.content = classify_post_content(post)
 		# Standardize properties
-		post.flair = post.link_flair_text || '[no flair]'
+		post.is_sticky = post.stickied || post.pinned
+		post.flair = post.link_flair_text || ''
 		return post
 rectified_comments = (comments_listing) ->
 	restructured_comments = (comments_listing) ->

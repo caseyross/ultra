@@ -4,18 +4,19 @@
 		img
 		+then('info')
 			img(src='{info.banner_background_image}')
-	#left
-		+if('$selected.post.id')
-			Post(post='{$selected.post}')
-			+else
-				Sidebar
-	#center
-		FeedControl
-		Feed
-	#right
-		+if('$selected.post.id')
-			Comments(post='{$selected.post}')
-	MouseMenu
+			Sidebar
+	#content
+		#feed
+			FeedControl
+			Feed
+		+if('$selected.post')
+			+if('$selected.post.content')
+				#post
+					Post(post='{$selected.post}')
+		+if('$selected.post')
+			#comments
+				Comments(post='{$selected.post}')
+	Menu
 svelte:head
 	+await('$feed.METADATA')
 		title {$feed.type + '/' + $feed.name}
@@ -43,28 +44,25 @@ svelte:head
 		word-break: break-word
 	img
 		width: 100%
-	#center
+		max-height: 384px
+		object-fit: cover
+	#content
 		position: absolute
-		top: 16px
-		left: 16px
-		width: 384px
-		height: calc(100% - 16px)
-		padding: 0 16px
-		background: #333
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
 		display: flex
-		flex-flow: column nowrap
-	#left
-	#right
-		position: absolute
-		top: 16px
-		width: calc((100% - 400px) / 2 - 16px)
-		height: calc(100% - 32px)
-	#left
-		left: 416px
-	#right
-		right: 0
-		padding: 8px 0 0 8px
+	#feed
+		flex: 0 0 384px
+		margin: 16px 0 0 16px
 		background: #333
+	#post
+		flex: 0 1 calc((100% - 384px) / 2)
+		margin: 16px 0 0 16px
+	#comments
+		flex: 1 0 calc((100% - 384px) / 2)
+		margin: 16px 0 0 16px
 	#inspector
 		position: fixed
 		top: 0
@@ -78,35 +76,35 @@ svelte:head
 
 <script>
 	import { feed, selected } from './state.coffee'
-	import keymap from './keymap.coffee'
+	import { Key } from './input.coffee'
 	import FeedControl from './FeedControl.svelte'
 	import Sidebar from './Sidebar.svelte'
 	import Feed from './Feed.svelte'
 	import Post from './Post.svelte'
 	import Comments from './Comments.svelte'
-	import MouseMenu from './MouseMenu.svelte'
+	import Menu from './Menu.svelte'
 	import Inspector from './Inspector.svelte'
 	window.addEventListener('popstate', () ->
 		feed.go()
 	)
 	document.addEventListener('keydown', (e) ->
-		switch e.key
-			when keymap.inspect.post
+		switch e.code
+			when Key[1]
 				if $selected.inspect_mode is 'post'
 					$selected.inspect_mode = ''
 				else
 					$selected.inspect_mode = 'post'
-			when keymap.inspect.feed
+			when Key[2]
 				if $selected.inspect_mode is 'feed'
 					$selected.inspect_mode = ''
 				else
 					$selected.inspect_mode = 'feed'
-			when keymap.inspect.comment
+			when Key[3]
 				if $selected.inspect_mode is 'comment'
 					$selected.inspect_mode = ''
 				else
 					$selected.inspect_mode = 'comment'
-			when keymap.inspect.state
+			when Key[4]
 				if $selected.inspect_mode is 'state'
 					$selected.inspect_mode = ''
 				else

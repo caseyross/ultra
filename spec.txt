@@ -1,23 +1,17 @@
-MOUSE ACTIONS
+MENUS
 -------------
-
-RIGHT CLICK to upvote.
-Hold RIGHT CLICK, then press LEFT CLICK to downvote.
-Hold RIGHT CLICK, then move mouse N/S/E/W to use specified actions for those directions.
-
-User menu:
-			TAG
-REPORT				MESSAGE
-			FOLLOW
-
-Comment menu:
-			AWARD
-REPORT				REPLY
-			SAVE
-
-Post menu:
-			AWARD
-REPORT				COMMENT
-			SAVE
-
+Q: PaneLeft 	W: ItemUp 		E: PaneRight
+A: ItemLeft		S: ItemDown		D: ItemRight
+Z:				X:				C:	
+Press SHIFT or RIGHT CLICK to upvote.
 DOUBLE LEFT CLICK to collapse comment trees.
+
+SHIFT-MENUS
+-----------
+POST/MESSAGE
+Q:  			W: 		 		E: 
+A: Author...	S: Save			D: 
+Z:				X:				C:	
++ Comment/Reply, Award, Report
+USER
++ Tag, DM, Follow, Report, Award?

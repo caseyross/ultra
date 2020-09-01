@@ -2,8 +2,8 @@ import { writable } from 'svelte/store'
 import { sync_url } from './network.coffee'
 
 default_selected = {
-	post: {}
-	comment: {}
+	post: null
+	comment: null
 	inspect_mode: ''
 }
 export selected = writable default_selected
