@@ -1,16 +1,4 @@
 <template>
-nav
-	#feed-select
-		input(type='text' value='{$feed.type}/{$feed.name}' on:change!='{(e) => feed.go("/" + e.target.value)}')
-		+await('$feed.METADATA')
-			img(src='{img_reddit_logo}')
-			+then('info')
-				+if('info.community_icon')
-					img(src='{info.community_icon}')
-					+elseif('info.icon_img')
-						img(src='{info.icon_img}')
-					+else
-						img(src='{img_reddit_logo}')
 	#rank-by
 		button#hot(class:selected!='{$feed.rank_by.type === "hot"}') Hot
 		button#new(class:selected!='{$feed.rank_by.type === "new"}') New
@@ -27,28 +15,9 @@ nav
 </template>
 
 <style>
-	nav
-		margin-bottom: 16px
-		padding: 0 12px
-	#feed-select
-		padding-top: 20px
-		margin-bottom: 8px
-		display: flex
-		justify-content: space-between
-	input[type=text]
-		width: 100%
-		font-size: 24px
-		height: 36px
-		&:focus
-		&:hover
-			color: salmon
-	img
-		height: 48px
-		flex: 0 0 auto
-		margin-left: 8px
 	#rank-by
-		margin: 0
-		padding: 0
+		padding: 16px
+		padding-left: 64px
 		display: flex
 		justify-content: space-between
 		align-items: center
@@ -67,5 +36,4 @@ nav
 
 <script>
 	import { feed } from './state.coffee'
-	import img_reddit_logo from './reddit_logo.svg'
 </script>

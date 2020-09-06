@@ -1,43 +1,41 @@
 <template>
-.comment(
-	tabindex=0
-	on:click='{select_comment(comment)}'
-	style='margin-left: {32 * (depth - 1)}px'
-	class:selected='{comment.id === selected_id}'
-	class:highlighted='{comment.id === highlight_id}'
-	data-depth='{depth}'
-	data-color='{comment_color(comment)}'
-)
-	+if('comment.is_more')
-		.meta + {comment.count} more
-		+else
-			.meta
-				a.author(on:click!='{() => feed.go("/u/" + comment.author)}' style!='background: {comment_color(comment)}; color: {contrast_color(comment_color(comment))}') {comment.author}
-				+if('comment.author_flair_text')
-					span.author-flair {comment.author_flair_text}
-				+if('comment.total_awards_received > 0')
-					span.awards(title='{awards_description(comment.all_awardings)}')
-						+each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
-							+if('bucket[1].length')
-								span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
-			.text {@html comment.body_html}
-+each('comment.replies as comment')
-	svelte:self(comment='{comment}' depth='{depth + 1}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
+	.comment(
+		tabindex=0
+		on:click='{select_comment(comment)}'
+		class:selected='{comment.id === selected_id}'
+		class:highlighted='{comment.id === highlight_id}'
+		data-color='{comment_color(comment)}'
+	)
+		+if('comment.is_more')
+			.meta [{comment.count} more]
+			+else
+				.meta
+					a.author(on:click!='{() => feed.go("/u/" + comment.author)}' style!='color: {comment_color(comment)}') {comment.author}
+					+if('comment.author_flair_text')
+						span.author-flair {comment.author_flair_text}
+					+if('comment.total_awards_received > 0')
+						span.awards(title='{awards_description(comment.all_awardings)}')
+							+each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
+								+if('bucket[1].length')
+									span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
+				.text {@html comment.body_html}
+		+each('comment.replies as comment')
+			svelte:self(comment='{comment}' depth='{depth + 1}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}' select_comment='{select_comment}')
 </template>
 
 
 <style>
 	.comment
-		flex: 0 1 480px
-		padding: 8px 4px 8px 8px
-		&:focus
-			background: #333
-			color: white
+		padding: 8px 4px 0 20px
+		margin-left: 1px
+		& > &
+			border-left: 1px solid #444
 	.meta
 		color: gray
 		display: flex
 	.text
 		margin-top: 6px
+		max-width: 60ch
 	.author
 		cursor: pointer
 	.author-flair
@@ -58,10 +56,6 @@
 		color: #ccc
 	.bronze
 		color: rosybrown
-	.selected
-	.highlighted
-		background: #333
-		color: white
 </style>
 
 <script>
@@ -91,7 +85,7 @@
 				if comment.author_fullname == op_id
 					distinguish_colors.op
 				else
-					'#666'
+					'gray'
 	award_buckets = (awards) ->
 		buckets =
 			argentium: []

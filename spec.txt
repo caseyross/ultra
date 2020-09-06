@@ -11,7 +11,10 @@ SHIFT-MENUS
 POST/MESSAGE
 Q:  			W: 		 		E: 
 A: Author...	S: Save			D: 
-Z:				X:				C:	
-+ Comment/Reply, Award, Report
+Z: Report		X:				C: Copy link
++ Reply, Award
 USER
-+ Tag, DM, Follow, Report, Award?
+Q:  			W: 		 		E: 
+A: [None]       S: Follow		D: Message
+Z: Report		X:				C:
++ Tag, Award?

@@ -113,6 +113,7 @@ export FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_conte
 	})
 
 import { classify_post_content } from './content.coffee'
+import { reltime } from './time.coffee'
 rectified_posts = (posts_listing) ->
 	posts_listing.data.children.map (child) ->
 		post = child.data
@@ -122,7 +123,7 @@ rectified_posts = (posts_listing) ->
 		post.fetch_comments = () ->
 			if not post.comments_fetch_time
 				post.COMMENTS = FETCH_COMMENTS(post.id)
-				post.comments_fetch_time = Date.now()
+				post.comments_fetch_time = Math.trunc(Date.now() / 1000)
 		# Identify content of post
 		if post.crosspost_parent
 			post.is_xpost = true
@@ -131,9 +132,15 @@ rectified_posts = (posts_listing) ->
 		else
 			post.is_xpost = false
 			post.content = classify_post_content(post)
+		# Rewrite HTTP URLs to use HTTPS
+		if post.content.url?.startsWith 'http://'
+			post.content.url = 'https://' + post.content.url[7..]
 		# Standardize properties
-		post.is_sticky = post.stickied || post.pinned
+		post.age = reltime(Date.now() / 1000 - post.created_utc)
 		post.flair = post.link_flair_text || ''
+		post.flair_color = post.link_flair_background_color or ''
+		post.subreddit_color = post.sr_detail.primary_color or post.sr_detail.key_color or '' 
+		post.is_sticky = post.stickied || post.pinned
 		return post
 rectified_comments = (comments_listing) ->
 	restructured_comments = (comments_listing) ->

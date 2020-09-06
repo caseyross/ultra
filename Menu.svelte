@@ -1,11 +1,11 @@
 <template>
-+if('show_menu')
-	#outer(style='top: {y - 96}px; left: {x - 96}px;')
-		#option-n Reply
-		#option-e Award
-		#option-s Report
-		#option-w Save
-	#inner(style='top: {y - 24}px; left: {x - 24}px;') Upvote
+	+if('show_menu')
+		#outer(style='top: {y - 96}px; left: {x - 96}px;')
+			#option-n Reply
+			#option-e Award
+			#option-s Report
+			#option-w Save
+		#inner(style='top: {y - 24}px; left: {x - 24}px;') Upvote
 </template>
 
 <style>

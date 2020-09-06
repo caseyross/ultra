@@ -7,9 +7,6 @@
 	font-weight: bold;
 	font-size: 16px;
 }
-a {
-	color: lightblue;
-}
 blockquote {
 	padding-left: 0.6em;
 	border-left: 4px solid #ccc;
@@ -34,6 +31,15 @@ p + p {
 }
 pre {
 	white-space: pre-wrap;
+}
+table {
+	border-spacing: 8px;
+}
+th {
+	text-align: left;
+}
+td {
+	text-align: left;
 }
 .md-spoiler-text {
 	background: gray;

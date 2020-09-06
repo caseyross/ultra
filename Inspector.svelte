@@ -1,16 +1,16 @@
 <template>
-+if('typeof value === "object"')
-	+if('value === null')
-		+elseif('Object.entries(value).length === 0')
+	+if('typeof value === "object"')
+		+if('value === null')
+			+elseif('Object.entries(value).length === 0')
+			+else
+				.object
+					.object-key {key}
+					.object-value
+						ol
+							+each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
+								svelte:self(key='{nestedKey}' value='{nestedValue}')
 		+else
-			.object
-				.object-key {key}
-				.object-value
-					ol
-						+each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
-							svelte:self(key='{nestedKey}' value='{nestedValue}')
-	+else
-		li(on:click='{navigator.clipboard.writeText(value)}' title='{value}' style='color: {color(value)}') {format(key, value)}
+			li(on:click='{navigator.clipboard.writeText(value)}' title='{value}' style='color: {color(value)}') {format(key, value)}
 </template>
 
 <style>

@@ -1,34 +1,33 @@
 <template>
-section
-	#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
-		+await('post.COMMENTS')
-			#nocomments Loading...
-			+then('comments')
-				+if('post.num_comments > 0')
-					article(use:reset_scroll use:draw_minimap)
-						+each('comments as comment')
-							CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}' selected_id='{$selected.comment?.id}' select_comment='{select_comment}')
-					+else
-						#nocomments
-							button#add-first-comment ADD THE FIRST COMMENT
-	figure(bind:this='{dom.minimap}')
-		canvas(bind:this='{dom.minimap_field}')
+	section
+		#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
+			+await('post.COMMENTS')
+				#nocomments Loading...
+				+then('comments')
+					+if('post.num_comments > 0')
+						article(use:reset_scroll use:draw_minimap)
+							+each('comments as comment')
+								CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}' selected_id='{$selected.comment?.id}' select_comment='{select_comment}')
+						+else
+							#nocomments
+								button#add-first-comment ADD THE FIRST COMMENT
+		figure(bind:this='{dom.minimap}')
+			canvas(bind:this='{dom.minimap_field}')
 </template>
 
 <style>
 	section
 		height: 100%
 		contain: strict
-		background: #333
 	#comments
 		height: 100%
 		overflow: auto
 		will-change: transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 		&::-webkit-scrollbar
-			width: 48px
+			width: 64px
 			background: transparent
 		&::-webkit-scrollbar-thumb
-			background: rgba(0, 0, 0, 0.5)
+			background: rgba(0,0,0,0.2)
 	#nocomments
 		height: 100%
 		display: flex
@@ -46,7 +45,7 @@ section
 			text-decoration: underline
 	figure
 		height: 100%
-		width: 48px
+		width: 64px
 		position: absolute
 		top: 0
 		right: 0
@@ -65,7 +64,7 @@ section
 		minimap: {}
 		minimap_field: {}
 	teleport_via_minimap = (click) ->
-		if dom.comments.clientWidth - click.layerX < 64
+		if dom.comments.clientWidth - click.layerX < 0
 			dom.comments.scrollTop = click.layerY / dom.minimap.scrollHeight * dom.comments.scrollHeight - dom.minimap.scrollHeight / 2
 	onMount () ->
 		# <canvas> can't be sized properly in static CSS (only scaled)
@@ -75,14 +74,19 @@ section
 		dom.comments.scrollTop = 0
 	draw_minimap = () ->
 		canvas_context = dom.minimap_field.getContext '2d'
-		# Clear symbols
+		max_depth = 10
+		draw_symbols_for_children = (parent, children_depth) ->
+			if (children_depth <= max_depth)
+				for element in parent.children
+					if element.classList.contains("comment") and element.children.length > 1
+						canvas_context.fillStyle = element.dataset.color
+						canvas_context.fillRect(
+							dom.minimap.scrollWidth / max_depth * (children_depth - 1),
+							Math.trunc(element.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight),
+							element.children[1].scrollHeight / dom.minimap.scrollWidth * dom.minimap.scrollWidth,
+							(element.children[0].scrollHeight + element.children[1].scrollHeight) / dom.comments.scrollHeight * dom.minimap.scrollHeight
+						)
+						draw_symbols_for_children(element, children_depth + 1)
 		canvas_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
-		# If comments don't all fit on screen, draw symbols
-		if dom.comments.scrollHeight > dom.comments.clientHeight
-			max_depth = 10
-			for comment in dom.comments.firstChild.children
-				depth = comment.dataset.depth
-				if (depth <= max_depth)
-					canvas_context.fillStyle = comment.dataset.color
-					canvas_context.fillRect(dom.minimap.scrollWidth / max_depth * (depth - 1), Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight), dom.minimap.scrollWidth / max_depth, comment.scrollHeight / dom.comments.scrollHeight * dom.minimap.scrollHeight)
+		draw_symbols_for_children(dom.comments.firstChild, 1)
 </script>

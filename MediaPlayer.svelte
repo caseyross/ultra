@@ -1,21 +1,21 @@
 <template>
-#player(bind:this='{dom.player}')
-	+if('audio_url || video_url')
-		video(
-			src='{video_url}'
-			bind:duration='{v.duration}'
-			bind:currentTime='{v.time}'
-			bind:paused='{v.paused}'
-		)
-		audio(
-			src='{audio_url}'
-			bind:paused='{a.paused}'
-		)
-		nav(on:mousedown!='{() => play_pause()}')
-			#scrubber-track
-				#scrubber(style!='transform: scaleX({v.time / v.duration})')
-		+else
-			div CANNOT LOAD AUDIO/VIDEO
+	#player(bind:this='{dom.player}')
+		+if('audio_url || video_url')
+			video(
+				src='{video_url}'
+				bind:duration='{v.duration}'
+				bind:currentTime='{v.time}'
+				bind:paused='{v.paused}'
+			)
+			audio(
+				src='{audio_url}'
+				bind:paused='{a.paused}'
+			)
+			nav(on:mousedown!='{() => play_pause()}')
+				#scrubber-track
+					#scrubber(style!='transform: scaleX({v.time / v.duration})')
+			+else
+				div CANNOT LOAD AUDIO/VIDEO
 </template>
 
 <style>
