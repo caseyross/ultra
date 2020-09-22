@@ -12,10 +12,26 @@ pre,
 blockquote,
 figure,
 figcaption,
+ol,
+ul,
 dl,
 dd {
 	margin: 0;
 	padding: 0;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
 }
 
 button,

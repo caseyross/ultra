@@ -20,31 +20,34 @@
 
 <style>
 	#player
-		overflow: hidden
-		position: relative
+		height 100%
+		position relative
+	video
+		max-width 100%
+		max-height 100%
 	nav
-		position: absolute
-		top: 0
-		left: 0
-		width: 100%
-		height: 100%
+		position absolute
+		top 0
+		left 0
+		width 100%
+		height 100%
 	#scrubber-track
-		position: absolute
-		bottom: 0
-		left: 0
-		height: 4px
-		width: 100%
-		background: #333
+		position absolute
+		top 0
+		left 0
+		height 4px
+		width 100%
+		background white
 	#scrubber
-		position: absolute
-		height: 100%
-		width: 100%
-		background: white
-		transform-origin: left center
+		position absolute
+		height 100%
+		width 100%
+		background steelblue
+		transform-origin left center
 </style>
 
 <script>
-	import { duration } from './time.coffee'
+	import { duration } from '/proc/time.coffee'
 	export audio_url = ''
 	export video_url = ''
 	export video_preview_url = ''

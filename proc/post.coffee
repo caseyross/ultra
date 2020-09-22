@@ -1,4 +1,4 @@
-import { FETCH_POST_AND_COMMENTS } from './network.coffee'
+import { FETCH_POST_AND_COMMENTS } from '/proc/network.coffee'
 export classify_post_content = (post) ->
 	if post.is_meta
 		# Reddit TODO
@@ -51,6 +51,10 @@ export classify_post_content = (post) ->
 					caption_url: image.outbound_url
 				}
 			)
+		}
+	if post.rpan_video
+		return {
+			type: 'rpan'
 		}
 	if post.domain.endsWith 'reddit.com'
 		[_, _, _, _, _, _, id, _, comment_id, options] = post.url.split '/'
@@ -195,8 +199,8 @@ export classify_post_content = (post) ->
 		type: 'empty'
 	}
 
-import gfycat_adjectives from './gfycat-adjectives.json'
-import gfycat_animals from './gfycat-animals.json'
+import gfycat_adjectives from '/data/gfycat-adjectives.json'
+import gfycat_animals from '/data/gfycat-animals.json'
 titlecase_gfycat_video_id = (video_id) ->
 	match_words = () ->
 		for adjective_1 in gfycat_adjectives

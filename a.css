@@ -1,22 +1,31 @@
 *:focus {
 	outline: none;
 }
-*:focus::before {
-	content: '>';
-	position: absolute;
-	font-weight: bold;
-	font-size: 16px;
+a {
+	color: skyblue;
 }
 blockquote {
 	padding-left: 0.6em;
-	border-left: 4px solid #ccc;
+	border-left: 4px solid #666;
 	color: #999;
 }
 blockquote + p {
 	margin-top: 8px;
 }
+kbd {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 3px;
+	width: 20px;
+	height: 20px;
+	background: #222;
+	color: gray;
+	border: 1px solid;
+	border-radius: 4px;
+	font: bold 12px "Iosevka Aile";
+}
 main {
-	height: 100%;
 	--tc-g: #222;
 	--tc-f: #775948;
 	--tc-m: #bd6340;

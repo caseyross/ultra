@@ -1,36 +1,3 @@
-export sync_url = (new_url = '') ->
-	# Enter new URL if provided
-	if new_url
-		history.pushState({}, new_url, new_url)
-	# Read in feed configuration from URL path
-	url_path = window.location.pathname.split('/')
-	url_params = new URLSearchParams window.location.search[1...]
-	feed = {
-		name: url_path[2] || ''
-		...(switch url_path[1]
-			when 'u', 'user'
-				type: 'u'
-				rank_by:
-					type: url_params.get('sort') || 'new'
-					filter: url_params.get('t') || ''
-			else
-				type: 'r'
-				rank_by:
-					type: if url_path[2] then url_params.get('sort') || url_path[3] || 'hot' else 'best'
-					filter: switch url_params.get('sort') || url_path[3]
-						when 'top'
-							url_params.get('t') || 'day'
-						else
-							url_params.get('geo_filter') || 'GLOBAL'
-		)
-		seen_count: url_params.get('count') || 0
-		after_id: url_params.get('after') || ''
-		page_size: url_params.get('limit') || 25
-	}
-	feed.DATA = FETCH_FEED_DATA(feed)
-	feed.METADATA = FETCH_FEED_METADATA(feed)
-	return feed
-
 # docs: https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
 # docs: https://www.reddit.com/dev/api
 token_type = localStorage.token_type || ''
@@ -70,25 +37,25 @@ GET_FROM_API = (endpoint) ->
 		}
 	).then (response) ->
 		response.json()
-FETCH_FEED_DATA = (feed) ->
+export FETCH_FEED_DATA = (feed) ->
 	GET_FROM_API(
 		(if feed.name is ''
-			"#{feed.rank_by.type}?"
+			"#{feed.sort}?"
 		else
 			(if feed.type is 'u'
-				"user/#{feed.name}?sort=#{feed.rank_by.type}&"
+				"user/#{feed.name}?sort=#{feed.sort}&"
 			else
-				"r/#{feed.name}/#{feed.rank_by.type}?"
+				"r/#{feed.name}/#{feed.sort}?"
 			)
 		) +
 		"limit=#{feed.page_size}&" +
-		(if feed.rank_by.type is 'top' then "t=#{feed.rank_by.filter}&" else '') +
+		(if feed.sort is 'top' then "t=#{feed.filter}&" else '') +
 		(if feed.after_id then "after=#{feed.after_id}&" else '') +
 		(if feed.seen_count then "count=#{feed.seen_count}&" else '') +
-		"sr_detail=true"
+		'sr_detail=true'
 	).then (posts_listing) ->
 		rectified_posts(posts_listing)
-FETCH_FEED_METADATA = (feed) ->
+export FETCH_FEED_METADATA = (feed) ->
 	if feed.name is '' then return new Promise (fulfill, reject) -> fulfill({})
 	GET_FROM_API(
 		"#{if feed.type is 'u' then 'user' else 'r'}/#{feed.name}/about"
@@ -112,8 +79,8 @@ export FETCH_POST_AND_COMMENTS = (post_id, focal_comment_id, focal_comment_conte
 			comments_fetch_time: Date.now()
 	})
 
-import { classify_post_content } from './content.coffee'
-import { reltime } from './time.coffee'
+import { classify_post_content } from '/proc/post.coffee'
+import { reltime } from '/proc/time.coffee'
 rectified_posts = (posts_listing) ->
 	posts_listing.data.children.map (child) ->
 		post = child.data
@@ -139,8 +106,8 @@ rectified_posts = (posts_listing) ->
 		post.age = reltime(Date.now() / 1000 - post.created_utc)
 		post.flair = post.link_flair_text || ''
 		post.flair_color = post.link_flair_background_color or ''
-		post.subreddit_color = post.sr_detail.primary_color or post.sr_detail.key_color or '' 
 		post.is_sticky = post.stickied || post.pinned
+		post.feed_color = post.sr_detail.primary_color or post.sr_detail.key_color or 'inherit'
 		return post
 rectified_comments = (comments_listing) ->
 	restructured_comments = (comments_listing) ->

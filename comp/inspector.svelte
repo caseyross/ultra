@@ -15,22 +15,22 @@
 
 <style>
 	.object
-		display: flex
+		display flex
 	.object-key
-		flex: 0 0 144px
-		height: 12px
-		color: gray
-		background: #ddd
-		border-top-right-radius: 12px
-		border-bottom-right-radius: 12px
+		flex 0 0 144px
+		height 12px
+		color gray
+		background #ddd
+		border-top-right-radius 12px
+		border-bottom-right-radius 12px
 	.object-value
-		flex: 0 0 288px
-		cursor: default
+		flex 0 0 288px
+		cursor default
 	ol
-		margin: 0
-		padding: 0
-		list-style: none
-		white-space: pre
+		margin 0
+		padding 0
+		list-style none
+		white-space pre
 </style>
 
 <script>
