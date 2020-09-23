@@ -10,7 +10,7 @@ blockquote {
 	color: #999;
 }
 blockquote + p {
-	margin-top: 8px;
+	margin-top: 0.5em;
 }
 kbd {
 	display: inline-flex;

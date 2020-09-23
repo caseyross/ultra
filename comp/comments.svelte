@@ -1,40 +1,33 @@
 <template>
-	section
-		nav
-		article
-			#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
-				+await('post.COMMENTS')
-					#nocomments Loading...
-					+then('comments')
-						+if('post.num_comments > 0')
-							+each('comments as comment')
-								CommentTree(comment='{comment}' author_color='{post.feed_color}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
-							+else
-								#nocomments
-									button#add-first-comment ADD THE FIRST COMMENT
-			figure(bind:this='{dom.minimap}')
-				canvas(bind:this='{dom.minimap_field}')
+	article
+		#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
+			+await('post.COMMENTS')
+				#nocomments Loading...
+				+then('comments')
+					+if('post.num_comments > 0')
+						+each('comments as comment')
+							CommentTree(comment='{comment}' author_color='{post.feed_color}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
+						+else
+							#nocomments
+								button#add-first-comment ADD THE FIRST COMMENT
+		figure(bind:this='{dom.minimap}')
+			canvas(bind:this='{dom.minimap_field}')
 </template>
 
 <style>
 	minimap_width = 64px
-	section
+	article
+		flex 1
 		height 100%
-		flex 1 0 640px
-		display flex
-		flex-flow column nowrap
+		contain strict
 	nav
 		flex 0 0 32px
 		background #333
-	article
-		flex 1 0 auto
-		contain strict
 	#comments
 		height 100%
 		overflow-x auto
 		overflow-y scroll
 		will-change transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
-		padding 16px
 		&::-webkit-scrollbar
 			width minimap_width
 			background transparent

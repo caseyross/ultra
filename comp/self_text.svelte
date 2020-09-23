@@ -6,10 +6,8 @@
 <style>
 	#self-text
 		height 100%
-		padding 16px
 		overflow auto
 		font-size 14px
-		line-height 1.5
 		&::-webkit-scrollbar
 			width 4px
 			background transparent

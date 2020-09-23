@@ -15,21 +15,25 @@
 							img(src='{info.icon_img}')
 						+else
 							img(src='{img_reddit_logo}')
+		#input
+			button(class:selected!='{state.feed.type === "r"}' on:click!='{() => state.feed.type = "r"}') subreddit
+			span(style!='margin: 0 8px') ·
+			button(class:selected!='{state.feed.type === "u"}' on:click!='{() => state.feed.type = "u"}') user
+			input(type='text' bind:value='{state.feed.name}' placeholder='front page')
+			#feed-sort
+				button#new(class:selected!='{state.feed.sort === "new"}') new
+				button#rising(class:selected!='{state.feed.sort === "rising"}') rising
+				button#hot(class:selected!='{state.feed.sort === "hot"}') hot
+				button#controversial(class:selected!='{state.feed.sort === "controversial"}') controversial
+				#feed-sort-top
+					button#top(class:selected!='{state.feed.sort === "top"}') top:
+					button#hour(class:selected!='{state.feed.sort === "top" && state.feed.filter === "hour"}') h
+					button#day(class:selected!='{state.feed.sort === "top" && state.feed.filter === "day"}') d
+					button#week(class:selected!='{state.feed.sort === "top" && state.feed.filter === "week"}') w
+					button#month(class:selected!='{state.feed.sort === "top" && state.feed.filter === "month"}') m
+					button#year(class:selected!='{state.feed.sort === "top" && state.feed.filter === "year"}') y
+					button#all(class:selected!='{state.feed.sort === "top" && state.feed.filter === "all"}') a
 		#feed
-			input(type='text' bind:value='{state.feed.name}')
-			#rank-by
-				button#hot(class:selected!='{state.feed.sort === "hot"}') Hot
-				button#new(class:selected!='{state.feed.sort === "new"}') New
-				button#rising(class:selected!='{state.feed.sort === "rising"}') Rising
-				button#controversial(class:selected!='{state.feed.sort === "controversial"}') Controversial
-				#rank-by-top
-					button#top(class:selected!='{state.feed.sort === "top"}') Top:
-					button#hour(class:selected!='{state.feed.sort === "top" && state.feed.filter === "hour"}') H
-					button#day(class:selected!='{state.feed.sort === "top" && state.feed.filter === "day"}') D
-					button#week(class:selected!='{state.feed.sort === "top" && state.feed.filter === "week"}') W
-					button#month(class:selected!='{state.feed.sort === "top" && state.feed.filter === "month"}') M
-					button#year(class:selected!='{state.feed.sort === "top" && state.feed.filter === "year"}') Y
-					button#all(class:selected!='{state.feed.sort === "top" && state.feed.filter === "all"}') A
 			+await('state.feed.DATA')
 				+then('items')
 					BoxStack(
@@ -42,18 +46,22 @@
 					.error-tag ERROR LOADING FEED
 					.error-message {error}
 		+if('state.item.id')
-			+if('state.item.content.type === "html"')
-				SelfText(text_html='{state.item.content.html}')
-				+elseif('state.item.content.type === "image"')
-					Gallery(images='{state.item.content.images}')
-				+elseif('state.item.content.type === "video"')
-					MediaPlayer(audio_url='{state.item.content.audio_url}' video_url='{state.item.content.url}' video_preview_url='{state.item.content.preview_url}')
-				+elseif('state.item.content.type === "item"')
-					+await('state.item.content.POST then content_post')
-						Comments(post='{content_post}')
-				+elseif('state.item.content.type === "link"')
-					iframe(src='{state.item.content.url}' sandbox='allow-scripts allow-same-origin')
-			Comments(post='{state.item}')
+			#post
+				#post-meta
+					h2 {state.item.title}
+				#post-content
+					+if('state.item.content.type === "html"')
+						SelfText(text_html='{state.item.content.html}')
+						+elseif('state.item.content.type === "image"')
+							Gallery(images='{state.item.content.images}')
+						+elseif('state.item.content.type === "video"')
+							MediaPlayer(audio_url='{state.item.content.audio_url}' video_url='{state.item.content.url}' video_preview_url='{state.item.content.preview_url}')
+						+elseif('state.item.content.type === "item"')
+							+await('state.item.content.POST then content_post')
+								Comments(post='{content_post}')
+						+elseif('state.item.content.type === "link"')
+							iframe(src='{state.item.content.url}' sandbox='allow-scripts allow-same-origin')
+					Comments(post='{state.item}')
 			+else
 				#feed-description
 					+await('state.feed.METADATA then info')
@@ -63,6 +71,10 @@
 						+catch('error')
 							article {error}
 		Menu
+		button#show-keyboard-shortcuts
+			| show keyboard shortcuts
+			|
+			kbd ?
 		+if('state.inspect')
 			#inspector
 				Inspector(value='{state}')
@@ -72,35 +84,51 @@
 	main
 		height 100%
 		display grid
-		grid-template-columns 30% 40% 30%
-		grid-template-rows 1fr
+		grid-template-columns 22% 1fr
+		grid-template-rows 144px minmax(0, 1fr)
+		grid-template-areas 'feed-meta content' 'feed content'
+		gap 0 48px
 		background #222
 		color white
-		font 300 12px/1.2 Verdana, sans-serif
+		font 300 12px/1.5 Verdana, sans-serif
 		word-break break-word
 	#top-nav
 		display none
-		flex 0 0 80px
 		background #333
 		img
 			width 80px
 			height 80px
 			padding 8px
 			object-fit contain
+	#input
+		grid-area feed-meta
+		padding-left 48px
+		padding-top 48px
+	input[type=text]
+		display block
+		font-size 3vh
 	#feed
-		flex 0 0 320px
-		padding 16px
-		height 100%
+		grid-area feed
+		padding-left 32px
+		overflow auto
+		will-change transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
+		&::-webkit-scrollbar
+			display none
+	#post
+		grid-area content
+		padding-top 48px
 		display flex
 		flex-flow column nowrap
-	#comments
-		grid-area right
+	#post-content
+		flex 1
+		padding-top 16px
+		display flex
 	#feed-nav
 		height 64px
 		display flex
 		justify-content space-between
 		align-items center
-	#rank-by
+	#feed-sort
 		display flex
 		justify-content space-between
 		align-items center
@@ -113,8 +141,10 @@
 	#year
 	#all
 		padding 4px
+	button
+		opacity 0.5
 	.selected
-		text-decoration underline
+		opacity 1
 	#feed-description
 		height 100%
 		overflow auto

@@ -7,10 +7,10 @@
 			data-color='{author_color}'
 		)
 			+if('comment.is_more')
-				.meta [{comment.count} more]
+				.meta +
 				+else
 					.meta
-						a.author {comment.author}
+						span {comment.score}
 						+if('comment.author_flair_text')
 							span.author-flair {comment.author_flair_text}
 						+if('comment.total_awards_received > 0')
@@ -27,13 +27,13 @@
 
 <style>
 	.comment-tree
-		padding 8px 4px 0 20px
+		margin-left 24px
 	.comment
+		margin-bottom 12px
 		display flex
 	.meta
-		flex 0 0 auto
-	.text
-		padding 3px 10px
+		flex 0 0 48px
+		color: gray
 	.author
 		display block
 		padding 2px

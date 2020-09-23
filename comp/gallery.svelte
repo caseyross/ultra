@@ -1,11 +1,24 @@
 <template>
 	#gallery
 		figure
+			menu
+				button
+					| enlarge
+					|
+					kbd E
+				button
+					| fullscreen
+					|
+					kbd F
+				button
+					a(href='{images[i].url_full}' target='_blank' rel='noopener')
+						| open original
+						|
+						kbd O
 			img(src='{images[i].url_640}')
 			figcaption
 				| {images[i].caption || ''}
 				a(href='{images[i].caption_url}') {images[i].caption_url || ''}
-			a(href='{images[i].url_full}' target='_blank' rel='noopener') View full size
 		#thumbnails
 			+if('images.length > 1')
 				+each('images as image, j')
@@ -18,25 +31,26 @@
 
 <style>
 	#gallery
-		position relative
 		height 100%
-		flex 0 0 960px
-		background #111
+		position relative
 	figure
 		height 100%
-		display flex
-		flex-flow column nowrap
-		justify-content center
-		&:hover > a
-			opacity 1
 	img
 		object-fit contain
-	a
-		opacity 0
-		position absolute
-		bottom 0
-		right 0
-		background black
+	menu
+		margin-bottom 8px
+	button
+		color gray
+		& ~ &
+			margin-left 24px
+		a
+			color inherit
+			text-decoration none
+	figcaption
+		margin-top 8px
+		font-style italic
+		a
+			margin-left: 8px
 	#thumbnails
 		position absolute
 		bottom 0

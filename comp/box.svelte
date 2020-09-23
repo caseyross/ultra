@@ -5,7 +5,7 @@
 		class:selected!='{is_selected}'
 		on:mousedown!='{() => do_select()}'
 	)
-		h2(
+		h1(
 			class:md-spoiler-text!='{item.spoiler}'
 			title='{Math.trunc(1000000 * item.score / item.subreddit_subscribers)} / {Math.trunc(1000000 * item.num_comments / item.subreddit_subscribers)}'
 		) {item.title}
@@ -16,20 +16,23 @@
 
 <style>
 	li
-		padding 4px 0
+		padding 16px
 		cursor pointer
+		border-radius: 16px
+		&:hover
+		&.selected
+			opacity 1
+			background: #333
 	.meta
 		color gray
 		display flex
 		& > span
 			margin-right 8px
-	h2
+	h1
 		font-weight normal
+		font-size: 15px
 	.read
 		opacity 0.2
-	.selected
-		opacity 1
-		color steelblue
 	a
 		color inherit
 		text-decoration none
