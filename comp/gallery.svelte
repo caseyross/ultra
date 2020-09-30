@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	#gallery
 		figure
 			menu
@@ -73,5 +73,6 @@
 
 <script>
 	export images = []
+	
 	i = 0
 </script>

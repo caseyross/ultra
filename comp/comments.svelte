@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	article
 		#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
 			+await('post.COMMENTS')
@@ -6,7 +6,7 @@
 				+then('comments')
 					+if('post.num_comments > 0')
 						+each('comments as comment')
-							CommentTree(comment='{comment}' author_color='{post.feed_color}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
+							CommentTree(comment='{comment}' author_color='{post.list_color}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
 						+else
 							#nocomments
 								button#add-first-comment ADD THE FIRST COMMENT

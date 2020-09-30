@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	.comment-tree
 		.comment(
 			tabindex=0
@@ -59,13 +59,15 @@
 </style>
 
 <script>
-	import { contrast_color } from '/proc/color.coffee'
 	export comment =
 		replies: []
 	export author_color = 'inherit'
 	export op_id = ''
 	export highlight_id = ''
 	export selected_id = ''
+
+	import { contrast_color } from '/proc/color.coffee'
+	
 	formatted_comment_html = (comment) ->
 		comment.body_html
 	distinguish_colors =

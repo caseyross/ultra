@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	#self-text
 		+html('text_html')
 </template>

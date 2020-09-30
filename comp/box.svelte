@@ -1,17 +1,20 @@
-<template>
+<template lang='pug'>
 	li(
 		tabindex=0
-		class:read!='{is_read}'
-		class:selected!='{is_selected}'
-		on:mousedown!='{() => do_select()}'
+		class:read
+		class:selected
+		on:mousedown='{select}'
 	)
-		h1(
-			class:md-spoiler-text!='{item.spoiler}'
-			title='{Math.trunc(1000000 * item.score / item.subreddit_subscribers)} / {Math.trunc(1000000 * item.num_comments / item.subreddit_subscribers)}'
-		) {item.title}
 		.meta
-			span.domain {item.is_self ? '[text]' : item.is_gallery ? '[gallery]' : item.domain}
-			span.age {item.age}
+			span {object.subreddit}
+			span {object.flair}
+		h1(
+			class:md-spoiler-text!='{object.spoiler}'
+			title='{Math.trunc(1000000 * object.score / object.subreddit_subscribers)} / {Math.trunc(1000000 * object.num_comments / object.subreddit_subscribers)}'
+		) {object.title}
+		.meta
+			span.domain {object.is_self ? '[text]' : object.is_gallery ? '[gallery]' : object.domain}
+			span.age {object.age}
 </template>
 
 <style>
@@ -39,15 +42,17 @@
 </style>
 
 <script>
+	export object = {}
+	export select = () -> {}
+	export selected = false
+	export read = false
+	
 	import { contrast_color } from '/proc/color.coffee'
-	export item = {}
-	export is_selected = false
-	export is_read = false
-	export do_select = () -> {}
-	tag = (item) -> switch
-		when item.is_sticky then 'STICKY'
-		when item.over_18 then 'NSFW'
-		when item.spoiler then 'SPOIL'
-		when item.locked then 'LOCK'
-		when item.quarantine then 'QUAR'
+	
+	tag = (object) -> switch
+		when object.is_sticky then 'STICKY'
+		when object.over_18 then 'NSFW'
+		when object.spoiler then 'SPOIL'
+		when object.locked then 'LOCK'
+		when object.quarantine then 'QUAR'
 </script>

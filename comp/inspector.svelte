@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	+if('typeof value === "object"')
 		+if('value === null')
 			+elseif('Object.entries(value).length === 0')
@@ -36,6 +36,7 @@
 <script>
 	export key = 'ROOT'
 	export value = undefined
+	
 	sort = (entries) ->
 		entries.sort (a, b) ->
 			(order.indexOf(typeof a[1]) - order.indexOf(typeof b[1])) + ((a[0] > b[0]) - 0.5)

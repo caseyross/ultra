@@ -1,52 +1,36 @@
-import { FETCH_FEED_DATA, FETCH_FEED_METADATA } from '/proc/network.coffee'
-load_feed = (new_url = '') ->
-	# Write new URL (if provided) to browser
-	if new_url
-		history.pushState({}, new_url, new_url)
-	# Read feed configuration from URL
-	path = window.location.pathname.split('/')
-	params = new URLSearchParams window.location.search[1...]
-	# Construct tabula rasa state
-	state =
-		feed: {
-			...(switch path[1]
-				when 'u', 'user'
-					type: 'u'
-					sort: params.get('sort') || 'new'
-					filter: params.get('t') || ''
-				else
-					type: 'r'
-					sort: if path[2] then params.get('sort') || path[3] || 'hot' else 'best'
-					filter: switch params.get('sort') || path[3]
-						when 'top'
-							params.get('t') || 'day'
-						else
-							params.get('geo_filter') || 'GLOBAL'
-			)
-			name: path[2] || ''
-			pagesize: params.get('limit') || 25
-			after: params.get('after') || ''
-			seen: params.get('count') || 0
-			read: new Set()
-		},
-		item:
-			id: ''
-			content:
-				type: 'empty'
-		comment:
-			id: ''
-		inspect: false
-	# Request Reddit content
-	state.feed.DATA = FETCH_FEED_DATA(state.feed)
-	state.feed.METADATA = FETCH_FEED_METADATA(state.feed)
-	# 
-	return state
+window.ls = window.localStorage
+
+###
+write_state_to_url = (state) ->
+	new_url = url_from_state state
+	history.pushState {}, new_url, new_url
+###
+
+import { state_from_url } from '/proc/url.coffee'
+import { LIST, LIST_DESCRIPTION, POST_AND_COMMENTS } from '/proc/api.coffee'
+
+state = state_from_url()
+data =
+	LIST: LIST {
+		id: state.list_id,
+		page_size: state.list_page_size,
+		predecessor_object_id: state.list_predecessor_object_id,
+		rank_by: state.list_rank_by,
+		time_period: state.list_time_period
+	}
+	LIST_DESCRIPTION: LIST_DESCRIPTION { id: state.list_id }
+	OBJECT: if state.object_id then POST_AND_COMMENTS { post_id: state.object_id } else new Promise (f, r) -> {}
 
 import App from '/app.svelte'
 new App({
 	target: document.body
 	props: {
-		state: load_feed(),
-		load_feed
+		state,
+		data
 	}
 })
+
+###
+window.addEventListener 'popstate', () ->
+	initialize_state()
+###

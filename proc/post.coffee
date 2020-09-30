@@ -1,4 +1,4 @@
-import { FETCH_POST_AND_COMMENTS } from '/proc/network.coffee'
+import { POST_AND_COMMENTS } from '/proc/api.coffee'
 export classify_post_content = (post) ->
 	if post.is_meta
 		# Reddit TODO
@@ -18,7 +18,7 @@ export classify_post_content = (post) ->
 		return {
 			type: 'image'
 			images: post.gallery_data.items.map (image) -> (
-				data = post.media_metadata[image.media_id].p.concat(post.media_metadata[image.media_id].s)
+				data = post.media_metadata[image.media_id].p.concat post.media_metadata[image.media_id].s
 				url_640 = data[0].u
 				width_640 = data[0].x
 				height_640 = data[0].y
@@ -57,11 +57,10 @@ export classify_post_content = (post) ->
 			type: 'rpan'
 		}
 	if post.domain.endsWith 'reddit.com'
-		[_, _, _, _, _, _, id, _, comment_id, options] = post.url.split '/'
-		url_params = new URLSearchParams(options)
+		[_, _, _, _, _, _, id, _, comroot_id, options] = post.url.split '/'
 		return {
 			type: 'post'
-			POST: FETCH_POST_AND_COMMENTS(id, comment_id, url_params.get('context'))
+			LINKED_OBJECT: POST_AND_COMMENTS { id, comroot_id, comroot_parent_count: (new URLSearchParams options).get 'context' }
 		}
 	switch post.domain
 		when 'clips.twitch.tv'
@@ -73,12 +72,12 @@ export classify_post_content = (post) ->
 		when 'gfycat.com'
 			return {
 				type: 'video'
-				url:'https://giant.gfycat.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+				url: 'https://giant.gfycat.com/' + titlecase_gfycat_video_id post.url[(post.url.lastIndexOf '/' + 1)...] + '.webm'
 			}
 		when 'redgifs.com'
 			return {
 				type: 'video'
-				url: 'https://thumbs1.redgifs.com/' + titlecase_gfycat_video_id(post.url[(post.url.lastIndexOf('/') + 1)...]) + '.webm'
+				url: 'https://thumbs1.redgifs.com/' + titlecase_gfycat_video_id post.url[(post.url.lastIndexOf '/' + 1)...] + '.webm'
 			}
 		when 'youtu.be'
 			video_id = (new URL(post.url)).pathname[1..]
@@ -87,7 +86,7 @@ export classify_post_content = (post) ->
 				html: "<iframe src='https://www.youtube.com/embed/#{video_id}?feature=oembed&amp;enablejsapi=1' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='true'></iframe>"
 			}
 		when 'youtube.com'
-			video_id = (new URL(post.url)).searchParams.get('v')
+			video_id = (new URL(post.url)).searchParams.get 'v'
 			return {
 				type: 'html'
 				html: "<iframe src='https://www.youtube.com/embed/#{video_id}?feature=oembed&amp;enablejsapi=1' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='true'></iframe>"
@@ -103,7 +102,7 @@ export classify_post_content = (post) ->
 			# TODO: Handle GIFs
 			optimized_image = post.preview?.images?[0]
 			if optimized_image
-				data = optimized_image.resolutions.concat(optimized_image.source)
+				data = optimized_image.resolutions.concat optimized_image.source
 				url_640 = data[0].url
 				width_640 = data[0].width
 				height_640 = data[0].height
@@ -156,17 +155,17 @@ export classify_post_content = (post) ->
 				preview_url: post.secure_media.reddit_video.scrubber_media_url
 			}
 		when 'rich:video'
-			console.log(post)
+			console.log post
 	if post.url
-		[i, j, k] = [post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1), post.url.indexOf('?'), post.url.indexOf('#')]
-		if j > -1
-			url_ext = post.url[(i + 1)...j]
-		else if k > -1
-			url_ext = post.url[(i + 1)...k]
-		else if i > -1
-			url_ext = post.url[(i + 1)...]
-		else
-			url_ext = ''
+		[ i, j, k ] = [
+			post.url.indexOf('.', post.url.indexOf('/', post.url.indexOf('//') + 2) + 1),
+			post.url.indexOf '?',
+			post.url.indexOf '#'
+		]
+		url_ext = ''
+		if j > -1 then url_ext = post.url[(i + 1)...j]
+		else if k > -1 then url_ext = post.url[(i + 1)...k]
+		else if i > -1 then url_ext = post.url[(i + 1)...]
 		switch url_ext
 			when 'gif', 'jpg',  'jpeg', 'png', 'webp'
 				return {
@@ -208,7 +207,7 @@ titlecase_gfycat_video_id = (video_id) ->
 				for adjective_2 in gfycat_adjectives
 					if video_id[adjective_1.length...].startsWith adjective_2
 						for animal in gfycat_animals
-							if video_id[(adjective_1.length + adjective_2.length)...] == animal
+							if video_id[(adjective_1.length + adjective_2.length)...] is animal
 								return [adjective_1, adjective_2, animal]
 		return ['', '', '']
 	[adjective_1, adjective_2, animal] = match_words()
@@ -218,4 +217,4 @@ titlecase_gfycat_video_id = (video_id) ->
 		gfycat_adjectives.reverse()
 	if not (adjective_1 and adjective_2 and animal)
 		return ''
-	adjective_1[0].toUpperCase() + adjective_1[1...] + adjective_2[0].toUpperCase() + adjective_2[1...] + animal[0].toUpperCase() + animal[1...]
+	return adjective_1[0].toUpperCase() + adjective_1[1...] + adjective_2[0].toUpperCase() + adjective_2[1...] + animal[0].toUpperCase() + animal[1...]

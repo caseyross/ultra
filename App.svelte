@@ -1,75 +1,79 @@
-<template>
+<template lang='pug'>
 	svelte:head
-		+await('state.feed.METADATA')
-			title {state.feed.type + '/' + state.feed.name}
-			+then('info')
-				title {info.title}
+		+await('data.LIST_DESCRIPTION')
+			title {state.list_id}
+			+then('description')
+				title {description.title}
 	main
 		nav#top-nav
-			+await('state.feed.METADATA')
+			+await('data.LIST_DESCRIPTION')
 				img
-				+then('info')
-					+if('info.community_icon')
-						img(src='{info.community_icon}')
-						+elseif('info.icon_img')
-							img(src='{info.icon_img}')
+				+then('description')
+					+if('description.community_icon')
+						img(src='{description.community_icon}')
+						+elseif('description.icon_img')
+							img(src='{description.icon_img}')
 						+else
 							img(src='{img_reddit_logo}')
 		#input
-			button(class:selected!='{state.feed.type === "r"}' on:click!='{() => state.feed.type = "r"}') subreddit
+			button(class:selected!='{state.list_id[0] !== "u"}' on:click!='{() => state.list_id = "r/"}') subreddit
 			span(style!='margin: 0 8px') ·
-			button(class:selected!='{state.feed.type === "u"}' on:click!='{() => state.feed.type = "u"}') user
-			input(type='text' bind:value='{state.feed.name}' placeholder='front page')
-			#feed-sort
-				button#new(class:selected!='{state.feed.sort === "new"}') new
-				button#rising(class:selected!='{state.feed.sort === "rising"}') rising
-				button#hot(class:selected!='{state.feed.sort === "hot"}') hot
-				button#controversial(class:selected!='{state.feed.sort === "controversial"}') controversial
-				#feed-sort-top
-					button#top(class:selected!='{state.feed.sort === "top"}') top:
-					button#hour(class:selected!='{state.feed.sort === "top" && state.feed.filter === "hour"}') h
-					button#day(class:selected!='{state.feed.sort === "top" && state.feed.filter === "day"}') d
-					button#week(class:selected!='{state.feed.sort === "top" && state.feed.filter === "week"}') w
-					button#month(class:selected!='{state.feed.sort === "top" && state.feed.filter === "month"}') m
-					button#year(class:selected!='{state.feed.sort === "top" && state.feed.filter === "year"}') y
-					button#all(class:selected!='{state.feed.sort === "top" && state.feed.filter === "all"}') a
-		#feed
-			+await('state.feed.DATA')
-				+then('items')
-					BoxStack(
-						items='{items}'
-						selected_item='{state.item}'
-						read_items='{state.feed.read}'
-						do_select_item='{do_select_item}'
-					)
+			button(class:selected!='{state.list_id[0] === "u"}' on:click!='{() => state.list_id = "u/"}') user
+			input(type='text' value!='{state.list_id.split("/")[1]}' placeholder='front page')
+			#list-sort
+				button#new(class:selected!='{state.list_rank_by === "new"}') new
+				button#rising(class:selected!='{state.list_rank_by === "rising"}') rising
+				button#hot(class:selected!='{state.list_rank_by === "hot"}') hot
+				button#controversial(class:selected!='{state.list_rank_by === "controversial"}') controversial
+				#list-sort-top
+					button#top(class:selected!='{state.list_rank_by === "top"}') top:
+					button#hour(class:selected!='{state.list_rank_by === "top" && state.list.time_period === "hour"}') h
+					button#day(class:selected!='{state.list_rank_by === "top" && state.list.time_period === "day"}') d
+					button#week(class:selected!='{state.list_rank_by === "top" && state.list.time_period === "week"}') w
+					button#month(class:selected!='{state.list_rank_by === "top" && state.list.time_period === "month"}') m
+					button#year(class:selected!='{state.list_rank_by === "top" && state.list.time_period === "year"}') y
+					button#all(class:selected!='{state.list_rank_by === "top" && state.list.time_period === "all"}') a
+		ol#list
+			+await('data.LIST')
+				+then('list')
+					+each('list as object')
+						Box(
+							object='{object}'
+							select!='{() => select_object(object)}'
+							selected!='{state.object_id === object.id}'
+							read='{ls[object.id]}'
+						)
 				+catch('error')
 					.error-tag ERROR LOADING FEED
 					.error-message {error}
-		+if('state.item.id')
-			#post
-				#post-meta
-					h2 {state.item.title}
-				#post-content
-					+if('state.item.content.type === "html"')
-						SelfText(text_html='{state.item.content.html}')
-						+elseif('state.item.content.type === "image"')
-							Gallery(images='{state.item.content.images}')
-						+elseif('state.item.content.type === "video"')
-							MediaPlayer(audio_url='{state.item.content.audio_url}' video_url='{state.item.content.url}' video_preview_url='{state.item.content.preview_url}')
-						+elseif('state.item.content.type === "item"')
-							+await('state.item.content.POST then content_post')
-								Comments(post='{content_post}')
-						+elseif('state.item.content.type === "link"')
-							iframe(src='{state.item.content.url}' sandbox='allow-scripts allow-same-origin')
-					Comments(post='{state.item}')
-			+else
-				#feed-description
-					+await('state.feed.METADATA then info')
-						img(src='{info.banner_background_image || info.banner_img}')
-						article
-							+html('info.description_html')
-						+catch('error')
-							article {error}
+		+await('data.OBJECT')
+			#list-description
+				+await('data.LIST_DESCRIPTION then description')
+					img(src='{description.banner_background_image || description.banner_img}')
+					article
+						+html('description.description_html')
+					+catch('error')
+						article {error}
+			+then('object')
+				#post
+					#post-meta
+						h2 {object.title}
+					#post-content
+						+if('object.content.type === "html"')
+							SelfText(text_html='{object.content.html}')
+							+elseif('object.content.type === "image"')
+								Gallery(images='{object.content.images}')
+							+elseif('object.content.type === "video"')
+								MediaPlayer(audio_url='{object.content.audio_url}' video_url='{object.content.url}' video_preview_url='{object.content.preview_url}')
+							+elseif('object.content.type === "item"')
+								+await('object.content.LINKED_OBJECt then linked_object')
+									Comments(post='{linked_object}')
+							+elseif('object.content.type === "link"')
+								iframe(src='{object.content.url}' sandbox='allow-scripts allow-same-origin')
+						Comments(post='{object}')
+			+catch('error')
+				.error-tag ERROR LOADING POST
+				.error-message {error}
 		Menu
 		button#show-keyboard-shortcuts
 			| show keyboard shortcuts
@@ -86,7 +90,7 @@
 		display grid
 		grid-template-columns 22% 1fr
 		grid-template-rows 144px minmax(0, 1fr)
-		grid-template-areas 'feed-meta content' 'feed content'
+		grid-template-areas 'list-meta content' 'list content'
 		gap 0 48px
 		background #222
 		color white
@@ -101,14 +105,14 @@
 			padding 8px
 			object-fit contain
 	#input
-		grid-area feed-meta
+		grid-area list-meta
 		padding-left 48px
 		padding-top 48px
 	input[type=text]
 		display block
 		font-size 3vh
-	#feed
-		grid-area feed
+	#list
+		grid-area list
 		padding-left 32px
 		overflow auto
 		will-change transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
@@ -123,12 +127,12 @@
 		flex 1
 		padding-top 16px
 		display flex
-	#feed-nav
+	#list-nav
 		height 64px
 		display flex
 		justify-content space-between
 		align-items center
-	#feed-sort
+	#list-sort
 		display flex
 		justify-content space-between
 		align-items center
@@ -145,7 +149,9 @@
 		opacity 0.5
 	.selected
 		opacity 1
-	#feed-description
+	ol
+		user-select: none
+	#list-description
 		height 100%
 		overflow auto
 		display flex
@@ -184,31 +190,27 @@
 </style>
 
 <script>
-	export state = null
-	export load_feed = null
+	export state = {}
+	export data = {}
 
-	import BoxStack from '/comp/box_stack.svelte'
+	import img_reddit_logo from '/data/reddit_logo.svg'
+	import Box from '/comp/box.svelte'
 	import Comments from '/comp/comments.svelte'
 	import Gallery from '/comp/gallery.svelte'
 	import Inspector from '/comp/inspector.svelte'
 	import MediaPlayer from '/comp/media_player.svelte'
 	import Menu from '/comp/menu.svelte'
 	import SelfText from '/comp/self_text.svelte'
-	import img_reddit_logo from '/data/reddit_logo.svg'
-	import { Key } from '/proc/input.coffee'
 
-	do_select_item = (item) ->
-		item.fetch_comments()
-		state.item = item
-		state.feed.read.add item.id
-		state.feed.read = state.feed.read
+	select_object = (object) ->
+		object.load_comments()
+		state.object_id = object.id
+		ls[object.id] = Date.now() / 1000
+		data.OBJECT = new Promise (f, r) -> f object
 	
-	window.addEventListener('popstate', () ->
-		load_feed()
-	)
-	document.addEventListener('keydown', (e) ->
-		switch e.code
+	import { Key } from '/proc/input.coffee'
+	document.addEventListener 'keydown',
+		(e) -> switch e.code
 			when Key[1]
 				state.inspect = !state.inspect
-	)
 </script>

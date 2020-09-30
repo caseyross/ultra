@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	+if('active')
 		nav(style!='top: {y-40}px; left: {x-40}px')
 			div#crossbar1
@@ -26,11 +26,13 @@
 </style>
 
 <script>
-	import { Key } from '/proc/input.coffee'
+	export active = false
 	export x = 0
 	export y = 0
 	export dir = ''
-	export active = false
+
+	import { Key } from '/proc/input.coffee'
+	
 	document.addEventListener('mousedown', (e) ->
 		if e.buttons is 2
 			x = e.x

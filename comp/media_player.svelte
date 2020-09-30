@@ -1,4 +1,4 @@
-<template>
+<template lang='pug'>
 	#player(bind:this='{dom.player}')
 		+if('audio_url || video_url')
 			video(
@@ -47,10 +47,12 @@
 </style>
 
 <script>
-	import { duration } from '/proc/time.coffee'
 	export audio_url = ''
 	export video_url = ''
 	export video_preview_url = ''
+
+	import { duration } from '/proc/time.coffee'
+	
 	dom =
 		player: {}
 	a =

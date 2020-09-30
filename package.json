@@ -8,8 +8,8 @@
 		"parcel-plugin-svelte": "^4.0.6",
 		"pug": "^3.0.0",
 		"stylus": "^0.54.8",
-		"svelte": "^3.26.0",
-		"svelte-preprocess": "^4.3.0"
+		"svelte": "^3.28.0",
+		"svelte-preprocess": "^4.3.2"
 	},
 	"scripts": {
 		"hack": "parcel index.html --no-cache",
