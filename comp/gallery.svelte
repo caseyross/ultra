@@ -4,16 +4,13 @@
 			menu
 				button
 					| enlarge
-					|
 					kbd E
 				button
 					| fullscreen
-					|
 					kbd F
 				button
 					a(href='{images[i].url_full}' target='_blank' rel='noopener')
 						| open original
-						|
 						kbd O
 			img(src='{images[i].url_640}')
 			figcaption

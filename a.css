@@ -1,29 +1,31 @@
 *:focus {
 	outline: none;
 }
+* + blockquote,
+* + p {
+	margin-top: 0.33em;
+}
 a {
-	color: skyblue;
+	color: slateblue;
+}
+a:visited {
+	color: rosybrown;
 }
 blockquote {
-	padding-left: 0.6em;
-	border-left: 4px solid #666;
+	padding-left: 0.66em;
+	border-left: 0.33em solid #666;
 	color: #999;
 }
-blockquote + p {
-	margin-top: 0.5em;
-}
 kbd {
+	font: bold 1rem monospace;
+	margin: 0 0.5rem;
+	padding: 0 0.5rem;
+	height: 2rem;
+	border: 1px solid;
+	border-radius: 0.5rem;
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	margin-left: 3px;
-	width: 20px;
-	height: 20px;
-	background: #222;
-	color: gray;
-	border: 1px solid;
-	border-radius: 4px;
-	font: bold 12px "Iosevka Aile";
 }
 main {
 	--tc-g: #222;
@@ -32,23 +34,19 @@ main {
 	--tc-c: #ccc;
 	--tc-s: white;
 }
-p + blockquote {
-	margin-top: 8px;
-}
-p + p {
-	margin-top: 8px;
-}
 pre {
 	white-space: pre-wrap;
 }
 table {
-	border-spacing: 8px;
+	border-spacing: 1rem;
+	font: 0.5rem monospace;
 }
-th {
-	text-align: left;
-}
-td {
-	text-align: left;
+.error-tag {
+	padding: 0 1px;
+	background: red;
+	color: white;
+	font-size: 10px;
+	font-weight: 700;
 }
 .md-spoiler-text {
 	background: gray;

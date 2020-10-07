@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template>
 	article
 		#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
 			+await('post.COMMENTS')
@@ -15,24 +15,25 @@
 </template>
 
 <style>
-	minimap_width = 64px
+	minimap_width = 4rem
 	article
-		flex 1
+		grid-area comments
 		height 100%
 		contain strict
-	nav
-		flex 0 0 32px
-		background #333
+		display flex
+		flex-flow column nowrap
 	#comments
-		height 100%
+		flex 1
+		padding 0 2rem 2rem 0
 		overflow-x auto
 		overflow-y scroll
 		will-change transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 		&::-webkit-scrollbar
-			width minimap_width
+			width 1 * minimap_width
 			background transparent
 		&::-webkit-scrollbar-thumb
-			border 1px dashed
+			border-width 4px 0 2px 0
+			border-style solid
 	#nocomments
 		height 100%
 		display flex
@@ -81,22 +82,21 @@
 	reset_scroll = () ->
 		dom.comments.scrollTop = 0
 	draw_minimap = () ->
-		max_depth = 10
+		max_depth = 8
 		canvas_context = dom.minimap_field.getContext '2d'
 		canvas_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
-		draw_comment_tree = (tree, current_depth) ->
-			if (current_depth <= max_depth)
-				[comment, ...reply_trees] = tree.children
-				canvas_context.fillStyle = comment.dataset.color
-				canvas_context.fillRect(
-					dom.minimap.scrollWidth / max_depth * (current_depth - 1),
-					Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight),
-					8,
-					comment.scrollHeight / dom.comments.scrollHeight * dom.minimap.scrollHeight
-				)
-				for tree in reply_trees
-					draw_comment_tree(tree, current_depth + 1)
+		draw_minimap_symbols = (comment, current_depth) ->
+			if not comment.classList.contains 'comment' then return
+			if current_depth > max_depth then return
+			canvas_context.fillStyle = comment.dataset.color
+			canvas_context.fillRect(
+				dom.minimap.scrollWidth / max_depth * (current_depth - 1),
+				Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight),
+				1,
+				comment.scrollHeight / dom.comments.scrollHeight * dom.minimap.scrollHeight
+			)
+			for child in comment.children[1].children
+				draw_minimap_symbols(child, current_depth + 1)
 		for child in dom.comments.children
-			if child.classList.contains 'comment-tree'
-				draw_comment_tree(child, 1)
+			draw_minimap_symbols(child, 1)
 </script>

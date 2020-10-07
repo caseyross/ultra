@@ -59,18 +59,18 @@ export POST_AND_COMMENTS = ({ id, comroot_id, comroot_parent_count }) ->
 		comment: comroot_id
 		context: if comroot_parent_count > 0 then comroot_parent_count else ''
 	.then ([ posts_listing, comments_listing ]) ->
+		post = rectified_posts(posts_listing)[0]
 		{
-			...rectified_posts(posts_listing)[0]
+			...post
 			comments_fetch_time: Date.now()
-			COMMENTS: new Promise (f, r) -> f rectified_comments comments_listing
+			COMMENTS: new Promise (f, r) -> f rectified_comments comments_listing, post.subreddit_subscribers
 		}
 
-COMMENTS = ({ post_id }) ->
+COMMENTS = ({ post_id, subreddit_subscribers }) ->
 	GET 'comments/' + post_id
-	.then ([ _, comments_listing ]) -> rectified_comments comments_listing
+	.then ([ _, comments_listing ]) -> rectified_comments comments_listing, subreddit_subscribers
 
 import { classify_post_content } from '/proc/post.coffee'
-import { reltime } from '/proc/time.coffee'
 
 rectified_posts = (posts_listing) ->
 	posts_listing.data.children.map (child) ->
@@ -79,7 +79,7 @@ rectified_posts = (posts_listing) ->
 		post.COMMENTS = new Promise (f, r) -> {}
 		post.load_comments = () ->
 			if not post.comments_fetch_time
-				post.COMMENTS = COMMENTS { post_id: post.id }
+				post.COMMENTS = COMMENTS { post_id: post.id, subreddit_subscribers: post.subreddit_subscribers }
 				post.comments_fetch_time = Math.trunc(Date.now() / 1000)
 		# Identify content of post
 		if post.crosspost_parent
@@ -92,31 +92,24 @@ rectified_posts = (posts_listing) ->
 		# Rewrite HTTP URLs to use HTTPS
 		if post.content.url?.startsWith 'http://' then post.content.url = 'https://' + post.content.url[7..]
 		# Standardize properties
-		post.age = reltime(Date.now() / 1000 - post.created_utc)
 		post.flair = post.link_flair_text ? ''
 		post.flair_color = post.link_flair_background_color ? ''
 		post.list_color = post.sr_detail.primary_color ? post.sr_detail.key_color ? 'inherit'
 		post.is_sticky = post.stickied or post.pinned
 		post
 
-rectified_comments = (comments_listing) ->
-	post_skeleton =
-		body: ''
-		replies: restructured_comments comments_listing
-		score_per_hour: 0
-	comment_tree_character_count = (comment) -> comment.body.length + comment.replies.reduce(((sum, reply) -> sum + comment_tree_character_count reply), 0)
-	comment_tree_score_per_hour = (comment) -> Math.abs comment.score_per_hour + comment.replies.reduce(((sum, reply) -> sum + comment_tree_score_per_hour reply), 0)
-	total_character_count = comment_tree_character_count post_skeleton
-	total_score_per_hour = comment_tree_score_per_hour post_skeleton
-	estimate_interest = (comment) ->
-		comment.character_count_percentage = Math.trunc(comment.body.length / total_character_count * 100)
-		comment.score_per_hour_percentage = Math.trunc(comment.score_per_hour / total_score_per_hour * 100)
-		comment.estimated_interest = if comment.score_hidden then 2 else comment.score_per_hour_percentage + comment.character_count_percentage
-		estimate_interest reply for reply in comment.replies
-	estimate_interest post_skeleton
-	post_skeleton.replies
+# Normalized length for HTML text containing arbitrary Unicode characters.
+# The goal is to provide a metric for measuring textual information content that works for diverse languages, emojis, and other situations where String.length does not suffice.
+# For English text, the score is approximately equal to the number of rendered characters in the text.
+nl = (html_string) ->
+	x = encodeURI(html_string.replace(/<[^>]+>/g, ''))
+	return x.length - 2 * x.split('%').length
 
-restructured_comments = (comments_listing) ->
+ns = (score, creation_time, subreddit_subscribers) ->
+	x = score / subreddit_subscribers / (Date.now() / 1000 - creation_time)
+	return 3600 * 1000000 * x
+
+rectified_comments = (comments_listing, subreddit_subscribers) ->
 	# No replies
 	if not comments_listing?.data?.children then []
 	# Ill-formed response structures
@@ -126,20 +119,17 @@ restructured_comments = (comments_listing) ->
 	else if comments_listing.data.children[0].data.count is 0 then []
 	# Replies, or "more"
 	else comments_listing.data.children.map (child) ->
+		comment = child.data
 		if child.kind is 'more'
-			{
-				...child.data
-				body: ''
-				is_more: true
-				replies: []
-				score_per_hour: 0
-			}
+			comment.is_more = true
 		else
-			{
-				...child.data
-				body_html: child.data.body_html[16...-6]
-				is_more: false
-				replies: restructured_comments child.data.replies
-				score: child.data.score - 1 # Don't count the built-in upvote from the commenter
-				score_per_hour: (child.data.score - 1) * 3600 / (Date.now() / 1000 - child.data.created_utc)
-			}
+			# Score.
+			comment.score -= 1 # Don't count the built-in upvote from the commenter
+			comment.ns = ns comment.score, comment.created_utc, subreddit_subscribers
+			# Content.
+			comment.body_html = comment.body_html[16...-6] # Trim useless (for us) tags
+			comment.nl = nl comment.body_html
+			# Replies.
+			comment.is_more = false
+			comment.replies = rectified_comments comment.replies, subreddit_subscribers
+		return comment

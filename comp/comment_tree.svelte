@@ -1,43 +1,51 @@
 <template lang='pug'>
-	.comment-tree
-		.comment(
-			tabindex=0
-			class:selected='{comment.id === selected_id}'
-			class:highlighted='{comment.id === highlight_id}'
-			data-color='{author_color}'
-		)
-			+if('comment.is_more')
-				.meta +
-				+else
-					.meta
-						span {comment.score}
-						+if('comment.author_flair_text')
-							span.author-flair {comment.author_flair_text}
-						+if('comment.total_awards_received > 0')
-							span.awards(title='{awards_description(comment.all_awardings)}')
-								+each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
-									+if('bucket[1].length')
-										span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
-					.text
-						+html('formatted_comment_html(comment)')
-		+each('comment.replies as comment')
-			svelte:self(comment='{comment}' author_color='{author_color}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}')
+	.comment(
+		tabindex=0
+		class:selected='{comment.id === selected_id}'
+		class:highlighted='{comment.id === highlight_id}'
+		data-color='{author_color}'
+	)
+		+if('comment.is_more')
+			.head
+			.body ...
+			+else
+				.head
+					img.author-distinguish-icon(src='{icon_gavel}')
+					span(style='color: {rating_color(rating(comment))}') {rating(comment)}
+					+if('comment.author_flair_body')
+						span.author-flair {comment.author_flair_body}
+					+if('comment.total_awards_received > 0')
+						span.awards(title='{awards_description(comment.all_awardings)}')
+							+each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
+								+if('bucket[1].length')
+									span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
+				.body
+					p {reltime(comment.created_utc)} / {comment.ns} / {comment.nl} / {comment.ns * comment.nl}
+					+html('formatted_comment_html(comment)')
+					+each('comment.replies as comment')
+						svelte:self(comment='{comment}' author_color='{author_color}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}')
 </template>
 
 
 <style>
-	.comment-tree
-		margin-left 24px
 	.comment
-		margin-bottom 12px
+		margin-top 1.5rem
 		display flex
-	.meta
-		flex 0 0 48px
-		color: gray
+	p
+		max-width 480px
+	.head
+		flex 0 0 4rem
+		margin-right 1rem
+		color gray
 	.author
 		display block
 		padding 2px
 		border 1px solid
+	.author-distinguish-icon
+		display inline-block
+		display none
+		width 16px
+		height 16px
 	.author-flair
 	.awards
 		margin-left 6px
@@ -67,27 +75,29 @@
 	export selected_id = ''
 
 	import { contrast_color } from '/proc/color.coffee'
-	
+	import { rating, rating_color } from '/proc/rating.coffee'
+	import { reltime } from '/proc/time.coffee'
+	import icon_gavel from '/data/gavel.svg'
+
 	formatted_comment_html = (comment) ->
 		comment.body_html
 	distinguish_colors =
 		op: 'lightskyblue'
-		mod: 'darkseagreen'
+		mod: 'mediumspringgreen'
 		admin: 'orangered'
 		special: 'crimson',
-	comment_color = (comment) ->
-		switch comment.distinguished
-			when 'moderator'
-				distinguish_colors.mod
-			when 'admin'
-				distinguish_colors.admin
-			when 'special'
-				distinguish_colors.special
+	comment_color = (comment) -> switch comment.distinguished
+		when 'moderator'
+			distinguish_colors.mod
+		when 'admin'
+			distinguish_colors.admin
+		when 'special'
+			distinguish_colors.special
+		else
+			if comment.author_fullname == op_id
+				distinguish_colors.op
 			else
-				if comment.author_fullname == op_id
-					distinguish_colors.op
-				else
-					author_color
+				'gray'
 	award_buckets = (awards) ->
 		buckets =
 			argentium: []

@@ -1,5 +1,6 @@
 # about 1 hours ago
-export reltime = (seconds_ago, format = 'short') ->
+export reltime = (x, format = 'short') ->
+	seconds_ago = Math.trunc(Date.now() / 1000) - x
 	if seconds_ago < 60
 		if format is 'long' then return "#{seconds_ago} seconds ago" else return "#{seconds_ago}s"
 	minutes_ago = Math.trunc(seconds_ago / 60 + 0.5)

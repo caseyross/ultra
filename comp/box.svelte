@@ -1,54 +1,55 @@
 <template lang='pug'>
 	li(
 		tabindex=0
-		class:read
-		class:selected
-		on:mousedown='{select}'
+		class:is_read
+		class:is_chosen
+		on:mousedown='{f_choose}'
 	)
-		.meta
-			span {object.subreddit}
-			span {object.flair}
-		h1(
-			class:md-spoiler-text!='{object.spoiler}'
-			title='{Math.trunc(1000000 * object.score / object.subreddit_subscribers)} / {Math.trunc(1000000 * object.num_comments / object.subreddit_subscribers)}'
-		) {object.title}
-		.meta
-			span.domain {object.is_self ? '[text]' : object.is_gallery ? '[gallery]' : object.domain}
-			span.age {object.age}
+		figure {content_type_icon(object)}
+		.txt
+			span(style='color: gray; margin-right: 1rem') {object.flair}
+			h3(
+				class:md-spoiler-text!='{object.spoiler}'
+				title='{Math.trunc(1000000 * object.score / object.subreddit_subscribers)} / {Math.trunc(1000000 * object.num_comments / object.subreddit_subscribers)}'
+			) {object.title}
 </template>
 
 <style>
 	li
-		padding 16px
 		cursor pointer
-		border-radius: 16px
-		&:hover
-		&.selected
-			opacity 1
-			background: #333
-	.meta
-		color gray
 		display flex
-		& > span
-			margin-right 8px
-	h1
-		font-weight normal
-		font-size: 15px
-	.read
+		opacity 0.8
+		text-transform uppercase
+		border 1px solid transparent
+		&:hover
+			opacity 1
+		&.is_chosen
+			opacity 1
+			border-color inherit
+	figure
+		flex: 0 0 3rem
+		margin 0.5rem 0 0 0
+		font-size 4rem
+		display flex
+		justify-content center
+	.is_read
 		opacity 0.2
-	a
-		color inherit
-		text-decoration none
 </style>
 
 <script>
 	export object = {}
-	export select = () -> {}
-	export selected = false
-	export read = false
+	export is_read = false
+	export is_chosen = false
+	export f_choose = () -> {}
 	
 	import { contrast_color } from '/proc/color.coffee'
 	
+	content_type_icon = (object) -> switch object.content.type
+		when 'html' then '≣'
+		when 'image'
+			if object.is_gallery then '⊟' else '⊡'
+		else '⇰'
+		# ⍟ ⛏ ♬ ☣ ☢ ☠ ☄ ⚠ ⛞ ⛨
 	tag = (object) -> switch
 		when object.is_sticky then 'STICKY'
 		when object.over_18 then 'NSFW'

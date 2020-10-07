@@ -29,8 +29,3 @@ new App({
 		data
 	}
 })
-
-###
-window.addEventListener 'popstate', () ->
-	initialize_state()
-###
