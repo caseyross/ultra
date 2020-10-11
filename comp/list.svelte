@@ -9,6 +9,9 @@
 						is_chosen='{choice === object.id}'
 						f_choose!='{() => f_choose(object)}'
 					)
+				button
+					kbd P
+					| load next page
 			+catch('error')
 				.error-tag ERROR LOADING FEED
 				.error-message {error}

@@ -7,8 +7,8 @@
 	)
 		figure {content_type_icon(object)}
 		.txt
-			span(style='color: gray; margin-right: 1rem') {object.flair}
-			h3(
+			.flair(style='color: gray') {object.flair}
+			h3.title(
 				class:md-spoiler-text!='{object.spoiler}'
 				title='{Math.trunc(1000000 * object.score / object.subreddit_subscribers)} / {Math.trunc(1000000 * object.num_comments / object.subreddit_subscribers)}'
 			) {object.title}
@@ -16,15 +16,15 @@
 
 <style>
 	li
-		cursor pointer
 		display flex
+		padding 1rem
 		opacity 0.8
-		text-transform uppercase
 		border 1px solid transparent
+		cursor pointer
 		&:hover
-			opacity 1
 		&.is_chosen
 			opacity 1
+		&.is_chosen
 			border-color inherit
 	figure
 		flex: 0 0 3rem
@@ -32,6 +32,9 @@
 		font-size 4rem
 		display flex
 		justify-content center
+	.title
+		margin 0
+		font-weight normal
 	.is_read
 		opacity 0.2
 </style>
@@ -48,8 +51,9 @@
 		when 'html' then '≣'
 		when 'image'
 			if object.is_gallery then '⊟' else '⊡'
-		else '⇰'
-		# ⍟ ⛏ ♬ ☣ ☢ ☠ ☄ ⚠ ⛞ ⛨
+		when 'video' then '▶'
+		else '↗'
+		# ⍟ ⛏ ♬ ☣ ☢ ☠ ☄ ⚠ ⛞ ⛨ ⁑ ※ ∽ ⊹ ⊚ ⛶ ◇
 	tag = (object) -> switch
 		when object.is_sticky then 'STICKY'
 		when object.over_18 then 'NSFW'

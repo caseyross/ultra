@@ -1,3 +1,6 @@
+* {
+	line-height: 1;
+}
 *:focus {
 	outline: none;
 }
@@ -15,6 +18,9 @@ blockquote {
 	padding-left: 0.66em;
 	border-left: 0.33em solid #666;
 	color: #999;
+}
+button {
+	text-transform: uppercase;
 }
 kbd {
 	font: bold 1rem monospace;
@@ -40,6 +46,9 @@ pre {
 table {
 	border-spacing: 1rem;
 	font: 0.5rem monospace;
+}
+.body > .comment > .head {
+	border-left: 1px solid rgba(0,0,0,0.1);
 }
 .error-tag {
 	padding: 0 1px;

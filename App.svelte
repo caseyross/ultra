@@ -9,32 +9,44 @@
 			ol
 				li
 					a(href='/')
-						h1 FRONT
-				li
-					a(href='/r/all')
-						h1 ALL
+						kbd 1
+						h1 FRONTPAGE
 				li
 					a(href='/r/popular')
+						kbd 2
 						h1 POPULAR
 				li
 					a(href='/')
-						h1 SAVED
-			button#show-keyboard-shortcuts
-				| show keyboard shortcuts
-				kbd ?
-			ul
+						kbd ?
+						h1 SEARCH
 				li
 					a(href='/')
-						h2 MAIL
+						kbd 0
+						h1 SAVED
+				li
+					a(href='/')
+						kbd /
+						h1 GOTO
+			ul#my-subs
+				li
+					a(href='/r/singapore')
+						h4 singapore
+			ol
+				li
+					a(href='/')
+						.indicator-light
+						kbd M
+						h1 MAIL
 				li
 					a(href='/r/all')
-						h2 MODQUEUE
+						.indicator-light
+						kbd ,
+						h1 MODMAIL
 				li
-					a(href='/')
-						h2 PROFILE
-				li
-					a(href='/')
-						h2 SETTINGS
+					a(href='/r/all')
+						.indicator-light
+						kbd .
+						h1 MODQUEUE
 		+await('data.LIST_DESCRIPTION')
 			img#subreddit-icon
 			+then('description')
@@ -44,23 +56,67 @@
 						img#subreddit-icon(src='{description.icon_img}')
 					+else
 						img#subreddit-icon(src='{img_reddit_logo}')
-		#list-actions
+		menu.tabs#list-sort
 			button
-				| new
 				kbd ^1
+				| new
 			button
-				| rising
 				kbd ^2
+				| rising
 			button
-				| hot
 				kbd ^3
+				| hot
 			button
-				| contro.
 				kbd ^4
+				| contro.
 			button
-				| top
 				kbd ^5
+				| hour
+			button
+				kbd ^6
+				| day
+			button
+				kbd ^7
+				| week
+			button
+				kbd ^8
+				| month
+			button
+				kbd ^9
+				| year
+			button
+				kbd ^0
+				| all
 		List(LIST='{data.LIST}' choice='{state.object_id}' f_choose='{f_choose_object}' )
+		menu#list-actions
+			button
+				kbd W
+				| previous item
+			button
+				kbd S
+				| next item
+			button
+				kbd +
+				| submit post
+		menu#comments-sort
+			button
+				kbd 1
+				| newest
+			button
+				kbd 1
+				| score
+			button
+				kbd 1
+				| controversiality
+			button
+				kbd 1
+				| op replies
+			button
+				kbd 1
+				| oldest
+			button
+				kbd 1
+				| reddit default
 		+await('data.OBJECT')
 			#list-description
 				+await('data.LIST_DESCRIPTION then description')
@@ -77,14 +133,11 @@
 				.error-message {error}
 		menu#comments-actions
 			button
-				| alpha
-				kbd 1
+				kbd C
+				| goto next top-level comment
 			button
-				| bravo
-				kbd 2
-			button
-				| charlie
-				kbd 3
+				kbd R
+				| reply with top-level comment
 		button#minimap-hat
 		Menu
 		+if('state.inspect')
@@ -97,20 +150,38 @@
 	main
 		height 100%
 		display grid
-		grid-template-columns 160px 464px 16px 1fr 16px 624px
-		grid-template-rows 4rem 1fr
-		grid-template-areas 'nav list-actions . object-actions . comments-actions' 'nav list . object . comments'
+		grid-template-columns 192px 1fr 16px 640px 640px
+		grid-template-rows 5rem 1fr 4rem
+		grid-template-areas 'nav list-sort . object comments-sort' 'nav list . object comments' 'nav list-actions . object comments-actions'
 		overflow hidden
 		background wheat
 		color black
 		font 300 14px monospace
-		word-break break-word
 	#nav
 		grid-area nav
+		display flex
+		flex-flow column nowrap
+		border-right 1px dotted
+		ol
+			padding 0
+			list-style none
 		li
 			opacity 0.5
 			&:hover
 				opacity 1
+		a
+			display flex
+			align-items baseline
+		h1
+			margin 0
+			color transparent
+			-webkit-text-stroke 1px crimson
+	.indicator-light
+		position absolute
+		left 0
+		width 1rem
+		height 1rem
+		background black
 	a
 		color inherit
 		text-decoration none
@@ -121,14 +192,8 @@
 		a
 			color inherit
 			text-decoration none
-	#comments-actions
-		grid-area comments-actions
-		padding-top 1rem
-		border-bottom 1px solid gray
-	#list-actions
-		grid-area list-actions
-		padding-top 1rem
-		border-bottom 1px solid gray
+	#my-subs
+		flex 1
 	#list-description
 		grid-area object
 		height 100%
@@ -143,6 +208,30 @@
 			max-height 288px
 			object-fit cover
 			margin-bottom 16px
+	#list-sort
+		grid-area list-sort
+		display flex
+		align-items flex-end
+		button
+			margin 0
+			border 1px dotted
+			border-width 0 1px 1px 0
+	#list-actions
+		grid-area list-actions
+		display flex
+		align-items center
+	#comments-sort
+		grid-area comments-sort
+		display flex
+		align-items flex-end
+		button
+			margin 0
+			border 1px dotted
+			border-width 0 0 1px 1px
+	#comments-actions
+		grid-area comments-actions
+		display flex
+		align-items center
 	#minimap-hat
 		position fixed
 		top 0

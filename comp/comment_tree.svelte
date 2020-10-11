@@ -3,7 +3,6 @@
 		tabindex=0
 		class:selected='{comment.id === selected_id}'
 		class:highlighted='{comment.id === highlight_id}'
-		data-color='{author_color}'
 	)
 		+if('comment.is_more')
 			.head
@@ -11,7 +10,6 @@
 			+else
 				.head
 					img.author-distinguish-icon(src='{icon_gavel}')
-					span(style='color: {rating_color(rating(comment))}') {rating(comment)}
 					+if('comment.author_flair_body')
 						span.author-flair {comment.author_flair_body}
 					+if('comment.total_awards_received > 0')
@@ -20,10 +18,10 @@
 								+if('bucket[1].length')
 									span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
 				.body
-					p {reltime(comment.created_utc)} / {comment.ns} / {comment.nl} / {comment.ns * comment.nl}
+					p.meta {reltime(comment.created_utc)} by {comment.author}
 					+html('formatted_comment_html(comment)')
 					+each('comment.replies as comment')
-						svelte:self(comment='{comment}' author_color='{author_color}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}')
+						svelte:self(comment='{comment}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}')
 </template>
 
 
@@ -34,9 +32,11 @@
 	p
 		max-width 480px
 	.head
-		flex 0 0 4rem
+		flex 0 0 1rem
 		margin-right 1rem
 		color gray
+	.meta
+		color rgba(0,0,0,0.2)
 	.author
 		display block
 		padding 2px
@@ -69,7 +69,6 @@
 <script>
 	export comment =
 		replies: []
-	export author_color = 'inherit'
 	export op_id = ''
 	export highlight_id = ''
 	export selected_id = ''

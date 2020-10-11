@@ -6,7 +6,7 @@
 				+then('comments')
 					+if('post.num_comments > 0')
 						+each('comments as comment')
-							CommentTree(comment='{comment}' author_color='{post.list_color}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
+							CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
 						+else
 							#nocomments
 								button#add-first-comment ADD THE FIRST COMMENT
@@ -27,6 +27,7 @@
 		padding 0 2rem 2rem 0
 		overflow-x auto
 		overflow-y scroll
+		word-break break-word
 		will-change transform //https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 		&::-webkit-scrollbar
 			width 1 * minimap_width
@@ -85,10 +86,10 @@
 		max_depth = 8
 		canvas_context = dom.minimap_field.getContext '2d'
 		canvas_context.clearRect(0, 0, dom.minimap_field.width, dom.minimap_field.height)
+		canvas_context.fillStyle = 'black'
 		draw_minimap_symbols = (comment, current_depth) ->
 			if not comment.classList.contains 'comment' then return
 			if current_depth > max_depth then return
-			canvas_context.fillStyle = comment.dataset.color
 			canvas_context.fillRect(
 				dom.minimap.scrollWidth / max_depth * (current_depth - 1),
 				Math.trunc(comment.offsetTop / dom.comments.scrollHeight * dom.minimap.scrollHeight),

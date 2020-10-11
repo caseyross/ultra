@@ -1,21 +1,5 @@
 <template lang='pug'>
 	#gallery
-		figure
-			menu
-				button
-					| enlarge
-					kbd E
-				button
-					| fullscreen
-					kbd F
-				button
-					a(href='{images[i].url_full}' target='_blank' rel='noopener')
-						| open original
-						kbd O
-			img(src='{images[i].url_640}')
-			figcaption
-				| {images[i].caption || ''}
-				a(href='{images[i].caption_url}') {images[i].caption_url || ''}
 		#thumbnails
 			+if('images.length > 1')
 				+each('images as image, j')
@@ -24,6 +8,22 @@
 						on:click!='{() => i = j}'
 						class:selected!='{i == j}'
 					)
+		figure
+			menu
+				button
+					kbd E
+					| enlarge
+				button
+					kbd F
+					| fullscreen
+				button
+					a(href='{images[i].url_full}' target='_blank' rel='noopener')
+						kbd O
+						| open original
+			img(src='{images[i].url_640}')
+			figcaption
+				| {images[i].caption || ''}
+				a(href='{images[i].caption_url}') {images[i].caption_url || ''}
 </template>
 
 <style>
@@ -31,7 +31,7 @@
 		height 100%
 		position relative
 	figure
-		height 100%
+		flex 1
 	img
 		object-fit contain
 	menu
@@ -49,16 +49,15 @@
 		a
 			margin-left: 8px
 	#thumbnails
-		position absolute
-		bottom 0
-		left 0
+		flex 0 0 auto
 		display flex
 		flex-flow row wrap
 	.thumbnail
-		width 80px
-		height 80px
+		width 58px
+		height 58px
+		padding 1rem
 		object-fit cover
-		border 4px solid transparent
+		border 1px solid transparent
 		opacity 0.5
 		&:hover
 			opacity 0.8
