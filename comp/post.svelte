@@ -16,7 +16,6 @@
 <style>
 	#post
 		grid-area object
-		padding-top 1rem
 		height 100%
 		overflow auto
 </style>

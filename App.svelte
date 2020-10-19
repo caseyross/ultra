@@ -88,16 +88,20 @@
 				kbd ^0
 				| all
 		List(LIST='{data.LIST}' choice='{state.object_id}' f_choose='{f_choose_object}' )
-		menu#list-actions
-			button
-				kbd W
-				| previous item
-			button
-				kbd S
-				| next item
-			button
-				kbd +
-				| submit post
+		+await('data.OBJECT')
+			#list-description
+				+await('data.LIST_DESCRIPTION then description')
+					img(src='{description.banner_background_image || description.banner_img}')
+					article
+						+html('description.description_html')
+					+catch('error')
+						article {error}
+			+then('object')
+				Post(post='{object}')
+				Comments(post='{object}')
+			+catch('error')
+				.error-tag ERROR LOADING POST
+				.error-message {error}
 		menu#comments-sort
 			button
 				kbd 1
@@ -117,27 +121,16 @@
 			button
 				kbd 1
 				| reddit default
-		+await('data.OBJECT')
-			#list-description
-				+await('data.LIST_DESCRIPTION then description')
-					img(src='{description.banner_background_image || description.banner_img}')
-					article
-						+html('description.description_html')
-					+catch('error')
-						article {error}
-			+then('object')
-				Post(post='{object}')
-				Comments(post='{object}')
-			+catch('error')
-				.error-tag ERROR LOADING POST
-				.error-message {error}
 		menu#comments-actions
 			button
 				kbd C
-				| goto next top-level comment
+				| next l1 comment
 			button
-				kbd R
-				| reply with top-level comment
+				kbd V
+				| next l2 comment
+			button
+				kbd B
+				| next l3 comment
 		button#minimap-hat
 		Menu
 		+if('state.inspect')
@@ -152,7 +145,7 @@
 		display grid
 		grid-template-columns 192px 1fr 16px 640px 640px
 		grid-template-rows 5rem 1fr 4rem
-		grid-template-areas 'nav list-sort . object comments-sort' 'nav list . object comments' 'nav list-actions . object comments-actions'
+		grid-template-areas 'nav list-sort . object comments-sort' 'nav list . object comments' 'nav list . object comments-actions'
 		overflow hidden
 		background wheat
 		color black
@@ -174,8 +167,7 @@
 			align-items baseline
 		h1
 			margin 0
-			color transparent
-			-webkit-text-stroke 1px crimson
+			color rgba(0,0,0,0.5)
 	.indicator-light
 		position absolute
 		left 0
@@ -198,11 +190,6 @@
 		grid-area object
 		height 100%
 		overflow auto
-		&::-webkit-scrollbar
-			width 4px
-			background transparent
-		&::-webkit-scrollbar-thumb
-			background gray
 		img
 			width 100%
 			max-height 288px
@@ -218,10 +205,16 @@
 			border-width 0 1px 1px 0
 	#list-actions
 		grid-area list-actions
+		padding-left 1rem
+		display flex
+		align-items center
+	#object-actions
+		grid-area object-actions
 		display flex
 		align-items center
 	#comments-sort
 		grid-area comments-sort
+		padding-left 1rem
 		display flex
 		align-items flex-end
 		button
@@ -230,6 +223,7 @@
 			border-width 0 0 1px 1px
 	#comments-actions
 		grid-area comments-actions
+		padding-left 1rem
 		display flex
 		align-items center
 	#minimap-hat
@@ -268,9 +262,18 @@
 		ls[object.id] = Date.now() / 1000
 		data.OBJECT = new Promise (f, r) -> f object
 	
-	import { Key } from '/proc/input.coffee'
-	document.addEventListener 'keydown',
-		(e) -> switch e.code
-			when Key[1]
-				state.inspect = !state.inspect
+	document.keyboard_shortcuts.Digit1 =
+		n: 'Navigation: Frontpage'
+		d: () => document.location.pathname = '/'
+	document.keyboard_shortcuts.Digit2 =
+		n: 'Navigation: Popular'
+		d: () => document.location.pathname = '/r/popular'
+	document.keyboard_shortcuts.Digit0 =
+		n: 'Navigation: Saved'
+	document.keyboard_shortcuts.Slash =
+		n: 'Navigation: Goto...'
+		sn: 'Navigation: Search'
+	document.keyboard_shortcuts.Backquote =
+		n: 'Toggle Inspector'
+		d: () => state.inspect = !state.inspect
 </script>

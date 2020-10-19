@@ -17,6 +17,7 @@
 <style>
 	li
 		display flex
+		margin 0 1rem
 		padding 1rem
 		opacity 0.8
 		border 1px solid transparent

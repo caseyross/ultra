@@ -1,74 +1,100 @@
 <template lang='pug'>
 	#gallery
-		#thumbnails
+		menu
 			+if('images.length > 1')
+				button
+					kbd A
+					| back
 				+each('images as image, j')
 					img.thumbnail(
 						src='{image.url_640}'
 						on:click!='{() => i = j}'
 						class:selected!='{i == j}'
 					)
+				button
+					kbd D
+					| next
+				+else
+					button
+						kbd E
+						| enlarge
+					button
+						kbd F
+						| fullscreen
+					button
+						a(href='{images[i].url_full}' target='_blank' rel='noopener')
+							kbd O
+							| open original
 		figure
-			menu
-				button
-					kbd E
-					| enlarge
-				button
-					kbd F
-					| fullscreen
-				button
-					a(href='{images[i].url_full}' target='_blank' rel='noopener')
-						kbd O
-						| open original
 			img(src='{images[i].url_640}')
 			figcaption
 				| {images[i].caption || ''}
-				a(href='{images[i].caption_url}') {images[i].caption_url || ''}
+				+if('images[i].caption_url')
+					a(href='{images[i].caption_url}')
+						kbd L
+						| {(new URL(images[i].caption_url)).hostname}
 </template>
 
 <style>
+	menu_height = 9rem
+	caption_height = 7rem
 	#gallery
 		height 100%
-		position relative
-	figure
-		flex 1
-	img
-		object-fit contain
 	menu
-		margin-bottom 8px
-	button
-		color gray
-		& ~ &
-			margin-left 24px
-		a
-			color inherit
-			text-decoration none
+		height menu_height
+		display flex
+		flex-flow row nowrap
+		justify-content center
+		align-items center
+		button
+			padding 1rem
+		img
+			box-sizing content-box
+			height 5rem
+			padding 0.5rem
+			border-width 0.5rem 1px
+			border-style solid
+			border-color transparent
+			object-fit scale-down
+			&:hover
+				opacity 0.8
+			&.selected
+				opacity 1
+				border-color inherit
+	figure
+		height "calc(100% - %s)" % menu_height
+		display flex
+		flex-flow column nowrap
+		align-items center
+		img
+			max-height "calc(100% - %s)" % caption_height
+			object-fit scale-down
 	figcaption
-		margin-top 8px
+		height caption_height
+		padding 2rem
+		overflow auto
+		text-align center
 		font-style italic
 		a
-			margin-left: 8px
-	#thumbnails
-		flex 0 0 auto
-		display flex
-		flex-flow row wrap
-	.thumbnail
-		width 58px
-		height 58px
-		padding 1rem
-		object-fit cover
-		border 1px solid transparent
-		opacity 0.5
-		&:hover
-			opacity 0.8
-			border-color gray
-		&.selected
-			opacity 1
-			border-color black
+			padding 1rem
 </style>
 
 <script>
 	export images = []
 	
 	i = 0
+
+	document.keyboard_shortcuts.KeyE =
+		n: 'Media: Enlarge'
+	document.keyboard_shortcuts.KeyF =
+		n: 'Media: Fullscreen'
+	document.keyboard_shortcuts.KeyO =
+		n: 'Media: Open Original Source'
+		d: () => window.open(images[i].url_full)
+	document.keyboard_shortcuts.KeyA =
+		n: 'Gallery: Previous Image'
+		d: () => if i > 0 then i -= 1
+	document.keyboard_shortcuts.KeyD =
+		n: 'Gallery: Next Image'
+		d: () => if i < images.length - 1 then i += 1
 </script>

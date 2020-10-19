@@ -4,6 +4,15 @@
 *:focus {
 	outline: none;
 }
+*::-webkit-scrollbar {
+	width: 1rem;
+	background: transparent;
+	border-width: 1px;
+	border-style: dotted;
+}
+*::-webkit-scrollbar-thumb {
+	background: repeating-linear-gradient(-60deg, rgba(0,0,0,0.5) 0 2px, transparent 2px 4px);
+}
 * + blockquote,
 * + p {
 	margin-top: 0.33em;

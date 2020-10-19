@@ -31,17 +31,15 @@
 	export y = 0
 	export dir = ''
 
-	import { Key } from '/proc/input.coffee'
-	
-	document.addEventListener('mousedown', (e) ->
+	document.onmousedown = (e) ->
 		if e.buttons is 2
 			x = e.x
 			y = e.y
 			dir = ''
 			active = true
 			comment = e.path.find((element) -> element.classList and element.classList.contains('comment'))
-	)
-	document.addEventListener('mousemove', (e) ->
+	document.onmouseup = (e) -> active = false
+	document.onmousemove = (e) ->
 		if active
 			up = y - e.y
 			right = e.x - x
@@ -57,18 +55,9 @@
 						dir = 'e'
 					else
 						dir = 'w'
-	)
-	document.addEventListener('mouseup', (e) ->
-		active = false
-	)
-	document.addEventListener('keydown', (e) ->
-		switch e.code
-			when Key.LShift
-				active = true
-	)
-	document.addEventListener('keyup', (e) ->
-		switch e.code
-			when Key.LShift
-				active = false
-	)
+
+	document.keyboard_shortcuts.ShiftLeft =
+		n: 'Show X-Menu'
+		d: () => active = true
+		u: () => active = false
 </script>

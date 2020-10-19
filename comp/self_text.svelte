@@ -8,11 +8,6 @@
 		height 100%
 		overflow auto
 		font-size 14px
-		&::-webkit-scrollbar
-			width 4px
-			background transparent
-		&::-webkit-scrollbar-thumb
-			background gray
 </style>
 
 <script>

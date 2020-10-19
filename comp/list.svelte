@@ -24,8 +24,6 @@
 		padding 0
 		overflow auto
 		will-change transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
-		&::-webkit-scrollbar
-			display none
 </style>
 
 <script>
