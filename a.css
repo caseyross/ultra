@@ -1,6 +1,3 @@
-* {
-	line-height: 1;
-}
 *:focus {
 	outline: none;
 }
@@ -41,6 +38,11 @@ kbd {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
+}
+h6 {
+	font-size: 1em;
+	font-weight: normal;
+	text-decoration: underline;
 }
 main {
 	--tc-g: #222;

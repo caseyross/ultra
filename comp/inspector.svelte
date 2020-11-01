@@ -1,68 +1,83 @@
 <template lang='pug'>
-	+if('typeof value === "object"')
-		+if('value === null')
-			+elseif('Object.entries(value).length === 0')
-			+else
-				.object
-					.object-key {key}
-					.object-value
-						ol
-							+each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
-								svelte:self(key='{nestedKey}' value='{nestedValue}')
+	+if('category(value) === "promise"')
+		+await('value')
+			li(title='{value}' style='color: {color(value)}') {format_key(key) + '*<pending>'}
+			+then('fulfilled_value')
+				svelte:self(key='{key}' value='{fulfilled_value}')
+			+catch('error')
+				li(title='{value}' style='color: {color(value)}') {format_key(key) + '*<rejected>'}
+		+elseif('category(value) === "object"')
+			.object(class:collapsed on:click!='{e => {collapsed = !collapsed; e.stopPropagation()}}')
+				.object-name {format_key(key) + ':'}
+				ol
+					+each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
+						svelte:self(key='{nestedKey}' value='{nestedValue}')
 		+else
-			li(on:click='{navigator.clipboard.writeText(value)}' title='{value}' style='color: {color(value)}') {format(key, value)}
+			li(on:auxclick!='{() => navigator.clipboard.writeText(value)}' title='{key}={value}' style='color: {color(value)}') {format_key(key) + '=' + format_value(value)}
 </template>
 
 <style>
 	.object
 		display flex
-	.object-key
-		flex 0 0 144px
-		height 12px
-		color gray
-		background #ddd
-		border-top-right-radius 12px
-		border-bottom-right-radius 12px
-	.object-value
-		flex 0 0 288px
-		cursor default
+		font bold 14px/3ch monospace
+		white-space pre
+		cursor crosshair
+		&.collapsed
+			height 3ch
+			overflow hidden
+			font-style italic
+	.object-name
+		flex 0 0 18ch
+		padding-left 1ch
+		&:hover
+			background black
+			color white
 	ol
 		margin 0
 		padding 0
 		list-style none
-		white-space pre
+		background rgba(0,0,0,0.1)
+		border-top 1px solid
+		border-left 1px solid
+	li
+		padding 0 1ch
+		&:hover
+			background #222
 </style>
 
 <script>
 	export key = 'ROOT'
-	export value = undefined
+	export value = {}
+
+	collapsed = false
 	
-	sort = (entries) ->
-		entries.sort (a, b) ->
-			(order.indexOf(typeof a[1]) - order.indexOf(typeof b[1])) + ((a[0] > b[0]) - 0.5)
+	category = (value) ->
+		if typeof value is 'object' then switch
+			when value is null then 'logical'
+			when value.then then 'promise'
+			else 'object'
+		else switch typeof value
+			when 'string', 'symbol' then 'textual'
+			when 'number', 'bigint' then 'numeric'
+			when 'boolean', 'undefined' then 'logical'
+			else 'function'
+	color = (value) -> switch category value
+		when 'textual' then 'salmon'
+		when 'numeric' then 'steelblue'
+		when 'logical' then 'darkkhaki'
+		when 'promise' then 'purple'
+		when 'function' then 'forestgreen'
+		else 'black'
 	order = [
-		'string'
-		'bigint'
-		'number'
-		'boolean'
-		'symbol'
-		'function'
-		'undefined'
+		'textual'
+		'numeric'
+		'logical'
+		'promise'
 		'object'
+		'function'
 	]
-	color = (value) ->
-		switch typeof value
-			when 'boolean'
-				'darkkhaki'
-			when 'number'
-				'steelblue'
-			when 'string'
-				'salmon'
-			else
-				'forestgreen'
-	format = (key, value) ->
-		if value.toString().length > 24
-			key.padEnd(23) + ' ' + value.toString()[...21] + '<<<'
-		else
-			key.padEnd(23) + ' ' + value.toString()
+	sort = (entries) ->
+		entries.sort (a, b) -> (order.indexOf(category a[1]) - order.indexOf(category b[1])) + ((a[0] > b[0]) - 0.5)
+	format_key = (key) -> if key.length > 16 then key[...15] + '<' else key.padStart 16
+	format_value = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
 </script>

@@ -25,3 +25,11 @@ export rating_color = (rating) -> switch rating
     when 'C' then 'rgba(0,0,0,0.5)'
     when 'E' then 'rgba(0,0,0,0.5)'
     else 'rgba(0,0,0,0.5)'
+    
+normalized_length = (html_string) ->
+	x = encodeURI(html_string.replace(/<[^>]+>/g, ''))
+	return x.length - 2 * x.split('%').length
+
+normalized_score = (score, creation_time, subreddit_subscribers) ->
+	x = score / subreddit_subscribers / (Date.now() / 1000 - creation_time)
+	return 3600 * 1000000 * x

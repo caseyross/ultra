@@ -3,12 +3,7 @@
 		+await('LIST')
 			+then('objects')
 				+each('objects as object')
-					Box(
-						object='{object}'
-						is_read='{ls[object.id]}'
-						is_chosen='{choice === object.id}'
-						f_choose!='{() => f_choose(object)}'
-					)
+					Box(object='{object}')
 				button
 					kbd P
 					| load next page
@@ -27,9 +22,7 @@
 </style>
 
 <script>
-	export LIST = new Promise (f, r) -> {}
-	export choice = ''
-	export f_choose = () -> {}
+	export LIST = Promise.resolve []
 
 	import Box from '/comp/box.svelte'
 </script>

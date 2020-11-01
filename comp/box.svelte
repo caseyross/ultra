@@ -1,15 +1,13 @@
 <template lang='pug'>
 	li(
 		tabindex=0
-		class:is_read
-		class:is_chosen
-		on:mousedown='{f_choose}'
+		on:mousedown!='{() => {}}'
 	)
 		figure {content_type_icon(object)}
 		.txt
 			.flair(style='color: gray') {object.flair}
 			h3.title(
-				class:md-spoiler-text!='{object.spoiler}'
+				class:md-spoiler-text='{object.spoiler}'
 				title='{Math.trunc(1000000 * object.score / object.subreddit_subscribers)} / {Math.trunc(1000000 * object.num_comments / object.subreddit_subscribers)}'
 			) {object.title}
 </template>
@@ -44,7 +42,6 @@
 	export object = {}
 	export is_read = false
 	export is_chosen = false
-	export f_choose = () -> {}
 	
 	import { contrast_color } from '/proc/color.coffee'
 	

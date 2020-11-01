@@ -79,7 +79,7 @@
 	import icon_gavel from '/data/gavel.svg'
 
 	formatted_comment_html = (comment) ->
-		comment.body_html
+		comment.body_html[16...-6]
 	distinguish_colors =
 		op: 'lightskyblue'
 		mod: 'mediumspringgreen'

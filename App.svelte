@@ -1,9 +1,9 @@
 <template lang='pug'>
 	svelte:head
-		+await('data.LIST_DESCRIPTION')
-			title {state.list_id}
-			+then('description')
-				title {description.title}
+		+await('page.ABOUT')
+			title {page.type + '/' + page.name}
+			+then('about')
+				title {about.title}
 	main
 		#nav
 			ol
@@ -16,15 +16,15 @@
 						kbd 2
 						h1 POPULAR
 				li
-					a(href='/')
+					button
 						kbd ?
 						h1 SEARCH
 				li
-					a(href='/')
+					a(href='/u/me/saved')
 						kbd 0
 						h1 SAVED
 				li
-					a(href='/')
+					button
 						kbd /
 						h1 GOTO
 			ul#my-subs
@@ -33,29 +33,29 @@
 						h4 singapore
 			ol
 				li
-					a(href='/')
+					a(href='/message')
 						.indicator-light
 						kbd M
 						h1 MAIL
 				li
-					a(href='/r/all')
+					a(href='/modmail')
 						.indicator-light
 						kbd ,
 						h1 MODMAIL
 				li
-					a(href='/r/all')
+					a(href='/modqueue')
 						.indicator-light
 						kbd .
 						h1 MODQUEUE
-		+await('data.LIST_DESCRIPTION')
+		+await('page.ABOUT')
 			img#subreddit-icon
-			+then('description')
-				+if('description.community_icon')
-					img#subreddit-icon(src='{description.community_icon}')
-					+elseif('description.icon_img')
-						img#subreddit-icon(src='{description.icon_img}')
+			+then('about')
+				+if('about.community_icon')
+					img#subreddit-icon(src='{about.community_icon}')
+					+elseif('about.icon_img')
+						img#subreddit-icon(src='{about.icon_img}')
 					+else
-						img#subreddit-icon(src='{img_reddit_logo}')
+						img#subreddit-icon
 		menu.tabs#list-sort
 			button
 				kbd ^1
@@ -87,13 +87,13 @@
 			button
 				kbd ^0
 				| all
-		List(LIST='{data.LIST}' choice='{state.object_id}' f_choose='{f_choose_object}' )
-		+await('data.OBJECT')
+		List(LIST='{page.STORIES}')
+		+await('OBJECT')
 			#list-description
-				+await('data.LIST_DESCRIPTION then description')
-					img(src='{description.banner_background_image || description.banner_img}')
+				+await('page.ABOUT then about')
+					img(src='{about.banner_background_image || about.banner_img}')
 					article
-						+html('description.description_html')
+						+html('about.description_html')
 					+catch('error')
 						article {error}
 			+then('object')
@@ -121,22 +121,12 @@
 			button
 				kbd 1
 				| reddit default
-		menu#comments-actions
-			button
-				kbd C
-				| next l1 comment
-			button
-				kbd V
-				| next l2 comment
-			button
-				kbd B
-				| next l3 comment
 		button#minimap-hat
 		Menu
-		+if('state.inspect')
-			#inspector
-				Inspector(key='state' value='{state}')
-				Inspector(key='data' value='{data}')
+		+if('inspect')
+			#inspect-overlay
+				Inspector(key='page' value='{page}')
+				Inspector(key='story' value='{story}')
 </template>
 
 <style>
@@ -145,7 +135,7 @@
 		display grid
 		grid-template-columns 192px 1fr 16px 640px 640px
 		grid-template-rows 5rem 1fr 4rem
-		grid-template-areas 'nav list-sort . object comments-sort' 'nav list . object comments' 'nav list . object comments-actions'
+		grid-template-areas 'nav list-sort . object comments-sort' 'nav list . object comments' 'nav list . object comments'
 		overflow hidden
 		background wheat
 		color black
@@ -163,6 +153,7 @@
 			&:hover
 				opacity 1
 		a
+		button
 			display flex
 			align-items baseline
 		h1
@@ -235,39 +226,33 @@
 		background black
 	#subreddit-icon
 		display none
-	#inspector
+	#inspect-overlay
 		position fixed
 		top 0
 		width 100%
 		height 100%
+		padding 1% 0
 		overflow auto
-		font 700 12px/1.2 monospace
 		background #fed
 </style>
 
 <script>
-	export state = {}
-	export data = {}
+	export page = {}
+	export story = {}
+	OBJECT = new Promise (f, r) -> {}
 
-	import img_reddit_logo from '/data/reddit_logo.svg'
 	import Comments from '/comp/comments.svelte'
 	import List from '/comp/list.svelte'
 	import Inspector from '/comp/inspector.svelte'
 	import Menu from '/comp/menu.svelte'
 	import Post from '/comp/post.svelte'
 
-	f_choose_object = (object) ->
-		object.load_comments()
-		state.object_id = object.id
-		ls[object.id] = Date.now() / 1000
-		data.OBJECT = new Promise (f, r) -> f object
+	inspect = off
 	
 	document.keyboard_shortcuts.Digit1 =
 		n: 'Navigation: Frontpage'
-		d: () => document.location.pathname = '/'
 	document.keyboard_shortcuts.Digit2 =
 		n: 'Navigation: Popular'
-		d: () => document.location.pathname = '/r/popular'
 	document.keyboard_shortcuts.Digit0 =
 		n: 'Navigation: Saved'
 	document.keyboard_shortcuts.Slash =
@@ -275,5 +260,5 @@
 		sn: 'Navigation: Search'
 	document.keyboard_shortcuts.Backquote =
 		n: 'Toggle Inspector'
-		d: () => state.inspect = !state.inspect
+		d: () => inspect = !inspect
 </script>
