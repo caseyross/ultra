@@ -58,34 +58,34 @@
 					+else
 						img#subreddit-icon
 		menu.tabs#list-sort
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=new')
 				kbd ^1
 				| new
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=rising')
 				kbd ^2
 				| rising
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=hot')
 				kbd ^3
 				| hot
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=controversial')
 				kbd ^4
 				| contro.
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=top&t=hour')
 				kbd ^5
 				| hour
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=top&t=day')
 				kbd ^6
 				| day
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=top&t=week')
 				kbd ^7
 				| week
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=top&t=month')
 				kbd ^8
 				| month
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=top&t=year')
 				kbd ^9
 				| year
-			button
+			a(href='/{state.page.type}/{state.page.name}?sort=top&t=all')
 				kbd ^0
 				| all
 		ol#list
@@ -93,7 +93,7 @@
 				+then('stories')
 					+each('stories as story')
 						li(tabindex=0)
-							a(href='/{state.page.type}/{state.page.name}#{story.id}')
+							a(href='{window.location.pathname}{window.location.search}#{story.id}')
 								Box(object='{story}')
 				+catch('error')
 					.error-tag ERROR LOADING FEED
@@ -202,10 +202,6 @@
 		grid-area list-sort
 		display flex
 		align-items flex-end
-		button
-			margin 0
-			border 1px dotted
-			border-width 0 1px 1px 0
 	#list
 		grid-area list
 		margin 0
