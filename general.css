@@ -44,16 +44,6 @@ h6 {
 	font-weight: normal;
 	text-decoration: underline;
 }
-main {
-	--tc-g: #222;
-	--tc-f: #775948;
-	--tc-m: #bd6340;
-	--tc-c: #ccc;
-	--tc-s: white;
-}
-pre {
-	white-space: pre-wrap;
-}
 table {
 	border-spacing: 1rem;
 	font: 0.5rem monospace;

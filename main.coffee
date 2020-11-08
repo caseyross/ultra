@@ -1,16 +1,6 @@
-import { parse_url } from '/proc/state.coffee'
-import App from '/app.svelte'
+import System from '/system.svelte'
 
 window.cache = window.localStorage
-{ page, story } = parse_url()
-document.onclick = (e) =>
-	for element in e.path
-		if element.href
-			# TODO: add replaceState logic
-			history.pushState {}, '', element.href
-			{ page, story } = parse_url()
-			e.preventDefault()
-			return
 
 document.keyboard_shortcuts = {}
 document.onkeydown = (e) ->
@@ -22,10 +12,6 @@ document.onkeyup = (e) ->
 	else if e.metaKey then document.keyboard_shortcuts[e.code]?.au?()
 	else document.keyboard_shortcuts[e.code]?.u?()
 
-new App({
+new System({
 	target: document.body
-	props: {
-		page
-		story
-	}
 })

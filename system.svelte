@@ -1,18 +1,18 @@
 <template lang='pug'>
 	svelte:head
-		+await('page.ABOUT')
-			title {page.type + '/' + page.name}
+		+await('content.ABOUT')
+			title {state.page.type + '/' + state.page.name}
 			+then('about')
 				title {about.title}
 	main
 		#nav
 			ol
 				li
-					a(href='/')
+					a(href='/sm/0/0')
 						kbd 1
 						h1 FRONTPAGE
 				li
-					a(href='/r/popular')
+					a(href='/sm/0/popular')
 						kbd 2
 						h1 POPULAR
 				li
@@ -28,9 +28,10 @@
 						kbd /
 						h1 GOTO
 			ul#my-subs
-				li
-					a(href='/r/singapore')
-						h4 singapore
+				+each('["earthporn", "fireemblem", "genshin_impact", "postprocessing", "singapore", "streetwear", "techwear"] as sub')
+					li
+						a(href='/r/{sub}')
+							h4 {sub}
 			ol
 				li
 					a(href='/message')
@@ -47,7 +48,7 @@
 						.indicator-light
 						kbd .
 						h1 MODQUEUE
-		+await('page.ABOUT')
+		+await('content.ABOUT')
 			img#subreddit-icon
 			+then('about')
 				+if('about.community_icon')
@@ -87,18 +88,29 @@
 			button
 				kbd ^0
 				| all
-		List(LIST='{page.STORIES}')
-		+await('OBJECT')
-			#list-description
-				+await('page.ABOUT then about')
-					img(src='{about.banner_background_image || about.banner_img}')
-					article
-						+html('about.description_html')
-					+catch('error')
-						article {error}
-			+then('object')
-				Post(post='{object}')
-				Comments(post='{object}')
+		ol#list
+			+await('content.PAGE')
+				+then('stories')
+					+each('stories as story')
+						li(tabindex=0)
+							a(href='/{state.page.type}/{state.page.name}#{story.id}')
+								Box(object='{story}')
+				+catch('error')
+					.error-tag ERROR LOADING FEED
+					.error-message {error}
+		+await('content.PAGE')
+			+then('stories')
+				+if('stories.some(x => state.story.id === x.id)')
+					Post(post!='{stories.find(x => state.story.id === x.id)}')
+					Comments(post!='{stories.find(x => state.story.id === x.id)}')
+					+else
+						#list-description
+							+await('content.ABOUT then about')
+								img(src='{about.banner_background_image || about.banner_img}')
+								article
+									+html('about.description_html')
+								+catch('error')
+									article {error}
 			+catch('error')
 				.error-tag ERROR LOADING POST
 				.error-message {error}
@@ -125,8 +137,8 @@
 		Menu
 		+if('inspect')
 			#inspect-overlay
-				Inspector(key='page' value='{page}')
-				Inspector(key='story' value='{story}')
+				Inspector(key='state' value='{state}')
+				Inspector(key='content' value='{content}')
 </template>
 
 <style>
@@ -194,6 +206,12 @@
 			margin 0
 			border 1px dotted
 			border-width 0 1px 1px 0
+	#list
+		grid-area list
+		margin 0
+		padding 0
+		overflow auto
+		will-change transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 	#list-actions
 		grid-area list-actions
 		padding-left 1rem
@@ -237,12 +255,42 @@
 </style>
 
 <script>
-	export page = {}
-	export story = {}
-	OBJECT = new Promise (f, r) -> {}
+	import { parse_url } from '/state.coffee'
+	import { sync_content } from '/content.coffee'
+	
+	# Cold load:
+	state = parse_url(window.location)
+	content = sync_content({}, {}, state)
+	next_state = {}
+	next_content = {}
 
+	# Hot load handlers:
+	document.addEventListener 'mousedown',
+		(e) ->
+			for element in e.path
+				if element.href
+					next_state = parse_url(new URL(element.href))
+					next_content = sync_content(content, state, next_state)
+					break
+	document.addEventListener 'click',
+		(e) ->
+			for element in e.path
+				if element.href
+					# TODO: add replaceState logic
+					history.pushState {}, '', element.href
+					state = next_state
+					content = next_content
+					e.preventDefault()
+					break
+	
+	# Need to fix mouse buttons 4 & 5 for some reason:
+	window.addEventListener 'mousedown',
+		(e) -> switch e.buttons
+			when 8 then history.back()
+			when 16 then history.forward()
+	
 	import Comments from '/comp/comments.svelte'
-	import List from '/comp/list.svelte'
+	import Box from '/comp/box.svelte'
 	import Inspector from '/comp/inspector.svelte'
 	import Menu from '/comp/menu.svelte'
 	import Post from '/comp/post.svelte'

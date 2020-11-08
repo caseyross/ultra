@@ -1,29 +1,26 @@
-import { SRPAGE, SRABOUT, USERPAGE, USERABOUT } from '/proc/api.coffee'
-
 base_state = 
 	page:
-		type: 'r'
-		name: ''
-		range: 'day'
-		sort: 'best'
+		type: 'sm'
+		name: '0/0'
+		range: ''
+		sort: ''
 		follow_id: ''
-		max_count: 25
-		ABOUT: new Promise (f, r) -> {}
-		STORIES: new Promise (f, r) -> {}
+		max_count: 10
 	story:
-		type: ''
 		id: ''
 		comments:
 			root:
 				id: ''
 				parents: NaN
-			sort: 'confidence' 
+			sort: 'confidence'
 
-export parse_url = () ->
-	segments = window.location.pathname.split('/')[1..]
-	query = new URLSearchParams window.location.search
+export parse_url = (url = new URL()) ->
 	page = { ...base_state.page }
 	story = { ...base_state.story }
+	fragment = url.hash
+	if fragment
+		story.id = fragment[1..]
+	query = new URLSearchParams url.search
 	if query.has 't'
 		page.range = query.get 't'
 	if query.has 'sort'
@@ -34,13 +31,21 @@ export parse_url = () ->
 		page.max_count = query.get 'limit'
 	if query.has 'context'
 		story.comments.root.parents = query.get 'context'
+	segments = url.pathname.split('/')[1..]
 	switch segments[0]
 		when 'new', 'rising', 'hot', 'controversial', 'top', 'best'
 			page.sort = segments[0]
 			story.id = segments[1]
 		when 'r'
 			if segments[1]
-				page.name = segments[1]
+				switch segments[1]
+					when 'all'
+						page.name = '0/all'
+					when 'popular'
+						page.name = '0/popular'
+					else
+						page.type = 'r'
+						page.name = segments[1]
 				if segments[2]
 					switch segments[2]
 						when 'comments'
@@ -64,16 +69,4 @@ export parse_url = () ->
 				story.id = segments[0]
 			else # 404
 				{}
-	switch page.type
-		when 'r'
-			page.STORIES = SRPAGE page
-			page.ABOUT = SRABOUT page
-		when 'u'
-			page.STORIES = USERPAGE page
-			page.ABOUT = USERABOUT page
-		###
-		if document.state.object_id
-			object.load_comments()
-			cache[document.state.object_id] = Date.now() / 1000
-		###
 	return { page, story }

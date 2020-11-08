@@ -1,22 +1,26 @@
 /* adapted from @zellwk/css-reset */
 
 *,
-*::before,
-*::after {
+*::after,
+*::before {
 	box-sizing: border-box;
 }
 
-body,
-p,
-pre,
 blockquote,
+body,
+dd,
+dl,
 figure,
 figcaption,
 menu,
-dl,
-dd {
+p,
+pre {
 	margin: 0;
 	padding: 0;
+}
+
+pre {
+	white-space: pre-wrap;
 }
 
 button,

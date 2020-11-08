@@ -1,8 +1,5 @@
 <template lang='pug'>
-	li(
-		tabindex=0
-		on:mousedown!='{() => {}}'
-	)
+	#box
 		figure {content_type_icon(object)}
 		.txt
 			.flair(style='color: gray') {object.flair}
@@ -13,7 +10,7 @@
 </template>
 
 <style>
-	li
+	#box
 		display flex
 		margin 0 1rem
 		padding 1rem

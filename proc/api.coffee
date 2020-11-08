@@ -1,11 +1,22 @@
-import { API_GET } from '/proc/api2.coffee'
+import { API_GET } from '/proc/api_primitives.coffee'
 import gfycat_adjectives from '/data/gfycat-adjectives.json'
 import gfycat_animals from '/data/gfycat-animals.json'
 
 # Docs: https://www.reddit.com/dev/api
 
-export SRPAGE = ({ name, range, sort, follow_id, max_count }) ->
-	API_GET (if name then "/r/#{name}/#{sort}" else "/#{sort}"),
+export SMRPAGE = ({ type, name, range, sort, follow_id, max_count }) ->
+	endpoint = switch
+		when type is 'r'
+			"/r/#{name}/#{sort}"
+		when type is 'sm'
+			switch name
+				when '0/all'
+					"/r/all/#{sort}"
+				when '0/popular'
+					"/r/popular/#{sort}"
+				else
+					"/#{sort}"
+	API_GET endpoint,
 		t: if sort is 'top' or sort is 'controversial' then range else ''
 		sort: sort
 		after: follow_id
@@ -15,8 +26,9 @@ export SRPAGE = ({ name, range, sort, follow_id, max_count }) ->
 		listing.data.children.map (child) ->
 			post = regularize_post child.data
 			post.COMMENTS = new Promise () -> {}
-			post.load_comments = () ->
+			post.sync_comments = () ->
 				post.COMMENTS = SINGLEPOST { id: post.id, comments_only: true }
+				post.comments_sync_time = Math.trunc(Date.now() / 1000)
 			return post
 			
 export USERPAGE = ({ name, range, sort, follow_id, max_count }) ->
@@ -31,7 +43,6 @@ export USERPAGE = ({ name, range, sort, follow_id, max_count }) ->
 			console.log child.data
 
 export SRABOUT = ({ name }) ->
-	if not name then return Promise.resolve {}
 	API_GET "/r/#{name}/about"
 	.then ({ data }) -> data
 

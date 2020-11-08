@@ -7,7 +7,7 @@
 			+catch('error')
 				li(title='{value}' style='color: {color(value)}') {format_key(key) + '*<rejected>'}
 		+elseif('category(value) === "object"')
-			.object(class:collapsed on:click!='{e => {collapsed = !collapsed; e.stopPropagation()}}')
+			.object(class:collapsed on:click|stopPropagation!='{e => collapsed = !collapsed}')
 				.object-name {format_key(key) + ':'}
 				ol
 					+each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
@@ -48,8 +48,6 @@
 <script>
 	export key = 'ROOT'
 	export value = {}
-
-	collapsed = false
 	
 	category = (value) ->
 		if typeof value is 'object' then switch
@@ -61,7 +59,7 @@
 			when 'number', 'bigint' then 'numeric'
 			when 'boolean', 'undefined' then 'logical'
 			else 'function'
-	color = (value) -> switch category value
+	color = (value) -> switch category(value)
 		when 'textual' then 'salmon'
 		when 'numeric' then 'steelblue'
 		when 'logical' then 'darkkhaki'
@@ -80,4 +78,6 @@
 		entries.sort (a, b) -> (order.indexOf(category a[1]) - order.indexOf(category b[1])) + ((a[0] > b[0]) - 0.5)
 	format_key = (key) -> if key.length > 16 then key[...15] + '<' else key.padStart 16
 	format_value = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
+	
+	collapsed = category(value) is 'object' and Object.keys(value).length > 16
 </script>

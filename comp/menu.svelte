@@ -31,6 +31,7 @@
 	export y = 0
 	export dir = ''
 
+	###
 	document.onmousedown = (e) ->
 		if e.buttons is 2
 			x = e.x
@@ -55,6 +56,7 @@
 						dir = 'e'
 					else
 						dir = 'w'
+	###
 
 	document.keyboard_shortcuts.ShiftLeft =
 		n: 'Show X-Menu'

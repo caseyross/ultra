@@ -9,7 +9,7 @@
 			.body ...
 			+else
 				.head
-					img.author-distinguish-icon(src='{icon_gavel}')
+					img.author-distinguish-icon
 					+if('comment.author_flair_body')
 						span.author-flair {comment.author_flair_body}
 					+if('comment.total_awards_received > 0')
@@ -76,7 +76,6 @@
 	import { contrast_color } from '/proc/color.coffee'
 	import { rating, rating_color } from '/proc/rating.coffee'
 	import { reltime } from '/proc/time.coffee'
-	import icon_gavel from '/data/gavel.svg'
 
 	formatted_comment_html = (comment) ->
 		comment.body_html[16...-6]

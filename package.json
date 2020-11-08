@@ -1,4 +1,5 @@
 {
+	"browser": "index.html",
 	"browserslist": [
 		"last 1 chrome versions"
 	],
@@ -11,11 +12,9 @@
 		"svelte": "^3.29.4",
 		"svelte-preprocess": "^4.5.2"
 	},
+	"license": "CC-BY-NC-SA-4.0",
 	"scripts": {
 		"hack": "parcel index.html --no-cache",
 		"ship": "parcel build index.html"
-	},
-	"dependencies": {
-		"proc": "^0.2.2"
 	}
 }
