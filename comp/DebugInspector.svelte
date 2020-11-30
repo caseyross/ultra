@@ -1,4 +1,5 @@
 <template lang='pug'>
+
 	+if('category(value) === "promise"')
 		+await('value')
 			li(title='{value}' style='color: {color(value)}') {format_key(key) + '*<pending>'}
@@ -14,9 +15,9 @@
 						svelte:self(key='{nestedKey}' value='{nestedValue}')
 		+else
 			li(on:auxclick!='{() => navigator.clipboard.writeText(value)}' title='{key}={value}' style='color: {color(value)}') {format_key(key) + '=' + format_value(value)}
-</template>
 
-<style>
+</template><style>
+
 	.object
 		display flex
 		font bold 14px/3ch monospace
@@ -43,9 +44,9 @@
 		padding 0 1ch
 		&:hover
 			background #222
-</style>
 
-<script>
+</style><script>
+
 	export key = 'ROOT'
 	export value = {}
 	
@@ -80,4 +81,5 @@
 	format_value = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
 	
 	collapsed = category(value) is 'object' and Object.keys(value).length > 16
+	
 </script>

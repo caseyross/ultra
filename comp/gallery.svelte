@@ -1,4 +1,5 @@
 <template lang='pug'>
+
 	#gallery
 		menu
 			+if('images.length > 1')
@@ -21,36 +22,37 @@
 					button
 						kbd F
 						| fullscreen
-					button
-						a(href='{images[i].url_full}' target='_blank' rel='noopener')
-							kbd O
-							| open original
+					a(href='{images[i].url_full}' target='_blank' rel='noopener')
+						kbd O
+						| open original
 		figure
 			img(src='{images[i].url_640}')
-			figcaption
-				| {images[i].caption || ''}
-				+if('images[i].caption_url')
-					a(href='{images[i].caption_url}')
-						kbd L
-						| {(new URL(images[i].caption_url)).hostname}
-</template>
+			+if('images[i].caption')
+				figcaption
+					| {images[i].caption}
+					+if('images[i].caption_url')
+						a(href='{images[i].caption_url}')
+							kbd L
+							| {(new URL(images[i].caption_url)).hostname}
 
-<style>
-	menu_height = 9rem
-	caption_height = 7rem
+</template><style>
+
+	menu_height = 8rem
+	caption_height = 8rem
 	#gallery
 		height 100%
 	menu
+		position absolute
 		height menu_height
 		display flex
 		flex-flow row nowrap
-		justify-content center
 		align-items center
 		button
 			padding 1rem
 		img
 			box-sizing content-box
 			height 5rem
+			width 5rem
 			padding 0.5rem
 			border-width 0.5rem 1px
 			border-style solid
@@ -62,24 +64,22 @@
 				opacity 1
 				border-color inherit
 	figure
-		height "calc(100% - %s)" % menu_height
-		display flex
-		flex-flow column nowrap
-		align-items center
+		height 100%
 		img
-			max-height "calc(100% - %s)" % caption_height
 			object-fit scale-down
 	figcaption
-		height caption_height
+		position absolute
+		max-height caption_height
 		padding 2rem
 		overflow auto
 		text-align center
-		font-style italic
+		background antiquewhite
+		border 1px solid
 		a
 			padding 1rem
-</style>
 
-<script>
+</style><script>
+
 	export images = []
 	
 	i = 0
@@ -97,4 +97,5 @@
 	document.keyboard_shortcuts.KeyD =
 		n: 'Gallery: Next Image'
 		d: () => if i < images.length - 1 then i += 1
+		
 </script>

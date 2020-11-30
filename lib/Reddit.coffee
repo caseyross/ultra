@@ -1,63 +1,70 @@
-import { API_GET } from '/proc/api_primitives.coffee'
+import { API_GET, API_POST } from '/lib/api_primitives.coffee'
 import gfycat_adjectives from '/data/gfycat-adjectives.json'
 import gfycat_animals from '/data/gfycat-animals.json'
 
 # Docs: https://www.reddit.com/dev/api
-
-export SMRPAGE = ({ type, name, range, sort, follow_id, max_count }) ->
-	endpoint = switch
-		when type is 'r'
-			"/r/#{name}/#{sort}"
-		when type is 'sm'
-			switch name
-				when '0/all'
-					"/r/all/#{sort}"
-				when '0/popular'
-					"/r/popular/#{sort}"
-				else
-					"/#{sort}"
-	API_GET endpoint,
-		t: if sort is 'top' or sort is 'controversial' then range else ''
-		sort: sort
-		after: follow_id
-		limit: max_count
-		sr_detail: true
-	.then (listing) ->
-		listing.data.children.map (child) ->
-			post = regularize_post child.data
-			post.COMMENTS = new Promise () -> {}
-			post.sync_comments = () ->
-				post.COMMENTS = SINGLEPOST { id: post.id, comments_only: true }
-				post.comments_sync_time = Math.trunc(Date.now() / 1000)
-			return post
-			
-export USERPAGE = ({ name, range, sort, follow_id, max_count }) ->
-	API_GET "/user/#{name}",
-		t: if sort is 'top' or sort is 'controversial' then range else ''
-		sort: sort
-		after: follow_id
-		limit: max_count
-		sr_detail: true
-	.then (listing) ->
-		listing.data.children.map (child) ->
-			console.log child.data
-
-export SRABOUT = ({ name }) ->
-	API_GET "/r/#{name}/about"
-	.then ({ data }) -> data
-
-export USERABOUT = ({ name }) ->
-	API_GET "/user/#{name}/about"
-	.then ({ data }) -> data
-
-export SINGLEPOST = ({ id, comments_root_id, comments_root_parents, comments_only = false }) ->
-	API_GET "/comments/#{id}",
-		comment: comments_root_id
-		context: comments_root_parents
-	.then ([ posts_listing, comments_listing ]) ->
-		post = regularize_post posts_listing.data.children[0].data
-		post.COMMENTS = regularize_comments_listing comments_listing
-		return if comments_only then post.COMMENTS else post
+export default
+	SMRPAGE: ({ type, name, range, sort, follow_id, max_count }) ->
+		endpoint = switch
+			when type is 'r'
+				"/r/#{name}/#{sort}"
+			when type is 'sm'
+				switch name
+					when '0/all'
+						"/r/all/#{sort}"
+					when '0/popular'
+						"/r/popular/#{sort}"
+					else
+						"/#{sort}"
+		API_GET endpoint,
+			t: if sort is 'top' or sort is 'controversial' then range else ''
+			sort: sort
+			after: follow_id
+			limit: max_count
+			sr_detail: true
+		.then (listing) ->
+			listing.data.children.map (child) ->
+				post = regularize_post child.data
+				post.COMMENTS = new Promise () -> {}
+				post.comments_prepared_at = NaN
+				post.prepare_comments = () ->
+					if not post.comments_prepared_at
+						post.COMMENTS = SINGLEPOST { id: post.id, comments_only: true }
+						post.comments_prepared_at = Math.trunc(Date.now() / 1000)
+				return post
+	USERPAGE: ({ name, range, sort, follow_id, max_count }) ->
+		API_GET "/user/#{name}",
+			t: if sort is 'top' or sort is 'controversial' then range else ''
+			sort: sort
+			after: follow_id
+			limit: max_count
+			sr_detail: true
+		.then (listing) ->
+			listing.data.children.map (child) ->
+				console.log child.data
+	SRABOUT: ({ name }) ->
+		API_GET "/r/#{name}/about"
+		.then ({ data }) -> data
+	USERABOUT: ({ name }) ->
+		API_GET "/user/#{name}/about"
+		.then ({ data }) -> data
+	# Only works when logged in and able to set link flair in target subreddit.
+	SRFLAIRS: ({ name }) ->
+		API_POST "/r/#{name}/api/flairselector",
+			is_newlink: true
+		.then (data) -> console.log data
+	# Only works when logged in.
+	SREMOJIS: ({ name }) ->
+		API_GET "/api/v1/#{name}/emojis/all"
+		.then (data) -> console.log data
+	SINGLEPOST: ({ id, comments_root_id, comments_root_parents, comments_only = false }) ->
+		API_GET "/comments/#{id}",
+			comment: comments_root_id
+			context: comments_root_parents
+		.then ([ posts_listing, comments_listing ]) ->
+			post = regularize_post posts_listing.data.children[0].data
+			post.COMMENTS = regularize_comments_listing comments_listing
+			return if comments_only then post.COMMENTS else post
 
 regularize_post = (post) ->
 	post.is_xpost = post.crosspost_parent

@@ -1,4 +1,5 @@
 <template>
+
 	article
 		#comments(bind:this='{dom.comments}' on:mousedown='{teleport_via_minimap}')
 			+await('post.COMMENTS')
@@ -6,15 +7,15 @@
 				+then('comments')
 					+if('post.num_comments > 0')
 						+each('comments as comment')
-							CommentTree(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
+							Comment(comment='{comment}' op_id='{post.author_fullname}' highlight_id='{post.focal_comment_id}')
 						+else
 							#nocomments
 								button#add-first-comment ADD THE FIRST COMMENT
 		figure(bind:this='{dom.minimap}')
 			canvas(bind:this='{dom.minimap_field}')
-</template>
 
-<style>
+</template><style>
+
 	minimap_width = 4rem
 	article
 		grid-area comments
@@ -57,13 +58,13 @@
 		top 0
 		right 0
 		pointer-events none
-</style>
 
-<script>
+</style><script>
+
 	export post = {}
 
 	import { onMount, afterUpdate } from 'svelte'
-	import CommentTree from '/comp/comment_tree.svelte'
+	import Comment from '/comp/Comment'
 	
 	dom =
 		comments: {}
@@ -100,4 +101,5 @@
 				draw_minimap_symbols(child, current_depth + 1)
 		for child in dom.comments.children
 			draw_minimap_symbols(child, 1)
+
 </script>

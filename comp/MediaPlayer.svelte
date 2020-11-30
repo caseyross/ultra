@@ -1,4 +1,5 @@
 <template lang='pug'>
+
 	#player(bind:this='{dom.player}')
 		+if('audio_url || video_url')
 			video(
@@ -16,9 +17,9 @@
 					#scrubber(style!='transform: scaleX({v.time / v.duration})')
 			+else
 				div CANNOT LOAD AUDIO/VIDEO
-</template>
 
-<style>
+</template><style>
+
 	#player
 		height 100%
 		position relative
@@ -44,14 +45,12 @@
 		width 100%
 		background steelblue
 		transform-origin left center
-</style>
 
-<script>
+</style><script>
+
 	export audio_url = ''
 	export video_url = ''
 	export video_preview_url = ''
-
-	import { duration } from '/proc/time.coffee'
 	
 	dom =
 		player: {}
@@ -69,4 +68,5 @@
 			document.exitFullscreen()
 		else
 			dom.player.requestFullscreen()
+			
 </script>

@@ -1,53 +1,56 @@
 <template lang='pug'>
-	svelte:head
-		+await('content.ABOUT')
-			title {state.page.type + '/' + state.page.name}
-			+then('about')
-				title {about.title}
+
 	main
+		#feed-title
+			h1 {state.page.name}
 		#nav
 			ol
 				li
-					a(href='/sm/0/0')
+					a(href="{State.write(state, { page: { type: 'sm', name: '0/0' }, story: {} })}")
 						kbd 1
-						h1 FRONTPAGE
+						h1 frontpage
+				li
+					a(href='/sm/0/all')
+						kbd 2
+						h1 r/all
 				li
 					a(href='/sm/0/popular')
-						kbd 2
-						h1 POPULAR
-				li
-					button
-						kbd ?
-						h1 SEARCH
+						kbd 3
+						h1 r/popular
+			ol
 				li
 					a(href='/u/me/saved')
 						kbd 0
-						h1 SAVED
+						h1 saved
+			ol
+				li
+					button
+						kbd ?
+						h1 search
 				li
 					button
 						kbd /
-						h1 GOTO
+						h1 goto
 			ul#my-subs
 				+each('["earthporn", "fireemblem", "genshin_impact", "postprocessing", "singapore", "streetwear", "techwear"] as sub')
 					li
-						a(href='/r/{sub}')
-							h4 {sub}
+						a.my-sub(href='/r/{sub}') {sub}
 			ol
 				li
 					a(href='/message')
 						.indicator-light
 						kbd M
-						h1 MAIL
+						h1 mail
 				li
 					a(href='/modmail')
 						.indicator-light
 						kbd ,
-						h1 MODMAIL
+						h1 modmail
 				li
 					a(href='/modqueue')
 						.indicator-light
 						kbd .
-						h1 MODQUEUE
+						h1 modqueue
 		+await('content.ABOUT')
 			img#subreddit-icon
 			+then('about')
@@ -57,44 +60,42 @@
 						img#subreddit-icon(src='{about.icon_img}')
 					+else
 						img#subreddit-icon
-		menu.tabs#list-sort
+		
+		menu#list-sort
 			a(href='/{state.page.type}/{state.page.name}?sort=new')
 				kbd ^1
-				| new
+				| New
 			a(href='/{state.page.type}/{state.page.name}?sort=rising')
 				kbd ^2
-				| rising
+				| Rising
 			a(href='/{state.page.type}/{state.page.name}?sort=hot')
 				kbd ^3
-				| hot
+				| Hot
 			a(href='/{state.page.type}/{state.page.name}?sort=controversial')
 				kbd ^4
-				| contro.
+				| Controversial
 			a(href='/{state.page.type}/{state.page.name}?sort=top&t=hour')
 				kbd ^5
-				| hour
+				| H
 			a(href='/{state.page.type}/{state.page.name}?sort=top&t=day')
 				kbd ^6
-				| day
+				| D
 			a(href='/{state.page.type}/{state.page.name}?sort=top&t=week')
 				kbd ^7
-				| week
+				| W
 			a(href='/{state.page.type}/{state.page.name}?sort=top&t=month')
 				kbd ^8
-				| month
+				| M
 			a(href='/{state.page.type}/{state.page.name}?sort=top&t=year')
 				kbd ^9
-				| year
+				| Y
 			a(href='/{state.page.type}/{state.page.name}?sort=top&t=all')
 				kbd ^0
-				| all
-		ol#list
+				| A
+		#list
 			+await('content.PAGE')
-				+then('stories')
-					+each('stories as story')
-						li(tabindex=0)
-							a(href='{window.location.pathname}{window.location.search}#{story.id}')
-								Box(object='{story}')
+				+then('objects')
+					SubredditFeed(objects='{objects}' show_flair!='{state.page.type === "r"}')
 				+catch('error')
 					.error-tag ERROR LOADING FEED
 					.error-message {error}
@@ -115,59 +116,55 @@
 				.error-tag ERROR LOADING POST
 				.error-message {error}
 		menu#comments-sort
-			button
+			a
 				kbd 1
-				| newest
-			button
+				| default
+			a
 				kbd 1
-				| score
-			button
+				| old
+			a
 				kbd 1
-				| controversiality
-			button
+				| new
+			a
+				kbd 1
+				| rating
+			a
+				kbd 1
+				| controversial
+			a
 				kbd 1
 				| op replies
-			button
-				kbd 1
-				| oldest
-			button
-				kbd 1
-				| reddit default
 		button#minimap-hat
-		Menu
-		+if('inspect')
-			#inspect-overlay
-				Inspector(key='state' value='{state}')
-				Inspector(key='content' value='{content}')
-</template>
 
-<style>
+</template><style>
+
 	main
 		height 100%
 		display grid
-		grid-template-columns 192px 1fr 16px 640px 640px
-		grid-template-rows 5rem 1fr 4rem
-		grid-template-areas 'nav list-sort . object comments-sort' 'nav list . object comments' 'nav list . object comments'
+		grid-template-columns 1fr 1fr 1fr
+		grid-template-rows 10rem 1fr
+		grid-template-areas 'story-meta feed-meta comments-sort' 'object list comments'
 		overflow hidden
-		background wheat
-		color black
-		font 300 14px monospace
+		background #222
+		color white
+		font 400 1.5rem/1 'Iosevka Aile', sans-serif
+	#feed-title
+		grid-area feed-meta
+	#story-title
+		grid-area story-meta
 	#nav
 		grid-area nav
-		display flex
+		display none
 		flex-flow column nowrap
 		border-right 1px dotted
 		ol
+		ul
 			padding 0
 			list-style none
-		li
-			opacity 0.5
-			&:hover
-				opacity 1
 		a
 		button
 			display flex
-			align-items baseline
+			align-items center
 		h1
 			margin 0
 			color rgba(0,0,0,0.5)
@@ -177,9 +174,6 @@
 		width 1rem
 		height 1rem
 		background black
-	a
-		color inherit
-		text-decoration none
 	button
 		color gray
 		& ~ &
@@ -189,34 +183,13 @@
 			text-decoration none
 	#my-subs
 		flex 1
-	#list-description
-		grid-area object
-		height 100%
-		overflow auto
-		img
-			width 100%
-			max-height 288px
-			object-fit cover
-			margin-bottom 16px
 	#list-sort
+		display none
 		grid-area list-sort
-		display flex
-		align-items flex-end
+		padding-left 5rem
+		padding-top 1rem
 	#list
 		grid-area list
-		margin 0
-		padding 0
-		overflow auto
-		will-change transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
-	#list-actions
-		grid-area list-actions
-		padding-left 1rem
-		display flex
-		align-items center
-	#object-actions
-		grid-area object-actions
-		display flex
-		align-items center
 	#comments-sort
 		grid-area comments-sort
 		padding-left 1rem
@@ -226,11 +199,6 @@
 			margin 0
 			border 1px dotted
 			border-width 0 0 1px 1px
-	#comments-actions
-		grid-area comments-actions
-		padding-left 1rem
-		display flex
-		align-items center
 	#minimap-hat
 		position fixed
 		top 0
@@ -240,59 +208,16 @@
 		background black
 	#subreddit-icon
 		display none
-	#inspect-overlay
-		position fixed
-		top 0
-		width 100%
-		height 100%
-		padding 1% 0
-		overflow auto
-		background #fed
-</style>
 
-<script>
-	import { parse_url } from '/state.coffee'
-	import { sync_content } from '/content.coffee'
-	
-	# Cold load:
-	state = parse_url(window.location)
-	content = sync_content({}, {}, state)
-	next_state = {}
-	next_content = {}
+</style><script>
 
-	# Hot load handlers:
-	document.addEventListener 'mousedown',
-		(e) ->
-			for element in e.path
-				if element.href
-					next_state = parse_url(new URL(element.href))
-					next_content = sync_content(content, state, next_state)
-					break
-	document.addEventListener 'click',
-		(e) ->
-			for element in e.path
-				if element.href
-					# TODO: add replaceState logic
-					history.pushState {}, '', element.href
-					state = next_state
-					content = next_content
-					e.preventDefault()
-					break
-	
-	# Need to fix mouse buttons 4 & 5 for some reason:
-	window.addEventListener 'mousedown',
-		(e) -> switch e.buttons
-			when 8 then history.back()
-			when 16 then history.forward()
-	
-	import Comments from '/comp/comments.svelte'
-	import Box from '/comp/box.svelte'
-	import Inspector from '/comp/inspector.svelte'
-	import Menu from '/comp/menu.svelte'
-	import Post from '/comp/post.svelte'
+	export state = {}
+	export content = {}
 
-	inspect = off
-	
+	import Comments from '/comp/Comments'
+	import Post from '/comp/Post'
+	import SubredditFeed from '/comp/SubredditFeed'
+
 	document.keyboard_shortcuts.Digit1 =
 		n: 'Navigation: Frontpage'
 	document.keyboard_shortcuts.Digit2 =
@@ -302,7 +227,5 @@
 	document.keyboard_shortcuts.Slash =
 		n: 'Navigation: Goto...'
 		sn: 'Navigation: Search'
-	document.keyboard_shortcuts.Backquote =
-		n: 'Toggle Inspector'
-		d: () => inspect = !inspect
+
 </script>

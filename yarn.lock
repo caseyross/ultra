@@ -3223,6 +3223,11 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+lib@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/lib/-/lib-4.3.0.tgz#efe87a5cf02640e2c4153b54b420076619b3adbb"
+  integrity sha512-1UtjFNb8MJzJNcIffffOJQPjAaCX8wJALpfvKBQmeWWDG39C9m9ikv0BIniLcXB8izWeOY7hmrjQqbFL4AHoTw==
+
 lodash.clone@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clone/-/lodash.clone-4.5.0.tgz#195870450f5a13192478df4bc3d23d2dea1907b6"
@@ -4210,11 +4215,6 @@ prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
-
-proc@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/proc/-/proc-0.2.2.tgz#3a476c48a09137273f7a2420fd9845d19d4128c3"
-  integrity sha1-OkdsSKCRNyc/eiQg/ZhF0Z1BKMM=
 
 process-nextick-args@~2.0.0:
   version "2.0.1"

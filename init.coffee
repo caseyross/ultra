@@ -1,6 +1,14 @@
-import System from '/system.svelte'
-
-window.cache = window.localStorage
+import Color from '/lib/Color'
+window.Color = Color
+import Content from '/lib/Content'
+window.Content = Content
+window.Memory = window.localStorage
+import State from '/lib/State'
+window.State = State
+import Reddit from '/lib/Reddit'
+window.Reddit = Reddit
+import Time from '/lib/Time'
+window.Time = Time
 
 document.keyboard_shortcuts = {}
 document.onkeydown = (e) ->
@@ -12,6 +20,7 @@ document.onkeyup = (e) ->
 	else if e.metaKey then document.keyboard_shortcuts[e.code]?.au?()
 	else document.keyboard_shortcuts[e.code]?.u?()
 
-new System({
+import App from '/App'
+new App({
 	target: document.body
 })

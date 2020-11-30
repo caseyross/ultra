@@ -1,4 +1,5 @@
 <template lang='pug'>
+	
 	.comment(
 		tabindex=0
 		class:selected='{comment.id === selected_id}'
@@ -22,15 +23,14 @@
 					+html('formatted_comment_html(comment)')
 					+each('comment.replies as comment')
 						svelte:self(comment='{comment}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}')
-</template>
 
+</template><style>
 
-<style>
 	.comment
 		margin-top 1.5rem
 		display flex
 	p
-		max-width 480px
+		max-width 60rem
 	.head
 		flex 0 0 1rem
 		margin-right 1rem
@@ -64,18 +64,14 @@
 		color #ccc
 	.bronze
 		color rosybrown
-</style>
 
-<script>
+</style><script>
+
 	export comment =
 		replies: []
 	export op_id = ''
 	export highlight_id = ''
 	export selected_id = ''
-
-	import { contrast_color } from '/proc/color.coffee'
-	import { rating, rating_color } from '/proc/rating.coffee'
-	import { reltime } from '/proc/time.coffee'
 
 	formatted_comment_html = (comment) ->
 		comment.body_html[16...-6]
@@ -127,4 +123,5 @@
 			else
 				''
 		).filter((x) -> x).join('\n\n')
+
 </script>

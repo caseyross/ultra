@@ -16,5 +16,8 @@
 	"scripts": {
 		"hack": "parcel index.html --no-cache",
 		"ship": "parcel build index.html"
+	},
+	"dependencies": {
+		"lib": "^4.3.0"
 	}
 }
