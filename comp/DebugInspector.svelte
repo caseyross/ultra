@@ -2,19 +2,19 @@
 
 	+if('category(value) === "promise"')
 		+await('value')
-			li(title='{value}' style='color: {color(value)}') {format_key(key) + '*<pending>'}
-			+then('fulfilled_value')
-				svelte:self(key='{key}' value='{fulfilled_value}')
+			li(title='{value}' style='color: {color(value)}') {formatKey(key) + '*<pending>'}
+			+then('fulfilledValue')
+				svelte:self(key='{key}' value='{fulfilledValue}')
 			+catch('error')
-				li(title='{value}' style='color: {color(value)}') {format_key(key) + '*<rejected>'}
+				li(title='{value}' style='color: {color(value)}') {formatKey(key) + '*<rejected>'}
 		+elseif('category(value) === "object"')
 			.object(class:collapsed on:click|stopPropagation!='{e => collapsed = !collapsed}')
-				.object-name {format_key(key) + ':'}
+				.object-name {formatKey(key) + ':'}
 				ol
 					+each('sort(Object.entries(value)) as [nestedKey, nestedValue]')
 						svelte:self(key='{nestedKey}' value='{nestedValue}')
 		+else
-			li(on:auxclick!='{() => navigator.clipboard.writeText(value)}' title='{key}={value}' style='color: {color(value)}') {format_key(key) + '=' + format_value(value)}
+			li(on:auxclick!='{() => navigator.clipboard.writeText(value)}' title='{key}={value}' style='color: {color(value)}') {formatKey(key) + '=' + formatValue(value)}
 
 </template><style>
 
@@ -77,9 +77,10 @@
 	]
 	sort = (entries) ->
 		entries.sort (a, b) -> (order.indexOf(category a[1]) - order.indexOf(category b[1])) + ((a[0] > b[0]) - 0.5)
-	format_key = (key) -> if key.length > 16 then key[...15] + '<' else key.padStart 16
-	format_value = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
-	
+		
+	formatKey = (key) -> if key.length > 16 then key[...15] + '<' else key.padStart 16
+	formatValue = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
+
 	collapsed = category(value) is 'object' and Object.keys(value).length > 16
 	
 </script>

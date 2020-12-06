@@ -9,36 +9,36 @@ RENEW_API_KEY = () ->
 			device_id: 'DO_NOT_TRACK_THIS_DEVICE'
 	.then (response) -> response.json()
 	.then (json) ->
-		Memory.api_token_type = json.token_type
-		Memory.api_token_value = json.access_token
-		Memory.api_token_expire_time = Date.now() + json.expires_in * 999
+		Memory.apiTokenType = json.token_type
+		Memory.apiTokenValue = json.access_token
+		Memory.apiTokenExpireTime = Date.now() + json.expires_in * 999
 
 ###
 # Reddit permits up to 60 requests per minute for OAuth2 clients.
 window.setInterval
 	() ->
-		if Memory.api_requests
-		if Memory.api_requests_waiting
+		if Memory.apiRequests
+		if Memory.apiRequestsWaiting
 			for promise in 
 	100
 UNDER_RATE_LIMIT = () ->
-	if Memory.api_requests_waiting and Memory.api_requests_waiting.length > 0
+	if Memory.apiRequestsWaiting and Memory.apiRequestsWaiting.length > 0
 		permission = new Promise (f, r) -> 
-		Memory.api_rate
+		Memory.apiRate
 	return Promise.resolve()
 ###
 
-API_OP = (http_method, url_path, request_body) ->
+API_OPERATION = (httpMethod, urlPath, requestBody) ->
 	# If access token is absent or already expired, block while getting a new one.
 	# If access token is expiring soon, don't block the current operation, but pre-emptively request a new token.
-	if not Memory.api_token_expire_time or Date.now() > Memory.api_token_expire_time then await RENEW_API_KEY()
-	else if Date.now() > Memory.api_token_expire_time - 600000 then RENEW_API_KEY()
+	if not Memory.apiTokenExpireTime or Date.now() > Memory.apiTokenExpireTime then await RENEW_API_KEY()
+	else if Date.now() > Memory.apiTokenExpireTime - 600000 then RENEW_API_KEY()
 	#await UNDER_RATE_LIMIT()
-	fetch 'https://oauth.reddit.com' + url_path,
-		method: http_method
+	fetch 'https://oauth.reddit.com' + urlPath,
+		method: httpMethod
 		headers:
-			'Authorization': Memory.api_token_type + ' ' + Memory.api_token_value
-		body: request_body
+			'Authorization': Memory.apiTokenType + ' ' + Memory.apiTokenValue
+		body: requestBody
 	.then (response) -> response.json()
 
 export API_GET = (endpoint, options = {}) ->
@@ -46,10 +46,10 @@ export API_GET = (endpoint, options = {}) ->
 	for name, value of options
 		if not value and value isnt 0 then delete options[name]
 	options.raw_json = 1
-	API_OP 'GET', endpoint + '?' + (new URLSearchParams(options)).toString()
+	API_OPERATION 'GET', endpoint + '?' + (new URLSearchParams(options)).toString()
 
 export API_POST = (endpoint, content = {}) ->
 	# Delete content keys with empty values.
 	for name, value of content
 		if not value and value isnt 0 then delete content[name]
-	API_OP 'POST', endpoint, new URLSearchParams(content)
+	API_OPERATION 'POST', endpoint, new URLSearchParams(content)

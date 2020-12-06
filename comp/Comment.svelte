@@ -1,11 +1,7 @@
 <template lang='pug'>
 	
-	.comment(
-		tabindex=0
-		class:selected='{comment.id === selected_id}'
-		class:highlighted='{comment.id === highlight_id}'
-	)
-		+if('comment.is_more')
+	.comment(tabindex=0)
+		+if('comment instanceof MoreComments')
 			.head
 			.body ...
 			+else
@@ -14,15 +10,10 @@
 					+if('comment.author_flair_body')
 						span.author-flair {comment.author_flair_body}
 					+if('comment.total_awards_received > 0')
-						span.awards(title='{awards_description(comment.all_awardings)}')
-							+each('Object.entries(award_buckets(comment.all_awardings)) as bucket')
-								+if('bucket[1].length')
-									span(class='{bucket[0]}') {'$'.repeat(bucket[1].reduce((sum, award) => sum + award.count, 0))}
+						span.awards
 				.body
-					p.meta {reltime(comment.created_utc)} by {comment.author}
-					+html('formatted_comment_html(comment)')
-					+each('comment.replies as comment')
-						svelte:self(comment='{comment}' op_id='{op_id}' highlight_id='{highlight_id}' selected_id='{selected_id}')
+					p.meta {Time.relative(comment.created_utc)} by {comment.author}
+					+html('comment.body')
 
 </template><style>
 
@@ -69,59 +60,23 @@
 
 	export comment =
 		replies: []
-	export op_id = ''
-	export highlight_id = ''
-	export selected_id = ''
 
-	formatted_comment_html = (comment) ->
-		comment.body_html[16...-6]
-	distinguish_colors =
+	distinguishColors =
 		op: 'lightskyblue'
 		mod: 'mediumspringgreen'
 		admin: 'orangered'
 		special: 'crimson',
-	comment_color = (comment) -> switch comment.distinguished
+	commentColor = (comment) -> switch comment.distinguish
 		when 'moderator'
-			distinguish_colors.mod
+			distinguishColors.mod
 		when 'admin'
-			distinguish_colors.admin
+			distinguishColors.admin
 		when 'special'
-			distinguish_colors.special
+			distinguishColors.special
 		else
-			if comment.author_fullname == op_id
-				distinguish_colors.op
+			if comment.author_fullname == opId
+				distinguishColors.op
 			else
 				'gray'
-	award_buckets = (awards) ->
-		buckets =
-			argentium: []
-			platinum: []
-			gold: []
-			silver: []
-			bronze: []
-		for award in awards.sort((a, b) -> (if a.count is b.count then b.name < a.name else a.count < b.count) - 0.5)
-			switch
-				when award.coin_price < 100
-					buckets.bronze.push award
-				when award.coin_price < 500
-					buckets.silver.push award
-				when award.coin_price < 1800
-					buckets.gold.push award
-				when award.coin_price < 20000
-					buckets.platinum.push award
-				else
-					buckets.argentium.push award
-		buckets
-	awards_description = (awards) ->
-		Object.entries(award_buckets(awards)).map((bucket) ->
-			if bucket[1].length
-				"#{bucket[0].toUpperCase()} AWARDS\n" +
-				bucket[1].map(
-					(award) ->
-						"#{award.count}x #{award.name}"
-				).join('\n')
-			else
-				''
-		).filter((x) -> x).join('\n\n')
 
 </script>

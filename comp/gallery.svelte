@@ -37,13 +37,13 @@
 
 </template><style>
 
-	menu_height = 8rem
-	caption_height = 8rem
+	menuHeight = 8rem
+	captionHeight = 8rem
 	#gallery
 		height 100%
 	menu
 		position absolute
-		height menu_height
+		height menuHeight
 		display flex
 		flex-flow row nowrap
 		align-items center
@@ -69,7 +69,7 @@
 			object-fit scale-down
 	figcaption
 		position absolute
-		max-height caption_height
+		max-height captionHeight
 		padding 2rem
 		overflow auto
 		text-align center
@@ -84,17 +84,17 @@
 	
 	i = 0
 
-	document.keyboard_shortcuts.KeyE =
+	document.keyboardShortcuts.KeyE =
 		n: 'Media: Enlarge'
-	document.keyboard_shortcuts.KeyF =
+	document.keyboardShortcuts.KeyF =
 		n: 'Media: Fullscreen'
-	document.keyboard_shortcuts.KeyO =
+	document.keyboardShortcuts.KeyO =
 		n: 'Media: Open Original Source'
 		d: () => window.open(images[i].url_full)
-	document.keyboard_shortcuts.KeyA =
+	document.keyboardShortcuts.KeyA =
 		n: 'Gallery: Previous Image'
 		d: () => if i > 0 then i -= 1
-	document.keyboard_shortcuts.KeyD =
+	document.keyboardShortcuts.KeyD =
 		n: 'Gallery: Next Image'
 		d: () => if i < images.length - 1 then i += 1
 		

@@ -66,7 +66,7 @@
 		(e) ->
 			active = false
 
-	document.keyboard_shortcuts.ShiftLeft =
+	document.keyboardShortcuts.ShiftLeft =
 		n: 'Show X-Menu'
 		d: () => active = true
 		u: () => active = false

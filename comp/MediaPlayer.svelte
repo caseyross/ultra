@@ -1,18 +1,18 @@
 <template lang='pug'>
 
 	#player(bind:this='{dom.player}')
-		+if('audio_url || video_url')
+		+if('audioUrl || videoUrl')
 			video(
-				src='{video_url}'
+				src='{videoUrl}'
 				bind:duration='{v.duration}'
 				bind:currentTime='{v.time}'
 				bind:paused='{v.paused}'
 			)
 			audio(
-				src='{audio_url}'
+				src='{audioUrl}'
 				bind:paused='{a.paused}'
 			)
-			nav(on:mousedown!='{() => play_pause()}')
+			nav(on:mousedown!='{() => playPause()}')
 				#scrubber-track
 					#scrubber(style!='transform: scaleX({v.time / v.duration})')
 			+else
@@ -48,9 +48,9 @@
 
 </style><script>
 
-	export audio_url = ''
-	export video_url = ''
-	export video_preview_url = ''
+	export audioUrl = ''
+	export videoUrl = ''
+	export videoPreviewUrl = ''
 	
 	dom =
 		player: {}
@@ -60,7 +60,7 @@
 		duration: 0
 		time: 0
 		paused: true
-	play_pause = () ->
+	playPause = () ->
 		v.paused = not v.paused
 		a.paused = not a.paused
 	fullscreen = () ->

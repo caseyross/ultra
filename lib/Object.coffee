@@ -1,0 +1,1 @@
+Object::fold = (a, b) -> @reduce(b, a)

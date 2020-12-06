@@ -1,68 +1,70 @@
 <template lang='pug'>
 
-    svelte:head
-        +await('content.ABOUT')
-            title {state.page.type + '/' + state.page.name}
-            +then('about')
-                title {about.title}
-    Main(state='{state}' content='{content}')
-    ActionMenu
-    +if('inspect')
-        #inspector-overlay
-            DebugInspector(key='state' value='{state}')
-            DebugInspector(key='content' value='{content}')
+	svelte:head
+		title {state.feed.name || 'front page'}
+	Main(state='{state}')
+	ActionMenu
+	+if('inspect')
+		#inspector-overlay
+			DebugInspector(key='state' value='{state}')
 
 </template><style>
 
-    #inspector-overlay
-        position fixed
-        top 0
-        width 100%
-        height 100%
-        padding 1% 0
-        overflow auto
-        background #fed
-        color black
+	#inspector-overlay
+		position fixed
+		top 0
+		width 100%
+		height 100%
+		padding 1% 0
+		overflow auto
+		background #fed
+		color black
 
 </style><script>
 
-    import Main from '/Main'
-    import ActionMenu from '/comp/ActionMenu'
-    import DebugInspector from '/comp/DebugInspector'
+	import Main from '/Main'
+	import ActionMenu from '/comp/ActionMenu'
+	import DebugInspector from '/comp/DebugInspector'
 
-    # Cold load:
-    state = State.read(window.location)
-    content = Content.sync({}, {}, state)
-    next_state = {}
-    next_content = {}
+	import FeedState from '/state/FeedState'
+	import UserState from '/state/UserState'
 
-    # Hot load:
-    document.addEventListener 'mousedown',
-        (e) ->
-            for element in e.path
-                if element.href
-                    next_state = State.read(new URL(element.href))
-                    next_content = Content.sync(content, state, next_state)
-                    break
-    document.addEventListener 'click',
-        (e) ->
-            for element in e.path
-                if element.href
-                    # TODO: add replaceState logic
-                    history.pushState {}, '', element.href
-                    state = next_state
-                    content = next_content
-                    e.preventDefault()
-                    break
-    window.addEventListener 'popstate',
-        (e) ->
-            next_state = State.read(window.location)
-            content = Content.sync(content, state, next_state)
-            state = next_state
+	## INIT / COLD LOAD ##
+	nextState =
+		feed: {}
+		user: {}
+	state =
+		feed: new FeedState()
+		user: new UserState()
+	state.feed.sync()
 
-    inspect = off
-    document.keyboard_shortcuts.Backquote =
-        n: 'Toggle Inspector'
-        d: () => inspect = !inspect
+	## LINK HOT LOAD ##
+	document.addEventListener 'mousedown',
+		(e) -> for element in e.path
+			if element.tagName is 'BUTTON'
+				console.log element
+				break
+			if element.href
+				nextState.feed = new FeedState(new URL(element.href))
+				nextState.feed.sync(state.feed)
+				break
+	document.addEventListener 'click',
+		(e) -> for element in e.path
+			if element.href
+				e.preventDefault()
+				state = nextState
+				history.pushState({ id: state.id, ranking: state.ranking }, '', element.href)
+				break
+	window.addEventListener 'popstate',
+		(e) ->
+			console.log state
+			nextState.feed = new FeedState()
+			nextState.feed.sync(state.feed)
+			state = nextState
+
+	inspect = off
+	document.keyboardShortcuts.Backquote =
+		n: 'Toggle Inspector'
+		d: () => inspect = !inspect
 
 </script>
