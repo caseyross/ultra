@@ -3,7 +3,7 @@
 	main
 		#feed-title
 			h1 {state.feed.name || 'front page'}
-		+await('state.feed.ABOUT')
+		+await('state.feed.meta.ABOUT')
 			img#subreddit-icon
 			+then('about')
 				+if('about')
@@ -14,14 +14,14 @@
 						+else
 							img#subreddit-icon
 		#feed
-			Feed(ITEMS='{state.feed.ITEMS}' PERMALINKED_ITEM='{state.feed.PERMALINKED_ITEM}')
-		+await('state.feed.SELECTION')
-			+then('selection')
-				+if('selection')
-					PostContent(content='{selection.content}')
+			Feed(visitors='{state.feed.visitors}' residents='{state.feed.residents}')
+		+await('state.feed.SELECTED')
+			+then('item')
+				+if('item')
+					PostContent(content='{item.content}')
 					+else
 						#list-description
-							+await('state.feed.ABOUT then about')
+							+await('state.feed.meta.ABOUT then about')
 								+if('about')
 									img(src='{about.banner_background_image || about.banner_img}')
 									article
@@ -31,10 +31,10 @@
 			+catch('error')
 				.error-tag ERROR LOADING POST
 				.error-message {error}
-		+await('state.feed.SELECTION')
-			+then('selection')
-				+if('selection')
-					Comments(comments='{selection.comments}')
+		+await('state.feed.SELECTED')
+			+then('item')
+				+if('item')
+					Comments(comments='{item.comments}')
 		menu#comments-sort
 			a
 				kbd 1
@@ -79,6 +79,8 @@
 			text-decoration none
 	#feed
 		grid-area feed
+		overflow auto
+		will-change transform // https://bugs.chromium.org/p/chromium/issues/detail?id=514303
 	#comments-sort
 		grid-area comments-sort
 		padding-left 1rem

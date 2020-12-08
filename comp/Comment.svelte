@@ -58,8 +58,9 @@
 
 </style><script>
 
-	export comment =
-		replies: []
+	export comment = {}
+
+	import MoreComments from '/objects/MoreComments'
 
 	distinguishColors =
 		op: 'lightskyblue'

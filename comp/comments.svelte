@@ -2,7 +2,7 @@
 
 	article
 		#comments(bind:this='{dom.comments}' on:mousedown='{teleportViaMinimap}')
-			+each('comments as comment')
+			+each('comments.list as comment')
 				Comment(comment='{comment}')
 				+else
 					#nocomments
@@ -60,7 +60,7 @@
 	export comments = {}
 
 	import Comment from '/comp/Comment'
-	import { onMount, afterUpdate } from 'svelte'
+	import { onMount } from 'svelte'
 	
 	dom =
 		comments: {}
@@ -73,9 +73,6 @@
 		# <canvas> can't be sized properly in static CSS (only scaled)
 		dom.minimapField.width = dom.minimap.clientWidth
 		dom.minimapField.height = dom.minimap.clientHeight
-	afterUpdate () ->
-		await post.COMMENTS
-		console.log('draw')
 		drawMinimap()
 	resetScroll = () ->
 		dom.comments.scrollTop = 0

@@ -6,7 +6,7 @@
 				Comments(comments='{post.comments}')
 			+elseif('content.type === "text"')
 				#text
-					+html('content.html')
+					+html('content.text')
 			+elseif('content.type === "image"')
 				Gallery(images='{content.images}')
 			+elseif('content.type === "video"')

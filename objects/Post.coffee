@@ -2,7 +2,6 @@ import Listing from '/objects/Listing'
 
 export default class Post
 	constructor: (raw) ->
-		console.log raw
 		@author =
 			distinguish: raw.distinguished ? ''
 			flair:
@@ -45,6 +44,7 @@ export default class Post
 			ratio: raw.upvote_ratio
 			score: raw.score - 1
 		@times =
+			parse: Date.now() // 1000
 			submit: raw.created_utc
 
 parseContent = (raw) ->
@@ -72,7 +72,7 @@ parseContent = (raw) ->
 		when raw.domain.endsWith('reddit.com')
 			content.type = 'comment'
 			[ _, _, _, _, _, _, postId, _, commentId, queryParameters ] = raw.url.split('/')
-			raw.POST = Reddit.POST {
+			content.POST = Reddit.FEED_POST {
 				id: postId,
 				commentId: commentId,
 				commentContext: (new URLSearchParams(queryParameters)).get('context')

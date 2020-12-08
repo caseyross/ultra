@@ -14,10 +14,7 @@
 	},
 	"license": "CC-BY-NC-SA-4.0",
 	"scripts": {
-		"hack": "parcel index.html --no-cache",
+		"hack": "parcel index.html --no-cache --log-level 4",
 		"ship": "parcel build index.html"
-	},
-	"dependencies": {
-		"lib": "^4.3.0"
 	}
 }

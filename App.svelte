@@ -25,42 +25,39 @@
 	import Main from '/Main'
 	import ActionMenu from '/comp/ActionMenu'
 	import DebugInspector from '/comp/DebugInspector'
-
 	import FeedState from '/state/FeedState'
-	import UserState from '/state/UserState'
 
-	## INIT / COLD LOAD ##
-	nextState =
-		feed: {}
-		user: {}
+	## INIT ##
 	state =
-		feed: new FeedState()
-		user: new UserState()
-	state.feed.sync()
-
-	## LINK HOT LOAD ##
+		feed: new FeedState(window.location)
+		feedPredict: {}
+	## PRE-LOAD INTERNAL LINKS... ##
 	document.addEventListener 'mousedown',
-		(e) -> for element in e.path
-			if element.tagName is 'BUTTON'
-				console.log element
-				break
-			if element.href
-				nextState.feed = new FeedState(new URL(element.href))
-				nextState.feed.sync(state.feed)
-				break
+		(e) ->
+			for element in e.path
+				if element.href
+					url = new URL(element.href)
+					if url.origin is window.location.origin
+						state.feedPredict[url.pathname] = new FeedState(url, state.feed)
+					break
+	## ...THEN HOT LOAD THEM ##
 	document.addEventListener 'click',
-		(e) -> for element in e.path
-			if element.href
-				e.preventDefault()
-				state = nextState
-				history.pushState({ id: state.id, ranking: state.ranking }, '', element.href)
-				break
+		(e) ->
+			for element in e.path
+				if element.href
+					url = new URL(element.href)
+					if url.origin is window.location.origin
+						[ empty, type, name, selections ] = url.pathname.split('/')
+						if not selections
+							history.pushState({}, '', element.href)
+						state.feed = state.feedPredict[url.pathname] ? new FeedState(url, state.feed)
+						delete state.feedPredict[url.pathname]
+						e.preventDefault()
+					break
+	## ALSO HOT LOAD UPON BROWSER BACK FUNCTION ##
 	window.addEventListener 'popstate',
 		(e) ->
-			console.log state
-			nextState.feed = new FeedState()
-			nextState.feed.sync(state.feed)
-			state = nextState
+			state.feed = new FeedState(window.location, state.feed)
 
 	inspect = off
 	document.keyboardShortcuts.Backquote =
