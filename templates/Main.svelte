@@ -104,9 +104,9 @@
 
 	export state = {}
 
-	import Comments from '/comp/Comments'
-	import Feed from '/comp/Feed'
-	import PostContent from '/comp/PostContent'
+	import Comments from '/templates/Comments'
+	import Feed from '/templates/Feed'
+	import PostContent from '/templates/PostContent'
 
 	document.keyboardShortcuts.Digit1 =
 		n: 'Navigation: Frontpage'

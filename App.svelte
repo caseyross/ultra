@@ -22,10 +22,10 @@
 
 </style><script>
 
-	import Main from '/Main'
-	import ActionMenu from '/comp/ActionMenu'
-	import DebugInspector from '/comp/DebugInspector'
-	import FeedState from '/state/FeedState'
+	import FeedState from '/objects/FeedState'
+	import ActionMenu from '/templates/ActionMenu'
+	import DebugInspector from '/templates/DebugInspector'
+	import Main from '/templates/Main'
 
 	## INIT ##
 	state =

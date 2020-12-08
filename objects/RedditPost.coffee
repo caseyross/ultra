@@ -1,31 +1,32 @@
-import Listing from '/objects/Listing'
+import RedditListing from '/objects/RedditListing'
 
-export default class Post
+export default class RedditPost
 	constructor: (raw) ->
 		@author =
-			distinguish: raw.distinguished ? ''
 			flair:
 				color: raw.author_flair_background_color ? ''
 				text: raw.author_flair_text ? ''
 			name: raw.author
+			premium: raw.author_premium
 		@awards =
 			list: []
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 		@comments =
 			count: raw.num_comments
-			list: new Listing(raw.replies)
+			list: new RedditListing(raw.replies)
 			suggestedRanking: raw.suggested_sort ? ''
 		@content = parseContent(raw.crosspost_parent_list?[0] ? raw)
 		@crossposts =
 			count: raw.num_crossposts
 			parentId: raw.crosspost_parent_list?[0]?.id ? ''
-		@edits = {}
+		@distinguish = raw.distinguished ? ''
 		@feed =
 			id: raw.subreddit_name_prefixed
 			subscribers: raw.subreddit_subscribers
 		@flags =
 			archived: raw.archived
 			contest: raw.contest_mode
+			edited: raw.edited?
 			hidden: raw.hidden
 			locked: raw.locked
 			nsfw: raw.over_18
@@ -34,7 +35,7 @@ export default class Post
 			saved: raw.saved
 			scoreHidden: raw.hide_score
 			spoiler: raw.spoiler
-			sticky: raw.stickied or raw.pinned
+			stickied: raw.stickied or raw.pinned
 		@flair =
 			color: raw.link_flair_background_color ? ''
 			text: raw.link_flair_text ? ''
@@ -44,6 +45,7 @@ export default class Post
 			ratio: raw.upvote_ratio
 			score: raw.score - 1
 		@times =
+			edit: raw.edited or NaN
 			parse: Date.now() // 1000
 			submit: raw.created_utc
 

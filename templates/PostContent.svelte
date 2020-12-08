@@ -32,8 +32,8 @@
 
 	export content = {}
 	
-	import Comments from '/comp/Comments'
-	import Gallery from '/comp/Gallery'
-	import MediaPlayer from '/comp/MediaPlayer'
+	import Comments from '/templates/Comments'
+	import Gallery from '/templates/Gallery'
+	import MediaPlayer from '/templates/MediaPlayer'
 
 </script>

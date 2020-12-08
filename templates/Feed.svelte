@@ -7,11 +7,11 @@
 					+await('ITEM')
 						p ---loading
 						+then('item')
-							+if('item instanceof Post')
-								FeedPost(post='{item}')
-								+elseif('item instanceof Comment')
-									p ---comment
-								+elseif('item instanceof Message')
+							+if('item instanceof RedditPost')
+								Post(post='{item}')
+								+elseif('item instanceof RedditComment')
+									Comment(comment='{item}')
+								+elseif('item instanceof RedditMessage')
 									p ---message
 								+else
 									p ---unknown item
@@ -28,10 +28,11 @@
 
 </style><script>
 
-	import FeedPost from '/comp/FeedPost'
-	import Comment from '/objects/Comment'
-	import Message from '/objects/Message'
-	import Post from '/objects/Post'
+	import RedditComment from '/objects/RedditComment'
+	import RedditMessage from '/objects/RedditMessage'
+	import RedditPost from '/objects/RedditPost'
+	import Comment from '/templates/Comment'
+	import Post from '/templates/Post'
 
 	export visitors = []
 	export residents = []

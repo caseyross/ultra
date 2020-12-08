@@ -19,3 +19,14 @@ export default
 				'#ccc'
 			else
 				'gray'
+	recency: (secondsSinceEpoch) -> switch
+		when (minutesAgo = (Date.now() / 1000 - secondsSinceEpoch) // 60) < 60
+			1
+		when (hoursAgo = minutesAgo // 60) < 24
+			0.6
+		when (daysAgo = hoursAgo // 24) < 7
+			0.3
+		when daysAgo < 365
+			0.1
+		else
+			0.05

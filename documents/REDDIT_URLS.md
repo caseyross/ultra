@@ -52,12 +52,12 @@ Users
 Messages
 --------
 
-	message/inbox																		ALL MESSAGES
-	message/messages																	SAME AS "/inbox"?
+	message/inbox																		ALL MESSAGES, POST/COMMENT REPLIES, & USERNAME MENTIONS
+	message/messages																	MESSAGES
 	message/messages/{messageId}														SINGLE MESSAGE
 	message/unread																		UNREAD MESSAGES
 	message/sent																		SENT MESSAGES
-	message/compose																		WRITE A MESSAGE
+	message/templatesose																		WRITE A MESSAGE
 	message/selfreply																	REPLIES TO YOUR POSTS
 	message/comments																	REPLIES TO YOUR COMMENTS
 	message/mentions																	MENTIONS OF YOUR USERNAME IN COMMENTS

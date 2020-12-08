@@ -19,28 +19,23 @@ export default
 		hours = date.getHours().padStart(2, '0')
 		minutes = date.getMinutes().padStart(2, '0')
 		return "#{month} #{day} #{year}, #{hours}:#{minutes}"
-	# about 1 hours ago
-	relative: (secondsSinceEpoch, format = 'short') ->
-		secondsAgo = Math.trunc(Date.now() / 1000) - secondsSinceEpoch
-		if secondsAgo < 60
-			if format is 'long' then return "#{secondsAgo} seconds ago" else return "#{secondsAgo}s"
-		minutesAgo = Math.trunc(secondsAgo / 60)
-		if minutesAgo < 60
-			if format is 'long' then return "#{minutesAgo} minutes ago" else return "#{minutesAgo}m"
-		hoursAgo = Math.trunc(minutesAgo / 60)
-		if hoursAgo < 24
+	# 59m / about 3 months ago
+	relative: (secondsSinceEpoch, format = 'short') -> switch
+		when (secondsAgo = Date.now() // 1000 - secondsSinceEpoch) < 60
+			if format is 'long' then return "about #{secondsAgo} seconds ago" else return "#{secondsAgo}s"
+		when (minutesAgo = secondsAgo // 60) < 60
+			if format is 'long' then return "about #{minutesAgo} minutes ago" else return "#{minutesAgo}m"
+		when (hoursAgo = minutesAgo // 60) < 24
 			if format is 'long' then return "about #{hoursAgo} hours ago" else return "#{hoursAgo}h"
-		daysAgo = Math.trunc(hoursAgo / 24)
-		if daysAgo < 7
+		when (daysAgo = hoursAgo // 24) < 7
 			if format is 'long' then return "about #{daysAgo} days ago" else return "#{daysAgo}d"
-		weeksAgo = Math.trunc(daysAgo / 7)
-		if weeksAgo < 5
-			if format is 'long' then return "about #{weeksAgo} weeks ago" else return "#{weeksAgo}w"
-		monthsAgo = Math.trunc(weeksAgo / 4)
-		if monthsAgo < 12
+		when (weeksAgo = daysAgo // 7) < 5
+			if format is 'long' then return "about #{weeksAgo} weeks ago" else return "#{weeksAgo}wk"
+		when (monthsAgo = weeksAgo // 4) < 12
 			if format is 'long' then return "about #{monthsAgo} months ago" else return "#{monthsAgo}mo"
-		yearsAgo = Math.trunc(monthsAgo / 12)
-		if format is 'long' then return "about #{yearsAgo} years ago" else return "#{yearsAgo}y"
+		else
+			yearsAgo = monthsAgo // 12
+			if format is 'long' then return "about #{yearsAgo} years ago" else return "#{yearsAgo}y"
 	# 01 59 52
 	duration: (seconds) ->
 		remaining = seconds

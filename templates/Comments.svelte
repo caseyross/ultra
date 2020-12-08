@@ -59,7 +59,7 @@
 
 	export comments = {}
 
-	import Comment from '/comp/Comment'
+	import Comment from '/templates/Comment'
 	import { onMount } from 'svelte'
 	
 	dom =

@@ -1,3 +1,3 @@
-export default class MoreComments
+export default class RedditMoreComments
 	constructor: (raw) ->
 		@ids = raw.children

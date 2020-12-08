@@ -7,7 +7,7 @@
 				td
 					span.stats
 						span.stat-icon(style!="color: {post.stats.score === 0 ? 'gray' : post.stats.score > 0 ? 'lightsalmon' : 'cornflowerblue'}") {post.flags.scoreHidden ? '🞄' : post.stats.score === 0 ? '🠶' : post.stats.score > 0 ? '🠉' : '🠋'}
-						span.stat-value &nbsp;{post.flags.scoreHidden ? 'hidden' : post.stats.score}
+						span.stat-value &nbsp;{post.flags.scoreHidden ? 'new' : post.stats.score}
 						+if('post.awards.spend > 0')
 							span.stat-icon(style!="color: goldenrod") ●
 							span.stat-value(style!="margin-left: 0.5ch; margin-right: 0.25ch") {post.awards.spend}
@@ -15,14 +15,15 @@
 						span.author-name {post.author.name}
 						+if('post.author.flair.text')
 							span.author-flair {post.author.flair.text}
+					span.stats(style!="float: right; display: none")
+						span.stat-icon(style!="color: greenyellow; opacity: {Color.recency(post.times.submit)}") ◔
+						span.stat-value &nbsp;{Time.relative(post.times.submit)}
 			tr
 				td.flair
+					span.post-flair(style!="color: {post.flair.color}") {post.flair.text}
 					span.feed-id {post.feed.id}
 				td
-					h2.headline
-						span.submission-time {Time.relative(post.times.submit)}
-						span.post-flair(style!="color: {post.flair.color}") {post.flair.text}
-						| {post.content.title}
+					h2.headline {post.content.title}
 				
 
 </template><style>
@@ -57,9 +58,6 @@
 		font-size 2rem
 		font-weight 200
 		line-height 1.25
-	.submission-time
-		display none
-		font-size 1rem
 	.feed-id
 		display none
 		padding 0.5ch 1ch
@@ -69,8 +67,7 @@
 		display none
 		padding 0.5ch 1ch
 		border-radius 1ch
-		font-size 1.5rem
-		margin-right 1ch
+		border 1px solid
 
 </style><script>
 
