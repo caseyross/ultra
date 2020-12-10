@@ -3,7 +3,7 @@
 	#postContent
 		+if('content.type === "comment"')
 			+await('content.POST then post')
-				Comments(comments='{post.comments}')
+				PostComments(comments='{post.comments}')
 			+elseif('content.type === "text"')
 				#text
 					+html('content.text')
@@ -32,7 +32,7 @@
 
 	export content = {}
 	
-	import Comments from '/templates/Comments'
+	import PostComments from '/templates/PostComments'
 	import Gallery from '/templates/Gallery'
 	import MediaPlayer from '/templates/MediaPlayer'
 

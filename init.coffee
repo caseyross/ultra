@@ -18,7 +18,7 @@ document.onkeyup = (e) ->
 	else if e.metaKey then document.keyboardShortcuts[e.code]?.au?()
 	else document.keyboardShortcuts[e.code]?.u?()
 
-import App from '/App'
+import App from '/templates/App'
 new App({
 	target: document.body
 })

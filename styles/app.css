@@ -12,7 +12,7 @@
 }
 * + blockquote,
 * + p {
-	margin-top: 0.33em;
+	margin-top: 0.5ch;
 }
 a {
 	color: inherit;
@@ -23,8 +23,8 @@ button:hover {
 	background: #333;
 }
 blockquote {
-	padding-left: 0.66em;
-	border-left: 0.33em solid #666;
+	padding-left: 1ch;
+	border-left: 0.5ch solid #666;
 	color: #999;
 }
 kbd {
@@ -39,7 +39,7 @@ kbd {
 	align-items: center;
 }
 table {
-	border-spacing: 1rem;
+	border-spacing: 1ch;
 	font-size: 0.5rem;
 }
 .error-tag {

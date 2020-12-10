@@ -1,3 +1,5 @@
+import RedditListing from '/objects/RedditListing.coffee'
+
 export default class RedditComment
 	constructor: (raw) ->
 		@awards =
@@ -17,7 +19,7 @@ export default class RedditComment
 			id: raw.subreddit_name_prefixed
 		@flags =
 			archived: raw.archived
-			edited: raw.edited?
+			edited: raw.edited
 			locked: raw.locked
 			nsfw: raw.over_18
 			pinned: raw.stickied
@@ -26,6 +28,7 @@ export default class RedditComment
 			scoreHidden: raw.score_hidden
 		@id = raw.id
 		@permalink = '/' + raw.subreddit_name_prefixed + '/' + raw.link_id[3..] + '-' + raw.id + '-3'
+		@replies = new RedditListing(raw.replies)
 		@stats =
 			controversiality: raw.controversiality
 			score: raw.score - 1

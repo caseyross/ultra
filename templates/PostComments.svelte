@@ -1,9 +1,9 @@
-<template>
+<template lang='pug'>
 
 	article
 		#comments(bind:this='{dom.comments}' on:mousedown='{teleportViaMinimap}')
-			+each('comments.list as comment')
-				Comment(comment='{comment}')
+			+each('comments.list as topLevelComment')
+				CommentTree(rootComment='{topLevelComment}')
 				+else
 					#nocomments
 						button#add-first-comment ADD THE FIRST COMMENT
@@ -59,7 +59,7 @@
 
 	export comments = {}
 
-	import Comment from '/templates/Comment'
+	import CommentTree from '/templates/CommentTree.svelte'
 	import { onMount } from 'svelte'
 	
 	dom =

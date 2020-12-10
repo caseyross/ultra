@@ -34,26 +34,7 @@
 		+await('state.feed.SELECTED')
 			+then('item')
 				+if('item')
-					Comments(comments='{item.comments}')
-		menu#comments-sort
-			a
-				kbd 1
-				| default
-			a
-				kbd 1
-				| old
-			a
-				kbd 1
-				| new
-			a
-				kbd 1
-				| rating
-			a
-				kbd 1
-				| controversial
-			a
-				kbd 1
-				| op replies
+					PostComments(comments='{item.comments}')
 		button#minimap-hat
 
 </template><style>
@@ -104,7 +85,7 @@
 
 	export state = {}
 
-	import Comments from '/templates/Comments'
+	import PostComments from '/templates/PostComments'
 	import Feed from '/templates/Feed'
 	import PostContent from '/templates/PostContent'
 

@@ -65,6 +65,12 @@ parseContent = (raw) ->
 		when raw.post_hint is 'image' or raw.is_gallery
 			content.type = 'image'
 			content.images = []
+			###
+			if raw.is_gallery
+
+			else
+				content.images.push(new RedditImage(preview.images[0]))
+			###
 		when raw.post_hint is 'hosted:video'
 			content.type = 'video'
 			content.videos = []

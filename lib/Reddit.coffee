@@ -28,9 +28,10 @@ export default
 				limit = 0
 				Promise.resolve(new RedditListing())
 		return [0...limit].map((i) -> BATCH.then (listing) ->
+			if not listing[i]? then return null
 			idMap[listing[i].id] = i
 			return listing[i]
-		)
+		).filter((item) -> item)
 	FEED_METADATA: ({ type, name }) ->
 		if not name
 			Promise.resolve null

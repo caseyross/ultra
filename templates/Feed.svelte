@@ -7,14 +7,15 @@
 					+await('ITEM')
 						p ---loading
 						+then('item')
-							+if('item instanceof RedditPost')
-								Post(post='{item}')
-								+elseif('item instanceof RedditComment')
-									Comment(comment='{item}')
-								+elseif('item instanceof RedditMessage')
-									p ---message
-								+else
-									p ---unknown item
+							a(href='{item.permalink}')
+								+if('item instanceof RedditPost')
+									Post(post='{item}')
+									+elseif('item instanceof RedditComment')
+										Comment(comment='{item}')
+									+elseif('item instanceof RedditMessage')
+										p ---message
+									+else
+										p ---unknown item
 						+catch('error')
 							.error-tag ERROR LOADING FEED
 							.error-message {error}
