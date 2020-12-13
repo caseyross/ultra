@@ -1,11 +1,10 @@
 import RedditListing from '/objects/RedditListing'
+import RedditFlair from '/objects/RedditFlair'
 
 export default class RedditPost
 	constructor: (raw) ->
 		@author =
-			flair:
-				color: raw.author_flair_background_color ? ''
-				text: raw.author_flair_text ? ''
+			flair: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 			name: raw.author
 			premium: raw.author_premium
 		@awards =
@@ -19,7 +18,6 @@ export default class RedditPost
 		@crossposts =
 			count: raw.num_crossposts
 			parentId: raw.crosspost_parent_list?[0]?.id ? ''
-		@distinguish = raw.distinguished ? ''
 		@feed =
 			id: raw.subreddit_name_prefixed
 			subscribers: raw.subreddit_subscribers
@@ -36,9 +34,7 @@ export default class RedditPost
 			scoreHidden: raw.hide_score
 			spoiler: raw.spoiler
 			stickied: raw.stickied or raw.pinned
-		@flair =
-			color: raw.link_flair_background_color ? ''
-			text: raw.link_flair_text ? ''
+		@flair = new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)
 		@id = raw.id
 		@permalink = '/' + raw.subreddit_name_prefixed + '/' + raw.id
 		@stats =

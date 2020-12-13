@@ -11,9 +11,12 @@ export default class RedditComment
 				text: raw.author_flair_text ? ''
 			name: raw.author
 			premium: raw.author_premium
+		@badges = [
+			if raw.distinguished is 'moderator' then 'mod' else raw.distinguished,
+			if raw.is_submitter then 'op' else null
+		].filter((a) -> a)
 		@content =
 			text: raw.body_html[16...-6]
-		@distinguish = raw.distinguished ? (if raw.is_submitter then 'op' else '')
 		@edits = {}
 		@feed =
 			id: raw.subreddit_name_prefixed

@@ -48,9 +48,11 @@
 		overflow hidden
 		background #222
 		color white
-		font 400 1.5rem/1 'Iosevka Aile', sans-serif
+		font 300 1.5rem/1.5 'Iosevka Aile', sans-serif
 	#feed-title
 		grid-area feed-meta
+		padding-left 10rem
+		font-size 2.5rem
 	button
 		color gray
 		& ~ &

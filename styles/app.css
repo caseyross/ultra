@@ -42,6 +42,22 @@ table {
 	border-spacing: 1ch;
 	font-size: 0.5rem;
 }
+.badge {
+	display: inline-block;
+	margin-right: 1ch;
+}
+.badge-op {
+	color: lightskyblue;
+}
+.badge-mod {
+	color: darkseagreen;
+}
+.badge-admin {
+	color: lightcoral;
+}
+.badge-special {
+	color: magenta;
+}
 .error-tag {
 	padding: 0 1px;
 	background: red;

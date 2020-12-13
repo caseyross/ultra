@@ -3,21 +3,23 @@
 	.post
 		.stats
 			Score(score='{post.stats.score}' scoreHidden='{post.flags.scoreHidden}')
-		h2.title {post.content.title}
+		h2.title
+			+if('post.flair.text')
+				span.flair(style!='color: {post.flair.color}') {post.flair.text}
+			| {post.content.title}
 		
 </template><style>
 
 	.post
 		display grid
 		grid-template-columns 9rem 57rem
-		gap 1rem
-	.stats
-		align-self flex-start
-		justify-self flex-end
+		font-size 2rem
+		padding 1ch
+	.flair
+		margin-right 1ch
 	.title
 		margin 0
-		font-size 2.25rem
-		font-weight 200
+		font-size 2rem
 
 </style><script>
 
