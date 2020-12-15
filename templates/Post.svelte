@@ -1,12 +1,16 @@
 <template lang='pug'>
 
-	.post
+	h2.post
 		.stats
 			Score(score='{post.stats.score}' scoreHidden='{post.flags.scoreHidden}')
-		h2.title
-			+if('post.flair.text')
-				span.flair(style!='color: {post.flair.color}') {post.flair.text}
-			| {post.content.title}
+		.headline
+			+if('showOrigin')
+				span.origin {post.feed.id.slice(2)}
+				span.spacer
+				+elseif('post.flair.text')
+					span.flair(style!='color: {post.flair.color}') {post.flair.text}
+					span.spacer
+			span.title {post.content.title}
 		
 </template><style>
 
@@ -14,16 +18,18 @@
 		display grid
 		grid-template-columns 9rem 57rem
 		font-size 2rem
-		padding 1ch
-	.flair
-		margin-right 1ch
-	.title
 		margin 0
-		font-size 2rem
+		padding 1ch
+	.origin
+		color gray
+	.spacer
+		display inline-block
+		width 1ch
 
 </style><script>
 
 	export post = null
+	export showOrigin = false
 
 	import Score from '/templates/Score.svelte'
 		

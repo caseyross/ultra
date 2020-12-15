@@ -1,15 +1,15 @@
 <template lang='pug'>
 
-	+each('[visitors, residents] as slice')
+	+each('[feed.visitors, feed.residents] as group')
 		ol
-			+each('slice as ITEM')
+			+each('group as ITEM')
 				li
 					+await('ITEM')
 						p ---loading
 						+then('item')
 							a(href='{item.permalink}')
 								+if('item instanceof RedditPost')
-									Post(post='{item}')
+									Post(post='{item}' showOrigin='{feed.id.toLowerCase() !== item.feed.id.toLowerCase()}')
 									+elseif('item instanceof RedditComment')
 										Comment(comment='{item}')
 									+elseif('item instanceof RedditMessage')
@@ -35,7 +35,6 @@
 	import Comment from '/templates/Comment'
 	import Post from '/templates/Post'
 
-	export visitors = []
-	export residents = []
+	export feed = null
 
 </script>

@@ -14,7 +14,7 @@
 						+else
 							img#subreddit-icon
 		#feed
-			Feed(visitors='{state.feed.visitors}' residents='{state.feed.residents}')
+			Feed(feed='{state.feed}')
 		+await('state.feed.SELECTED')
 			+then('item')
 				+if('item')

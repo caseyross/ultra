@@ -2,34 +2,34 @@ rankings = [
 	'new', 'rising', 'hot', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all'
 ]
 
-export default class FeedState
-	constructor: (url, currentFeedState) ->
+export default class RedditFeed
+	constructor: (url, currentFeed) ->
 		[ empty, type, name, selections ] = url.pathname.split('/')
 		if selections
 			## ---load selections into current feed if possible ##
-			if currentFeedState
+			if currentFeed
 				## ---if a feed state already exists, maintain that state as much as possible... ##
-				feedState = { ...currentFeedState }
+				feed = { ...currentFeed }
 			else
 				## ---...if not, generate a fresh state (effectively, load a new feed with the selections visiting). ##
-				feedState = new FeedState({ ...url, pathname: [empty, type, name].join('/') })
+				feed = new RedditFeed({ ...url, pathname: [empty, type, name].join('/') })
 			## ---is item a resident of current feed? ##
 			[ itemId, commentId, commentContext ] = selections.split('-')
-			residentsIndex = feedState.idMap[itemId]
+			residentsIndex = feed.idMap[itemId]
 			if residentsIndex?
 				## ---yes, load item from residents ##
-				ITEM = feedState.residents[residentsIndex]
+				ITEM = feed.residents[residentsIndex]
 				## ---load full comments for item ##
 				Reddit.FEED_POST({ id: itemId, commentId: commentId, commentContext: commentContext })
 					.then (post) ->
-						feedState.residents[residentsIndex] = Promise.resolve post
-						feedState.SELECTED = feedState.residents[residentsIndex]
+						feed.residents[residentsIndex] = Promise.resolve post
+						feed.SELECTED = feed.residents[residentsIndex]
 			else
 				## ---no, load item as a visitor ##
 				ITEM = Reddit.FEED_POST({ id: itemId, commentId: commentId, commentContext: commentContext })
-				feedState.visitors = [ITEM]
-			feedState.SELECTED = ITEM
-			return feedState
+				feed.visitors = [ITEM]
+			feed.SELECTED = ITEM
+			return feed
 		else
 			## ---load new feed ##
 			@type = if type then type else 'r'

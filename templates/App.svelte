@@ -22,14 +22,14 @@
 
 </style><script>
 
-	import FeedState from '/objects/FeedState'
+	import RedditFeed from '/objects/RedditFeed'
 	import ActionMenu from '/templates/ActionMenu'
 	import DebugInspector from '/templates/DebugInspector'
 	import Main from '/templates/Main'
 
 	## INIT ##
 	state =
-		feed: new FeedState(window.location)
+		feed: new RedditFeed(window.location)
 		feedPredict: {}
 	## PRE-LOAD INTERNAL LINKS... ##
 	document.addEventListener 'mousedown',
@@ -38,7 +38,7 @@
 				if element.href
 					url = new URL(element.href)
 					if url.origin is window.location.origin
-						state.feedPredict[url.pathname] = new FeedState(url, state.feed)
+						state.feedPredict[url.pathname] = new RedditFeed(url, state.feed)
 					break
 	## ...THEN HOT LOAD THEM ##
 	document.addEventListener 'click',
@@ -50,14 +50,14 @@
 						[ empty, type, name, selections ] = url.pathname.split('/')
 						if not selections
 							history.pushState({}, '', element.href)
-						state.feed = state.feedPredict[url.pathname] ? new FeedState(url, state.feed)
+						state.feed = state.feedPredict[url.pathname] ? new RedditFeed(url, state.feed)
 						delete state.feedPredict[url.pathname]
 						e.preventDefault()
 					break
 	## ALSO HOT LOAD UPON BROWSER BACK FUNCTION ##
 	window.addEventListener 'popstate',
 		(e) ->
-			state.feed = new FeedState(window.location, state.feed)
+			state.feed = new RedditFeed(window.location, state.feed)
 
 	inspect = off
 	document.keyboardShortcuts.Backquote =
