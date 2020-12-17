@@ -1,4 +1,4 @@
-rankings = [
+sorts = [
 	'new', 'rising', 'hot', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all'
 ]
 
@@ -35,15 +35,15 @@ export default class RedditFeed
 			@type = if type then type else 'r'
 			@name = name ? ''
 			@id = @type + '/' + @name
-			@ranking = if @id is 'r/' then 'best' else 'hot'
+			@sort = if @id is 'r/' then 'best' else 'hot'
 			for [k, v] from (new URLSearchParams(url.search))
 				if k is 'search'
-					@ranking = 'search-' + v
+					@sort = 'search-' + v
 					break
-				if rankings.includes(k) then @ranking = k
+				if sorts.includes(k) then @sort = k
 			@idMap = {}
 			@visitors = []
-			@residents = Reddit.FEED_SLICE({ type: @type, name: @name, ranking: @ranking, idMap: @idMap })
+			@residents = Reddit.FEED_SLICE({ type: @type, name: @name, sort: @sort, idMap: @idMap })
 			@meta =
 				ABOUT: Reddit.FEED_METADATA({ type: @type, name: @name })
 			@SELECTED = Promise.resolve null

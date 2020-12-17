@@ -1,6 +1,6 @@
 <template lang='pug'>
 	
-	.comment
+	.comment(class:removed='{comment.flags.removed}')
 		+if('comment instanceof RedditComment')
 			.stats
 				Score(score='{comment.stats.score}' scoreHidden='{comment.flags.scoreHidden}')
@@ -16,6 +16,9 @@
 		display grid
 		grid-template-columns 9rem 37rem
 		font-weight 300
+	.removed
+		color gray
+		text-decoration line-through
 	.stats
 		align-self flex-start
 		justify-self flex-end

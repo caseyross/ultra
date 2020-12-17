@@ -1,5 +1,6 @@
 import RedditListing from '/objects/RedditListing'
 import RedditFlair from '/objects/RedditFlair'
+import RedditImage from '/objects/RedditImage'
 
 export default class RedditPost
 	constructor: (raw) ->
@@ -60,14 +61,11 @@ parseContent = (raw) ->
 			content.text = raw.selftext_html?[31...-20] ? ''
 		when raw.post_hint is 'image' or raw.is_gallery
 			content.type = 'image'
-			content.images = []
-			###
 			if raw.is_gallery
-
+				content.images = raw.gallery_data.items.map((item) -> new RedditImage(raw.media_metadata[item.media_id]))
 			else
-				content.images.push(new RedditImage(preview.images[0]))
-			###
-		when raw.post_hint is 'hosted:video'
+				content.images = [new RedditImage(raw.preview.images[0])]
+		when raw.post_hint is 'hosted:video' or raw.rpan_video
 			content.type = 'video'
 			content.videos = []
 		when raw.post_hint is 'rich:video'

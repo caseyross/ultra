@@ -4,8 +4,8 @@ import RedditListing from '/objects/RedditListing'
 
 export default
 	## warning: side effects (idMap) ##
-	FEED_SLICE: ({ type, name, ranking, after, limit, idMap }) ->
-		[ broadRanking, narrowRanking ] = ranking.split('-')
+	FEED_SLICE: ({ type, name, sort, after, limit, idMap }) ->
+		[ broadRanking, narrowRanking ] = sort.split('-')
 		BATCH = switch type
 			when 'r'
 				limit ?= 10

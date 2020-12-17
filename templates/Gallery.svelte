@@ -8,7 +8,7 @@
 					| back
 				+each('images as image, j')
 					img.thumbnail(
-						src='{image.url_640}'
+						src!='{image.sizes.find(size => size.width === 108).url}'
 						on:click!='{() => i = j}'
 						class:selected!='{i == j}'
 					)
@@ -22,11 +22,11 @@
 					button
 						kbd F
 						| fullscreen
-					a(href='{images[i].url_full}' target='_blank' rel='noopener')
+					a(href!='{images[i].sizes.find(size => size.width === 640).url}' target='_blank' rel='noopener')
 						kbd O
 						| open original
 		figure
-			img(src='{images[i].url_640}')
+			img(src!='{images[i].sizes.find(size => size.width === 640).url}')
 			+if('images[i].caption')
 				figcaption
 					| {images[i].caption}

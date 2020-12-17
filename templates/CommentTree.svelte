@@ -9,7 +9,7 @@
 </template><style>
 
 	.comment-tree
-		margin-top 1ch
+		margin-top 2ch
 		margin-left 2rem
 		border-left 1px solid #333
 

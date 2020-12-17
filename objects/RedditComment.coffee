@@ -27,6 +27,7 @@ export default class RedditComment
 			nsfw: raw.over_18
 			pinned: raw.stickied
 			quarantined: raw.quarantine
+			removed: raw.body is '[removed]'
 			saved: raw.saved
 			scoreHidden: raw.score_hidden
 		@id = raw.id
