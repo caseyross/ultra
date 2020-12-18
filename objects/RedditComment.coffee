@@ -1,4 +1,4 @@
-import RedditListing from '/objects/RedditListing.coffee'
+import RedditListingSlice from '/objects/RedditListingSlice.coffee'
 
 export default class RedditComment
 	constructor: (raw) ->
@@ -18,8 +18,6 @@ export default class RedditComment
 		@content =
 			text: raw.body_html[16...-6]
 		@edits = {}
-		@feed =
-			id: raw.subreddit_name_prefixed
 		@flags =
 			archived: raw.archived
 			edited: raw.edited
@@ -31,8 +29,10 @@ export default class RedditComment
 			saved: raw.saved
 			scoreHidden: raw.score_hidden
 		@id = raw.id
-		@permalink = '/' + raw.subreddit_name_prefixed + '/' + raw.link_id[3..] + '-' + raw.id + '-3'
-		@replies = new RedditListing(raw.replies)
+		@listingId = raw.subreddit_name_prefixed.toLowerCase()
+		@permalink = '/' + @listingId + '/' + @postId + '-' + @id + '-3'
+		@postId = raw.link_id[3..]
+		@replies = new RedditListingSlice(raw.replies)
 		@stats =
 			controversiality: raw.controversiality
 			score: raw.score - 1

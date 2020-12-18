@@ -1,7 +1,7 @@
 <template lang='pug'>
 
 	svelte:head
-		title {state.feed.name || 'front page'}
+		title {state.listingId || 'frontpage'}
 	Main(state='{state}')
 	ActionMenu
 	+if('inspect')
@@ -22,42 +22,41 @@
 
 </style><script>
 
-	import RedditFeed from '/objects/RedditFeed'
+	import State from '/objects/State'
 	import ActionMenu from '/templates/ActionMenu'
 	import DebugInspector from '/templates/DebugInspector'
 	import Main from '/templates/Main'
 
-	## INIT ##
-	state =
-		feed: new RedditFeed(window.location)
-		feedPredict: {}
-	## PRE-LOAD INTERNAL LINKS... ##
+	# Initialize.
+	state = new State(window.location)
+	preloads = {}
+	# Preload internal links...
 	document.addEventListener 'mousedown',
 		(e) ->
 			for element in e.path
 				if element.href
 					url = new URL(element.href)
 					if url.origin is window.location.origin
-						state.feedPredict[url.pathname] = new RedditFeed(url, state.feed)
+						preloads[url.pathname] = new State(url, state)
 					break
-	## ...THEN HOT LOAD THEM ##
+	# ...then hot load them into the page.
 	document.addEventListener 'click',
 		(e) ->
 			for element in e.path
 				if element.href
 					url = new URL(element.href)
 					if url.origin is window.location.origin
-						[ empty, type, name, selections ] = url.pathname.split('/')
+						[ nothing, listingType, listingName, selections ] = url.pathname.split('/')
 						if not selections
 							history.pushState({}, '', element.href)
-						state.feed = state.feedPredict[url.pathname] ? new RedditFeed(url, state.feed)
-						delete state.feedPredict[url.pathname]
+						state = preloads[url.pathname] ? new State(url, state)
+						delete preloads[url.pathname]
 						e.preventDefault()
 					break
-	## ALSO HOT LOAD UPON BROWSER BACK FUNCTION ##
+	# Also hot load when the browser back function is used.
 	window.addEventListener 'popstate',
 		(e) ->
-			state.feed = new RedditFeed(window.location, state.feed)
+			state = new State(window.location, state)
 
 	inspect = off
 	document.keyboardShortcuts.Backquote =

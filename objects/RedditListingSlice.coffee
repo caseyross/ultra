@@ -6,7 +6,7 @@ import RedditPost from '/objects/RedditPost'
 import RedditUser from '/objects/RedditUser'
 import RedditSubreddit from '/objects/RedditSubreddit'
 
-export default class RedditListing
+export default class RedditListingSlice
 	constructor: (raw) ->
 		return [] unless raw?.kind is 'Listing' and raw?.data?.children instanceof Array
 		return raw.data.children.map (child) ->

@@ -1,4 +1,4 @@
-import RedditListing from '/objects/RedditListing'
+import RedditListingSlice from '/objects/RedditListingSlice'
 import RedditFlair from '/objects/RedditFlair'
 import RedditImage from '/objects/RedditImage'
 
@@ -13,15 +13,12 @@ export default class RedditPost
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 		@comments =
 			count: raw.num_comments
-			list: new RedditListing(raw.replies)
+			list: new RedditListingSlice(raw.replies)
 			suggestedRanking: raw.suggested_sort ? ''
 		@content = parseContent(raw.crosspost_parent_list?[0] ? raw)
 		@crossposts =
 			count: raw.num_crossposts
 			parentId: raw.crosspost_parent_list?[0]?.id ? ''
-		@feed =
-			id: raw.subreddit_name_prefixed
-			subscribers: raw.subreddit_subscribers
 		@flags =
 			archived: raw.archived
 			contest: raw.contest_mode
@@ -37,7 +34,8 @@ export default class RedditPost
 			stickied: raw.stickied or raw.pinned
 		@flair = new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)
 		@id = raw.id
-		@permalink = '/' + raw.subreddit_name_prefixed + '/' + raw.id
+		@listingId = raw.subreddit_name_prefixed.toLowerCase()
+		@permalink = '/' + @listingId + '/' + @id
 		@stats =
 			ratio: raw.upvote_ratio
 			score: raw.score - 1
@@ -74,7 +72,7 @@ parseContent = (raw) ->
 		when raw.domain.endsWith('reddit.com')
 			content.type = 'comment'
 			[ _, _, _, _, _, _, postId, _, commentId, queryParameters ] = raw.url.split('/')
-			content.POST = Reddit.FEED_POST {
+			content.POST = Reddit.POST {
 				id: postId,
 				commentId: commentId,
 				commentContext: (new URLSearchParams(queryParameters)).get('context')

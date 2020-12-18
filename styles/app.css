@@ -41,13 +41,10 @@
 	outline: none;
 }
 *::-webkit-scrollbar {
-	width: 1rem;
-	background: transparent;
-	border-width: 1px;
-	border-style: dotted;
+	background: linear-gradient(90deg, transparent 0 8px, white 8px 9px, transparent 9px);
 }
 *::-webkit-scrollbar-thumb {
-	background: repeating-linear-gradient(-60deg, rgba(0,0,0,0.5) 0 2px, transparent 2px 4px);
+	background: white;
 }
 * + blockquote,
 * + p {

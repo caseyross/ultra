@@ -1,49 +1,49 @@
 # Docs: https://www.reddit.com/dev/api
 import { API_GET, API_POST } from '/lib/apiPrimitives'
-import RedditListing from '/objects/RedditListing'
+import RedditListingSlice from '/objects/RedditListingSlice'
 
 export default
-	## warning: side effects (idMap) ##
-	FEED_SLICE: ({ type, name, sort, after, limit, idMap }) ->
-		[ broadRanking, narrowRanking ] = sort.split('-')
-		BATCH = switch type
+	# Causes side effects (idMap).
+	LISTING_SLICE: ({ id, sort, after, limit, idMap }) ->
+		[ broadSort, narrowSort ] = sort.split('-')
+		BATCH = switch id[0]
 			when 'r'
 				limit ?= 10
-				API_GET (if name then "/r/#{name}/#{broadRanking}" else "/#{broadRanking}"),
-					t: if broadRanking is 'top' or broadRanking is 'controversial' then narrowRanking else ''
-					show: 'all'
+				API_GET (if id[2..] then "/#{id}/#{broadSort}" else "/#{broadSort}"),
+					t: if broadSort is 'top' or broadSort is 'controversial' then narrowSort else ''
 					after: after
 					limit: limit
-				.then (rawListing) -> new RedditListing(rawListing)
+					show: 'all'
+				.then (rawListing) -> new RedditListingSlice(rawListing)
 			when 'u'
 				limit ?= 25
-				API_GET "/user/#{name}/overview",
-					sort: broadRanking
-					t: if broadRanking is 'top' or broadRanking is 'controversial' then narrowRanking else ''
-					show: 'given'
+				API_GET "/user/#{id[2..]}/overview",
+					sort: broadSort
+					t: if broadSort is 'top' or broadSort is 'controversial' then narrowSort else ''
 					after: after
 					limit: limit ? 25
-				.then (rawListing) -> new RedditListing(rawListing)
+					show: 'given'
+				.then (rawListing) -> new RedditListingSlice(rawListing)
 			else
 				limit = 0
-				Promise.resolve(new RedditListing())
+				Promise.resolve(new RedditListingSlice())
 		return [0...limit].map((i) -> BATCH.then (listing) ->
 			if not listing[i]? then return null
 			idMap[listing[i].id] = i
 			return listing[i]
 		).filter((item) -> item)
-	FEED_METADATA: ({ type, name }) ->
-		if not name
+	LISTING_ABOUT: ({ id }) ->
+		if not id[2..]
 			Promise.resolve null
 		else
-			API_GET "/#{if type is 'u' then 'user' else type}/#{name}/about"
-			.then (metadata) -> metadata.data
-	FEED_POST: ({ id, commentId, commentContext }) ->
+			API_GET "/#{if id[0] is 'u' then 'user' else id[0]}/#{id[2..]}/about"
+			.then (rawData) -> rawData.data
+	POST: ({ id, commentId, commentContext }) ->
 		API_GET "/comments/#{id}",
 			comment: commentId
 			context: commentContext
 		.then ([ rawPostListing, rawCommentListing ]) ->
-			posts = new RedditListing(rawPostListing)
+			posts = new RedditListingSlice(rawPostListing)
 			post = posts[0]
-			post.comments.list = new RedditListing(rawCommentListing)
+			post.comments.list = new RedditListingSlice(rawCommentListing)
 			return post

@@ -1,15 +1,26 @@
 <template lang='pug'>
 
-	+each('[feed.visitors, feed.residents] as group')
+	h1 {state.listingId || 'frontpage'}
+	+await('state.listingMetadata.ABOUT')
+		img#subreddit-icon
+		+then('about')
+			+if('about')
+				+if('about.community_icon')
+					img#subreddit-icon(src='{about.community_icon}')
+					+elseif('about.icon_img')
+						img#subreddit-icon(src='{about.icon_img}')
+					+else
+						img#subreddit-icon
+	+each('[state.listingItems, state.foreignItems] as items')
 		ol
-			+each('group as ITEM')
+			+each('items as ITEM')
 				li
 					+await('ITEM')
 						p ---loading
 						+then('item')
 							a(href='{item.permalink}')
 								+if('item instanceof RedditPost')
-									Post(post='{item}' showOrigin='{feed.id.toLowerCase() !== item.feed.id.toLowerCase()}')
+									Post(post='{item}' showOrigin='{state.listingId !== item.listingId}')
 									+elseif('item instanceof RedditComment')
 										Comment(comment='{item}')
 									+elseif('item instanceof RedditMessage')
@@ -26,15 +37,17 @@
 		margin 0
 		padding 0
 		list-style none
+	#subreddit-icon
+		display none
 
 </style><script>
+	
+	export state = {}
 
 	import RedditComment from '/objects/RedditComment'
 	import RedditMessage from '/objects/RedditMessage'
 	import RedditPost from '/objects/RedditPost'
 	import Comment from '/templates/Comment'
 	import Post from '/templates/Post'
-
-	export feed = null
 
 </script>

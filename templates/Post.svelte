@@ -4,7 +4,7 @@
 		.score {post.flags.scoreHidden ? '---' : post.stats.score}
 		.headline
 			+if('showOrigin')
-				a.origin(href='/{post.feed.id}') {post.feed.id.slice(2)}
+				a.origin(href='/{post.listingId}') {post.listingId.slice(2)}
 				+elseif('post.flair.text')
 					span.flair(style!='border-color: {post.flair.color}') {post.flair.text}
 					span.spacer
@@ -36,7 +36,5 @@
 
 	export post = null
 	export showOrigin = false
-
-	import Score from '/templates/Score.svelte'
 		
 </script>
