@@ -5,8 +5,8 @@
 		.headline
 			+if('showOrigin')
 				a.origin(href='/{post.listingId}') {post.listingId.slice(2)}
-				+elseif('post.flair.text')
-					span.flair(style!='border-color: {post.flair.color}') {post.flair.text}
+				+elseif('post.flairs.title.text')
+					span.flair(style!='border-color: {post.flairs.title.color}') {post.flairs.title.text}
 					span.spacer
 			span.title {post.content.title}
 		

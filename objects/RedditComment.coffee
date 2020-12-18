@@ -1,3 +1,4 @@
+import RedditFlair from '/objects/RedditFlair.coffee'
 import RedditListingSlice from '/objects/RedditListingSlice.coffee'
 
 export default class RedditComment
@@ -6,9 +7,6 @@ export default class RedditComment
 			list: []
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 		@author =
-			flair:
-				color: raw.author_flair_background_color ? ''
-				text: raw.author_flair_text ? ''
 			name: raw.author
 			premium: raw.author_premium
 		@badges = [
@@ -17,7 +15,6 @@ export default class RedditComment
 		].filter((a) -> a)
 		@content =
 			text: raw.body_html[16...-6]
-		@edits = {}
 		@flags =
 			archived: raw.archived
 			edited: raw.edited
@@ -28,6 +25,8 @@ export default class RedditComment
 			removed: raw.body is '[removed]'
 			saved: raw.saved
 			scoreHidden: raw.score_hidden
+		@flairs =
+			author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 		@id = raw.id
 		@listingId = raw.subreddit_name_prefixed.toLowerCase()
 		@permalink = '/' + @listingId + '/' + @postId + '-' + @id + '-3'

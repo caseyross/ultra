@@ -1,11 +1,10 @@
-import RedditListingSlice from '/objects/RedditListingSlice'
 import RedditFlair from '/objects/RedditFlair'
 import RedditImage from '/objects/RedditImage'
+import RedditListingSlice from '/objects/RedditListingSlice'
 
 export default class RedditPost
 	constructor: (raw) ->
 		@author =
-			flair: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 			name: raw.author
 			premium: raw.author_premium
 		@awards =
@@ -13,8 +12,8 @@ export default class RedditPost
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 		@comments =
 			count: raw.num_comments
+			defaultSort: raw.suggested_sort ? ''
 			list: new RedditListingSlice(raw.replies)
-			suggestedRanking: raw.suggested_sort ? ''
 		@content = parseContent(raw.crosspost_parent_list?[0] ? raw)
 		@crossposts =
 			count: raw.num_crossposts
@@ -32,7 +31,9 @@ export default class RedditPost
 			scoreHidden: raw.hide_score
 			spoiler: raw.spoiler
 			stickied: raw.stickied or raw.pinned
-		@flair = new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)
+		@flairs =
+			author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
+			title: new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)
 		@id = raw.id
 		@listingId = raw.subreddit_name_prefixed.toLowerCase()
 		@permalink = '/' + @listingId + '/' + @id
