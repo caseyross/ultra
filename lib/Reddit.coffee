@@ -1,6 +1,6 @@
 # Docs: https://www.reddit.com/dev/api
 import { API_GET, API_POST } from '/lib/apiPrimitives'
-import RedditListingSlice from '/objects/RedditListingSlice'
+import RedditItems from '/objects/RedditItems'
 
 export default
 	# Causes side effects (idMap).
@@ -8,25 +8,41 @@ export default
 		[ broadSort, narrowSort ] = sort.split('-')
 		BATCH = switch id[0]
 			when 'r'
+				t = switch broadSort
+					when 'top', 'controversial'
+						switch narrowSort
+							when '' then 'month'
+							when 'alltime' then 'all'
+							else narrowSort
+					else
+						''
 				limit ?= 10
 				API_GET (if id[2..] then "/#{id}/#{broadSort}" else "/#{broadSort}"),
-					t: if broadSort is 'top' or broadSort is 'controversial' then narrowSort else ''
+					t: t
 					after: after
 					limit: limit
 					show: 'all'
-				.then (rawListing) -> new RedditListingSlice(rawListing)
+				.then (rawListing) -> new RedditItems(rawListing)
 			when 'u'
+				t = switch broadSort
+					when 'top', 'controversial'
+						switch narrowSort
+							when '' then 'all'
+							when 'alltime' then 'all'
+							else narrowSort
+					else
+						''
 				limit ?= 25
 				API_GET "/user/#{id[2..]}/overview",
 					sort: broadSort
-					t: if broadSort is 'top' or broadSort is 'controversial' then narrowSort else ''
+					t: t
 					after: after
 					limit: limit ? 25
 					show: 'given'
-				.then (rawListing) -> new RedditListingSlice(rawListing)
+				.then (rawListing) -> new RedditItems(rawListing)
 			else
 				limit = 0
-				Promise.resolve(new RedditListingSlice())
+				Promise.resolve(new RedditItems())
 		return [0...limit].map((i) -> BATCH.then (listing) ->
 			if not listing[i]? then return null
 			idMap[listing[i].id] = i
@@ -43,7 +59,7 @@ export default
 			comment: commentId
 			context: commentContext
 		.then ([ rawPostListing, rawCommentListing ]) ->
-			posts = new RedditListingSlice(rawPostListing)
+			posts = new RedditItems(rawPostListing)
 			post = posts[0]
-			post.comments.list = new RedditListingSlice(rawCommentListing)
+			post.comments.list = new RedditItems(rawCommentListing)
 			return post

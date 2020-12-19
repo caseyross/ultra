@@ -1,6 +1,6 @@
 import RedditFlair from '/objects/RedditFlair'
 import RedditImage from '/objects/RedditImage'
-import RedditListingSlice from '/objects/RedditListingSlice'
+import RedditItems from '/objects/RedditItems'
 
 export default class RedditPost
 	constructor: (raw) ->
@@ -13,7 +13,7 @@ export default class RedditPost
 		@comments =
 			count: raw.num_comments
 			defaultSort: raw.suggested_sort ? ''
-			list: new RedditListingSlice(raw.replies)
+			list: new RedditItems(raw.replies)
 		@content = parseContent(raw.crosspost_parent_list?[0] ? raw)
 		@crossposts =
 			count: raw.num_crossposts

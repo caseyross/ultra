@@ -1,5 +1,5 @@
 import RedditFlair from '/objects/RedditFlair.coffee'
-import RedditListingSlice from '/objects/RedditListingSlice.coffee'
+import RedditItems from '/objects/RedditItems.coffee'
 
 export default class RedditComment
 	constructor: (raw) ->
@@ -31,7 +31,7 @@ export default class RedditComment
 		@listingId = raw.subreddit_name_prefixed.toLowerCase()
 		@permalink = '/' + @listingId + '/' + @postId + '-' + @id + '-3'
 		@postId = raw.link_id[3..]
-		@replies = new RedditListingSlice(raw.replies)
+		@replies = new RedditItems(raw.replies)
 		@stats =
 			controversiality: raw.controversiality
 			score: raw.score - 1

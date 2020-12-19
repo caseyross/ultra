@@ -1,5 +1,5 @@
 sorts = [
-	'new', 'rising', 'hot', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all'
+	'new', 'rising', 'hot', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-alltime', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-alltime'
 ]
 
 export default class State
@@ -14,7 +14,7 @@ export default class State
 				# No, start fresh.
 				newState = new State({ ...url, pathname: [nothing, listingType, listingName].join('/') })
 			[ itemId, commentId, commentContext ] = selections.split('-')
-			itemIndex = newState.idMap[itemId]
+			itemIndex = newState.itemIdMap[itemId]
 			# Is data for the desired item already present?
 			if itemIndex?
 				# Yes, it must be from the current listing.
@@ -34,15 +34,16 @@ export default class State
 			return newState
 		else
 			# Generate a fresh state.
-			@idMap = {}
+			@itemIdMap = {}
 			@listingId = (if listingType then listingType else 'r') + '/' + (listingName ? '')
 			@listingSort = if @listingId is 'r/' then 'best' else 'hot'
 			for [k, v] from (new URLSearchParams(url.search))
-				if k is 'search'
-					@listingSort = 'search-' + v
-					break
-				if sorts.includes(k) then @listingSort = k
-			@listingItems = Reddit.LISTING_SLICE({ id: @listingId, sort: @listingSort, idMap: @idMap })
+				switch
+					when ['search', 'top', 'controversial'].includes(k)
+						@listingSort = k + '-' + v
+					when sorts.includes(k)
+						@listingSort = k
+			@listingItems = Reddit.LISTING_SLICE({ id: @listingId, sort: @listingSort, idMap: @itemIdMap })
 			@listingMetadata =
 				ABOUT: Reddit.LISTING_ABOUT({ id: @listingId })
 			@foreignItems = []
