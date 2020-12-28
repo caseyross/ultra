@@ -19,14 +19,16 @@
 </template><style>
 
 	#postContent
-		grid-area item
 		height 100%
 		overflow auto
 		background repeating-linear-gradient(-45deg, rgba(0,0,0,0.1) 0 1rem, transparent 1rem 2rem)
 	#text
 		height 100%
 		overflow auto
-		font-size 14px
+		padding 1ch
+		width 50%
+		background white
+		color black
 
 </style><script>
 

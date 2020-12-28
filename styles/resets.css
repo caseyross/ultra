@@ -13,6 +13,13 @@ h4,
 h5,
 h6 {
 	font-weight: inherit;
+	margin-top: 0;
+}
+
+ol,
+ul {
+	margin: 0;
+	padding-left: 20px;
 }
 
 blockquote,

@@ -27,7 +27,6 @@ export default class State
 			else
 				# No, item must be foreign; fetch the whole item now.
 				DESIRED_ITEM = Reddit.POST({ id: itemId, commentId: commentId, commentContext: commentContext })
-				newState.foreignItems = [DESIRED_ITEM]
 			# Make the selection.
 			newState.SELECTED_ITEM = DESIRED_ITEM
 			# Return the new object instead of running the constructor.
@@ -46,5 +45,4 @@ export default class State
 			@listingItems = Reddit.LISTING_SLICE({ id: @listingId, sort: @listingSort, idMap: @itemIdMap })
 			@listingMetadata =
 				ABOUT: Reddit.LISTING_ABOUT({ id: @listingId })
-			@foreignItems = []
 			@SELECTED_ITEM = Promise.resolve null

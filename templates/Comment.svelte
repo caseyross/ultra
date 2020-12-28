@@ -1,47 +1,41 @@
 <template lang='pug'>
 	
-	.comment(class:removed='{comment.flags.removed}')
-		+if('comment instanceof RedditComment')
-			.stats
-				Score(score='{comment.stats.score}' scoreHidden='{comment.flags.scoreHidden}')
-			.text
+	.comment(class='{commentClass}' style='{commentStyle}' title='{comment.stats.score} points {Time.relative(comment.times.submit)} by u/{comment.author.name} ({commentHoverText})')
+		Avatar(username='{comment.author.name}')
+		.text
+			+if('comment instanceof RedditComment')
 				+html('comment.content.text')
-			+elseif('comment instanceof RedditMoreComments')
-			+else
-				.error-tag ERROR LOADING COMMENT
+				+elseif('comment instanceof RedditMoreComments')
+					a(href='/') {comment.ids.length} MORE
+				+else
+					.error-tag ERROR LOADING COMMENT
+	+each('comment.replies as reply')
+		svelte:self(comment='{reply}' depth='{depth + 1}')
 
 </template><style>
 
 	.comment
-		display grid
-		grid-template-columns 9rem 37rem
-		font-weight 300
+		position relative
+		padding 1ch
+		display flex
 	.removed
-		color gray
+		opacity 0.2
 		text-decoration line-through
-	.stats
-		align-self flex-start
-		justify-self flex-end
 
 </style><script>
 
+	export depth = 0
 	export comment = null
 
 	import RedditComment from '/objects/RedditComment'
 	import RedditMoreComments from '/objects/RedditMoreComments'
-	import Score from '/templates/Score.svelte'
+	import Avatar from '/templates/Avatar.svelte'
 
-	###
-	badgeText = (type) -> switch type
-		when 'op' then 'OP'
-		when 'mod' then 'Mod'
-		when 'admin' then 'Admin'
-		when 'special' then '???'
-	badgeHtml = ''
-	for type in comment.badges
-		badgeHtml += "<span class='badge badge-#{type}'>(#{badgeText(type)})</span>"
-
-	textHtml = comment.content.text[..2] + badgeHtml + comment.content.text[3..]
-	###
+	if comment instanceof RedditComment
+		commentClass = (if comment.distinguish then 'comment-' + comment.distinguish else '') + ' ' + (if comment.flags.removed then 'removed' else '')
+		commentStyle = "margin-left: #{depth * 2}ch; opacity: #{0.5 + comment.stats.rating / 10}"
+		commentHoverText = comment.stats.ratingExplanation
+	else if comment instanceof RedditMoreComments
+		commentStyle = "color: gray"
 
 </script>

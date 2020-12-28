@@ -4,9 +4,14 @@
 		+await('state.SELECTED_ITEM')
 			+then('item')
 				+if('item')
-					PostContent(content='{item.content}')
+					#item-actions
+					#item-title
+						h3 {item.title}
+					#item-content
+						PostContent(content='{item.content}')
+						PostComments(comments='{item.comments}')
 					+else
-						#list-description
+						#listing-description
 							+await('state.listingMetadata.ABOUT then about')
 								+if('about')
 									img(src='{about.banner_background_image || about.banner_img}')
@@ -17,28 +22,23 @@
 			+catch('error')
 				.error-tag ERROR LOADING POST
 				.error-message {error}
-		Feed(state='{state}')
-		+await('state.SELECTED_ITEM')
-			+then('item')
-				+if('item')
-					PostComments(comments='{item.comments}')
 
 </template><style>
 
 	main
-		display grid
-		grid-template-columns 1fr 1fr 1fr
 		height 100%
-		overflow hidden
-		background #222
-		color white
-		font 300 1.5rem/1.5 'Iosevka Aile', sans-serif
+		overflow auto
+	#item-actions
+		height 5rem
+	#item-title
+		height 5rem
+	#item-content
+		display flex
 
 </style><script>
 
 	export state = {}
 
-	import Feed from '/templates/Feed'
 	import PostComments from '/templates/PostComments'
 	import PostContent from '/templates/PostContent'
 

@@ -1,8 +1,9 @@
 <template lang='pug'>
 
 	svelte:head
-		title {state.listingId || 'frontpage'}
-	Main(state='{state}')
+		title {state.listingId[0] === 'r' ? state.listingId.slice(2) : state.listingId}
+	AppNav(state='{state}')
+	AppMain(state='{state}')
 	ActionMenu
 	+if('inspect')
 		#inspector-overlay
@@ -13,8 +14,8 @@
 	#inspector-overlay
 		position fixed
 		top 0
-		width 100%
-		height 100%
+		width 100vw
+		height 100vh
 		padding 1% 0
 		overflow auto
 		background #fed
@@ -24,8 +25,9 @@
 
 	import State from '/objects/State'
 	import ActionMenu from '/templates/ActionMenu'
+	import AppMain from '/templates/AppMain'
+	import AppNav from '/templates/AppNav'
 	import DebugInspector from '/templates/DebugInspector'
-	import Main from '/templates/Main'
 
 	# Initialize.
 	state = new State(window.location)

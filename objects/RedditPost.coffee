@@ -40,6 +40,7 @@ export default class RedditPost
 		@stats =
 			ratio: raw.upvote_ratio
 			score: raw.score - 1
+		@title = raw.title
 		@times =
 			edit: raw.edited or NaN
 			parse: Date.now() // 1000
@@ -51,7 +52,6 @@ parseContent = (raw) ->
 		images: []
 		link: ''
 		text: ''
-		title: raw.title
 		type: 'unknown'
 		videos: []
 	switch

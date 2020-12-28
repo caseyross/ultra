@@ -5,6 +5,8 @@ window.Color = Color
 window.Memory = window.localStorage
 import Reddit from '/lib/Reddit'
 window.Reddit = Reddit
+import Statistics from '/lib/Statistics'
+window.Statistics = Statistics
 import Time from '/lib/Time'
 window.Time = Time
 

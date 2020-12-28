@@ -14,21 +14,20 @@ export default
 		else
 			# Target date is a day in a previous year.
 			return "#{monthText[_then.getMonth()]} #{_then.getDate()} #{_then.getFullYear()}"
-	relative: (secondsSinceEpoch) -> switch
+	relative: (secondsSinceEpoch, shortFormat = no) -> switch
 		when (secondsAgo = Date.now() // 1000 - secondsSinceEpoch) < 60
-			"about #{secondsAgo} seconds ago"
+			if shortFormat then "#{secondsAgo}s" else "#{secondsAgo} seconds ago"
 		when (minutesAgo = secondsAgo // 60) < 60
-			"about #{minutesAgo} minutes ago"
+			if shortFormat then "#{minutesAgo}m" else "#{minutesAgo} minutes ago"
 		when (hoursAgo = minutesAgo // 60) < 24
-			"about #{hoursAgo} hours ago"
+			if shortFormat then "#{hoursAgo}h" else "#{hoursAgo} hours ago"
 		when (daysAgo = hoursAgo // 24) < 7
-			"about #{daysAgo} days ago"
-		when (weeksAgo = daysAgo // 7) < 5
-			"about #{weeksAgo} weeks ago"
-		when (monthsAgo = weeksAgo // 4) < 12
-			"about #{monthsAgo} months ago"
+			if shortFormat then "#{daysAgo}d" else "#{daysAgo} days ago"
+		when (weeksAgo = daysAgo // 7) < 52
+			if shortFormat then "#{weeksAgo}w" else "#{weeksAgo} weeks ago"
 		else
-			"about #{monthsAgo // 12} years ago"
+			yearsAgo = weeksAgo // 52
+			if shortFormat then "#{yearsAgo}y" else "#{yearsAgo} years ago"
 	durationCounter: (seconds) ->
 		secondsToAdd = seconds
 		h = 0

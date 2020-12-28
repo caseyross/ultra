@@ -9,10 +9,10 @@ export default class RedditComment
 		@author =
 			name: raw.author
 			premium: raw.author_premium
-		@badges = [
-			if raw.distinguished is 'moderator' then 'mod' else raw.distinguished,
-			if raw.is_submitter then 'op' else null
-		].filter((a) -> a)
+		@distinguish = switch
+			when raw.is_submitter then 'op'
+			when raw.distinguished is 'moderator' then 'mod'
+			else raw.distinguished
 		@content =
 			text: raw.body_html[16...-6]
 		@flags =
@@ -32,10 +32,12 @@ export default class RedditComment
 		@permalink = '/' + @listingId + '/' + @postId + '-' + @id + '-3'
 		@postId = raw.link_id[3..]
 		@replies = new RedditItems(raw.replies)
-		@stats =
-			controversiality: raw.controversiality
-			score: raw.score - 1
 		@times =
 			edit: raw.edited or NaN
 			parse: Date.now() // 1000
 			submit: raw.created_utc
+		@stats =
+			controversiality: raw.controversiality
+			score: raw.score - 1
+			rating: Math.log(Statistics.normalizedLength(raw.body_html)) - Math.log((@times.parse - @times.submit) / 60) + (if raw.score > 1 then Math.log(raw.score - 1) else if raw.score is 1 then 0 else -1)
+			ratingExplanation: "LEN: #{Math.log(Statistics.normalizedLength(raw.body_html))}  TIME: #{Math.log((@times.parse - @times.submit) / 60)}  SCORE: #{if raw.score > 1 then Math.log(raw.score - 1) else if raw.score is 1 then 0 else -1}"
