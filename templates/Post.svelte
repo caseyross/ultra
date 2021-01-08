@@ -1,42 +1,38 @@
-<template lang='pug'>
+<script>
 
-	h2.post
-		.score {post.flags.scoreHidden ? '---' : post.stats.score}
-		.headline
-			+if('showOrigin')
-				a.origin(href='/{post.listingId}') {post.listingId.slice(2)}
-			.flair(style!='border-color: {post.flairs.title.color}' title='{post.flairs.title.text}') &nbsp;{post.flairs.title.text}
-			.title {post.title}
+	export post = null
+	export showOrigin = false
+
+	import Avatar from '/templates/Avatar.svelte'
+		
+</script><template lang='pug'>
+
+	.post
+		Avatar(user='{post.author}')
+		.text
+			h2.title {post.title}
+			span.time-since {Time.relative(post.times.submit, true)}
+			a.origin(href='{post.nativeFeed.id}') {post.nativeFeed.id}
+			span.flair(style!='border-color: {post.flairs.title.color}' title='{post.flairs.title.text}') &nbsp;{post.flairs.title.text}
 		
 </template><style>
 
 	.post
-		width 24rem
-		margin 0
+		display flex
+		padding 1ch
 		word-break break-word
-	.score
-		display none
-		text-align right
+	.time-since
+		flex 0 0 auto
+		width 2.5rem
+		margin-right 1rem
 	.flair
 		height 2.5rem
 		font-size 1.5rem
-		border 1px solid
-		border-left 3rem solid
 		white-space nowrap
 		overflow hidden
 		text-overflow ellipsis
 	.origin
 		display none
 		color gray
-	.title
-		font-size 1.5rem
-		background wheat
-		color black
-		padding 1ch
 
-</style><script>
-
-	export post = null
-	export showOrigin = false
-		
-</script>
+</style>

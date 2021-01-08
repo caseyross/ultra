@@ -1,4 +1,24 @@
-<template lang='pug'>
+<script>
+
+	export images = []
+	
+	i = 0
+
+	document.keyboardShortcuts.KeyE =
+		n: 'Media: Enlarge'
+	document.keyboardShortcuts.KeyF =
+		n: 'Media: Fullscreen'
+	document.keyboardShortcuts.KeyO =
+		n: 'Media: Open Original Source'
+		d: () => window.open(images[i].url_full)
+	document.keyboardShortcuts.KeyA =
+		n: 'Gallery: Previous Image'
+		d: () => if i > 0 then i -= 1
+	document.keyboardShortcuts.KeyD =
+		n: 'Gallery: Next Image'
+		d: () => if i < images.length - 1 then i += 1
+		
+</script><template lang='pug'>
 
 	#gallery
 		menu
@@ -78,24 +98,4 @@
 		a
 			padding 1rem
 
-</style><script>
-
-	export images = []
-	
-	i = 0
-
-	document.keyboardShortcuts.KeyE =
-		n: 'Media: Enlarge'
-	document.keyboardShortcuts.KeyF =
-		n: 'Media: Fullscreen'
-	document.keyboardShortcuts.KeyO =
-		n: 'Media: Open Original Source'
-		d: () => window.open(images[i].url_full)
-	document.keyboardShortcuts.KeyA =
-		n: 'Gallery: Previous Image'
-		d: () => if i > 0 then i -= 1
-	document.keyboardShortcuts.KeyD =
-		n: 'Gallery: Next Image'
-		d: () => if i < images.length - 1 then i += 1
-		
-</script>
+</style>

@@ -1,19 +1,29 @@
-<template lang='pug'>
+<script>
 
-	#comments
-		+each('comments.list as topLevelComment')
-			#top-level-comment
-				Comment(comment='{topLevelComment}')
-			+else
-				#nocomments
-					button#add-first-comment ADD THE FIRST COMMENT
+	export comments = []
+
+	import Comment from '/templates/Comment.svelte'
+
+</script><template lang='pug'>
+
+	+await('comments then list')
+		#comments
+			+each('list as topLevelComment')
+				#top-level-comment
+					Comment(comment='{topLevelComment}')
+				+else
+					#nocomments
+						button#add-first-comment ADD THE FIRST COMMENT
+		+catch('error')
+			.error-tag ERROR LOADING COMMENTS
+			.error-message {error}
 
 </template><style>
 
 	#comments
-		flex 0 0 auto
+		flex 1
 		display flex
-		flex-flow column wrap
+		flex-flow row wrap
 		place-content flex-start
 		overflow auto
 	#top-level-comment
@@ -35,10 +45,4 @@
 			border-style solid
 			text-decoration underline
 
-</style><script>
-
-	export comments = {}
-
-	import Comment from '/templates/Comment.svelte'
-
-</script>
+</style>

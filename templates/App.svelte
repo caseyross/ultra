@@ -1,13 +1,65 @@
-<template lang='pug'>
+<script>
+
+	import RedditFeed from '/objects/RedditFeed'
+	import RedditUser from '/objects/RedditUser'
+	import FeedList from '/templates/FeedList'
+	import FeedView from '/templates/FeedView'
+	import MouseMenu from '/templates/MouseMenu'
+	import InternalsView from '/templates/InternalsView'
+
+	# Initialize.
+	currentFeed = new RedditFeed(window.location.pathname)
+	# Hot load internal links.
+	document.addEventListener 'click',
+		(e) ->
+			for element in e.path
+				if element.href
+					url = new URL(element.href)
+					if url.origin is window.location.origin
+						currentFeed = new RedditFeed(url.pathname)
+						history.pushState({}, '', element.href)
+						e.preventDefault()
+					break
+	# Also hot load when the user goes "Back".
+	window.addEventListener 'popstate',
+		(e) ->
+			currentFeed = new RedditFeed(window.location.pathname)
+	
+	account =
+		subscriptions:
+			subreddits: [
+				'fireemblem'
+				'onebag'
+				'gonewild'
+				'tulsa'
+				'genshin_impact'
+				'buildapcsales'
+				'namenerds'
+				'singapore'
+				'postprocessing'
+				'manybaggers'
+			]
+			users: [
+				'spez'
+				'kn0thing'
+				'gallowboob'
+			].map((name) -> new RedditUser(name))
+
+	inspect = off
+	document.keyboardShortcuts.Backquote =
+		n: 'Toggle Inspector'
+		d: () => inspect = !inspect
+
+</script><template lang='pug'>
 
 	svelte:head
-		title {state.listingId[0] === 'r' ? state.listingId.slice(2) : state.listingId}
-	AppNav(state='{state}')
-	AppMain(state='{state}')
-	ActionMenu
+		title {currentFeed.id}
+	FeedList(subscriptions='{account.subscriptions}')
+	FeedView(feed='{currentFeed}')
+	MouseMenu
 	+if('inspect')
 		#inspector-overlay
-			DebugInspector(key='state' value='{state}')
+			InternalsView(key='currentFeed' value='{currentFeed}')
 
 </template><style>
 
@@ -21,48 +73,4 @@
 		background #fed
 		color black
 
-</style><script>
-
-	import State from '/objects/State'
-	import ActionMenu from '/templates/ActionMenu'
-	import AppMain from '/templates/AppMain'
-	import AppNav from '/templates/AppNav'
-	import DebugInspector from '/templates/DebugInspector'
-
-	# Initialize.
-	state = new State(window.location)
-	preloads = {}
-	# Preload internal links...
-	document.addEventListener 'mousedown',
-		(e) ->
-			for element in e.path
-				if element.href
-					url = new URL(element.href)
-					if url.origin is window.location.origin
-						preloads[url.pathname] = new State(url, state)
-					break
-	# ...then hot load them into the page.
-	document.addEventListener 'click',
-		(e) ->
-			for element in e.path
-				if element.href
-					url = new URL(element.href)
-					if url.origin is window.location.origin
-						[ nothing, listingType, listingName, selections ] = url.pathname.split('/')
-						if not selections
-							history.pushState({}, '', element.href)
-						state = preloads[url.pathname] ? new State(url, state)
-						delete preloads[url.pathname]
-						e.preventDefault()
-					break
-	# Also hot load when the browser back function is used.
-	window.addEventListener 'popstate',
-		(e) ->
-			state = new State(window.location, state)
-
-	inspect = off
-	document.keyboardShortcuts.Backquote =
-		n: 'Toggle Inspector'
-		d: () => inspect = !inspect
-
-</script>
+</style>

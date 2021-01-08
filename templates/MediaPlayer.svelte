@@ -1,4 +1,27 @@
-<template lang='pug'>
+<script>
+
+	export audioUrl = ''
+	export videoUrl = ''
+	export videoPreviewUrl = ''
+	
+	dom =
+		player: {}
+	a =
+		paused: true
+	v =
+		duration: 0
+		time: 0
+		paused: true
+	playPause = () ->
+		v.paused = not v.paused
+		a.paused = not a.paused
+	fullscreen = () ->
+		if document.fullscreenElement
+			document.exitFullscreen()
+		else
+			dom.player.requestFullscreen()
+			
+</script><template lang='pug'>
 
 	#player(bind:this='{dom.player}')
 		+if('audioUrl || videoUrl')
@@ -46,27 +69,4 @@
 		background steelblue
 		transform-origin left center
 
-</style><script>
-
-	export audioUrl = ''
-	export videoUrl = ''
-	export videoPreviewUrl = ''
-	
-	dom =
-		player: {}
-	a =
-		paused: true
-	v =
-		duration: 0
-		time: 0
-		paused: true
-	playPause = () ->
-		v.paused = not v.paused
-		a.paused = not a.paused
-	fullscreen = () ->
-		if document.fullscreenElement
-			document.exitFullscreen()
-		else
-			dom.player.requestFullscreen()
-			
-</script>
+</style>

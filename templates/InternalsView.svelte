@@ -1,4 +1,42 @@
-<template lang='pug'>
+<script>
+
+	export key = 'ROOT'
+	export value = {}
+	
+	category = (value) ->
+		if typeof value is 'object' then switch
+			when value is null then 'logical'
+			when value.then then 'promise'
+			else 'object'
+		else switch typeof value
+			when 'string', 'symbol' then 'textual'
+			when 'number', 'bigint' then 'numeric'
+			when 'boolean', 'undefined' then 'logical'
+			else 'function'
+	color = (value) -> switch category(value)
+		when 'textual' then 'salmon'
+		when 'numeric' then 'steelblue'
+		when 'logical' then 'darkkhaki'
+		when 'promise' then 'purple'
+		when 'function' then 'forestgreen'
+		else 'black'
+	order = [
+		'textual'
+		'numeric'
+		'logical'
+		'promise'
+		'object'
+		'function'
+	]
+	sort = (entries) ->
+		entries.sort (a, b) -> (order.indexOf(category a[1]) - order.indexOf(category b[1])) + ((a[0] > b[0]) - 0.5)
+		
+	formatKey = (key) -> if key.length > 16 then key[...15] + '<' else key.padStart 16
+	formatValue = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
+
+	collapsed = category(value) is 'object' and Object.keys(value).length > 16
+	
+</script><template lang='pug'>
 
 	+if('category(value) === "promise"')
 		+await('value')
@@ -45,42 +83,4 @@
 		&:hover
 			background #222
 
-</style><script>
-
-	export key = 'ROOT'
-	export value = {}
-	
-	category = (value) ->
-		if typeof value is 'object' then switch
-			when value is null then 'logical'
-			when value.then then 'promise'
-			else 'object'
-		else switch typeof value
-			when 'string', 'symbol' then 'textual'
-			when 'number', 'bigint' then 'numeric'
-			when 'boolean', 'undefined' then 'logical'
-			else 'function'
-	color = (value) -> switch category(value)
-		when 'textual' then 'salmon'
-		when 'numeric' then 'steelblue'
-		when 'logical' then 'darkkhaki'
-		when 'promise' then 'purple'
-		when 'function' then 'forestgreen'
-		else 'black'
-	order = [
-		'textual'
-		'numeric'
-		'logical'
-		'promise'
-		'object'
-		'function'
-	]
-	sort = (entries) ->
-		entries.sort (a, b) -> (order.indexOf(category a[1]) - order.indexOf(category b[1])) + ((a[0] > b[0]) - 0.5)
-		
-	formatKey = (key) -> if key.length > 16 then key[...15] + '<' else key.padStart 16
-	formatValue = (value) -> if String(value).length > 16 then String(value)[...15] + '<' else String(value).padEnd 16
-
-	collapsed = category(value) is 'object' and Object.keys(value).length > 16
-	
-</script>
+</style>

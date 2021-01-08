@@ -1,4 +1,8 @@
-<template lang='pug'>
+<script>
+
+	export spend = 0
+		
+</script><template lang='pug'>
 
 	span
 		span.stat-icon(style!="color: goldenrod") ●
@@ -11,8 +15,4 @@
 	.stat-value
 		font-size 0.8rem
 
-</style><script>
-
-	export spend = 0
-		
-</script>
+</style>

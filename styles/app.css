@@ -1,50 +1,5 @@
-/*  */
-@font-face {
-	font-family: 'Karla';
-	src: '/fonts/Karla-VariableFont_wght.ttf' format('ttf');
-	font-weight: 200 800;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Karla';
-	src: '/fonts/Karla-Italic-VariableFont_wght.ttf' format('ttf');
-	font-weight: 200 800;
-	font-style: italic;
-}
-/*  */
-@font-face {
-	font-family: 'Lora';
-	src: '/fonts/Lora-VariableFont_wght.ttf' format('ttf');
-	font-weight: 400 700;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Lora';
-	src: '/fonts/Lora-Italic-VariableFont_wght.ttf' format('ttf');
-	font-weight: 400 700;
-	font-style: italic;
-}
-/*  */
-@font-face {
-	font-family: 'PlayfairDisplay';
-	src: '/fonts/PlayfairDisplay-VariableFont_wght.ttf' format('ttf');
-	font-weight: 400 900;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'PlayfairDisplay';
-	src: '/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf' format('ttf');
-	font-weight: 400 900;
-	font-style: italic;
-}
 *:focus {
 	outline: none;
-}
-*::-webkit-scrollbar {
-	background: linear-gradient(90deg, transparent 0 8px, white 8px 9px, transparent 9px);
-}
-*::-webkit-scrollbar-thumb {
-	background: white;
 }
 * + blockquote,
 * + p {
@@ -64,13 +19,12 @@ blockquote {
 	color: #999;
 }
 body {
-	width: 100vw;
-	height: 100vh;
+	height: 100%;
 	display: grid;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 200px 1fr;
 	overflow: hidden;
 	background: #fed;
-	font: 400 14px/1.5 'IBM Plex Sans', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+	font: 400 14px/1.5 Tahoma, sans-serif;
 }
 kbd {
 	font: 1rem monospace;
@@ -82,6 +36,10 @@ kbd {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
+}
+html {
+	height: 100%;
+	font-size: 50%; /* 1rem = 8px */
 }
 table {
 	border-spacing: 1ch;

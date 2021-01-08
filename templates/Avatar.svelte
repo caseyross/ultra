@@ -1,6 +1,10 @@
-<template lang='pug'>
+<script>
 
-	a.avatar(href='/u/{username}' ) 🎇
+	export user = new RedditUser()
+
+</script><template lang='pug'>
+
+	a.avatar(href='{user.id}') 🎇
 
 </template><style>
 
@@ -33,8 +37,4 @@
 			content '???'
 			color purple
 
-</style><script>
-
-	export username = ''
-
-</script>
+</style>

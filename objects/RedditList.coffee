@@ -1,10 +1,10 @@
 import RedditAward from '/objects/RedditAward'
 import RedditComment from '/objects/RedditComment'
+import RedditFeed from '/objects/RedditFeed'
 import RedditMessage from '/objects/RedditMessage'
 import RedditMoreComments from '/objects/RedditMoreComments'
 import RedditPost from '/objects/RedditPost'
 import RedditUser from '/objects/RedditUser'
-import RedditSubreddit from '/objects/RedditSubreddit'
 
 export default class RedditItems
 	constructor: (raw) ->
@@ -22,7 +22,7 @@ export default class RedditItems
 				when 't4'
 					new RedditMessage(child.data)
 				when 't5'
-					new RedditSubreddit(child.data)
+					new RedditFeed(child.data)
 				when 't6'
 					new RedditAward(child.data)
 				when 'more'

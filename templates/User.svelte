@@ -1,4 +1,8 @@
-<template lang='pug'>
+<script>
+
+	export user = null
+		
+</script><template lang='pug'>
 
 	a.user(href='/u/{user.name}')
 		span.name {user.name}
@@ -17,8 +21,4 @@
 		color #666
 		font-style italic
 
-</style><script>
-
-	export user = null
-		
-</script>
+</style>

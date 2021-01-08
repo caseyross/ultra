@@ -1,4 +1,27 @@
-<template lang='pug'>
+<script>
+
+	export active = false
+	position =
+		x: 0
+		y: 0
+
+	document.addEventListener 'mousedown',
+		(e) ->
+			if e.buttons is 2
+				position =
+					x: e.x
+					y: e.y
+				active = true
+	document.addEventListener 'mouseup',
+		(e) ->
+			active = false
+
+	document.keyboardShortcuts.ShiftLeft =
+		n: 'Show X-Menu'
+		d: () => active = true
+		u: () => active = false
+		
+</script><template lang='pug'>
 
 	menu(style!="{active ? 'transform: translate(' + position.x + 'px,' + position.y + 'px) rotate(45deg)' : ''}")
 		button.large#w Reply
@@ -48,27 +71,4 @@
 	#c
 		grid-area c
 
-</style><script>
-
-	export active = false
-	position =
-		x: 0
-		y: 0
-
-	document.addEventListener 'mousedown',
-		(e) ->
-			if e.buttons is 2
-				position =
-					x: e.x
-					y: e.y
-				active = true
-	document.addEventListener 'mouseup',
-		(e) ->
-			active = false
-
-	document.keyboardShortcuts.ShiftLeft =
-		n: 'Show X-Menu'
-		d: () => active = true
-		u: () => active = false
-		
-</script>
+</style>

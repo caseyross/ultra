@@ -57,7 +57,7 @@ Messages
 	message/messages/{messageId}														SINGLE MESSAGE
 	message/unread																		UNREAD MESSAGES
 	message/sent																		SENT MESSAGES
-	message/templatesose																		WRITE A MESSAGE
+	message/template																		WRITE A MESSAGE
 	message/selfreply																	REPLIES TO YOUR POSTS
 	message/comments																	REPLIES TO YOUR COMMENTS
 	message/mentions																	MENTIONS OF YOUR USERNAME IN COMMENTS

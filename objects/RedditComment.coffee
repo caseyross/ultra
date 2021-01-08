@@ -1,14 +1,14 @@
+import RedditFeed from '/objects/RedditFeed.coffee'
 import RedditFlair from '/objects/RedditFlair.coffee'
-import RedditItems from '/objects/RedditItems.coffee'
+import RedditList from '/objects/RedditList.coffee'
+import RedditUser from '/objects/RedditUser.coffee'
 
 export default class RedditComment
 	constructor: (raw) ->
 		@awards =
-			list: []
+			list: raw.all_awardings
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
-		@author =
-			name: raw.author
-			premium: raw.author_premium
+		@author = new RedditUser(raw.author)
 		@distinguish = switch
 			when raw.is_submitter then 'op'
 			when raw.distinguished is 'moderator' then 'mod'
@@ -27,11 +27,10 @@ export default class RedditComment
 			scoreHidden: raw.score_hidden
 		@flairs =
 			author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
-		@id = raw.id
-		@listingId = raw.subreddit_name_prefixed.toLowerCase()
-		@permalink = '/' + @listingId + '/' + @postId + '-' + @id + '-3'
-		@postId = raw.link_id[3..]
-		@replies = new RedditItems(raw.replies)
+		@id = 'c' + raw.id.toUpperCase()
+		@nativeFeed = new RedditFeed(raw.subreddit_name_prefixed)
+		@postId = 'p' + raw.link_id[3..].toUpperCase()
+		@replies = new RedditList(raw.replies)
 		@times =
 			edit: raw.edited or NaN
 			parse: Date.now() // 1000
