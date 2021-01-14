@@ -1,0 +1,40 @@
+script.
+	export subscriptions = {}
+	import Avatar from '/src/components/Avatar'
+	import Subreddit from '/src/components/Subreddit'
+
+nav#global-nav
+	{#if subscriptions.length}
+		#subscriptions
+			ol#user-subscriptions
+				{#each subscriptions.users as user}
+					li
+						Avatar(user={user})
+			ol#subreddit-subscriptions
+				{#each subscriptions.subreddits as name}
+					li
+						Subreddit(name={name})
+	#quick-settings
+		label Show NSFW
+			input(type='checkbox' checked)
+	#account-switcher
+		button Account...
+		Avatar(user='')
+
+style.
+	#global-nav
+		height 100%
+		display flex
+		overflow auto
+	#subscriptions
+		flex 1
+		display flex
+	#subreddit-subscriptions
+	#user-subscriptions
+		display flex
+	li
+		list-style none
+		margin 1ch 0
+	#quick-settings
+	#account-switcher
+		display flex

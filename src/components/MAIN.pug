@@ -1,0 +1,67 @@
+script.
+	import RedditFeed from '/src/objects/RedditFeed'
+	import RedditUser from '/src/objects/RedditUser'
+	import FeedList from '/src/components/FeedList'
+	import FeedView from '/src/components/FeedView'
+	import MouseMenu from '/src/components/MouseMenu'
+	import InternalsView from '/src/components/InternalsView'
+	# Initialize.
+	currentFeed = new RedditFeed(window.location.pathname)
+	# Hot load internal links.
+	document.addEventListener 'click',
+		(e) ->
+			for element in e.path
+				if element.href
+					url = new URL(element.href)
+					if url.origin is window.location.origin
+						currentFeed = new RedditFeed(url.pathname)
+						history.pushState({}, '', element.href)
+						e.preventDefault()
+					break
+	# Also hot load when the user goes "Back".
+	window.addEventListener 'popstate',
+		(e) ->
+			currentFeed = new RedditFeed(window.location.pathname)
+	account =
+		subscriptions:
+			subreddits: [
+				'fireemblem'
+				'onebag'
+				'gonewild'
+				'tulsa'
+				'genshin_impact'
+				'buildapcsales'
+				'namenerds'
+				'singapore'
+				'postprocessing'
+				'manybaggers'
+			]
+			users: [
+				'spez'
+				'kn0thing'
+				'gallowboob'
+			].map((name) -> new RedditUser(name))
+	inspect = off
+	KeyMap.Backquote =
+		n: 'Toggle Inspector'
+		d: () => inspect = !inspect
+
+svelte:head
+	title {currentFeed.id}
+FeedList(subscriptions={account.subscriptions})
+FeedView(feed={currentFeed})
+MouseMenu
+{#if inspect}
+	#inspector-overlay
+		InternalsView(key='feed' value={currentFeed})
+
+style.
+	#inspector-overlay
+		position fixed
+		top 0
+		width 100vw
+		height 100vh
+		padding 1% 0
+		overflow auto
+		background #fed
+		color black

@@ -1,0 +1,88 @@
+script.
+	import RedditComment from '/src/objects/RedditComment'
+	import RedditMessage from '/src/objects/RedditMessage'
+	import RedditPost from '/src/objects/RedditPost'
+	import Comment from '/src/components/Comment'
+	import Message from '/src/components/Message'
+	import Post from '/src/components/Post'
+	import PostComments from '/src/components/PostComments'
+	import PostContent from '/src/components/PostContent'
+	export feed = null
+	story = null
+	select = (newStory) ->
+		story = newStory
+
+#feed-view
+	#feed
+		h1#listing-name {feed.id}
+		ol#story-list
+			{#each feed.fragments as fragment}
+				{#await fragment()}
+				{:then stories}
+					{#each stories as story}
+						li(on:mousedown={() => select(story)})
+							{#if story instanceof RedditPost}
+								{#await story.data}
+								{:then data}
+									Post(post={data})
+							{:else if story instanceof RedditComment}
+								Comment(comment={story})
+							{:else if story instanceof RedditMessage}
+								Message(message={story})
+							{:else}
+								.error-tag UNKNOWN ITEM
+								.error-message {story.toString()}
+				{:catch error}
+					.error-tag ERROR LOADING FEED FRAGMENT
+					.error-message {error}
+	{#if story}
+		{#if story instanceof RedditPost}
+			{#await story.data}
+			{:then data}
+				{#if data.content.type !== 'link'}
+					#story-content
+						PostContent(content={data.content})
+				#story-comments
+					{#await data.comments}
+					{:then comments}
+						PostComments(comments={comments})
+			{:catch error}
+				.error-tag ERROR LOADING POST
+				.error-message {error}		
+		{:else if story instanceof RedditComment}
+			p COMMENT
+		{:else if story instanceof RedditMessage}
+			p MESSAGE
+		{:else}
+			{#await feed.sidebar()}
+			{:then sidebar}
+				{#if sidebar}
+					img(src={sidebar.banner_background_image || sidebar.banner_img})
+					article
+						{@html sidebar.description_html}
+			{:catch error}
+				.error-tag ERROR LOADING SIDEBAR
+				.error-message {error}
+
+style.
+	#feed-view
+		height 100%
+		display grid
+		grid-template-rows 100%
+		grid-template-columns 480px calc(100% - 960px) 480px
+	#feed
+		height 100%
+		padding 5rem
+		display grid
+		grid-template-rows 10rem calc(100% - 10rem)
+		#story-list
+			overflow auto
+	#story-content
+		height 100%
+		display flex
+		justify-content center
+		align-items center
+	#story-comments
+		height 100%
+		padding 5rem
+		overflow auto
