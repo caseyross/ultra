@@ -1,11 +1,26 @@
 <!DOCTYPE html>
-<html style='height: 100%'>
+<html lang='en'>
 	<head>
-		<meta charset='utf-8' />
-		<meta name='viewport' content='width=device-width, initial-scale=1' />
-		<title>*</title>
+		<meta charset='utf-8'>
+		<!-- Ensure correct mobile scaling, in the rare event of usage on mobile -->
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<!-- CSP: only run scripts from this domain -->
+		<meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+		<!-- External resources -->
+		<link rel="preconnect" href="https://oauth.reddit.com">
+		<link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.0.2/dist/tailwind.min.css">
+		<!-- Page metadata -->
+		<title></title>
+		<link rel='icon' sizes='24x24' href=''>
+		<link rel='icon' sizes='384x384' href=''>
+		<meta name='application-name' value=''>
+		<meta name='author' value='Casey Ross'>
+		<meta name='color-scheme' value='normal'>
+		<meta name='description' value=''>
+		<meta name='theme-color' value=''>
 	</head>
-	<body oncontextmenu='return false' style="margin: 0; height: 100%">
-		<main id='svelte-root' style="height:100%; display:grid; grid-template-rows:5rem calc(100%-5rem); grid-template-columns: 1fr;"></main>
+	<body oncontextmenu='return false'>
+		<main id='svelte-root'></main>
+		<noscript>You need JavaScript for this website.</noscript>
 	</body>
 </html>

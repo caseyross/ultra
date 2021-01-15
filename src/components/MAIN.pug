@@ -52,16 +52,5 @@ FeedList(subscriptions={account.subscriptions})
 FeedView(feed={currentFeed})
 MouseMenu
 {#if inspect}
-	#inspector-overlay
+	.fixed.top-0.w-full.h-full.overflow-auto.py-4.bg-white.text-black
 		InternalsView(key='feed' value={currentFeed})
-
-style.
-	#inspector-overlay
-		position fixed
-		top 0
-		width 100vw
-		height 100vh
-		padding 1% 0
-		overflow auto
-		background #fed
-		color black

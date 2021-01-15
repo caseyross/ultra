@@ -125,7 +125,7 @@ pugToSvelte = input => {
 }
 
 module.exports = {
-	mode: 'development',
+	mode: 'production',
 	devServer: {
 		contentBase: './public',
 		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
