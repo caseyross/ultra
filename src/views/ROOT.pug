@@ -1,10 +1,10 @@
 script.
+	import DataInspector from '/src/components/DataInspector'
 	import RedditFeed from '/src/objects/RedditFeed'
 	import RedditUser from '/src/objects/RedditUser'
-	import FeedList from '/src/components/FeedList'
-	import FeedView from '/src/components/FeedView'
-	import MouseMenu from '/src/components/MouseMenu'
-	import InternalsView from '/src/components/InternalsView'
+	import HEADER from '/src/views/HEADER'
+	import MAIN from '/src/views/MAIN'
+	import MOUSEMENU from '/src/views/MOUSEMENU'
 	# Initialize.
 	currentFeed = new RedditFeed(window.location.pathname)
 	# Hot load internal links.
@@ -48,9 +48,9 @@ script.
 
 svelte:head
 	title {currentFeed.id}
-FeedList(subscriptions={account.subscriptions})
-FeedView(feed={currentFeed})
-MouseMenu
+HEADER(subscriptions={account.subscriptions})
+MAIN(feed={currentFeed})
+MOUSEMENU
 {#if inspect}
-	.fixed.top-0.w-full.h-full.overflow-auto.py-4.bg-white.text-black
-		InternalsView(key='feed' value={currentFeed})
+	.fixed.w-screen.h-screen.overflow-auto.py-4.bg-white.text-black
+		DataInspector(key='feed' value={currentFeed})

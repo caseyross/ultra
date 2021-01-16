@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang='en' style='font-size:25%'><!-- Set 1rem equal to 4px -->
 	<head>
 		<meta charset='utf-8'>
 		<!-- Ensure correct mobile scaling, in the rare event of usage on mobile -->
 		<meta name='viewport' content='width=device-width, initial-scale=1'>
 		<!-- CSP: only run scripts from this domain -->
 		<meta http-equiv="Content-Security-Policy" content="script-src 'self'">
-		<!-- External resources -->
+		<!-- External esources -->
 		<link rel="preconnect" href="https://oauth.reddit.com">
 		<link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.0.2/dist/tailwind.min.css">
 		<!-- Page metadata -->
@@ -20,7 +20,16 @@
 		<meta name='theme-color' value=''>
 	</head>
 	<body oncontextmenu='return false'>
-		<main id='svelte-root'></main>
+		<style>
+			* {
+				max-height: 100%;
+				max-width: 100%;
+			}
+			menu {
+				margin: 0;
+			}
+		</style>
+		<div id='svelte-root' style='position:fixed; width:100vw; height:100vh'></div>
 		<noscript>You need JavaScript for this website.</noscript>
 	</body>
 </html>

@@ -1,21 +1,21 @@
 script.
-	import RedditComment from '/src/objects/RedditComment'
-	import RedditMessage from '/src/objects/RedditMessage'
-	import RedditPost from '/src/objects/RedditPost'
+	export feed = {}
 	import Comment from '/src/components/Comment'
 	import Message from '/src/components/Message'
 	import Post from '/src/components/Post'
-	import PostComments from '/src/components/PostComments'
-	import PostContent from '/src/components/PostContent'
-	export feed = null
+	import RedditComment from '/src/objects/RedditComment'
+	import RedditMessage from '/src/objects/RedditMessage'
+	import RedditPost from '/src/objects/RedditPost'
+	import COMMENTS from '/src/views/COMMENTS'
+	import GALLERY from '/src/views/GALLERY'
 	story = null
 	select = (newStory) ->
 		story = newStory
 
-#feed-view
-	#feed
-		h1#listing-name {feed.id}
-		ol#story-list
+main
+	.border-4.border-gray-400.h-full
+		h1 {feed.id}
+		ol
 			{#each feed.fragments as fragment}
 				{#await fragment()}
 				{:then stories}
@@ -39,13 +39,26 @@ script.
 		{#if story instanceof RedditPost}
 			{#await story.data}
 			{:then data}
-				{#if data.content.type !== 'link'}
-					#story-content
-						PostContent(content={data.content})
-				#story-comments
+				.border-4.border-gray-400.h-full
+					{#if data.content.type === 'comment'}
+						{#await data.content.post.data}
+						{:then data}
+							COMMENTS(comments={data.comments})
+						{:catch error}
+							.error-tag ERROR LOADING POST
+							.error-message {error}
+					{:else if data.content.type === 'text'}
+						{#if data.content.text.length}
+							#text
+								{@html data.content.text}
+					{:else if data.content.type === 'image'}
+						GALLERY(images={data.content.images})
+					{:else}
+						article {data.content.type}
+				.border-4.border-gray-400.h-full
 					{#await data.comments}
 					{:then comments}
-						PostComments(comments={comments})
+						COMMENTS(comments={comments})
 			{:catch error}
 				.error-tag ERROR LOADING POST
 				.error-message {error}		
@@ -53,36 +66,21 @@ script.
 			p COMMENT
 		{:else if story instanceof RedditMessage}
 			p MESSAGE
-		{:else}
-			{#await feed.sidebar()}
-			{:then sidebar}
+	{:else}
+		{#await feed.sidebar()}
+		{:then sidebar}
+			.border-4.border-gray-400.h-full.col-span-2
 				{#if sidebar}
 					img(src={sidebar.banner_background_image || sidebar.banner_img})
 					article
 						{@html sidebar.description_html}
-			{:catch error}
-				.error-tag ERROR LOADING SIDEBAR
-				.error-message {error}
+		{:catch error}
+			.error-tag ERROR LOADING SIDEBAR
+			.error-message {error}
 
 style.
-	#feed-view
-		height 100%
+	main
+		height calc(100% - 32px)
 		display grid
+		grid-template-columns 480px 960px 480px
 		grid-template-rows 100%
-		grid-template-columns 480px calc(100% - 960px) 480px
-	#feed
-		height 100%
-		padding 5rem
-		display grid
-		grid-template-rows 10rem calc(100% - 10rem)
-		#story-list
-			overflow auto
-	#story-content
-		height 100%
-		display flex
-		justify-content center
-		align-items center
-	#story-comments
-		height 100%
-		padding 5rem
-		overflow auto
