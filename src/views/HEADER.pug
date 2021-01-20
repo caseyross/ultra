@@ -4,7 +4,9 @@ script.
 	import Subreddit from '/src/components/Subreddit'
 
 header.h-32.flex
-	a.block.w-32.bg-black
+	a.block.w-32.bg-gray-500(href='/') HOME
+	a.block.w-32.bg-gray-500(href='/r/all') ALL
+	a.block.w-32.bg-gray-500(href='/r/popular') POP.
 	{#if subscriptions}
 		#subscriptions.flex-grow.flex
 			ol.flex

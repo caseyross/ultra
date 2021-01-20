@@ -16,36 +16,36 @@ script.
 		d: () => if i < images.length - 1 then i += 1
 
 section.h-full.w-full.flex.flex-col
-	menu.h-32.border-b-4.border-gray-300.flex.justify-center
-		button.mx-4
-			kbd A
-			| back
-		{#each images as image, j}
-			img.mx-4.h-32.w-32.flex.justify-center(src={image.bestFit(32, 32).url} on:click={() => i = j})
-		button.mx-4
-			kbd D
-			| next
-	figure.flex.justify-center.items-center
+	nav.h-32.border-b-4.border-gray-300.flex
+		span.w-64 {images.length} {'image'.pluralize(images.length)}
+		menu.flex-grow
+			{#each images as image, j}
+				button.ml-8
+					img.thumbnail(src={image.bestFit(27, 27).url} on:click={() => i = j})
+		menu
+			button prev image
+			button next image
+	figure.relative.flex.justify-center.items-center
 		img(src={images[i].bestFit(800, 800).url})
-		{#if images[i].caption}
-			figcaption
+		{#if images[i].caption || images[i].link}
+			figcaption.absolute.right-0.bottom-0.bg-gray-500.text-white
 				| {images[i].caption}
-				{#if images[i].caption_url}
-					a(href={images[i].caption_url})
-						kbd L
-						| {(new URL(images[i].caption_url)).hostname}
-	menu.h-32.border-t-4.border-gray-300.flex.justify-center
-		span {images[i].bestFit(800, 800).width} x {images[i].bestFit(800, 800).height} ({Math.trunc(100 * images[i].bestFit(800, 800).width / images[i].largest().width)}%)
-		button
-			kbd E
-			| enlarge
-		button
-			kbd F
-			| fullscreen
-		a(href={images[i].largest().url} target='_blank' rel='noopener')
-			kbd O
-			| open original
+				{#if images[i].link}
+					a(href={images[i].link}) {(new URL(images[i].link)).hostname}
+	section.h-32.border-t-4.border-gray-300.grid.grid-cols-3
+		.flex.px-4
+			data.w-64 {Math.trunc(100 * images[i].bestFit(800, 800).width / images[i].largest().width)}%
+			data rendered size: {images[i].bestFit(800, 800).width} × {images[i].bestFit(800, 800).height}
+			data original size: {images[i].largest().width} × {images[i].largest().height}
+		menu
+		menu.flex.justify-end.px-4
+			a(href={images[i].largest().url} target='_blank' rel='noopener') open source image
+			button show in fullscreen
 
 style.
 	figure
 		height calc(100% - 64px)
+	.thumbnail
+		height 27px
+		width 27px
+		object-fit cover

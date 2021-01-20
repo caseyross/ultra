@@ -92,7 +92,7 @@ parseContent = (raw) ->
 			content.type = 'image'
 			content.images =
 				if raw.is_gallery
-					raw.gallery_data.items.map((item) -> new RedditImage(raw.media_metadata[item.media_id]))
+					raw.gallery_data.items.map((item) -> new RedditImage({ ...raw.media_metadata[item.media_id], caption: item.caption, link: item.outbound_url }))
 				else
 					[new RedditImage(raw.preview.images[0])]
 		when raw.post_hint is 'hosted:video' or raw.rpan_video

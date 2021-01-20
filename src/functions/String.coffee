@@ -1,0 +1,1 @@
+String::pluralize = (count) -> @ + (if count is 1 then '' else 's')

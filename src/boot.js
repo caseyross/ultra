@@ -1,4 +1,5 @@
 import '/src/functions/Object'
+import '/src/functions/String'
 import Api from '/src/functions/Api'
 import Color from '/src/functions/Color'
 import KeyMap from '/src/functions/KeyMap'
