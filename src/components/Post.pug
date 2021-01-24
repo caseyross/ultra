@@ -2,30 +2,24 @@ script.
 	export post = null
 	import Avatar from '/src/components/Avatar'
 
-{#if post.content.type === 'link'}
-	a.post(href={post.content.link})
-		Avatar(user={post.author})
-		.text
-			.title {post.title}
-			span.time-since {Time.relative(post.times.submit, true)}
-			a.origin(href={post.nativeFeed.id}) {post.nativeFeed.id}
-			span.flair(style='border-color: {post.flairs.title.color}' title={post.flairs.title.text}) &nbsp;{post.flairs.title.text}
-{:else}
-	.post
-		Avatar(user={post.author})
-		.text
-			.title {post.title}
-			span.time-since {Time.relative(post.times.submit, true)}
-			a.origin(href={post.nativeFeed.id}) {post.nativeFeed.id}
-			span.flair(style='border-color: {post.flairs.title.color}' title={post.flairs.title.text}) &nbsp;{post.flairs.title.text}
+.post
+	Avatar(user={post.author})
+	.text
+		.text-6xl
+			{#if post.content.type === 'link'}
+				a(href={post.content.link}) {post.title}
+			{:else if post.content.type === 'feed'}
+				a(href={post.content.feed.href}) {post.title}
+			{:else}
+				span {post.title}
+		span.time-since {Time.relative(post.times.submit, true)}
+		Avatar(feed={post.nativeFeed})
+		span.flair(style='border-color: {post.flairs.title.color}' title={post.flairs.title.text}) &nbsp;{post.flairs.title.text}
 
 style.
 	.post
 		display flex
-		padding 1ch
 		word-break break-word
-	.title
-		font-size 2rem
 	.time-since
 		flex 0 0 auto
 		width 2.5rem
@@ -36,6 +30,3 @@ style.
 		white-space nowrap
 		overflow hidden
 		text-overflow ellipsis
-	.origin
-		display none
-		color gray

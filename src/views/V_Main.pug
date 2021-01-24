@@ -1,0 +1,90 @@
+script.
+	export account = {}
+	export feed = {}
+	import Avatar from '/src/components/Avatar'
+	import Comment from '/src/components/Comment'
+	import Message from '/src/components/Message'
+	import Post from '/src/components/Post'
+	import FETCH from '/src/effects/FETCH'
+	import RedditComment from '/src/objects/RedditComment'
+	import RedditMessage from '/src/objects/RedditMessage'
+	import RedditPost from '/src/objects/RedditPost'
+	import V_Comments from '/src/views/V_Comments'
+	import V_Essay from '/src/views/V_Essay'
+	import V_Gallery from '/src/views/V_Gallery'
+	selectedStory = null
+
+main
+	.border-4.border-gray-400.h-full.flex.flex-col
+		.h-64.border-b-4.border-gray-300.flex
+			FETCH(let:v p={feed.about})
+				img.h-64.w-64.border-2.border-black.bg-gray-200(src={v.community_icon} alt='TODO')
+			h1 {feed.id}
+			FETCH(let:v p={feed.about})
+				data {v.accounts_active}
+				data {v.subscribers}
+		ol.border-b-4.border-gray-300.flex-grow.overflow-auto
+			{#each feed.fragments as fragment}
+				FETCH(let:v p={fragment()})
+					{#each v as story}
+						li.border.border-gray-200(on:mousedown={() => selectedStory = story})
+							{#if story instanceof RedditPost}
+								FETCH(let:v p={story.data})
+									Post(post={v})
+							{:else if story instanceof RedditComment}
+								Comment(comment={story})
+							{:else if story instanceof RedditMessage}
+								Message(message={story})
+							{:else}
+								.error-tag UNKNOWN ITEM
+								.error-message {story.toString()}
+		nav.h-96.border-b-4.border-gray-300
+			ol.flex.flex-wrap
+				{#each account.subscriptions.users as user}
+					li
+						Avatar(user={user})
+				{#each account.subscriptions.feeds as feed}
+					li
+						Avatar(feed={feed})
+		nav.h-64.flex
+			a.w-64.h-64.bg-yellow-500.flex.justify-center.items-center.text-8xl(href='/') 🎇
+			#quick-settings
+				label Show NSFW
+					input(type='checkbox' checked)
+	{#if selectedStory}
+		{#if selectedStory instanceof RedditPost}
+			.border-4.border-gray-400.h-full
+				FETCH(let:v p={selectedStory.data})
+					{#if v.content.type === 'comment'}
+						FETCH(let:v p={v.content.post.data})
+							FETCH(let:v p={v.comments})
+								V_Comments(comments={v})
+					{:else if v.content.type === 'text'}
+						{#if v.content.text.length}
+							V_Essay(text={v.content.text})
+					{:else if v.content.type === 'image'}
+						V_Gallery(images={v.content.images})
+					{:else}
+						article {v.content.type}
+			.border-4.border-gray-400.h-full
+				FETCH(let:v p={selectedStory.data})
+					FETCH(let:v p={v.comments})
+						V_Comments(comments={v})
+		{:else if selectedStory instanceof RedditComment}
+			p COMMENT
+		{:else if selectedStory instanceof RedditMessage}
+			p MESSAGE
+	{:else}
+		.border-4.border-gray-400.h-full.col-span-2
+			FETCH(let:v p={feed.about()})
+				{#if v}
+					img(src={v.banner_background_image || v.banner_img} alt='TODO')
+					article
+						{@html v.description_html}
+
+style.
+	main
+		height 100vh
+		display grid
+		grid-template-columns 476px 968px 476px
+		grid-template-rows 100%

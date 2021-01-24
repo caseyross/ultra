@@ -1,27 +1,33 @@
 import RedditList from '/src/objects/RedditList'
 import RedditUser from '/src/objects/RedditUser'
 
-export default class RedditFeed
-	constructor: (urlPath) ->
-		if urlPath.length < 4
-			@id = '/me/home/best'
-		else if urlPath.startsWith('/u/')
-			@id = urlPath[2..].toLowerCase()
-		else if urlPath.startsWith('/user/')
-			@id = urlPath[4..].toLowerCase()
+idFromUrl = (url) ->
+	switch
+		when url.pathname.length < 4
+			'me/home'
+		when url.pathname.startsWith('/u/')
+			url.pathname[3..].toLowerCase()
+		when url.pathname.startsWith('/user/')
+			url.pathname[6..].toLowerCase()
 		else
-			@id = urlPath.toLowerCase()
-		[ _, seg1, seg2, seg3, seg4 ] = @id.split('/')
-		@owner = new RedditUser(seg1)
-		@name = seg2 ? 'overview'
-		@order = seg3 ? if @owner.name is 'r' then 'hot' else 'new'
+			url.pathname[1..].toLowerCase()
+
+export default class RedditFeed
+	constructor: ({ id, fromUrl }) ->
+		@id = id ? idFromUrl(fromUrl)
+		[ userName, feedName, sort, itemCount ] = @id.split('/')
+		@owner = new RedditUser(userName)
+		@name = feedName ? 'overview'
+		@order = sort ? if userName is 'r' then 'hot' else 'new'
 		[ @orderclass, @ordervalue ] = @order.split('-')
-		@fragsize = seg4 ? 10
+		@multi = (userName is not 'r') or (feedName is 'all' or feedName is 'popular' or feedName.startsWith('u_'))
+		@fragsize = itemCount ? 10
 		@fragend = null
 		@fragments = [
 			@nextFragment
 		]
-		@sidebar = () ->
+		@href = '/' + @id
+		@about = () =>
 			endpoint = switch @owner.name
 				when 'me' then ''
 				when 'r' then '/r/' + @name + '/about'
@@ -30,7 +36,7 @@ export default class RedditFeed
 	nextFragment: () =>
 		endpoint = switch @owner.name
 			when 'me' then '/'
-			when 'r' then @id
+			when 'r' then '/r/' + @name
 			else '/user/' + @owner.name + '/' + @name
 		options =
 			after: @fragend

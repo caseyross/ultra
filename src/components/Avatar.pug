@@ -1,35 +1,11 @@
 script.
-	import RedditUser from '/src/objects/RedditUser'
-	export user = new RedditUser()
+	export feed = null
+	export user = null
 
-a.avatar(href={user.id}) 🎇
-
-style.
-	.avatar
-		flex 0 0 auto
-		width 2.5ch
-		height @width
-		border 1px solid
-		border-radius 100%
-		background red
-		margin-right 1ch
-		position relative
-		.distinguish-admin > &::before
-		.distinguish-mod > &::before
-		.distinguish-op > &::before
-		.distinguish-special > &::before
-			position absolute
-			font-size 10px
-			transform rotate(-10deg)
-		.distinguish-admin > &::before
-			content 'ADMIN'
-			color orangered
-		.distinguish-mod > &::before
-			content 'MOD'
-			color green
-		.distinguish-op > &::before
-			content 'OP'
-			color blue
-		.distinguish-special > &::before
-			content '???'
-			color purple
+{#if feed}
+	{#if feed.multi}
+		a.h-24.flex.justify-center.items-center.bg-purple-300(href={feed.href}) {feed.id}
+	{:else}
+		a.h-24.flex.justify-center.items-center.bg-green-300(href={feed.href}) {feed.id}
+{:else if user}
+	a.w-24.h-24.flex.justify-center.items-center.bg-red-500.text-6xl(href={user.href}) 🎇

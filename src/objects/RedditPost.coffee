@@ -48,7 +48,7 @@ parse = (raw) ->
 	flairs:
 		author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 		title: new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)
-	nativeFeed: new RedditFeed(raw.subreddit_name_prefixed)
+	nativeFeed: new RedditFeed({ id: 'r/' + raw.subreddit })
 	ratio: raw.upvote_ratio
 	score: raw.score - 1
 	title: raw.title
@@ -101,7 +101,14 @@ parseContent = (raw) ->
 		when raw.post_hint is 'rich:video'
 			content.type = 'embed'
 		when raw.domain.endsWith('reddit.com')
-			content.type = 'comment'
-			[ _, _, _, _, _, _, postId, _, commentFocusId, query ] = raw.url.split('/')
-			content.post = new RedditPost("p#{postId.toUpperCase()}c#{commentFocusId.toUpperCase()}d#{(new URLSearchParams(query)).get('context')}")
+			[ _, _, _, ownerName, feedName, _, postId, _, commentFocusId, query ] = raw.url.split('/')
+			if commentFocusId
+				content.type = 'comment'
+				content.post = new RedditPost("p#{postId.toUpperCase()}c#{commentFocusId?.toUpperCase()}d#{(new URLSearchParams(query)).get('context')}")
+			else if postId
+				content.type = 'post'
+				content.post = new RedditPost("p#{postId.toUpperCase()}")
+			else if feedName
+				content.type = 'feed'
+				content.feed = new RedditFeed({ fromUrl: new URL(raw.url) })
 	return content

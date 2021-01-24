@@ -28,7 +28,7 @@ export default class RedditComment
 		@flairs =
 			author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 		@id = 'c' + raw.id.toUpperCase()
-		@nativeFeed = new RedditFeed(raw.subreddit_name_prefixed)
+		@nativeFeed = new RedditFeed({ id: 'r/' + raw.subreddit })
 		@postId = 'p' + raw.link_id[3..].toUpperCase()
 		@replies = new RedditList(raw.replies)
 		@times =

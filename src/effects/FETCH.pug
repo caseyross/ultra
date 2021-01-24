@@ -1,0 +1,9 @@
+script.
+	export p = Promise.resolve(undefined)
+
+{#await p}
+	.h-full.bg-yellow-400.text-white LOADING
+{:then v}
+	slot(v={v})
+{:catch e}
+	.h-full.bg-red-400.text-white {e}

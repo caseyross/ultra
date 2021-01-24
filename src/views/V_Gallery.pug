@@ -1,0 +1,64 @@
+script.
+	export images = []
+	i = 0
+	KeyMap.KeyE =
+		n: 'Media: Enlarge'
+	KeyMap.KeyF =
+		n: 'Media: Fullscreen'
+	KeyMap.KeyO =
+		n: 'Media: Open Original Source'
+		d: () => window.open(images[i].url_full)
+	KeyMap.KeyA =
+		n: 'Gallery: Previous Image'
+		d: () => if i > 0 then i -= 1
+	KeyMap.KeyD =
+		n: 'Gallery: Next Image'
+		d: () => if i < images.length - 1 then i += 1
+
+figure.relative.h-full.w-full.flex.justify-center.items-center
+	menu.overlay.top-0.left-0.flex.flex-wrap
+		{#each images as image, j}
+			button.h-32.w-32.flex.justify-center.align-center(on:click={() => i = j})
+				{#if j === i}
+					data.relative.w-full.h-full.flex.justify-center.items-center
+						span.absolute.top-0.left-0.text-8xl {j + 1}
+						span.text-8xl ／
+						span.absolute.bottom-0.right-0.text-6xl {images.length}
+				{:else}
+					img.thumbnail(src={image.bestFit(27, 27).url} alt='thumbnail {j + 1}')
+	img(src={images[i].bestFit(960, 960).url} alt='TODO')
+	data.overlay.bottom-0.right-0.p-8
+		table
+			colgroup
+				tcol
+				tcol.text-right
+			tr
+				td rendered size
+				td {images[i].bestFit(960, 960).width} × {images[i].bestFit(960, 960).height}
+			tr
+				td
+					a(href={images[i].largest().url} target='_blank' rel='noopener') original size
+				td {images[i].largest().width} × {images[i].largest().height}
+			tr
+				td scale
+				td.text-8xl {images[i].bestFit(960, 960).width === images[i].largest().width ? 'Max' : Math.trunc(100 * images[i].bestFit(960, 960).width / images[i].largest().width) + '%'}
+	{#if images[i].caption || images[i].link}
+		figcaption.overlay.bottom-0.left-0.p-8
+			{#if images[i].caption}
+				section
+					div caption
+					.text-6xl {images[i].caption}
+			{#if images[i].link}
+				section
+					div link
+					a(href={images[i].link}).text-4xl {(new URL(images[i].link)).href}
+
+style.
+	.thumbnail
+		height 27px
+		width 27px
+		object-fit cover
+	.overlay
+		position absolute
+		color white
+		background black

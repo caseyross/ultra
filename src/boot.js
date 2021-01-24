@@ -12,7 +12,7 @@ window.Memory = window.localStorage
 window.Statistics = Statistics
 window.Time = Time
 
-import ROOT from '/src/views/ROOT'
-new ROOT({
+import V_Root from '/src/views/V_Root'
+new V_Root({
 	target: document.getElementById('svelte-root')
 })

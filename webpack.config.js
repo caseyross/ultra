@@ -66,7 +66,7 @@ pugToSvelte = input => {
 						finishers.pop()
 						if(finishers.length === 0) { // check for end of value
 							if(value[0] === '{') {
-								attributes.push(key + '!=' + "'" + value.replace("'", "/'") + "'") // save attribute and quote value
+								attributes.push(key + '!=' + "'" + value.replaceAll("'", "\\'") + "'") // save attribute and quote value
 							} else {
 								attributes.push(key + '!=' + value) // save attribute
 							}

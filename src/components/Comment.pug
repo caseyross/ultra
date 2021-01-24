@@ -6,15 +6,15 @@ script.
 	import Avatar from '/src/components/Avatar'
 	if comment instanceof RedditComment
 		commentClass = (if comment.distinguish then 'comment-' + comment.distinguish else '') + ' ' + (if comment.flags.removed then 'removed' else '')
-		commentStyle = "margin-left: #{depth * 2}ch; opacity: #{0.5 + comment.stats.rating / 10}"
+		commentStyle = "margin-left: #{depth * 6}rem; opacity: #{0.5 + comment.stats.rating / 10}"
 		commentHoverText = comment.stats.ratingExplanation
 	else if comment instanceof RedditMoreComments
 		commentStyle = "color: gray"
 
 {#if comment instanceof RedditComment}
-	.comment(class={commentClass} style={commentStyle} title='{comment.stats.score} points {Time.relative(comment.times.submit)} by u/{comment.author.name} ({commentHoverText})')
+	.border.border-black.flex(class={commentClass} style={commentStyle} title='{comment.stats.score} points {Time.relative(comment.times.submit)} by u/{comment.author.name} ({commentHoverText})')
 		Avatar(user={comment.author})
-		.text
+		.ml-4.mt-4.mr-16.mb-8
 			{@html comment.content.text}
 {:else if comment instanceof RedditMoreComments}
 	a(href='/') {comment.ids.length} MORE
@@ -24,10 +24,6 @@ script.
 	svelte:self(comment={reply} depth={depth + 1})
 
 style.
-	.comment
-		position relative
-		padding 1ch
-		display flex
 	.removed
 		opacity 0.2
 		text-decoration line-through

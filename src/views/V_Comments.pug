@@ -1,0 +1,10 @@
+script.
+	export comments = []
+	import Comment from '/src/components/Comment'
+
+.overflow-auto
+	{#each comments as topLevelComment}
+		Comment(comment={topLevelComment})
+	{:else}
+		#nocomments
+			button#add-first-comment ADD THE FIRST COMMENT

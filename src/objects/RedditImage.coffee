@@ -1,6 +1,15 @@
 export default class RedditImage
 	constructor: (raw) ->
-		if raw.p
+		if raw.status and raw.status is not 'valid' # TODO: Add "error image" for unparseable images
+			@aspectRatio = 1
+			@resolutions = [
+				{
+					height: 640
+					width: 640
+					url: ''
+				}
+			]
+		else if raw.p
 			@aspectRatio = raw.s.x / raw.s.y
 			@resolutions = raw.p.concat(raw.s).map((resolution) ->
 				height: resolution.y
