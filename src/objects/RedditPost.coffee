@@ -14,7 +14,7 @@ export default class RedditPost
 			commentFocusDepth = raw.match(/d[A-Z0-9]+/)
 			@id = postId
 			@data =
-				Api.get '/comments/' + id[1..].toLowerCase(),
+				Api.get '/comments/' + @id[1..].toLowerCase(),
 					comment: commentFocusId[1..].toLowerCase()
 					context: commentFocusDepth[1..] ? 3
 				.then ([ rawPostListing, rawCommentListing ]) ->
@@ -48,7 +48,7 @@ parse = (raw) ->
 	flairs:
 		author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 		title: new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)
-	nativeFeed: new RedditFeed({ id: 'r/' + raw.subreddit })
+	nativeFeed: new RedditFeed({ fromId: 'r/' + raw.subreddit })
 	ratio: raw.upvote_ratio
 	score: raw.score - 1
 	title: raw.title
@@ -101,14 +101,18 @@ parseContent = (raw) ->
 		when raw.post_hint is 'rich:video'
 			content.type = 'embed'
 		when raw.domain.endsWith('reddit.com')
-			[ _, _, _, ownerName, feedName, _, postId, _, commentFocusId, query ] = raw.url.split('/')
-			if commentFocusId
-				content.type = 'comment'
-				content.post = new RedditPost("p#{postId.toUpperCase()}c#{commentFocusId?.toUpperCase()}d#{(new URLSearchParams(query)).get('context')}")
-			else if postId
-				content.type = 'post'
-				content.post = new RedditPost("p#{postId.toUpperCase()}")
-			else if feedName
+			[ _, _, _, feedDomain, feedSubdomain, feedRankBy, postId, _, commentFocusId, query ] = raw.url.split('/')
+			if feedRankBy is 'comments'
+				if commentFocusId
+					content.type = 'comment'
+					content.post = new RedditPost("p#{postId.toUpperCase()}c#{commentFocusId?.toUpperCase()}d#{(new URLSearchParams(query)).get('context')}")
+				else if postId
+					content.type = 'post'
+					content.post = new RedditPost("p#{postId.toUpperCase()}")
+			else if feedRankBy is 'wiki'
+				content.type = 'link'
+				content.link = raw.url
+			else if feedSubdomain
 				content.type = 'feed'
 				content.feed = new RedditFeed({ fromUrl: new URL(raw.url) })
 	return content

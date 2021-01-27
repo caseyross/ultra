@@ -5,4 +5,4 @@ export default class RedditUser
 		else
 			@id = ''
 		@name = @id[2..]
-		@href = '/' + @name
+		@href = '/' + @id

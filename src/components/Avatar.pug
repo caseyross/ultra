@@ -3,9 +3,9 @@ script.
 	export user = null
 
 {#if feed}
-	{#if feed.multi}
-		a.h-24.flex.justify-center.items-center.bg-purple-300(href={feed.href}) {feed.id}
-	{:else}
+	{#if feed.flags.pure}
 		a.h-24.flex.justify-center.items-center.bg-green-300(href={feed.href}) {feed.id}
+	{:else}
+		a.h-24.flex.justify-center.items-center.bg-purple-300(href={feed.href}) {feed.id}
 {:else if user}
 	a.w-24.h-24.flex.justify-center.items-center.bg-red-500.text-6xl(href={user.href}) 🎇

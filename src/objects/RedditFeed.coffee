@@ -1,48 +1,92 @@
 import RedditList from '/src/objects/RedditList'
 import RedditUser from '/src/objects/RedditUser'
 
-idFromUrl = (url) ->
-	switch
-		when url.pathname.length < 4
-			'me/home'
-		when url.pathname.startsWith('/u/')
-			url.pathname[3..].toLowerCase()
-		when url.pathname.startsWith('/user/')
-			url.pathname[6..].toLowerCase()
-		else
-			url.pathname[1..].toLowerCase()
-
 export default class RedditFeed
-	constructor: ({ id, fromUrl }) ->
-		@id = id ? idFromUrl(fromUrl)
-		[ userName, feedName, sort, itemCount ] = @id.split('/')
-		@owner = new RedditUser(userName)
-		@name = feedName ? 'overview'
-		@order = sort ? if userName is 'r' then 'hot' else 'new'
-		[ @orderclass, @ordervalue ] = @order.split('-')
-		@multi = (userName is not 'r') or (feedName is 'all' or feedName is 'popular' or feedName.startsWith('u_'))
-		@fragsize = itemCount ? 10
-		@fragend = null
+	constructor: ({ fromId, fromUrl }) ->
+		# parsed properties
+		@domain = 'frontpage'
+		@subdomain = ''
+		@range = ''
+		@rankBy = ['best', '']
+		@limit = 10
+		if fromId
+			parts = fromId.split('/')
+			if parts[0]
+				@domain = parts[0]
+			if parts[1]
+				@subdomain = parts[1]
+			if parts[2]
+				@range = parts[2]
+			switch @domain
+				when 'r'
+					@rankBy = ['hot', '']
+				when 'u', 'inbox', 'saved'
+					@rankBy = ['new', '']
+		else
+			path = fromUrl.pathname.split('/')
+			query = new URLSearchParams(fromUrl.search)
+			if path[1]
+				switch path[1]
+					when 'r'
+						@domain = 'r'
+						@rankBy = if path[3] in ['new', 'rising', 'hot', 'best', 'top', 'controversial'] then [path[3], query.get('t') or ''] else ['hot', '']
+					when 'u', 'user'
+						@domain = 'u'
+						@rankBy = if query.get('sort') then [query.get('sort'), query.get('t') or ''] else ['new', '']
+					when 'new', 'rising', 'hot', 'best', 'top', 'controversial'
+						@rankBy = [path[1], query.get('t') or '']
+					else
+						@domain = path[1]
+						@rankBy = ['new', '']
+			if path[2]
+				@subdomain = path[2]
+			if path[3]
+				@range = path[3]
+			if query.get('limit')
+				@limit = query.get('limit')
+		# derived properties
+		@id = [@domain, @subdomain, @range].join('/')
+		@href = '/' + @id
+		@owner = switch @domain
+			when 'inbox', 'saved' then new RedditUser('me')
+			when 'r' then new RedditUser('reddit')
+			when 'u' then new RedditUser(@subdomain)
+			else new RedditUser(@domain)
+		@color = switch @domain
+			when 'inbox' then 'indianred'
+			when 'saved' then 'gold'
+			when 'u' then 'cornflowerblue'
+			else 'orangered'
+		@flags =
+			pure: @domain is 'r' and not (@subdomain in ['all', 'popular'] or @subdomain.startsWith('u_'))
+		# mutable properties
+		@endId = ''
 		@fragments = [
 			@nextFragment
 		]
-		@href = '/' + @id
-		@about = () =>
-			endpoint = switch @owner.name
-				when 'me' then ''
-				when 'r' then '/r/' + @name + '/about'
-				else '/user/' + @owner.name + '/about'
-			Api.get(endpoint).then ({ data }) -> data
+	about: () =>
+		switch @domain
+			when 'r'
+				Api.get('/r/' + @subdomain + '/about').then ({ data }) -> data
+			when 'u'
+				Api.get('/user/' + @subdomain + '/about').then ({ data }) -> data
+			else
+				Promise.resolve {}
 	nextFragment: () =>
-		endpoint = switch @owner.name
-			when 'me' then '/'
-			when 'r' then '/r/' + @name
-			else '/user/' + @owner.name + '/' + @name
+		endpoint = switch @domain
+			when 'frontpage' then '/'
+			when 'r' then '/r/' + @subdomain + '/' + @rankBy[0]
+			when 'u' then '/user/' + @subdomain + '/overview'
+			when 'saved' then '/me/saved'
+			when 'inbox' then '/message/inbox'
+			else '/' # multireddits - TODO
 		options =
-			after: @fragend
-			limit: @fragsize
-			sort: @orderclass
-			t: @ordervalue
-		return Api.get(endpoint, options).then (rawListing) =>
-			@fragend = rawListing?.data?.after
-			return new RedditList(rawListing)
+			after: '' # TODO
+			count: '' # TODO
+			limit: @limit
+			show: '' # TODO
+			sort: @rankBy[0]
+			t: @rankBy[1]
+		Api.get(endpoint, options).then (rawListing) =>
+			@endId = rawListing?.data?.after
+			new RedditList(rawListing)

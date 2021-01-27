@@ -15,14 +15,47 @@ script.
 	selectedStory = null
 
 main
+	{#if selectedStory}
+		{#if selectedStory instanceof RedditPost}
+			.h-full
+				FETCH(let:v p={selectedStory.data})
+					{#if v.content.type === 'comment'}
+						FETCH(let:v p={v.content.post.data})
+							FETCH(let:v p={v.comments})
+								V_Comments(comments={v})
+					{:else if v.content.type === 'text'}
+						{#if v.content.text.length}
+							V_Essay(text={v.content.text})
+					{:else if v.content.type === 'image'}
+						V_Gallery(images={v.content.images})
+					{:else}
+						article {v.content.type}
+		{:else if selectedStory instanceof RedditComment}
+			p COMMENT
+		{:else if selectedStory instanceof RedditMessage}
+			p MESSAGE
+	{:else}
+		.border-4.border-gray-400.h-full.col-span-2
+			FETCH(let:v p={feed.about()})
+				{#if v}
+					img(src={v.banner_background_image || v.banner_img} alt='TODO')
+					article
+						{@html v.description_html}
 	.border-4.border-gray-400.h-full.flex.flex-col
 		.h-64.border-b-4.border-gray-300.flex
 			FETCH(let:v p={feed.about})
 				img.h-64.w-64.border-2.border-black.bg-gray-200(src={v.community_icon} alt='TODO')
-			h1 {feed.id}
+			.flex-grow.p-8
+				div now viewing
+				h1.text-8xl.inline-flex.items-baseline
+					span.inline-block.px-8.py-4.text-white(style='background: {feed.color}') {feed.domain}
+					span {feed.subdomain}
 			FETCH(let:v p={feed.about})
-				data {v.accounts_active}
-				data {v.subscribers}
+				.w-64
+					div Online
+					data.text-6xl {v.accounts_active || 4932}
+					div Subscribers
+					data.text-6xl {v.subscribers || 1583902}
 		ol.border-b-4.border-gray-300.flex-grow.overflow-auto
 			{#each feed.fragments as fragment}
 				FETCH(let:v p={fragment()})
@@ -53,38 +86,14 @@ main
 					input(type='checkbox' checked)
 	{#if selectedStory}
 		{#if selectedStory instanceof RedditPost}
-			.border-4.border-gray-400.h-full
-				FETCH(let:v p={selectedStory.data})
-					{#if v.content.type === 'comment'}
-						FETCH(let:v p={v.content.post.data})
-							FETCH(let:v p={v.comments})
-								V_Comments(comments={v})
-					{:else if v.content.type === 'text'}
-						{#if v.content.text.length}
-							V_Essay(text={v.content.text})
-					{:else if v.content.type === 'image'}
-						V_Gallery(images={v.content.images})
-					{:else}
-						article {v.content.type}
-			.border-4.border-gray-400.h-full
+			.h-full
 				FETCH(let:v p={selectedStory.data})
 					FETCH(let:v p={v.comments})
 						V_Comments(comments={v})
-		{:else if selectedStory instanceof RedditComment}
-			p COMMENT
-		{:else if selectedStory instanceof RedditMessage}
-			p MESSAGE
-	{:else}
-		.border-4.border-gray-400.h-full.col-span-2
-			FETCH(let:v p={feed.about()})
-				{#if v}
-					img(src={v.banner_background_image || v.banner_img} alt='TODO')
-					article
-						{@html v.description_html}
 
 style.
 	main
 		height 100vh
 		display grid
-		grid-template-columns 476px 968px 476px
+		grid-template-columns 40% 20% 40%
 		grid-template-rows 100%

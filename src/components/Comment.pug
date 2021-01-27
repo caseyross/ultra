@@ -4,26 +4,23 @@ script.
 	import RedditComment from '/src/objects/RedditComment'
 	import RedditMoreComments from '/src/objects/RedditMoreComments'
 	import Avatar from '/src/components/Avatar'
-	if comment instanceof RedditComment
-		commentClass = (if comment.distinguish then 'comment-' + comment.distinguish else '') + ' ' + (if comment.flags.removed then 'removed' else '')
-		commentStyle = "margin-left: #{depth * 6}rem; opacity: #{0.5 + comment.stats.rating / 10}"
-		commentHoverText = comment.stats.ratingExplanation
-	else if comment instanceof RedditMoreComments
-		commentStyle = "color: gray"
 
 {#if comment instanceof RedditComment}
-	.border.border-black.flex(class={commentClass} style={commentStyle} title='{comment.stats.score} points {Time.relative(comment.times.submit)} by u/{comment.author.name} ({commentHoverText})')
-		Avatar(user={comment.author})
-		.ml-4.mt-4.mr-16.mb-8
+	.comment(style='margin-left: {depth * 4}rem' title='{Time.relative(comment.times.submit)} by u/{comment.author.name}')
+		div
+			.flex
+				span.text-gray-300 {comment.author.name}
 			{@html comment.content.text}
-{:else if comment instanceof RedditMoreComments}
-	a(href='/') {comment.ids.length} MORE
-{:else}
-	.error-tag ERROR LOADING COMMENT
+		.text-right
 {#each comment.replies as reply}
 	svelte:self(comment={reply} depth={depth + 1})
 
 style.
+	.comment
+		margin-bottom 1rem
+		display grid
+		grid-template-columns 1fr 20px
+		word-break break-word
 	.removed
 		opacity 0.2
 		text-decoration line-through

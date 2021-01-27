@@ -15,7 +15,7 @@ script.
 		n: 'Gallery: Next Image'
 		d: () => if i < images.length - 1 then i += 1
 
-figure.relative.h-full.w-full.flex.justify-center.items-center
+figure.relative.h-full.w-full.flex.flex-col.justify-center.items-center
 	menu.overlay.top-0.left-0.flex.flex-wrap
 		{#each images as image, j}
 			button.h-32.w-32.flex.justify-center.align-center(on:click={() => i = j})
@@ -26,7 +26,8 @@ figure.relative.h-full.w-full.flex.justify-center.items-center
 						span.absolute.bottom-0.right-0.text-6xl {images.length}
 				{:else}
 					img.thumbnail(src={image.bestFit(27, 27).url} alt='thumbnail {j + 1}')
-	img(src={images[i].bestFit(960, 960).url} alt='TODO')
+	{#each images as image}
+		img(src={image.bestFit(960, 960).url} alt='TODO')
 	data.overlay.bottom-0.right-0.p-8
 		table
 			colgroup

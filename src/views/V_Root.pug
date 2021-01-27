@@ -8,7 +8,6 @@ script.
 	currentAccount =
 		subscriptions:
 			feeds: [
-				'me/home'
 				'r/all'
 				'r/popular'
 				'r/fireemblem'
@@ -21,7 +20,7 @@ script.
 				'r/singapore'
 				'r/postprocessing'
 				'r/manybaggers'
-			].sort((a, b) -> if a < b then -1 else 1).map((id) -> new RedditFeed({ id }))
+			].sort((a, b) -> if a < b then -1 else 1).map((id) -> new RedditFeed({ fromId: id }))
 			users: [
 				'spez'
 				'kn0thing'
