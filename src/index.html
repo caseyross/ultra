@@ -6,12 +6,11 @@
 		<meta name='viewport' content='width=device-width, initial-scale=1'>
 		<!-- CSP: only run scripts from this domain -->
 		<meta http-equiv="Content-Security-Policy" content="script-src 'self'">
-		<!-- External esources -->
+		<!-- External resources -->
 		<link rel="preconnect" href="https://oauth.reddit.com">
 		<link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.0.2/dist/tailwind.min.css">
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap" rel="stylesheet">
 		<!-- Page metadata -->
 		<title></title>
 		<link rel='icon' sizes='24x24' href=''>
@@ -24,16 +23,31 @@
 	</head>
 	<body oncontextmenu='return false'>
 		<style>
-			* {
-				max-height: 100%;
-				max-width: 100%;
+			a {
+				color: cornflowerblue;
+				cursor: default;
+			}
+			a[target='_blank'] {
+				cursor: alias;
 			}
 			body {
-				font-family: 'Roboto Mono', monospace;
+				font: 10px/1.5 'Roboto Mono';
 			}
 			menu {
 				margin: 0;
 				padding: 0;
+			}
+			ol {
+				list-style: inside;
+			}
+			ul {
+				list-style: inside;
+			}
+			.hide-scrollbar {
+				scrollbar-width: none;
+			}
+			.hide-scrollbar::-webkit-scrollbar {
+				width: 0;
 			}
 		</style>
 		<div id='svelte-root' style='position:fixed; width:100vw; height:100vh'></div>

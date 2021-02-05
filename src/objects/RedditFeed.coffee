@@ -45,7 +45,7 @@ export default class RedditFeed
 			if query.get('limit')
 				@limit = query.get('limit')
 		# derived properties
-		@id = [@domain, @subdomain, @range].join('/')
+		@id = [@domain, @subdomain, @range].filter((x) -> x).join('/')
 		@href = '/' + @id
 		@owner = switch @domain
 			when 'inbox', 'saved' then new RedditUser('me')

@@ -23,10 +23,12 @@ export default
 			if shortFormat then "#{hoursAgo}h" else "#{hoursAgo} hours ago"
 		when (daysAgo = hoursAgo // 24) < 7
 			if shortFormat then "#{daysAgo}d" else "#{daysAgo} days ago"
-		when (weeksAgo = daysAgo // 7) < 52
+		when (weeksAgo = daysAgo // 7) < 5
 			if shortFormat then "#{weeksAgo}w" else "#{weeksAgo} weeks ago"
+		when (monthsAgo = weeksAgo // 4) < 12
+			if shortFormat then "#{monthsAgo}mo" else "#{monthsAgo} months ago"
 		else
-			yearsAgo = weeksAgo // 52
+			yearsAgo = monthsAgo // 12
 			if shortFormat then "#{yearsAgo}y" else "#{yearsAgo} years ago"
 	durationCounter: (seconds) ->
 		secondsToAdd = seconds

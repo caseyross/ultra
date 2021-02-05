@@ -37,6 +37,6 @@ export default class RedditComment
 			submit: raw.created_utc
 		@stats =
 			controversiality: raw.controversiality
-			score: raw.score - 1
+			score: if raw.score_hidden then 0 else raw.score - 1
 			rating: Math.log(Statistics.normalizedLength(raw.body_html)) - Math.log((@times.parse - @times.submit) / 6000) + (if raw.score > 1 then Math.log(raw.score - 1) else if raw.score is 1 then 0 else -1)
 			ratingExplanation: "LEN: #{Math.log(Statistics.normalizedLength(raw.body_html))}  TIME: #{Math.log((@times.parse - @times.submit) / 6000)}  SCORE: #{if raw.score > 1 then Math.log(raw.score - 1) else if raw.score is 1 then 0 else -1}"

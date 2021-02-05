@@ -1,32 +1,27 @@
 script.
 	export post = null
+	export showNativeFeed = false
+	export showTitleFlair = false
 	import Avatar from '/src/components/Avatar'
+	import Link from '/src/components/Link'
 
-.post
-	Avatar(user={post.author})
-	.text
-		.text-6xl
-			{#if post.content.type === 'link'}
-				a(href={post.content.link}) {post.title}
-			{:else if post.content.type === 'feed'}
-				a(href={post.content.feed.href}) {post.title}
-			{:else}
-				span {post.title}
-		span.time-since {Time.relative(post.times.submit, true)}
-		Avatar(feed={post.nativeFeed})
-		span.flair(style='border-color: {post.flairs.title.color}' title={post.flairs.title.text}) &nbsp;{post.flairs.title.text}
-
-style.
-	.post
-		display flex
-		word-break break-word
-	.time-since
-		flex 0 0 auto
-		width 2.5rem
-		margin-right 1rem
-	.flair
-		height 2.5rem
-		font-size 1.5rem
-		white-space nowrap
-		overflow hidden
-		text-overflow ellipsis
+.break-words.cursor-default
+	.flex.justify-between.items-baseline
+		{#if showTitleFlair}
+			span.text-gray-400(style='color: {post.flairs.title.color}') {post.flairs.title.text}
+	.text-6xl
+		{#if post.content.type === 'link'}
+			Link(href={post.content.link}) {post.title}
+		{:else if post.content.type === 'feed'}
+			Link(href={post.content.feed.href}) {post.title}
+		{:else}
+			span {post.title}
+	.text-gray-400
+		span {Time.relative(post.times.submit, true)} ago
+		{#if showNativeFeed}
+			span
+				| in
+				Avatar(feed={post.nativeFeed})
+		span by
+		span.bg-gray-100 {post.author.name}
+		span {post.flairs.author.text}

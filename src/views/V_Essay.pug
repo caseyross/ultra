@@ -1,6 +1,6 @@
 script.
 	export text = ''
+	import FormattedHtml from '/src/components/FormattedHtml'
 
-section.h-full.overflow-auto.flex.flex-col.justify-center.items-center
-	article
-		{@html text}
+article.m-16
+	FormattedHtml(html={text})

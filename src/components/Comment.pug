@@ -1,26 +1,24 @@
 script.
-	export depth = 0
 	export comment = null
+	export depth = 0
+	import FormattedHtml from '/src/components/FormattedHtml'
 	import RedditComment from '/src/objects/RedditComment'
 	import RedditMoreComments from '/src/objects/RedditMoreComments'
-	import Avatar from '/src/components/Avatar'
 
 {#if comment instanceof RedditComment}
-	.comment(style='margin-left: {depth * 4}rem' title='{Time.relative(comment.times.submit)} by u/{comment.author.name}')
-		div
-			.flex
-				span.text-gray-300 {comment.author.name}
-			{@html comment.content.text}
-		.text-right
+	.comment(style='margin-left: {depth * 4}rem')
+		.flex.justify-between.text-gray-400
+			span
+				span {comment.flags.scoreHidden ? '[score hidden]' : (comment.stats.score < 0 ? '' : '+') + comment.stats.score} by
+				span.bg-gray-100 {comment.author.name}
+				span {comment.flairs.author.text}
+			span {Time.relative(comment.times.submit, true)}
+		FormattedHtml(html={comment.content.text})
 {#each comment.replies as reply}
 	svelte:self(comment={reply} depth={depth + 1})
 
 style.
-	.comment
+	.comment	
 		margin-bottom 1rem
-		display grid
-		grid-template-columns 1fr 20px
+		width 480px
 		word-break break-word
-	.removed
-		opacity 0.2
-		text-decoration line-through
