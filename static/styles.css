@@ -1,0 +1,41 @@
+@import 'iosevka-aile.css';
+@import 'iosevka-etoile.css';
+
+a {
+	color: cornflowerblue;
+	cursor: default;
+}
+a[target='_blank'] {
+	cursor: alias;
+}
+body {
+	font: 12px/15px Iosevka Aile;
+}
+menu {
+	margin: 0;
+	padding: 0;
+}
+ol {
+	list-style: decimal;
+	padding-left: 4rem;
+}
+ul {
+	list-style: inherit;
+	padding-left: 4rem;
+}
+* + p,
+* + pre {
+	margin-top: 0.5em;
+}
+.hide-scrollbar {
+	scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+	width: 0;
+}
+.text-alpha {
+	font: 21px/25px Iosevka Aile;
+}
+.text-beta {
+	font: 15px/17px Iosevka Etoile;
+}

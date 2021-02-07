@@ -6,19 +6,19 @@ script.
 	import RedditMoreComments from '/src/objects/RedditMoreComments'
 
 {#if comment instanceof RedditComment}
-	.comment(style='margin-left: {depth * 4}rem')
+	.comment(style='margin-left: {depth * 2}em')
 		.flex.justify-between.text-gray-400
 			span
-				span {comment.flags.scoreHidden ? '[score hidden]' : (comment.stats.score < 0 ? '' : '+') + comment.stats.score} by
-				span.bg-gray-100 {comment.author.name}
+				span.bg-gray-100(style='color: {comment.distinguish.color}; background: {comment.distinguish.bgColor}') {comment.author.name}
 				span {comment.flairs.author.text}
 			span {Time.relative(comment.times.submit, true)}
-		FormattedHtml(html={comment.content.text})
+		.border.border-black.p-4
+			FormattedHtml(html={comment.content.text})
 {#each comment.replies as reply}
 	svelte:self(comment={reply} depth={depth + 1})
 
 style.
-	.comment	
+	.comment
 		margin-bottom 1rem
-		width 480px
 		word-break break-word
+		max-width 600px

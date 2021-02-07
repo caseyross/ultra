@@ -1,3 +1,4 @@
+import RedditDistinguish from '/src/objects/RedditDistinguish'
 import RedditFeed from '/src/objects/RedditFeed'
 import RedditFlair from '/src/objects/RedditFlair'
 import RedditList from '/src/objects/RedditList'
@@ -9,12 +10,9 @@ export default class RedditComment
 			list: raw.all_awardings
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 		@author = new RedditUser(raw.author)
-		@distinguish = switch
-			when raw.is_submitter then 'op'
-			when raw.distinguished is 'moderator' then 'mod'
-			else raw.distinguished
 		@content =
 			text: raw.body_html[16...-6]
+		@distinguish = new RedditDistinguish(raw.distinguished, raw.is_submitter)
 		@flags =
 			archived: raw.archived
 			edited: raw.edited

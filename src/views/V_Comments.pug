@@ -5,19 +5,18 @@ script.
 	treeScore = (comment) -> comment.replies.fold(0, (a, b) -> a + treeScore(b)) + Math.abs(comment.stats.score)
 	topLevelScore = comments.fold(0, (a,b) -> a + (if b.flags.scoreHidden then 0 else Math.abs(b.stats.score)))
 	topLevelScorePercent = (comment) -> switch
-		when comment.flags.scoreHidden then '~'
+		when comment.flags.scoreHidden then '*'
 		when topLevelScore < 1 then '0'
 		else Math.trunc(100 * comment.stats.score / topLevelScore)
 
-.m-16
-	{#each comments as topLevelComment, i}
-		.top-level-comment
-			.text-6xl
-				span {topLevelScorePercent(topLevelComment)}
-			div
-				Comment(comment={topLevelComment})
-	{:else}
-		span No comments.
+{#each comments as topLevelComment, i}
+	.top-level-comment
+		.text-beta.text-center
+			span {topLevelScorePercent(topLevelComment)}
+		div
+			Comment(comment={topLevelComment})
+{:else}
+	span No comments.
 
 style.
 	.top-level-comment

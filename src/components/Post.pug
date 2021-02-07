@@ -7,21 +7,19 @@ script.
 
 .break-words.cursor-default
 	.flex.justify-between.items-baseline
-		{#if showTitleFlair}
-			span.text-gray-400(style='color: {post.flairs.title.color}') {post.flairs.title.text}
-	.text-6xl
-		{#if post.content.type === 'link'}
-			Link(href={post.content.link}) {post.title}
-		{:else if post.content.type === 'feed'}
-			Link(href={post.content.feed.href}) {post.title}
-		{:else}
-			span {post.title}
-	.text-gray-400
-		span {Time.relative(post.times.submit, true)} ago
+		.text-gray-400
+			span.bg-gray-100(style='color: {post.distinguish.color}; background: {post.distinguish.bgColor}') {post.author.name}
+			span {post.flairs.author.text}
+		span {Time.relative(post.times.submit, true)}
+	.border.border-black.p-4
 		{#if showNativeFeed}
-			span
-				| in
-				Avatar(feed={post.nativeFeed})
-		span by
-		span.bg-gray-100 {post.author.name}
-		span {post.flairs.author.text}
+			Avatar(feed={post.nativeFeed})
+		{:else if showTitleFlair}
+			span.text-gray-400(style='color: {post.flairs.title.color}') {post.flairs.title.text}
+		.text-beta
+			{#if post.content.type === 'link'}
+				Link(href={post.content.link}) {post.title}
+			{:else if post.content.type === 'feed'}
+				Link(href={post.content.feed.href}) {post.title}
+			{:else}
+				span {post.title}

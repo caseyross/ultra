@@ -1,3 +1,4 @@
+import RedditDistinguish from '/src/objects/RedditDistinguish'
 import RedditFeed from '/src/objects/RedditFeed'
 import RedditFlair from '/src/objects/RedditFlair'
 import RedditImage from '/src/objects/RedditImage'
@@ -32,6 +33,7 @@ parse = (raw) ->
 		spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 	comments: parseComments(raw)
 	content: parseContent(raw)
+	distinguish: new RedditDistinguish(raw.distinguished, true)
 	flags:
 		archived: raw.archived
 		contest: raw.contest_mode
