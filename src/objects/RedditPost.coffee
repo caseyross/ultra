@@ -46,7 +46,7 @@ parse = (raw) ->
 		saved: raw.saved
 		scoreHidden: raw.hide_score
 		spoiler: raw.spoiler
-		stickied: raw.stickied or raw.pinned
+		sticky: raw.stickied or raw.pinned
 	flairs:
 		author: new RedditFlair(raw.author_flair_text, raw.author_flair_background_color)
 		title: new RedditFlair(raw.link_flair_text, raw.link_flair_background_color)

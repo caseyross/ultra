@@ -1,24 +1,8 @@
 script.
 	export comments = []
-	import RedditComment from '/src/objects/RedditComment'
 	import Comment from '/src/components/Comment'
-	treeScore = (comment) -> comment.replies.fold(0, (a, b) -> a + treeScore(b)) + Math.abs(comment.stats.score)
-	topLevelScore = comments.fold(0, (a,b) -> a + (if b.flags.scoreHidden then 0 else Math.abs(b.stats.score)))
-	topLevelScorePercent = (comment) -> switch
-		when comment.flags.scoreHidden then '*'
-		when topLevelScore < 1 then '0'
-		else Math.trunc(100 * comment.stats.score / topLevelScore)
 
 {#each comments as topLevelComment, i}
-	.top-level-comment
-		.text-beta.text-center
-			span {topLevelScorePercent(topLevelComment)}
-		div
-			Comment(comment={topLevelComment})
+	Comment(comment={topLevelComment})
 {:else}
 	span No comments.
-
-style.
-	.top-level-comment
-		display grid
-		grid-template-columns 32px 1fr

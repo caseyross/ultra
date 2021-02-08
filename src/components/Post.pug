@@ -11,7 +11,7 @@ script.
 			span.bg-gray-100(style='color: {post.distinguish.color}; background: {post.distinguish.bgColor}') {post.author.name}
 			span {post.flairs.author.text}
 		span {Time.relative(post.times.submit, true)}
-	.border.border-black.p-4
+	div
 		{#if showNativeFeed}
 			Avatar(feed={post.nativeFeed})
 		{:else if showTitleFlair}

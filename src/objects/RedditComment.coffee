@@ -11,6 +11,11 @@ export default class RedditComment
 			spend: raw.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
 		@author = new RedditUser(raw.author)
 		@content =
+			rating: switch
+				when raw.score_hidden then '·'
+				when raw.score > 1 then (raw.score - 1)
+				when raw.score is 1 then '0'
+				when raw.score < 1 then (raw.score - 1)
 			text: raw.body_html[16...-6]
 		@distinguish = new RedditDistinguish(raw.distinguished, raw.is_submitter)
 		@flags =
