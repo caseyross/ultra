@@ -1,0 +1,1 @@
+export { default as PROMISE } from './PROMISE.pug'

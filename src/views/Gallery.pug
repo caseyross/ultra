@@ -1,0 +1,29 @@
+script.
+	import Link from './Link'
+	export images = []
+	design_width = 960
+	design_height = 840
+	expanded = -1
+
+{#each images as image, i}
+	figure.m-16
+		.flex.justify-between
+			data {i + 1} of { images.length }
+			data
+				| {Math.trunc(100 * Math.min(design_width / image.largest().width, design_height / image.largest().height)) + '%'} of
+				Link(href={image.largest().url} desc='Click to open original image in a new tab') original size
+		img.border.border-black(src={image.best_fit(design_width, design_height).url} alt='TODO')
+		{#if image.caption || image.link}
+			figcaption
+				{#if image.caption}
+					| {image.caption}
+				{#if image.link}
+					Link(href={image.link}) {image.link}
+style.
+	data
+		background black
+		color white
+		padding 1rem
+	img
+		max-height 842px
+		cursor zoom-in

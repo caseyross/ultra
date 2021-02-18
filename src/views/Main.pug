@@ -1,0 +1,86 @@
+script.
+	import { Comment, Message, Post } from '/src/models'
+	import { PROMISE } from './effects'
+	import Avatar from './Avatar'
+	import Button from './Button'
+	import Comments from './Comments'
+	import Gallery from './Gallery'
+	import Inspector from './Inspector'
+	import Link from './Link'
+	import MouseMenu from './MouseMenu'
+	export account = {}
+	export feed = {}
+	selected_story = null
+	inspect = false
+	KeyMap.Backquote =
+		n: 'Toggle Inspect Mode'
+		d: () => inspect = !inspect
+
+main
+	.h-full.overflow-auto.hide-scrollbar.flex.flex-col.justify-start.items-end
+		{#if selected_story}
+			{#if selected_story instanceof Post}
+				{#if selected_story.content.type === 'iframe'}
+					{@html selected_story.content.data}
+				{:else if selected_story.content.type === 'comment'}
+					PROMISE(let:v p={v.content.data})
+						Comments(comments={v})
+				{:else if selected_story.content.type === 'image'}
+					Gallery(images={selected_story.content.data})
+				{:else}
+					article {selected_story.content.data}
+			{:else if selected_story instanceof Comment}
+				p COMMENT
+			{:else if selected_story instanceof Message}
+				p MESSAGE
+	.h-full.flex.flex-col.border.border-black(style='background: gainsboro')
+		.h-64.p-4
+			h1.inline-flex.items-center
+				.w-48.h-24.flex.justify-around.border.border-black.text-beta {feed.domain}
+				.text-alpha.px-4 {feed.subdomain}
+		ol.m-4.p-4.list-none.border-t-2.border-b-2.border-dashed.border-black
+			{#each feed.data.pages as page}
+				PROMISE(let:v p={page})
+					{#each v as story}
+						li.m-4(on:mousedown={() => selected_story = story})
+							.break-words.cursor-default
+								{#if story instanceof Post}
+									.flex.justify-between.items-baseline
+										.text-gray-400
+										span {story.meta.submit_date.toRelativeString()}
+									div
+										{#if true}
+											Avatar(feed={story.meta.native_feed})
+										{:else}
+											span.text-gray-400(style='color: {story.flair.color}') {story.flair.text}
+										.text-beta.text-center
+											{#if story.content.type === 'link'}
+												Link(href={story.content.url.href}) {story.title}
+											{:else if story.content.type === 'feed'}
+												Link(href={story.content.data.href}) {story.title}
+											{:else}
+												span {story.title}
+								{:else if story instanceof Comment}
+									Comment(comment={story})
+								{:else if story instanceof Message}
+								{:else}
+									.error-tag UNKNOWN ITEM
+									.error-message {String(story)}
+	.h-full.overflow-auto.hide-scrollbar.flex.flex-col.items-start.py-16
+		{#if selected_story}
+			{#if selected_story instanceof Post}
+				PROMISE(let:v p={selected_story.comments.data})
+					Comments(comments={v})
+	MouseMenu
+	{#if inspect}
+		.fixed.w-screen.h-screen.overflow-auto.py-4.bg-white.text-black
+			Inspector(key='selected_story' value={selected_story})
+			Inspector(key='feed' value={feed})
+			Inspector(key='account' value={account})
+
+style.
+	main
+		height 100vh
+		display grid
+		grid-template-rows 100%
+		grid-template-columns 43% 14% 43%

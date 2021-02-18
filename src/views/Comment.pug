@@ -1,0 +1,19 @@
+script.
+	import Score from './Score'
+	import { Comment, MoreComments } from '/src/models'
+	export comment = null
+
+{#if comment instanceof Comment}
+	article.comment
+		Score(score={comment.meta.score})
+		| {comment.text}
+		{#each comment.replies as reply}
+			svelte:self(comment={reply})
+
+style.
+	.comment
+		display grid
+		word-break break-word
+		margin-left 8rem
+		margin-top 3rem
+		font-size 12px

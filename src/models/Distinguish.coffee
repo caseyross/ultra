@@ -1,24 +1,24 @@
-export default class RedditDistinguish
-	constructor: (rawDistinguish, isOp) ->
-		switch rawDistinguish
+export default class Distinguish
+	constructor: ({ naive_type, is_op }) ->
+		switch naive_type
 			when 'moderator'
 				@type = 'mod'
 				@color = 'white'
-				@bgColor = 'green'
+				@bg_color = 'green'
 			when 'admin'
 				@type = 'admin'
 				@color = 'white'
-				@bgColor = 'orangered'
+				@bg_color = 'orangered'
 			when 'special'
 				@type = 'special'
 				@color = 'white'
-				@bgColor = 'black'
+				@bg_color = 'black'
 			else
-				if isOp
+				if is_op
 					@type = 'op'
 					@color = 'white'
-					@bgColor = 'blue'
+					@bg_color = 'blue'
 				else
 					@type = 'none'
 					@color = ''
-					@bgColor = ''
+					@bg_color = ''

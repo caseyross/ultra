@@ -1,6 +1,6 @@
 script.
+	import Comment from './Comment'
 	export comments = []
-	import Comment from '/src/components/Comment'
 
 {#each comments as topLevelComment, i}
 	Comment(comment={topLevelComment})

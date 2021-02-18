@@ -1,0 +1,13 @@
+script.
+	export score = 'score unknown'
+	text = switch
+		when score > 0 then '+' + score
+		when score is 0 then '=0'
+		else score
+
+data(value={score}) {text}
+
+style.
+	data
+		font-weight bold
+		color indianred

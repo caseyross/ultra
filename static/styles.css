@@ -10,7 +10,6 @@ a[target='_blank'] {
 }
 body {
 	font: 12px/15px Iosevka Aile;
-	background: gainsboro;
 }
 menu {
 	margin: 0;
@@ -35,7 +34,7 @@ ul {
 	width: 0;
 }
 .text-alpha {
-	font: bold 10rem/1 Iosevka Aile;
+	font: 900 8rem/1 Iosevka Aile;
 }
 .text-beta {
 	font: bold 15px/17px Iosevka Aile;
