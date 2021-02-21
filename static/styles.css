@@ -9,7 +9,7 @@ a[target='_blank'] {
 	cursor: alias;
 }
 body {
-	font: 12px/15px Iosevka Aile;
+	font: 12px/16px verdana;
 }
 menu {
 	margin: 0;
@@ -34,8 +34,11 @@ ul {
 	width: 0;
 }
 .text-alpha {
-	font: 900 8rem/1 Iosevka Aile;
+	font: 24px/32px verdana;
 }
 .text-beta {
-	font: bold 15px/17px Iosevka Aile;
+	font: 16px/24px verdana;
+}
+.text-gamma {
+	font: 14px/18px verdana;
 }

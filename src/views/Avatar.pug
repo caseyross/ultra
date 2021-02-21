@@ -1,6 +1,4 @@
 script.
 	export feed = null
 
-a.inline-flex.items-baseline.opacity-50(href={feed.href} class='hover:opacity-100')
-	span.inline-block.px-4.text-white.border.border-black.rounded {feed.domain}
-	span.text-black {feed.subdomain}
+a.opacity-50(href={feed.href} class='hover:opacity-100') {feed.domain}/{feed.subdomain}

@@ -6,14 +6,15 @@ script.
 {#if comment instanceof Comment}
 	article.comment
 		Score(score={comment.meta.score})
-		| {comment.text}
-		{#each comment.replies as reply}
-			svelte:self(comment={reply})
+		.text {comment.text}
+		.replies
+			{#each comment.replies as reply}
+				svelte:self(comment={reply})
 
 style.
 	.comment
-		display grid
 		word-break break-word
-		margin-left 8rem
 		margin-top 3rem
-		font-size 12px
+	.replies
+		padding-left 5rem
+		border-left 1px solid

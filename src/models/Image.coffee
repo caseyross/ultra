@@ -1,5 +1,5 @@
 export default class Image
-	constructor: (r) ->
+	constructor: (r) -> # TODO: fix gifs
 		if r.status and r.status is not 'valid' # TODO: Add "error image" for unparseable images
 			@aspect_ratio = 1
 			@resolutions = [

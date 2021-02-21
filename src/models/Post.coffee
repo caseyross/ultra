@@ -37,7 +37,7 @@ export default class
 			contest_mode: r.contest_mode
 			crossposts:
 				if r.crosspost_parent_list
-					r.crosspost_parent_list.map((p) -> new this(p))
+					r.crosspost_parent_list.map((p) -> new this(p)) #TODO: fix
 				else
 					[]
 			distinguish: new Distinguish({
@@ -112,31 +112,37 @@ class Content
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src='https://gfycat.com/ifr/#{@url.pathname.split('/')[1]}' allowfullscreen width='640' height='684'></iframe>
+							<iframe src='https://gfycat.com/ifr/#{@url.pathname.split('/')[1]}' allowfullscreen width='640' height='640'></iframe>
 							"""
 					when 'redgifs.com'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src='https://redgifs.com/ifr/#{@url.pathname.split('/')[2]}' allowfullscreen width='640' height='1137'></iframe>
+							<iframe src='https://redgifs.com/ifr/#{@url.pathname.split('/')[2]}' allowfullscreen width='640' height='640'></iframe>
 							"""
 					when 'clips.twitch.tv'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[1]}&parent=localhost" allowfullscreen="true" height="378" width="620"></iframe>
+							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[1]}&parent=localhost" allowfullscreen="true" height="360" width="640"></iframe>
+							"""
+					when 'twitch.tv'
+						@type = 'iframe'
+						@data =
+							"""
+							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[3]}&parent=localhost" allowfullscreen="true" height="360" width="640"></iframe>
 							"""
 					when 'youtube.com'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/#{@url.searchParams.get('v')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+							<iframe width="640" height="360" src="https://www.youtube-nocookie.com/embed/#{@url.searchParams.get('v')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 							"""
 					when 'youtu.be'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/#{@url.pathname.split('/')[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+							<iframe width="640" height="360" src="https://www.youtube-nocookie.com/embed/#{@url.pathname.split('/')[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 							"""
 
 class Comments

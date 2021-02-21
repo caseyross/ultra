@@ -1,20 +1,13 @@
-MENUS
--------------
-Q: PaneLeft 	W: ItemUp 		E: PaneRight
-A: ItemLeft		S: ItemDown		D: ItemRight
-Z:				X:				C:	
-Press SHIFT or RIGHT CLICK to upvote.
-DOUBLE LEFT CLICK to collapse comment trees.
+POST/COMMENT/MESSAGE MENU
+-------------------------
+Q:  			W: Award 		E: 
+A: Report		S: Save			D: Reply
+Z: 				X:				C: 
 
-SHIFT-MENUS
------------
-POST/MESSAGE
+USER MENU
+---------
 Q:  			W: 		 		E: 
-A: Author...	S: Save			D: 
-Z: Report		X:				C: Copy link
-+ Reply, Award
-USER
-Q:  			W: 		 		E: 
-A: [None]       S: Follow		D: Message
-Z: Report		X:				C:
-+ Tag, Award?
+A: 		        S: Follow		D: Message ("DM")
+Z:				X:				C:
++ Tag?
++ Report?
