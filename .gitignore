@@ -1,2 +1,4 @@
+.yarn
+.yarnrc
 node_modules
 public
