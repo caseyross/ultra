@@ -1,5 +1,4 @@
 import Award from './Award'
-import Distinguish from './Distinguish'
 import Feed from './Feed'
 import Flair from './Flair'
 import Image from './Image'
@@ -7,7 +6,7 @@ import List from './List'
 import User from './User'
 import Video from './Video'
 
-export default class 
+export default class Post
 	constructor: (r) ->
 		@id = r.id
 		@title = r.title
@@ -30,6 +29,13 @@ export default class
 			color: r.link_flair_background_color
 		})
 		@meta =
+			author_relation: switch
+				when r.author is 'AutoModerator'
+					'automoderator'
+				when r.distinguished
+					r.distinguished
+				else
+					'submitter'
 			awards:
 				list: r.all_awardings.map((a) -> new Award(a))
 				spend: r.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
@@ -37,13 +43,9 @@ export default class
 			contest_mode: r.contest_mode
 			crossposts:
 				if r.crosspost_parent_list
-					r.crosspost_parent_list.map((p) -> new this(p)) #TODO: fix
+					r.crosspost_parent_list.map((r) -> new Post(r))
 				else
 					[]
-			distinguish: new Distinguish({
-				naive_type: r.distinguished,
-				is_op: true
-			})
 			edit_date:
 				if r.edited
 					new Date(r.edited * 1000)
@@ -58,13 +60,15 @@ export default class
 			saved: r.saved
 			score:
 				if r.hide_score
-					'score hidden'
+					'●'
 				else
 					r.score - 1
 			spoiler: r.spoiler
 			stickied: r.stickied or r.pinned
 			submit_date: new Date(r.created_utc * 1000)
 
+IFRAME_WIDTH = 960
+IFRAME_HEIGHT = 540
 class Content
 	constructor: (r) ->
 		@url = new URL(r.url)
@@ -112,43 +116,43 @@ class Content
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src='https://gfycat.com/ifr/#{@url.pathname.split('/')[1]}' allowfullscreen width='640' height='640'></iframe>
+							<iframe src='https://gfycat.com/ifr/#{@url.pathname.split('/')[1]}' allowfullscreen width='#{IFRAME_WIDTH}' height='#{IFRAME_HEIGHT}'></iframe>
 							"""
 					when 'redgifs.com'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src='https://redgifs.com/ifr/#{@url.pathname.split('/')[2]}' allowfullscreen width='640' height='640'></iframe>
+							<iframe src='https://redgifs.com/ifr/#{@url.pathname.split('/')[2]}' allowfullscreen width='#{IFRAME_WIDTH}' height='#{IFRAME_HEIGHT}'></iframe>
 							"""
 					when 'clips.twitch.tv'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[1]}&parent=localhost" allowfullscreen="true" height="360" width="640"></iframe>
+							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[1]}&parent=localhost" allowfullscreen width='#{IFRAME_WIDTH}' height='#{IFRAME_HEIGHT}'></iframe>
 							"""
 					when 'twitch.tv'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[3]}&parent=localhost" allowfullscreen="true" height="360" width="640"></iframe>
+							<iframe src="https://clips.twitch.tv/embed?clip=#{@url.pathname.split('/')[3]}&parent=localhost" allowfullscreen  width='#{IFRAME_WIDTH}' height='#{IFRAME_HEIGHT}'></iframe>
 							"""
 					when 'youtube.com'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe width="640" height="360" src="https://www.youtube-nocookie.com/embed/#{@url.searchParams.get('v')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+							<iframe src="https://www.youtube-nocookie.com/embed/#{@url.searchParams.get('v')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen width='#{IFRAME_WIDTH}' height='#{IFRAME_HEIGHT}'></iframe>
 							"""
 					when 'youtu.be'
 						@type = 'iframe'
 						@data =
 							"""
-							<iframe width="640" height="360" src="https://www.youtube-nocookie.com/embed/#{@url.pathname.split('/')[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+							<iframe src="https://www.youtube-nocookie.com/embed/#{@url.pathname.split('/')[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen width='#{IFRAME_WIDTH}' height='#{IFRAME_HEIGHT}'></iframe>
 							"""
 
 class Comments
 	constructor: (r) ->
-		@suggested_sort = r.suggested_sort
 		@count = r.num_comments
+		@sort = r.suggested_sort or 'default'
 		@data = new LazyPromise(=>
 			provided = new List(r.replies)
 			if provided.length

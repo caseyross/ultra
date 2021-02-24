@@ -1,71 +1,53 @@
 script.
-	export active = false
+	active = false
 	position =
 		x: 0
 		y: 0
-	document.addEventListener 'mousedown',
+	###
+	document.addEventListener(
+		'mousedown',
 		(e) ->
 			if e.buttons is 2
 				position =
 					x: e.x
 					y: e.y
 				active = true
-	document.addEventListener 'mouseup',
+	)
+	document.addEventListener(
+		'mouseup',
 		(e) ->
 			active = false
+	)
+	###
 	KeyMap.ShiftLeft =
 		n: 'Show X-Menu'
 		d: () => active = true
 		u: () => active = false
-	menuStyle = (active, position) ->
-		if active
-			"transform: translate(#{position.x}px, #{position.y}px) rotate(45deg)"
-		else
-			''
 
-menu(style={menuStyle(active, position)})
-	button.large#w Reply
-	button.large#a
-	button.large#s Save
-	button.large#d Hide
-	button.small#q
-	button.small#z
-	button.small#e
-	button.small#c
+menu.absolute(style='transform: translate({position.x}px, {position.y}px); opacity: {active ? 1 : 0}')
+	label
+	label Award
+	label
+	label Report
+	.w-full.h-full.border-2.border-solid.border-black.rounded-full
+	label Reply
+	label
+	label Save
+	label
 
 style.
 	menu
-		position absolute
-		width 40rem
-		height 40rem
-		top -20rem
-		left -20rem
+		width 144px
+		height 144px
+		top -(@height / 2)
+		left -(@width / 2)
 		display grid
-		grid-template-rows 2fr 2fr 1fr 1fr 2fr 2fr
-		grid-template-columns 2fr 2fr 1fr 1fr 2fr 2fr
-		grid-template-areas:
-			'. . e e . .' \
-			'. w w d d .' \
-			'q w w d d c' \
-			'q a a s s c' \
-			'. a a s s .' \
-			'. . z z . .'
-		transform rotate3d(0.5, 0, 0, 90deg)
-	button
-		transform rotate(-45deg)
-	#w
-		grid-area w
-	#a
-		grid-area a
-	#s
-		grid-area s
-	#d
-		grid-area d
-	#q
-		grid-area q
-	#z
-		grid-area z
-	#e
-		grid-area e
-	#c
-		grid-area c
+		grid-template-rows 1fr 48px 1fr
+		grid-template-columns 1fr 48px 1fr
+		place-items center
+	label
+		background white
+		color black
+		border 2px solid black
+		border-radius 9999px
+		padding 4px

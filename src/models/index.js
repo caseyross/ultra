@@ -1,6 +1,5 @@
 export { default as Award } from './Award.coffee'
 export { default as Comment } from './Comment.coffee'
-export { default as Distinguish } from './Distinguish.coffee'
 export { default as Feed } from './Feed.coffee'
 export { default as Flair } from './Flair.coffee'
 export { default as Image } from './Image.coffee'

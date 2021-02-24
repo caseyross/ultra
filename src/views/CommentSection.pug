@@ -4,9 +4,8 @@ script.
 	export comments = []
 
 div
-	.flex.mb-20.text-gray-400.justify-between
-		span showing {comments.count} comments
-		span sorted by {comments.suggested_sort}
+	.flex.text-gray-400.justify-end
+		span {comments.count} {'comment'.pluralize(comments.count)}, sorted by: {comments.sort}
 	PROMISE(let:v p={comments.data})
 		{#each v as top_level_comment}
 			Comment(comment={top_level_comment})

@@ -1,8 +1,9 @@
 script.
-	import { Comment, Message, Post } from '/src/models'
+	import * as Models from '/src/models'
 	import { PROMISE } from './effects'
 	import Avatar from './Avatar'
 	import Button from './Button'
+	import Comment from './Comment'
 	import CommentSection from './CommentSection'
 	import Gallery from './Gallery'
 	import Inspector from './Inspector'
@@ -22,56 +23,51 @@ svelte:head
 	{:else}
 		title {feed.name}
 main
-	#grid-a.overflow-auto.hide-scrollbar.border-r.border-black.pl-8.py-8.bg-gray-50
-		h1.text-alpha {feed.subdomain}
-		ol.p-0.list-none.border-t-2.border-dashed.border-black
+	#grid-s.overflow-auto.hide-scrollbar
+		.h-96.flex.items-center
+			h1.text-alpha {feed.subdomain}
+		ol.p-0.list-none
 			{#each feed.data.pages as page}
 				PROMISE(let:v p={page})
 					{#each v as story}
-						li.p-8(on:mousedown={() => selected_story = story})
-							.break-words.cursor-default
-								{#if story instanceof Post}
-									.flex
-										Avatar(feed={story.meta.native_feed})
-										data.text-gray-400(value={story.meta.submit_date.valueOf()}) {story.meta.submit_date.toRelativeString()}
-									{#if story.content.type === 'link'}
-										Link(href={story.content.url.href}) {story.title}
-									{:else if story.content.type === 'feed'}
-										Link(href={story.content.data.href}) {story.title}
-									{:else}
-										span {story.title}
-								{:else if story instanceof Comment}
-									Comment(comment={story})
-								{:else if story instanceof Message}
-									span MESSAGE
-								{:else}
-									.error-tag UNKNOWN ITEM
-									.error-message {String(story)}
-		button.w-48.h-48.text-gray-400.border.border-gray-400 next page
+						li(on:mousedown={() => selected_story = story})
+							{#if story instanceof Models.Post}
+								{#if story.content.type === 'image'}
+									img(src={story.content.data[0].best_fit(320, 320).href})
+								.break-words.cursor-default.mt-8.p-8.border.border-black
+									h3 {story.title}
+									.flex.text-gray-400
+										{story.meta.native_feed.name}
+							{:else if story instanceof Models.Comment}
+								Comment(comment={story})
+							{:else if story instanceof Models.Message}
+								span MESSAGE
+							{:else}
+								.error-tag UNKNOWN ITEM
+								.error-message {String(story)}
 	{#if selected_story}
-		#grid-s.h-full.overflow-auto.hide-scrollbar.px-20.py-32
+		#grid-d.h-full.overflow-auto.hide-scrollbar.px-20.py-16
 			.text-beta.mb-4 {selected_story.title}
-			.flex.mb-20.text-gray-400
-				span posted {selected_story.meta.submit_date.toRelativeString()} ago by u/{selected_story.author.name}
-			{#if selected_story instanceof Post}
-				.mb-20
+			.flex.justify-between.mb-8.text-gray-400
+				span u/{selected_story.author.name}
+			{#if selected_story instanceof Models.Post}
+				.mb-12.break-words
 					{#if selected_story.content.type === 'iframe'}
 						{@html selected_story.content.data}
 					{:else if selected_story.content.type === 'comment'}
 						CommentSection(comments={selected_story.content.data})
 					{:else if selected_story.content.type === 'image'}
 						Gallery(images={selected_story.content.data})
+					{:else if selected_story.content.type === 'text'}
+						article.text-delta {selected_story.content.data}
 					{:else}
-						article.text-gamma {selected_story.content.data}
-				hr
+						Link(href={selected_story.content.url.href}) {selected_story.content.url.href}
+				hr.mb-4
 				CommentSection(comments={selected_story.comments})
-			{:else if selected_story instanceof Comment}
+			{:else if selected_story instanceof Models.Comment}
 				p COMMENT
-			{:else if selected_story instanceof Message}
+			{:else if selected_story instanceof Models.Message}
 				p MESSAGE
-	{#if selected_story}
-		#grid-d.h-full.overflow-auto.py-20
-			#minimap
 	MouseMenu
 	{#if inspect}
 		.fixed.w-screen.h-screen.overflow-auto.py-4.bg-white.text-black
@@ -84,14 +80,15 @@ style.
 		height 100vh
 		display grid
 		grid-template-rows 100%
-		grid-template-columns 220px 400px 680px 620px
-		grid-template-areas '. a s d'
+		grid-template-columns 320px 320px 960px
+		grid-template-areas 'a s d'
 	#grid-a
 		grid-area a
 	#grid-s
 		grid-area s
 	#grid-d
 		grid-area d
+		padding-right 120px
 	#minimap
 		width 96px
 		height 96px

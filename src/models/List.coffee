@@ -12,7 +12,7 @@ export default class List
 		return r.data.children.map (child) ->
 			switch child.kind
 				when 'Listing'
-					new this(child.data)
+					new List(child.data)
 				when 't1'
 					new Comment(child.data)
 				when 't2'

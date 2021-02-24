@@ -1,19 +1,19 @@
 script.
 	import Link from './Link'
 	export images = []
-	design_width = 640
+	design_width = 960
 	design_height = Infinity
 	expanded = -1
 
 {#each images as image, i}
-	figure.mb-8
-		img(src={image.best_fit(design_width, design_height).url} alt='TODO')
-		{#if image.caption || image.link}
+	figure.mb-4
+		img(src={image.best_fit(design_width, design_height).href} alt='TODO' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
+		{#if image.caption.text || image.caption.href}
 			figcaption
-				{#if image.caption}
-					| {image.caption}
-				{#if image.link}
-					Link(href={image.link}) {image.link}
+				{#if image.caption.text}
+					| {image.caption.text}
+				{#if image.caption.href}
+					Link(href={image.caption.href}) {image.caption.href}
 style.
 	img
 		cursor zoom-in

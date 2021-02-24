@@ -1,20 +1,29 @@
 script.
+	import Badge from './Badge'
 	import Score from './Score'
-	import { Comment, MoreComments } from '/src/models'
+	import { MoreComments } from '/src/models'
 	export comment = null
 
-{#if comment instanceof Comment}
-	article.comment
+article
+	.h-full.flex.flex-col.items-end
 		Score(score={comment.meta.score})
-		.text {comment.text}
-		.replies
-			{#each comment.replies as reply}
-				svelte:self(comment={reply})
+	.h-full.flex.flex-col
+		Badge(relation={comment instanceof MoreComments ? 'loadable' : comment.meta.author_relation})
+		.line.flex-grow
+	div
+		{#if comment instanceof MoreComments}
+			.p-4.text-gray-400 {comment.ids.length} more {'comment'.pluralize(comment.ids.length)}
+		{:else}
+			.p-4.break-words {comment.text}
+			.replies
+				{#each comment.replies as reply}
+					svelte:self(comment={reply})
 
 style.
-	.comment
-		word-break break-word
-		margin-top 3rem
-	.replies
-		padding-left 5rem
-		border-left 1px solid
+	article
+		display grid
+		grid-template-rows 1fr
+		grid-template-columns 48px 24px 1fr
+		align-items flex-start
+	.line
+		background linear-gradient(to right, transparent 11px, gray 11px, transparent 12px)
