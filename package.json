@@ -6,7 +6,7 @@
 		"coffeescript": "^2.5.1",
 		"copy-webpack-plugin": "^7.0.0",
 		"html-webpack-plugin": "^5.2.0",
-		"pug": "^3.0.0",
+		"pug": "^3.0.1",
 		"stylus": "^0.54.8",
 		"svelte": "^3.32.3",
 		"svelte-loader": "^3.0.0",
