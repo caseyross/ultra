@@ -1,29 +1,25 @@
 script.
-	import Badge from './Badge'
-	import Score from './Score'
 	import { MoreComments } from '/src/models'
+	import ScoreBadge from './ScoreBadge'
+	import UserLabel from './UserLabel'
 	export comment = null
 
-article
-	.h-full.flex.flex-col.items-end
-		Score(score={comment.meta.score})
-	.h-full.flex.flex-col
-		Badge(relation={comment instanceof MoreComments ? 'loadable' : comment.meta.author_relation})
-		.line.flex-grow
-	div
-		{#if comment instanceof MoreComments}
-			.p-4.text-gray-400 {comment.ids.length} more {'comment'.pluralize(comment.ids.length)}
-		{:else}
-			.p-4.break-words {comment.text}
-			.replies
-				{#each comment.replies as reply}
-					svelte:self(comment={reply})
+{#if comment instanceof MoreComments}
+	.py-5.px-3.text-gray-400 {comment.ids.length} more
+{:else}
+	article
+		.comment
+			.flex.items-baseline
+				ScoreBadge(relation={comment.meta.author_relation} score={comment.meta.score} hype={comment.meta.hype} awards={comment.meta.awards})
+				UserLabel(user={comment.author})
+			.py-2.break-words
+				{@html comment.text.getHtmlFromMarkdown()}
+		.replies
+			{#each comment.replies as reply}
+				svelte:self(comment={reply})
 
 style.
-	article
-		display grid
-		grid-template-rows 1fr
-		grid-template-columns 48px 24px 1fr
-		align-items flex-start
-	.line
-		background linear-gradient(to right, transparent 11px, gray 11px, transparent 12px)
+	.comment
+		width 640px
+	.replies
+		padding-left 5rem

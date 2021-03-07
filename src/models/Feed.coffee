@@ -1,4 +1,5 @@
 import List from './List'
+import Post from './Post'
 import User from './User'
 
 export default class Feed
@@ -47,11 +48,13 @@ export default class Feed
 		# derived properties
 		@name = [@domain, @subdomain, @range].filter((x) -> x).join('/')
 		@href = '/' + @name
-		@owner = switch @domain
-			when 'inbox', 'saved' then new User({ name: 'me' })
-			when 'r' then new User({ name: 'reddit' })
-			when 'u' then new User({ name: @subdomain })
-			else new User({ name: @domain })
+		@owner = new User({
+			name: switch @domain
+					when 'inbox', 'saved' then 'me'
+					when 'r' then 'reddit'
+					when 'u' then @subdomain
+					else @domain
+		})
 		@color = switch @domain
 			when 'inbox' then 'indianred'
 			when 'saved' then 'gold'
@@ -61,6 +64,7 @@ export default class Feed
 			pure: @domain is 'r' and not (@subdomain in ['all', 'popular'] or @subdomain.startsWith('u_'))
 		# mutable properties
 		@data =
+			# TODO: check for 403 response (not allowed to access subreddit)
 			pages: [
 				@page({})
 			]
@@ -69,13 +73,13 @@ export default class Feed
 					when 'r'
 						Server.get({
 							endpoint: '/r/' + @subdomain + '/about'
-						}).then ({ data }) -> data
+						}).then ({ data }) -> new FeedInfo(data)
 					when 'u'
 						Server.get({
 							endpoint: '/user/' + @subdomain + '/about'
-						}).then ({ data }) -> data
+						}).then ({ data }) -> new FeedInfo(data)
 					else
-						Promise.resolve {}
+						Promise.resolve(null)
 			)
 	page: ({ after_id, seen_count }) => new LazyPromise(=>
 		Server.get({
@@ -93,5 +97,36 @@ export default class Feed
 				show: '' # TODO
 				sort: @ranking[0]
 				t: @ranking[1]
-		}).then (listing) -> new List(listing)
+		}).then (listing) ->
+			list = new List(listing)
+			calc_hype(list.filter((x) -> x instanceof Post))
+			return list
 	)
+calc_hype = (posts) ->
+	now = Date.now()
+	log_score_per_hour = (post) =>
+		if Number.isFinite(post.meta.score)
+			Math.log(post.meta.score / ((now - post.meta.submit_date.valueOf()) / 3600000))
+		else
+			NaN
+	# calc distribution
+	distribution = new NormalDistribution(posts.map((p) -> log_score_per_hour(p)).filter((x) -> Number.isFinite(x)))
+	# calc and set each post's hype
+	for post in posts
+		post.meta.hype = distribution.deviation(log_score_per_hour(post))
+
+class FeedInfo
+	constructor: (r) ->
+		@text =
+			tagline: r.public_description_html
+			sidebar: r.description_html
+		@images =
+			banner: r.banner_background_image or r.mobile_banner_image or r.banner_img or ''
+			icon: r.community_icon or r.icon_img or ''
+			header: r.header_img or ''
+		@color = r.primary_color or r.key_color or 'transparent'
+		@meta =
+			create_date: new Date(r.created_utc * 1000)
+			nsfw: r.over18
+			online_user_count: r.active_user_count or r.accounts_active
+			subscriber_count: r.subscribers

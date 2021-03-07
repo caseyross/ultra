@@ -1,0 +1,45 @@
+script.
+	export relation = ''
+	export score = NaN
+	export hype = 0
+	export awards = []
+	award_spend = awards.fold(0, (a, b) -> a + b.coin_price * b.count)
+	style =
+		switch
+			when relation is 'special'
+				'color: white; background: crimson'
+			when relation is 'admin'
+				'color: white; background: orangered'
+			when relation is 'moderator'
+				'color: white; background: darkseagreen'
+			when relation is 'submitter'
+				'color: white; background: lightskyblue'
+			when score < 1
+				'color: white; background: black'
+			when hype > 3
+				'color: white; background: salmon'
+			when hype > 2.5
+				'color: white; background: lightsalmon'
+			###
+			when #sometimeschooseonevalueatrandom
+				'purple'
+			###
+			else
+				'color: black; background: lightgray'
+
+span.stats.inline-flex.items-baseline(title={hype})
+	{#if Number.isFinite(score)}
+		span.stat-value {score}
+	{:else}
+		span.stat-icon 🞄
+	{#if award_spend > 0}
+		span.stat-icon ●
+		span.stat-value {award_spend}
+
+style.
+	.stats
+		border-radius 1ch
+		font-weight bold
+	.stat-value
+		padding 2px 4px
+		font-size 10px

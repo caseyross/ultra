@@ -1,13 +1,22 @@
 @import 'iosevka-aile.css';
+@font-face {
+	src: url('pixellari.ttf');
+	font-family: 'Custom';
+}
 a {
 	color: cornflowerblue;
-	cursor: default;
 }
 a[target='_blank'] {
 	cursor: alias;
 }
 body {
-	font: 12px/1.25 'Iosevka Aile Web';
+	font: 16px/1.5 'Custom';
+}
+iframe {
+	border-radius: 1ch;
+}
+img {
+	border-radius: 1ch;
 }
 menu {
 	margin: 0;
@@ -16,6 +25,20 @@ menu {
 ol {
 	list-style: decimal;
 	padding-left: 4rem;
+}
+table {
+	font-size: 10px;
+	margin: 5rem 0;
+}
+td {
+	padding: 1ch;
+	vertical-align: top;
+	border: 1px solid lightgray;
+	border-width: 1px 0;
+}
+th {
+	padding: 1ch;
+	vertical-align: top;
 }
 ul {
 	list-style: inherit;
@@ -32,7 +55,7 @@ ul {
 	width: 0;
 }
 .text-alpha {
-	font-size: 24px;
+	font-size: 20px;
 }
 .text-beta {
 	font-size: 16px;

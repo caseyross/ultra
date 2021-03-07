@@ -1,4 +1,5 @@
 import Award from './Award'
+import Comment from './Comment'
 import Feed from './Feed'
 import Flair from './Flair'
 import Image from './Image'
@@ -24,22 +25,22 @@ export default class Post
 				r
 		)
 		@comments = new Comments(r)
-		@flair = new Flair({
-			text: r.link_flair_text,
-			color: r.link_flair_background_color
-		})
+		@flair =
+			if r.link_flair_text
+				new Flair({
+					text: r.link_flair_text,
+					color: r.link_flair_background_color
+				})
+			else
+				null
 		@meta =
 			author_relation: switch
-				when r.author is 'AutoModerator'
-					'automoderator'
 				when r.distinguished
 					r.distinguished
 				else
-					'submitter'
-			awards:
-				list: r.all_awardings.map((a) -> new Award(a))
-				spend: r.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
+					''
 			archived: r.archived
+			awards: r.all_awardings
 			contest_mode: r.contest_mode
 			crossposts:
 				if r.crosspost_parent_list
@@ -52,6 +53,7 @@ export default class Post
 				else
 					null
 			hidden: r.hidden
+			hype: NaN # to be set by requester
 			locked: r.locked
 			native_feed: new Feed({ name: 'r/' + r.subreddit })
 			nsfw: r.over_18
@@ -60,9 +62,9 @@ export default class Post
 			saved: r.saved
 			score:
 				if r.hide_score
-					'●'
+					NaN
 				else
-					r.score - 1
+					r.score
 			spoiler: r.spoiler
 			stickied: r.stickied or r.pinned
 			submit_date: new Date(r.created_utc * 1000)
@@ -77,41 +79,41 @@ class Content
 		switch
 			when r.is_self
 				@type = 'text'
-				@data = r.selftext ? ''
-			when r.post_hint is 'image' or r.is_gallery
+				@data = r.selftext_html ? ''
+			when r.post_hint is 'image'
 				@type = 'image'
-				@data =
-					if r.is_gallery
-						r.gallery_data.items.map((item) ->
-							new Image({
-								...r.media_metadata[item.media_id],
-								caption: item.caption,
-								link: item.outbound_url
-							}))
-					else
-						[
-							new Image(r.preview.images[0])
-						]
-			when r.post_hint is 'hosted:video' or r.rpan_video
-				#TODO
+				@data =	[
+					new Image(r.preview.images[0])
+				]
+			when r.is_gallery
+				@type = 'image'
+				@data = r.gallery_data.items.map((item) ->
+					new Image({
+						...r.media_metadata[item.media_id],
+						caption: item.caption,
+						link: item.outbound_url
+					}))
+			when r.post_hint is 'hosted:video'
+				@type = 'video'
+				@data = new Video(r.media.reddit_video)
+			when r.domain.endsWith('reddit.com')
+				[ _, domain, subdomain, sort, post_id, _, comment_id ] = @url.pathname.split('/')
+				if sort is 'comments'
+					if comment_id
+						@type = 'comment'
+						@data = new Comments({
+							id: post_id,
+							comment_id: comment_id,
+							comment_context: @url.searchParams.get('context')
+						})
+					else if post_id
+						@type = 'link'
+						#TODO (treat as link, mostly)
+				else if subdomain
+					@type = 'feed'
+					@data = new Feed({ url: @url })
 			else
 				switch r.domain
-					when 'reddit.com', 'np.reddit.com', 'old.reddit.com', 'new.reddit.com'
-						[ _, domain, subdomain, sort, post_id, _, comment_id ] = @url.pathname.split('/')
-						if sort is 'comments'
-							if comment_id
-								@type = 'comment'
-								@data = new Comments({
-									id: post_id,
-									comment_id: comment_id,
-									comment_context: @url.searchParams.get('context')
-								})
-							else if post_id
-								@type = 'link'
-								#TODO (treat as link, mostly)
-						else if subdomain
-							@type = 'feed'
-							@data = new Feed({ url: @url })
 					when 'gfycat.com'
 						@type = 'iframe'
 						@data =
@@ -154,13 +156,14 @@ class Comments
 		@count = r.num_comments
 		@sort = r.suggested_sort or 'default'
 		@data = new LazyPromise(=>
-			provided = new List(r.replies)
-			if provided.length
+			comments = new List(r.replies)
+			if comments.length
 				# we already have the comments.
-				Promise.resolve provided
+				calc_hype(comments)
+				Promise.resolve(comments)
 			else if @count is 0
 				# no comments on this post.
-				Promise.resolve []
+				Promise.resolve(new List([]))
 			else
 				# we don't have the comments yet. get them.
 				Server.get({
@@ -168,5 +171,33 @@ class Comments
 					options:
 						comment: r.comment_id
 						context: r.comment_context
-				}).then ([ _, comment_listing ]) -> new List(comment_listing)
+				}).then ([ _, comment_listing ]) ->
+					comments = new List(comment_listing)
+					calc_hype(comments)
+					comments
 		)
+calc_hype = (comments) ->
+	now = Date.now()
+	log_score_per_hour = (comment) =>
+		if Number.isFinite(comment.meta.score)
+			Math.log(comment.meta.score / ((now - comment.meta.submit_date.valueOf()) / 3600000))
+		else
+			NaN
+	# calc distribution
+	values = []
+	add_subtree_values = (comment) ->
+		if comment instanceof Comment
+			values.push(log_score_per_hour(comment))
+			for reply in comment.replies
+				add_subtree_values(reply)
+	for comment in comments
+		add_subtree_values(comment)
+	distribution = new NormalDistribution(values.filter((x) -> Number.isFinite(x)))
+	# calc and set each comment's hype
+	set_subtree_deviation = (comment) ->
+		if comment instanceof Comment
+			comment.meta.hype = distribution.deviation(log_score_per_hour(comment))
+			for reply in comment.replies
+				set_subtree_deviation(reply)
+	for comment in comments
+		set_subtree_deviation(comment)

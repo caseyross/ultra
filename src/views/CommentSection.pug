@@ -3,9 +3,7 @@ script.
 	import Comment from './Comment'
 	export comments = []
 
-div
-	.flex.text-gray-400.justify-end
-		span {comments.count} {'comment'.pluralize(comments.count)}, sorted by: {comments.sort}
+.pl-16.border-l.border-gray-200
 	PROMISE(let:v p={comments.data})
 		{#each v as top_level_comment}
 			Comment(comment={top_level_comment})

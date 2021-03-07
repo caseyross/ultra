@@ -2,12 +2,11 @@ script.
 	import Link from './Link'
 	export images = []
 	design_width = 960
-	design_height = Infinity
-	expanded = -1
+	design_height = 720
 
 {#each images as image, i}
 	figure.mb-4
-		img(src={image.best_fit(design_width, design_height).href} alt='TODO' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
+		img(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
 		{#if image.caption.text || image.caption.href}
 			figcaption
 				{#if image.caption.text}
@@ -16,4 +15,5 @@ script.
 					Link(href={image.caption.href}) {image.caption.href}
 style.
 	img
+		max-height 720px
 		cursor zoom-in

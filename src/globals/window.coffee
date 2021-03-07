@@ -20,6 +20,17 @@ document.onkeyup = (e) ->
 	else KeyMap[e.code]?.u?()
 
 
+# quick and dirty normal distribution estimator for the given sample
+window.NormalDistribution = class
+	constructor: (sample) ->
+		@mean = sample.fold(0, (a, b) -> a + b) / sample.length
+		above_mean = sample.filter((x) => x > @mean).sort()
+		below_mean = sample.filter((x) => x < @mean).sort()
+		@standard_deviation = (Math.abs(above_mean[above_mean.length // 3] - @mean) + Math.abs(@mean - below_mean[below_mean.length // 3 * 2])) / 2
+	deviation: (value) =>
+		(value - @mean) / @standard_deviation
+
+
 # Docs: https://github.com/reddit-archive/reddit/wiki/OAuth2
 renew_api_key = () ->
 	fetch 'https://www.reddit.com/api/v1/access_token',

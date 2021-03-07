@@ -1,12 +1,12 @@
 export default class Image
 	constructor: (r) -> # TODO: fix gifs
-		if r.status and r.status is not 'valid' # TODO: Add "error image" for unparseable images
+		if r.status and not (r.status is 'valid')
 			@aspect_ratio = 1
 			@resolutions = [
 				{
 					width: 640
 					height: 640
-					href: ''
+					href: '' # TODO: Add error image for invalid images
 				}
 			]
 		else if r.p

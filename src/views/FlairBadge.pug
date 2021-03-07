@@ -1,0 +1,13 @@
+script.
+	export flair = null
+
+span.inline-flex.items-center(style='color: {flair.color.getContrastColor()};background: {flair.color || "gray"}') {flair.text}
+
+style.
+	span
+		height 18px
+		padding 0 1.5ch
+		border-radius 1ch
+		color white
+		font-size 10px
+		white-space pre

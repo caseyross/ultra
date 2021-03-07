@@ -14,28 +14,25 @@ export default class Comment
 				color: r.author_flair_background_color
 			})
 		})
-		@text = r.body
+		@text = r.body_html
 		@replies = new List(r.replies)
 		@meta =
 			author_relation: switch
-				when r.author is 'AutoModerator'
-					'automoderator'
 				when r.distinguished
 					r.distinguished
 				when r.is_submitter
 					'submitter'
 				else
-					'commenter'
-			awards:
-				list: r.all_awardings.map((a) -> new Award(a))
-				spend: r.all_awardings.fold(0, (a, b) -> a + b.coin_price * b.count)
+					''
 			archived: r.archived
+			awards: r.all_awardings
 			controversiality: r.controversiality
 			edit_date:
 				if r.edited
 					new Date(r.edited * 1000)
 				else
 					null
+			hype: NaN # to be set by requester
 			locked: r.locked
 			native_feed: new Feed({ name: 'r/' + r.subreddit })
 			nsfw: r.over_18
@@ -46,7 +43,7 @@ export default class Comment
 			saved: r.saved
 			score:
 				if r.score_hidden
-					'●'
+					NaN
 				else
-					r.score - 1
+					r.score
 			submit_date: new Date(r.created_utc * 1000)

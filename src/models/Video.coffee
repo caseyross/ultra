@@ -1,30 +1,25 @@
-import Image from './Image'
-
 export default class Video
 	constructor: (r) ->
-		@approximateLength = r.media.reddit_video.duration
-		@aspect_ratio = r.media.reddit_video.width / r.media.reddit_video.height
-		@coverImage = new Image(r.preview.images[0])
+		@width = r.width
+		@height = r.height
 		@tracks =
 			audio: [
-				new MediaSource('audio/mp4', 'mp4a.40.2', r.url + '/DASH_audio.mp4')
+				new MediaSource({
+					mime_type: 'audio/mp4',
+					codec: 'mp4a.40.2'
+					href: r.fallback_url.replaceAll('DASH_' + @height, 'DASH_audio')
+				})
 			]
-			video: ['96', '240', '360', '480', '720', '1080'].map((resolution) ->
-				new MediaSource('video/mp4', 'avc1.4D401F', r.url + "/DASH_#{resolution}.mp4")
-			)
-		console.log r, @
+			video: [
+				new MediaSource({
+					mime_type: 'video/mp4',
+					codec: 'avc1.4D401F' # 4D401E for 480p and below
+					href: r.fallback_url
+				})
+			]
 
 class MediaSource
-	constructor: (mimeType, codec, url) ->
-		@mimeType = mimeType
+	constructor: ({ mime_type, codec, href }) ->
+		@mime_type = mime_type
 		@codec = codec
-		@url = url
-		@fragments = [
-			@nextFragment()
-		]
-	nextFragment: () =>
-		fetch @url,
-			method: 'GET'
-			headers:
-				'range': "bytes=#{0}-#{10000}"
-		.then (response) -> console.log response.arrayBuffer()
+		@href = href

@@ -1,0 +1,33 @@
+script.
+	import CommentSection from './CommentSection'
+	import Gallery from './Gallery'
+	import Link from './Link'
+	import ScoreBadge from './ScoreBadge'
+	import UserLabel from './UserLabel'
+	export post = null
+
+header
+	.flex.items-center
+		ScoreBadge(relation={post.meta.author_relation} score={post.meta.score} hype={post.meta.hype} awards={post.meta.awards})
+		UserLabel(user={post.author})
+.mb-12.break-words
+	{#if post.content.type === 'iframe'}
+		{@html post.content.data}
+	{:else if post.content.type === 'comment'}
+		CommentSection(comments={post.content.data})
+	{:else if post.content.type === 'video'}
+		video(controls='true' width={post.content.data.width} height={post.content.data.height})
+			{#each post.content.data.tracks.video as representation}
+				source(src={representation.href} type={representation.mime_type})
+			Link(href={post.content.url.href}) {post.content.url.href}
+		audio(controls='true')
+			{#each post.content.data.tracks.audio as representation}
+				source(src={representation.href} type={representation.mime_type})
+	{:else if post.content.type === 'image'}
+		Gallery(images={post.content.data})
+	{:else if post.content.type === 'text'}
+		article.text-delta
+			{@html post.content.data.getHtmlFromMarkdown()}
+	{:else}
+		Link(href={post.content.url.href}) {post.content.url.href}
+CommentSection(comments={post.comments})

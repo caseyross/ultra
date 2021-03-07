@@ -25,7 +25,9 @@ String::getContrastColor = ->
 	red = Number.parseInt(@[1..2], 16) / 255
 	green = Number.parseInt(@[3..4], 16) / 255
 	blue = Number.parseInt(@[5..6], 16) / 255
-	if (green + red / 8 + blue / 8) > 0.7 then 'black' else 'white'
+	if (green + red / 8 + blue / 8) > 0.8 then 'black' else 'white'
+String::getHtmlFromMarkdown = ->
+	@
 String::getNormalizedLength = ->
 	x = encodeURI(@replace(/<[^>]+>/g, ''))
 	x.length - 2 * x.split('%').length
