@@ -126,13 +126,6 @@ pugToSvelte = input => {
 
 module.exports = {
 	mode: 'production',
-	devServer: {
-		contentBase: './public',
-		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
-		compress: true, // gzip responses
-		https: true,
-		overlay: true, // error overlay
-	},
 	entry: './src/boot.js',
 	output: {
 		filename: 'bundle.js',
@@ -196,4 +189,4 @@ module.exports = {
 			],
 		}),
 	],
-};
+}
