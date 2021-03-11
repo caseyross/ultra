@@ -1,0 +1,41 @@
+script.
+	activated = false
+	coordinates = [0, 0]
+	document.addEventListener 'mousedown',
+		(e) ->
+			if e.buttons is 2
+				coordinates = [e.x, e.y]
+				console.log coordinates
+				activated = true
+	document.addEventListener 'mouseup',
+		(e) ->
+			activated = false
+	style = (activated) ->
+		if activated
+			"opacity: 1; transform: translate(#{coordinates[0]}px, #{coordinates[1]}px) rotate(45deg)"
+		else
+			''
+
+menu(style={style(activated)})
+	button.w-full.h-full
+		div.p-4.bg-black.text-white(style='transform: rotate(-45deg)') SAVE
+	button.w-full.h-full
+		div.p-4.bg-black.text-white(style='transform: rotate(-45deg)') REPLY
+	button.w-full.h-full
+		div.p-4.bg-black.text-white(style='transform: rotate(-45deg)') AWARD
+	button.w-full.h-full
+		div.p-4.bg-black.text-white(style='transform: rotate(-45deg)') REPORT
+
+style.
+	menu
+		opacity 0
+		pointer-events none
+		position fixed
+		width 144px
+		height 144px
+		top -(@height / 2)
+		left -(@width / 2)
+		display grid
+		grid-template-rows 1fr 1fr
+		grid-template-columns 1fr 1fr
+		place-items center

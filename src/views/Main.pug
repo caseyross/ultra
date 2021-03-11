@@ -4,7 +4,7 @@ script.
 	import Button from './Button'
 	import Comment from './Comment'
 	import Inspector from './Inspector'
-	import MouseMenu from './MouseMenu'
+	import PieMenu from './PieMenu'
 	import PostBody from './PostBody'
 	import PostHeadline from './PostHeadline'
 	export account = {}
@@ -53,7 +53,7 @@ main
 				p COMMENT
 			{:else if selected_story instanceof Models.Message}
 				p MESSAGE
-	MouseMenu
+	PieMenu
 	{#if inspect}
 		.fixed.w-screen.h-screen.overflow-auto.py-4.bg-white.text-black
 			Inspector(key='selected_story' value={selected_story})
