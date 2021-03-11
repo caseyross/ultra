@@ -22,20 +22,20 @@ svelte:head
 		title [{feed.name}]
 main
 	#grid-a.border-r.border-gray-200
-	#grid-s.overflow-auto.hide-scrollbar.border-r.border-gray-200.pl-80
+	#grid-s.overflow-auto.hide-scrollbar.border-r.border-gray-200
 		.h-96.flex.justify-between.items-center.px-16
-			h1.text-alpha.uppercase {feed.subdomain}
+			h1.text-alpha {feed.subdomain}
 			PROMISE(let:v p={feed.data.about})
-				img.w-32.h-32(src={v.images.icon})
+				img.w-32(src={v.images.icon})
 		{#each feed.data.pages as page}
 			PROMISE(let:v p={page})
 				ol.list-none.p-0.mb-32
 					{#each v.filter(x => x.meta.stickied) as sticky}
-						li.px-16(on:mousedown={() => selected_story = sticky})
+						li(on:mousedown={() => selected_story = sticky})
 							PostHeadline(post={sticky})
 				ol.list-none.p-0
 					{#each v.filter(x => !x.meta.stickied) as story}
-						li.px-16(on:mousedown={() => selected_story = story})
+						li(on:mousedown={() => selected_story = story})
 							{#if story instanceof Models.Post}
 								PostHeadline(post={story} label_feed={feed.name !== story.meta.native_feed.name})
 							{:else if story instanceof Models.Comment}
@@ -65,7 +65,7 @@ style.
 		height 100vh
 		display grid
 		grid-template-rows 100%
-		grid-template-columns 15% 25% 60%
+		grid-template-columns 15% 35% 50%
 		grid-template-areas 'a s d'
 	#grid-a
 		grid-area a

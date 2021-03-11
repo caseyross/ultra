@@ -38,7 +38,7 @@ export default class Post
 				when r.distinguished
 					r.distinguished
 				else
-					''
+					'submitter'
 			archived: r.archived
 			awards: r.all_awardings
 			contest_mode: r.contest_mode
@@ -69,8 +69,8 @@ export default class Post
 			stickied: r.stickied or r.pinned
 			submit_date: new Date(r.created_utc * 1000)
 
-IFRAME_WIDTH = 960
-IFRAME_HEIGHT = 540
+IFRAME_WIDTH = 854
+IFRAME_HEIGHT = 480
 class Content
 	constructor: (r) ->
 		@url = new URL(r.url)

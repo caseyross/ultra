@@ -1,13 +1,11 @@
 script.
 	export flair = null
 
-span.inline-flex.items-center(style='color: {flair.color.getContrastColor()};background: {flair.color || "gray"}') {flair.text}
+span.border(style='color: {flair.color}; border-color: {flair.color}') {flair.text}
 
 style.
 	span
-		height 18px
-		padding 0 1.5ch
+		padding 0 2rem
 		border-radius 1ch
-		color white
 		font-size 10px
 		white-space pre

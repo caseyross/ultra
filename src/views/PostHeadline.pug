@@ -1,25 +1,20 @@
 script.
 	export post = null
 	export label_feed = false
-	import FeedLabel from './FeedLabel'
 	import FlairBadge from './FlairBadge'
-	import ScoreBadge from './ScoreBadge'
 
-article.relative.p-8.break-words(title={post.hype})
-	{#if label_feed}
-		data.absolute.px-4
-			FeedLabel(feed={post.meta.native_feed})
-	{#if post.flair}
-		data.absolute.px-4
+article.relative.px-16.break-words(title={post.hype})
+	div
+		{#if post.flair}
 			FlairBadge(flair={post.flair})
-	h3.text-gamma {post.title}
+	h3 {post.title}
 
 style.
 	article
+		display grid
+		grid-template-rows 100%
+		grid-template-columns 120px 1fr
 		&:hover
 		&:focus
 		&:active
 			background gainsboro
-	data
-		right 100%
-		background white

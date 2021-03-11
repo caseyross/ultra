@@ -1,5 +1,5 @@
 export default class Image
-	constructor: (r) -> # TODO: fix gifs
+	constructor: (r) ->
 		if r.status and not (r.status is 'valid')
 			@aspect_ratio = 1
 			@resolutions = [
@@ -33,5 +33,5 @@ export default class Image
 				return next
 			return current_best
 		)
-	largest: () => @resolutions[@resolutions.length - 1]
+	largest: () => @resolutions.last()
 				

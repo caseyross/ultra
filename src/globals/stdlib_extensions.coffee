@@ -1,3 +1,4 @@
+Array::last = -> @[@.length - 1]
 Date::toContextualString = ->
 	monthText = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 	now = new Date()

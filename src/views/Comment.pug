@@ -1,7 +1,6 @@
 script.
 	import { MoreComments } from '/src/models'
-	import ScoreBadge from './ScoreBadge'
-	import UserLabel from './UserLabel'
+	import Placard from './Placard'
 	export comment = null
 
 {#if comment instanceof MoreComments}
@@ -9,10 +8,8 @@ script.
 {:else}
 	article
 		.comment
-			.flex.items-baseline
-				ScoreBadge(relation={comment.meta.author_relation} score={comment.meta.score} hype={comment.meta.hype} awards={comment.meta.awards})
-				UserLabel(user={comment.author})
-			.py-2.break-words
+			Placard(user={comment.author} relation={comment.meta.author_relation} score={comment.meta.score} hype={comment.meta.hype} awards={comment.meta.awards})
+			.break-words
 				{@html comment.text.getHtmlFromMarkdown()}
 		.replies
 			{#each comment.replies as reply}

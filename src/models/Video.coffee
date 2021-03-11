@@ -8,7 +8,7 @@ export default class Video
 					new MediaSource({
 						mime_type: 'audio/mp4',
 						codec: 'mp4a.40.2'
-						href: r.fallback_url.replaceAll('DASH_' + @height, 'DASH_audio')
+						href: r.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio')
 					})
 				]
 				video: [

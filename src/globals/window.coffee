@@ -32,6 +32,40 @@ window.NormalDistribution = class
 
 
 # Docs: https://github.com/reddit-archive/reddit/wiki/OAuth2
+
+RATELIMIT_WINDOW = 600000 # milliseconds
+RATELIMIT_QUOTA = 600 # requests
+
+class RateLimitError extends Error
+	constructor: (message) ->
+		super(message)
+		@name = 'RateLimitError'
+
+mark_ratelimit = () ->
+	existing_activity = localStorage.api_ratelimit_activity
+	updated_activity =
+		if existing_activity
+			existing_activity + '-' + Date.now()
+		else
+			Date.now()
+	localStorage.api_ratelimit_activity = updated_activity
+		
+check_ratelimit_wait = () ->
+	existing_activity = localStorage.api_ratelimit_activity
+	existing_actives =
+		if existing_activity
+			existing_activity.split('-')
+		else
+			[]
+	current_time = Date.now()
+	updated_actives = existing_actives.filter((x) -> (Number(x) + RATELIMIT_WINDOW) > current_time)
+	if updated_actives.length != existing_actives.length
+		localStorage.api_ratelimit_activity = updated_actives.join('-')
+	if updated_actives.length > RATELIMIT_QUOTA
+		(Number(updated_actives[0]) + RATELIMIT_WINDOW) - Date.now()
+	else
+		0
+
 renew_api_key = () ->
 	fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
@@ -42,46 +76,38 @@ renew_api_key = () ->
 			device_id: 'DO_NOT_TRACK_THIS_DEVICE'
 	.then (response) -> response.json()
 	.then (json) ->
-		Storage.apiTokenType = json.token_type
-		Storage.apiTokenValue = json.access_token
-		Storage.apiTokenExpireTime = Date.now() + json.expires_in * 999
-class RateLimitError extends Error
-	constructor: (message) ->
-		super(message)
-		@name = 'RateLimitError'
-requestLockupExpirations = []
-contact_api = ({ method, path, body }) ->
-	# Check rate limit. Reddit allows up to 60 requests per minute.
-	now = Date.now()
-	requestLockupExpirations = requestLockupExpirations.filter((expiration) -> expiration > now)
-	if requestLockupExpirations.length >= 30 # use half of the allowed limit, for testing
-		secondsUntilRequestAllowed = (requestLockupExpirations[0] - now) // 1000
-		return Promise.reject(new RateLimitError("Request would exceed Reddit API frequency limit. Wait #{secondsUntilRequestAllowed} seconds."))
-	# If access token is absent or already expired, block while getting a new one.
-	# If access token is expiring soon, don't block the current operation, but pre-emptively request a new token.
-	if not Storage.apiTokenExpireTime or now > Storage.apiTokenExpireTime
-		await renew_api_key()
-	else if now > Storage.apiTokenExpireTime - 600000
-		renew_api_key()
-	# Record time of request for rate limit checking.
-	requestLockupExpirations.push(now + 60000)
-	fetch(
-		'https://oauth.reddit.com' + path,
-		{
-			method,
-			headers: {
-				'Authorization': Storage.apiTokenType + ' ' + Storage.apiTokenValue
-			},
-			body
-		}
-	).then (response) -> response.json()
+		localStorage.api_key_type = json.token_type
+		localStorage.api_key_value = json.access_token
+		localStorage.api_key_expiration = Date.now() + json.expires_in * 1000
+
+call_api = ({ method, path, body }) ->
+	ratelimit_wait = check_ratelimit_wait()
+	if ratelimit_wait < 1
+		# If API key is absent or expired, renew it.
+		if (not localStorage.api_key_expiration) or (Date.now() > localStorage.api_key_expiration)
+			await renew_api_key()
+		mark_ratelimit()
+		fetch 'https://oauth.reddit.com' + path,
+			method: method
+			headers:
+				'Authorization': localStorage.api_key_type + ' ' + localStorage.api_key_value
+			body: body
+		.then (response) ->
+			response.json()
+		.finally () ->
+			# If API key is expiring soon, asynchronously renew it.
+			if Date.now() > (localStorage.api_key_expiration - 600000)
+				renew_api_key()
+	else
+		Promise.reject(new RateLimitError("Request would exceed Reddit API frequency limit. Wait #{ratelimit_wait // 1000} seconds."))
+
 window.Server =
 	get: ({ endpoint, options = {} }) ->
 		# Delete keys with empty values.
 		for name, value of options
 			if not value and value isnt 0 then delete options[name]
 		options.raw_json = 1
-		contact_api({
+		call_api({
 			method: 'GET',
 			path: endpoint + '?' + (new URLSearchParams(options)).toString()
 		})
@@ -89,11 +115,8 @@ window.Server =
 		# Delete keys with empty values.
 		for name, value of content
 			if not value and value isnt 0 then delete content[name]
-		contact_api({
+		call_api({
 			method: 'POST',
 			path: endpoint,
 			body: new URLSearchParams(content)
 		})
-
-
-window.Storage = window.localStorage

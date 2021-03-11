@@ -2,14 +2,11 @@ script.
 	import CommentSection from './CommentSection'
 	import Gallery from './Gallery'
 	import Link from './Link'
-	import ScoreBadge from './ScoreBadge'
-	import UserLabel from './UserLabel'
+	import Placard from './Placard'
 	export post = null
 
 header
-	.flex.items-center
-		ScoreBadge(relation={post.meta.author_relation} score={post.meta.score} hype={post.meta.hype} awards={post.meta.awards})
-		UserLabel(user={post.author})
+	Placard(user={post.author} relation={post.meta.author_relation} score={post.meta.score} hype={post.meta.hype} awards={post.meta.awards})
 .mb-12.break-words
 	{#if post.content.type === 'iframe'}
 		{@html post.content.data}

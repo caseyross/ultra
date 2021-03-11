@@ -1,4 +1,5 @@
 script.
+	export user = null
 	export relation = ''
 	export score = NaN
 	export hype = 0
@@ -13,33 +14,22 @@ script.
 			when relation is 'moderator'
 				'color: white; background: darkseagreen'
 			when relation is 'submitter'
-				'color: white; background: lightskyblue'
-			when score < 1
-				'color: white; background: black'
-			when hype > 3
-				'color: white; background: salmon'
-			when hype > 2.5
-				'color: white; background: lightsalmon'
-			###
-			when #sometimeschooseonevalueatrandom
-				'purple'
-			###
+				'color: white; background: cornflowerblue'
 			else
-				'color: black; background: lightgray'
+				'color: white; background: lightsteelblue'
 
-span.stats.inline-flex.items-baseline(title={hype})
+span.stats.inline-flex.items-baseline(style={style} title={hype})
 	{#if Number.isFinite(score)}
 		span.stat-value {score}
 	{:else}
-		span.stat-icon 🞄
+		span.stat-value ●
 	{#if award_spend > 0}
-		span.stat-icon ●
 		span.stat-value {award_spend}
+	span.stat-value {user.name}
 
 style.
 	.stats
-		border-radius 1ch
 		font-weight bold
-	.stat-value
-		padding 2px 4px
 		font-size 10px
+	.stat-value
+		padding 1px 4px
