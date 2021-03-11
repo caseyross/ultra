@@ -1,3 +1,4 @@
+import './global.styl'
 import './globals'
 import Root from './Root'
 
