@@ -7,7 +7,7 @@ script.
 	.py-5.px-3.text-gray-400 {comment.ids.length} more
 {:else}
 	article
-		.comment
+		.comment.p-4(data-menu='t1_{comment.id}')
 			Placard(user={comment.author} relation={comment.meta.author_relation} score={comment.meta.score} hype={comment.meta.hype} awards={comment.meta.awards})
 			.break-words
 				{@html comment.text.getHtmlFromMarkdown()}
@@ -17,6 +17,7 @@ script.
 
 style.
 	.comment
-		width 640px
+		display inline-block
+		max-width 640px
 	.replies
 		padding-left 5rem
