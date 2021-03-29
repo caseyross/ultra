@@ -1,7 +1,4 @@
-import './global.styl'
-import './globals'
-import Root from './Root'
-
-new Root({
-	target: document.getElementById('svelte-root')
-})
+import './common.styl'
+import './lib'
+import Root from './view/Root'
+new Root({ target: document.body })

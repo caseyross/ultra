@@ -1,0 +1,62 @@
+script.
+	export post = null
+	export selection = ''
+	import { LOAD } from '/src/effect'
+	import CommentsSection from './CommentsSection'
+	import ImageViewer from './ImageViewer'
+	import TitleFlair from './TitleFlair'
+
+a.p-4(id={post.id} href='#{post.id}')
+	LOAD(let:v p={post.INFO})
+		.flex
+			.text-gray-300 {v.engagement.score.display_value}
+			.text-gray-300 {v.author.name}
+		h3.title {v.title.text}
+		{#if v.title.flair}
+			span.mr-8
+				TitleFlair(flair={v.title.flair})
+{#if selection === post.id}
+	LOAD(let:v p={post.CONTENT})
+		.content.inline-block
+			{#if v.type === 'iframe'}
+				iframe(src={v.data.src} allowfullscreen allow={v.data.allow})
+			{:else if v.type === 'comment'}
+				CommentsSection(comments={v.data})
+			{:else if v.type === 'video'}
+				video(controls='true')
+					{#each v.data.tracks.video as representation}
+						source(src={representation.href} type={representation.mime_type})
+					a(href={v.url.href}) {v.url.href}
+				audio(controls='true')
+					{#each v.data.tracks.audio as representation}
+						source(src={representation.href} type={representation.mime_type})
+			{:else if v.type === 'image'}
+				ImageViewer(images={v.data})
+			{:else if v.type === 'text'}
+				article
+					{@html Markdown.to_HTML(v.data)}
+			{:else}
+				a(href={v.url.href}) {v.url.href}
+	LOAD(let:v p={post.COMMENTS})
+		.comments
+			CommentsSection(comments={v})
+
+style.
+	a
+		display flex
+		flex-flow column nowrap
+		justify-content flex-start
+		align-items center
+		width 640px
+		overflow-wrap anywhere
+	.content
+	.comments
+		position absolute
+		max-height 90vh
+		max-width 640px
+		overflow auto
+		padding 0.5vw
+	.content
+		right 1280px
+	.comments
+		left 1280px

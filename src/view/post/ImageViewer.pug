@@ -1,0 +1,19 @@
+script.
+	export images = []
+	design_width = 640
+	design_height = Infinity
+
+{#each images as image, i}
+	figure
+		img.border.border-black(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
+		{#if image.caption.text || image.caption.href}
+			figcaption
+				{#if image.caption.text}
+					| {image.caption.text}
+				{#if image.caption.href}
+					a(href={image.caption.href}) {image.caption.href}
+style.
+	img
+		box-sizing content-box
+		max-width 640px
+		cursor zoom-in

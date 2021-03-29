@@ -1,0 +1,23 @@
+script.
+	export comment = null
+	import { MoreComments } from '/src/model'
+
+{#if comment instanceof MoreComments}
+	p.p-4.text-gray-400 more ({comment.ids.length})
+{:else}
+	article(id='{comment.id}')
+		.comment.p-4
+			.flex
+				.text-gray-300 {comment.engagement.score.display_value}
+				.text-gray-300 {comment.author.name}
+			{@html Markdown.to_HTML(comment.text)}
+		.replies
+			{#each comment.replies as reply}
+				svelte:self(comment={reply})
+
+style.
+	.comment
+		width 640px
+		overflow-wrap anywhere
+	.replies
+		padding-left 20px

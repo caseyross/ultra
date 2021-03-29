@@ -1,7 +1,0 @@
-script.
-	export href = ''
-	export desc = ''
-	external = href.toLowerCase().startsWith('http')
-
-a(href={href} title={desc} target={external ? '_blank' : ''} rel={external ? 'noopener' : ''})
-	slot

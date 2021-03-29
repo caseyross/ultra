@@ -1,0 +1,87 @@
+iframe
+video
+	width 640px
+	height 360px
+menu
+	margin 0
+	padding 0
+
+.md
+	a
+		color cornflowerblue
+		text-decoration underline
+		&:visited
+			color lightsteelblue
+	b, strong
+		font-size 11px
+	blockquote
+		font-style italic
+	code
+		background gainsboro
+		padding 0 1rem
+		white-space pre-wrap
+	h1
+		font 18px/1 Consolas
+		margin 0 0 6px 0
+	h2, h3, h4, h5, h6
+		font 16px/1 Consolas
+		margin 0 0 6px 0
+	ol
+		list-style decimal
+		padding-left 4rem
+	p
+		margin 0 0 6px 0
+	table
+		font-size 9pt
+		overflow-wrap break-word
+		margin 0 0 6px 0
+	td, th
+		border 1px solid
+		padding 6px
+		vertical-align top
+	ul
+		list-style inherit
+		padding-left 4rem
+		margin 1ch 0
+.hide-scrollbar
+	scrollbar-width none
+.hide-scrollbar::-webkit-scrollbar
+	width 0
+.text-alpha
+	font-weight bold
+	text-transform uppercase
+*[data-menu]
+	position relative
+	&::after
+		content ''
+		position absolute
+		left 0
+		top 0
+		width 100%
+		height 100%
+		frame-color = darkkhaki
+		frame-length = 20px
+		background-image:
+			linear-gradient(to right, frame-color frame-length, transparent frame-length),
+			linear-gradient(to right, frame-color frame-length, transparent frame-length),
+			linear-gradient(to bottom, frame-color frame-length, transparent frame-length),
+			linear-gradient(to bottom, frame-color frame-length, transparent frame-length)
+		background-size:
+			100% 1px,
+			100% 1px,
+			1px 100%,
+			1px 100%
+		background-position:
+			-(frame-length / 2) 0%,
+			-(frame-length / 2) 100%,
+			0% (-(frame-length / 2)),
+			100% (-(frame-length / 2))
+		background-repeat:
+			repeat-x,
+			repeat-x,
+			repeat-y,
+			repeat-y
+		pointer-events none
+		opacity 0
+	&:hover::after
+		opacity 1
