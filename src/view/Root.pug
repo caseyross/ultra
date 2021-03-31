@@ -2,6 +2,7 @@ script.
 	import { LOAD } from '/src/effect'
 	import MouseMenu from './menu/MouseMenu'
 	import ListingPage from './page/ListingPage'
+	import WelcomePage from './page/WelcomePage'
 	pages = []
 	{ listing, sort, count, id } = PageState.from_url(location)
 	if id
@@ -14,6 +15,7 @@ script.
 		selection = location.hash[1..]
 
 main
+	WelcomePage
 	{#each pages as PAGE}
 		LOAD(let:v p={PAGE})
 			ListingPage(page={v} selection={selection})

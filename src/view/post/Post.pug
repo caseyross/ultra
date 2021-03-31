@@ -19,7 +19,7 @@ a.p-4(id={post.id} href='#{post.id}')
 	LOAD(let:v p={post.CONTENT})
 		.content.inline-block
 			{#if v.type === 'iframe'}
-				iframe(src={v.data.src} allowfullscreen allow={v.data.allow})
+				iframe(src={v.data.src} allowfullscreen='true' allow={v.data.allow})
 			{:else if v.type === 'comment'}
 				CommentsSection(comments={v.data})
 			{:else if v.type === 'video'}

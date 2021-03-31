@@ -23,5 +23,5 @@ window.PageState =
 			else null
 		sort = y
 		count = z
-		id = url.hash[1..]
+		id = if url.hash.length > 3 then url.hash[1..] else ''
 		{ listing, sort, count, id }

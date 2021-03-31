@@ -1,5 +1,16 @@
 # Docs: https://github.com/reddit-archive/reddit/wiki/OAuth2
 
+searchParams = new URLSearchParams location.search
+if searchParams.get('code')
+	localStorage.api_key_exchange_token = searchParams.get('code')
+	localStorage.api_key_expiration = 0
+else if searchParams.get('logout')
+	delete localStorage.api_key_refresh_token
+	localStorage.api_key_expiration = 0
+
+CLIENT_ID = '3-XWy138GarDUw'
+REDIRECT_URI = 'https://localhost:8080'
+RENEWAL_HEADSTART = 600000 # milliseconds
 RATELIMIT_WINDOW = 600000 # milliseconds
 RATELIMIT_QUOTA = 600 # requests
 
@@ -34,24 +45,43 @@ check_ratelimit_wait = () ->
 		0
 
 renew_api_key = () ->
+	exchange_token = localStorage.api_key_exchange_token
+	last_used_exchange_token = localStorage.api_key_last_used_exchange_token
+	refresh_token = localStorage.api_key_refresh_token
+	if exchange_token and not (exchange_token is last_used_exchange_token)
+		console.log exchange_token
+		body = new URLSearchParams
+			grant_type: 'authorization_code'
+			code: exchange_token
+			redirect_uri: REDIRECT_URI
+		localStorage.api_key_last_used_exchange_token = exchange_token
+		delete localStorage.api_key_exchange_token
+	else if refresh_token
+		body = new URLSearchParams
+			grant_type: 'refresh_token'
+			refresh_token: refresh_token
+	else
+		body = new URLSearchParams
+			grant_type: 'https://oauth.reddit.com/grants/installed_client'
+			device_id: 'DO_NOT_TRACK_THIS_DEVICE'
 	fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
 		headers:
-			'Authorization': 'Basic SjZVcUg0a1lRTkFFVWc6'
-		body: new URLSearchParams
-			grant_type: 'https://oauth.reddit.com/grants/installed_client'
-			device_id: 'DO_NOT_TRACK_THIS_DEVICE'
+			'Authorization': 'Basic ' + btoa(CLIENT_ID + ':')
+		body: body
 	.then (response) -> response.json()
 	.then (json) ->
-		localStorage.api_key_type = json.token_type
-		localStorage.api_key_value = json.access_token
-		localStorage.api_key_expiration = Date.now() + json.expires_in * 1000
+		localStorage.api_key_type = json.token_type or ''
+		localStorage.api_key_value = json.access_token or ''
+		localStorage.api_key_expiration = if json.expires_in then Date.now() + json.expires_in * 1000 else 0
+		localStorage.api_key_refresh_token = json.refresh_token or ''
 
 call_api = ({ method, path, body }) ->
 	ratelimit_wait = check_ratelimit_wait()
 	if ratelimit_wait < 1
 		# If API key is absent or expired, renew it.
-		if (not localStorage.api_key_expiration) or (Date.now() > localStorage.api_key_expiration)
+		expiration = Number localStorage.api_key_expiration
+		if (not expiration) or Date.now() > expiration
 			await renew_api_key()
 		mark_ratelimit()
 		fetch 'https://oauth.reddit.com' + path,
@@ -63,12 +93,14 @@ call_api = ({ method, path, body }) ->
 			response.json()
 		.finally () ->
 			# If API key is expiring soon, asynchronously renew it.
-			if Date.now() > (localStorage.api_key_expiration - 600000)
+			expiration = Number localStorage.api_key_expiration
+			if Date.now() > (expiration - RENEWAL_HEADSTART)
 				renew_api_key()
 	else
 		Promise.reject(new RateLimitError("Request would exceed Reddit API frequency limit. Wait #{ratelimit_wait // 1000} seconds."))
 
 window.API =
+	authorization_url: "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=account,creddits,edit,flair,history,identity,livemanage,modconfig,modcontributors,modflair,modlog,modmail,modothers,modposts,modself,modwiki,mysubreddits,privatemessages,read,report,save,structuredstyles,submit,subscribe,vote,wikiedit,wikiread&client_id=#{CLIENT_ID}&redirect_uri=#{REDIRECT_URI}&state=x"
 	get: (url, options = {}) ->
 		# Delete keys with empty values.
 		for name, value of options
