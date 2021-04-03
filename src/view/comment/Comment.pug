@@ -7,9 +7,7 @@ script.
 {:else}
 	article(id='{comment.id}')
 		.comment.p-4
-			.flex
-				.text-gray-300 {comment.engagement.score.display_value}
-				.text-gray-300 {comment.author.name}
+			a.avatar(href='u/{comment.author.name}') A
 			{@html Markdown.to_HTML(comment.text)}
 		.replies
 			{#each comment.replies as reply}
@@ -17,7 +15,19 @@ script.
 
 style.
 	.comment
+		display grid
+		grid-template-columns 16px 1fr
+		gap 2rem
 		width 640px
 		overflow-wrap anywhere
+	.avatar
+		background black
+		color white
+		width 16px
+		height 16px
+		border-radius 50%
+		display flex
+		justify-content center
+		align-items center
 	.replies
 		padding-left 20px

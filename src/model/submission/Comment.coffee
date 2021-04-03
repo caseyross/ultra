@@ -18,7 +18,10 @@ export default class Comment
 			controversiality: r.controversiality
 			score: new Score { value: r.score, hidden: r.score_hidden }
 		@id = 't1_' + r.id
-		@post_id = r.link_id
+		@post =
+			id: r.link_id
+			title: r.link_title
+			subreddit: new Subreddit { name: r.subreddit }
 		@replies = new ModeledArray(r.replies)
 		@tags =
 			archived: r.archived
@@ -30,4 +33,3 @@ export default class Comment
 			saved: r.saved
 		@text = r.body_html
 		@submit_date = new Date(r.created_utc * 1000)
-		@subreddit = new Subreddit { name: r.subreddit }

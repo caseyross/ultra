@@ -14,7 +14,7 @@ export default class Post
 				# If link is to another Reddit comment, fetch that comment.
 				url = new URL post_data.url
 				if url.host.endsWith('reddit.com')
-					[ _, _, _, post_number, _, comment_number ] = url.pathname.split('/')
+					[ _, _, _, _, post_number, _, comment_number ] = url.pathname.split('/')
 					if comment_number
 						API.get '/comments/' + post_number,
 							comment: comment_number
@@ -31,7 +31,7 @@ export default class Post
 				# If link is to another Reddit comment, fetch that comment.
 				url = new URL data.url
 				if url.host.endsWith('reddit.com')
-					[ _, _, _, post_number, _, comment_number ] = url.pathname.split('/')
+					[ _, _, _, _, post_number, _, comment_number ] = url.pathname.split('/')
 					if comment_number
 						API.get '/comments/' + post_number,
 							comment: comment_number

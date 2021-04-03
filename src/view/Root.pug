@@ -5,7 +5,7 @@ script.
 	import WelcomePage from './page/WelcomePage'
 	pages = []
 	{ listing, sort, count, id } = PageState.from_url(location)
-	if id
+	if false
 		selection = id
 		pages.push() # TODO: create page for single post load
 	else
@@ -14,7 +14,7 @@ script.
 	window.addEventListener 'hashchange', () ->
 		selection = location.hash[1..]
 
-main
+main.hide-scrollbar
 	WelcomePage
 	{#each pages as PAGE}
 		LOAD(let:v p={PAGE})
@@ -29,17 +29,13 @@ style.
 		width 100vw
 		height 100vh
 		overflow auto
-		display flex
-		flex-flow column nowrap
-		justify-content flex-start
-		align-items center
 		font 12px/1.5 'Iosevka Aile'
 		cursor default
 		--white white
 		--lightgray lightgray
 		--black black
 		&.theme-dark
-			--white #222
-			--black white
+			--white #494949
+			--black #e3e3e3
 		color var(--black)
-		background linear-gradient(to right, var(--white) 50%, var(--lightgray) 50%, var(--white) calc(50% + 1px))
+		background linear-gradient(to right, var(--white) 48%, var(--lightgray) 50%, var(--white) calc(50% + 1px))

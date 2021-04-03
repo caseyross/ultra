@@ -1,11 +1,11 @@
 script.
 	export images = []
-	design_width = 640
-	design_height = Infinity
+	design_width = 720
+	design_height = 720
 
 {#each images as image, i}
 	figure
-		img.border.border-black(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
+		img(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
 		{#if image.caption.text || image.caption.href}
 			figcaption
 				{#if image.caption.text}
@@ -15,5 +15,6 @@ script.
 style.
 	img
 		box-sizing content-box
-		max-width 640px
+		max-width 854px
+		max-height 854px
 		cursor zoom-in

@@ -1,15 +1,16 @@
 iframe
 video
-	width 640px
-	height 360px
+	width 854px
+	height 480px
 menu
 	margin 0
 	padding 0
 
 .md
 	a
-		color cornflowerblue
-		text-decoration underline
+		color steelblue
+		text-decoration none
+		border-bottom 2px solid lightsteelblue
 		&:visited
 			color lightsteelblue
 	b, strong
@@ -35,12 +36,16 @@ menu
 		font-size 9pt
 		overflow-wrap break-word
 		margin 0 0 6px 0
-	td, th
-		border 1px solid
-		padding 6px
+	td
+		padding 0 0.5em
 		vertical-align top
+	th
+		vertical-align bottom
+		padding 0 0.5em
+		background black
+		color white
 	ul
-		list-style inherit
+		list-style square
 		padding-left 4rem
 		margin 1ch 0
 .hide-scrollbar

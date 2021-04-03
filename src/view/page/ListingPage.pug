@@ -19,12 +19,13 @@ script.
 ol.list-none
 	{#each page.submissions as submission}
 		li
-			{#if submission instanceof _Post}
-				Post(post={submission} selection={selection})
-			{:else if submission instanceof _Comment}
-				Comment(comment={submission})
-			{:else if submission instanceof _Message}
-				p MESSAGE
-			{:else}
-				.error-tag UNKNOWN ITEM
-				.error-message {String(submission)}
+			a(href='#{submission.id}')
+				{#if submission instanceof _Post}
+					Post(post={submission} selected={selection === submission.id})
+				{:else if submission instanceof _Comment}
+					Comment(comment={submission})
+				{:else if submission instanceof _Message}
+					p MESSAGE
+				{:else}
+					.error-tag UNKNOWN ITEM
+					.error-message {String(submission)}
