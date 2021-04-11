@@ -5,7 +5,7 @@ export default class Home extends Listing
 		super()
 		@id = 'home'
 		@href = '/'
-		@display_name = 'your frontpage'
+		@display_name = 'Frontpage'
 		@page_config = (sort = 'best') -> switch sort
 			when 'hour', 'day', 'week', 'month', 'year', 'all'
 				url: '/top'

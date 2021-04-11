@@ -1,0 +1,37 @@
+script.
+	export submission = null
+	export selected = false
+	import {
+		Comment as _Comment,
+		Message as _Message,
+		Post as _Post
+	} from '/src/model'
+	import Comment from '../comment/Comment'
+	import PostBody from '../post/PostBody'
+	import PostHeadline from '../post/PostHeadline'
+
+{#if submission instanceof _Post}
+	PostHeadline(post={submission})
+{:else if submission instanceof _Comment}
+	Comment(comment={submission})
+{:else if submission instanceof _Message}
+	p Message
+{#if selected}
+	.detail-pane.hide-scrollbar
+		{#if submission instanceof _Post}
+			PostBody(post={submission})
+		{:else if submission instanceof _Comment}
+			p Comment
+		{:else if submission instanceof _Message}
+			p Message
+
+style.
+	.detail-pane
+		position fixed
+		top 0
+		right 0
+		width 50%
+		height 100%
+		overflow auto
+		padding 3%
+		background var(--white)

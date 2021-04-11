@@ -5,5 +5,5 @@ script.
 {#if comments.length === 0}
 	span [No comments.]
 {:else}
-	{#each comments as top_level_comment}
-		Comment(comment={top_level_comment})
+	{#each comments as comment}
+		Comment(comment={comment} top_level={true})

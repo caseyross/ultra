@@ -1,0 +1,15 @@
+script.
+	export post = null
+	export selected = false
+	import { LOAD } from '/src/effect'
+
+LOAD(let:v p={post.INFO})
+	a.headline(href='#{post.id}')
+		h2.title {v.title.text}
+
+style.
+	.title
+		overflow-wrap anywhere
+		font-size 18px
+		line-height 1
+		letter-spacing -0.05em

@@ -1,5 +1,6 @@
 script.
 	export comment = null
+	export top_level = false
 	import { MoreComments } from '/src/model'
 
 {#if comment instanceof MoreComments}
@@ -21,7 +22,7 @@ style.
 		width 640px
 		overflow-wrap anywhere
 	.avatar
-		background black
+		background var(--black)
 		color white
 		width 16px
 		height 16px

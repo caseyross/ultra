@@ -7,43 +7,45 @@ menu
 	padding 0
 
 .md
+	* + p
+		margin-top 1em
 	a
 		color steelblue
 		text-decoration none
 		border-bottom 2px solid lightsteelblue
 		&:visited
 			color lightsteelblue
-	b, strong
-		font-size 11px
 	blockquote
 		font-style italic
 	code
-		background gainsboro
-		padding 0 1rem
-		white-space pre-wrap
+		font-weight bold
+		color red
 	h1
-		font 18px/1 Consolas
-		margin 0 0 6px 0
+		font-size 1.4em
 	h2, h3, h4, h5, h6
-		font 16px/1 Consolas
-		margin 0 0 6px 0
+		font-size 1.2em
 	ol
 		list-style decimal
 		padding-left 4rem
-	p
-		margin 0 0 6px 0
+	pre
+		display inline-block
+		white-space pre
+		padding 1ch
+		border 1px dashed red
+		overflow auto
 	table
-		font-size 9pt
+		font 12px/1.5 monospace
 		overflow-wrap break-word
 		margin 0 0 6px 0
+		border 1px solid
+	td, th
+		padding 0 1ch
 	td
-		padding 0 0.5em
 		vertical-align top
 	th
 		vertical-align bottom
-		padding 0 0.5em
-		background black
-		color white
+		font-weight normal
+		background gainsboro
 	ul
 		list-style square
 		padding-left 4rem

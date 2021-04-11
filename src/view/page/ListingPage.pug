@@ -1,31 +1,31 @@
 script.
 	export page = null
 	export selection = ''
-	import { LOAD } from '/src/effect'
-	import {
-		Comment as _Comment,
-		Message as _Message
-		Post as _Post,
-		Subreddit,
-		User
-	} from '/src/model/'
-	import Comment from '../comment/Comment'
-	import Post from '../post/Post'
+	import ListingItem from './ListingItem.pug'
+	$: ordinal = (submission) -> page.submissions.indexOf(submission) + 1
 
-.h-96.flex.justify-between.items-center.px-16
-	h1.text-alpha {page.listing.display_name}
-	LOAD(let:v p={page.listing.PROFILE})
-		img.w-32(src={v ? v.images.icon : ''} alt='')
 ol.list-none
 	{#each page.submissions as submission}
 		li
-			a(href='#{submission.id}')
-				{#if submission instanceof _Post}
-					Post(post={submission} selected={selection === submission.id})
-				{:else if submission instanceof _Comment}
-					Comment(comment={submission})
-				{:else if submission instanceof _Message}
-					p MESSAGE
-				{:else}
-					.error-tag UNKNOWN ITEM
-					.error-message {String(submission)}
+			.ordinal {ordinal(submission)}
+			ListingItem(submission={submission} selected={selection === submission.id})
+			.arrow ►
+
+style.
+	li
+		display grid
+		grid-template-columns 10rem 1fr 10rem
+	.ordinal
+		width 8rem
+		height 8rem
+		background var(--black)
+		color white
+		border-radius 50%
+		display flex
+		justify-content center
+		align-items center
+		font-size 16px
+	.arrow
+		opacity 0
+		.selected &
+			opacity 1

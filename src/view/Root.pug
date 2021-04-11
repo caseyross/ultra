@@ -15,10 +15,22 @@ script.
 		selection = location.hash[1..]
 
 main.hide-scrollbar
-	WelcomePage
-	{#each pages as PAGE}
-		LOAD(let:v p={PAGE})
-			ListingPage(page={v} selection={selection})
+	nav
+		section
+			h6 Subscriptions
+			ul
+				{#each ['r/analog', 'r/genshin_impact', 'r/popular'] as subscription}
+					li.subscription-item
+						a(href='/{subscription}') {subscription}
+			h6 
+		.current-listing.h-64.flex.items-center.px-16
+			LOAD(let:v p={listing.PROFILE})
+				img(src={v ? v.images.icon : ''} alt='')
+			h1 {listing.display_name}
+	section
+		{#each pages as PAGE}
+			LOAD(let:v p={PAGE})
+				ListingPage(page={v} selection={selection})
 	MouseMenu
 
 style.
@@ -28,14 +40,32 @@ style.
 		left 0
 		width 100vw
 		height 100vh
-		overflow auto
-		font 12px/1.5 'Iosevka Aile'
+		display grid
+		grid-template-columns 1fr 2fr 3fr
+		grid-template-rows 100%
+		font 400 12px/1.5 'Iosevka Aile'
 		cursor default
 		--white white
 		--lightgray lightgray
 		--black black
+		--orangered orangered
 		&.theme-dark
-			--white #494949
+			--white rgb(29 32 38)
 			--black #e3e3e3
 		color var(--black)
 		background linear-gradient(to right, var(--white) 48%, var(--lightgray) 50%, var(--white) calc(50% + 1px))
+	nav
+		display grid
+		grid-template-columns 1fr 64px
+	.current-listing
+		transform-origin top left
+		transform rotate(90deg) translate(0px, -64px)
+	h1
+		font-size 50px
+		font-weight 700
+		letter-spacing -0.1em
+		text-transform lowercase
+	.subscription-item
+		padding 1ch
+		background black
+		color white
