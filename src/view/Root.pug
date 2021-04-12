@@ -23,7 +23,7 @@ main.hide-scrollbar
 					li.subscription-item
 						a(href='/{subscription}') {subscription}
 			h6 
-		.current-listing.h-64.flex.items-center.px-16
+		.current-listing
 			LOAD(let:v p={listing.PROFILE})
 				img(src={v ? v.images.icon : ''} alt='')
 			h1 {listing.display_name}
@@ -43,8 +43,9 @@ style.
 		display grid
 		grid-template-columns 1fr 2fr 3fr
 		grid-template-rows 100%
-		font 400 12px/1.5 'Iosevka Aile'
-		cursor default
+		font 400 12px/16px 'Iosevka Aile'
+		-webkit-font-smoothing antialiased
+		-moz-osx-font-smoothing grayscale
 		--white white
 		--lightgray lightgray
 		--black black
@@ -58,13 +59,19 @@ style.
 		display grid
 		grid-template-columns 1fr 64px
 	.current-listing
+		height 64px
+		display flex
+		align-items center
+		padding 0 16px
 		transform-origin top left
 		transform rotate(90deg) translate(0px, -64px)
+		& img
+			max-height 32px
 	h1
-		font-size 50px
-		font-weight 700
-		letter-spacing -0.1em
-		text-transform lowercase
+		font-family monospace
+		font-size 60px
+		font-weight normal
+		text-transform uppercase
 	.subscription-item
 		padding 1ch
 		background black

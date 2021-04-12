@@ -6,7 +6,7 @@ script.
 	import TitleFlair from './TitleFlair'
 
 LOAD(let:v p={post.CONTENT})
-	.content.inline-block
+	.content
 		{#if v.type === 'iframe'}
 			iframe(src={v.data.src} allowfullscreen='true' allow={v.data.allow})
 		{:else if v.type === 'comment'}

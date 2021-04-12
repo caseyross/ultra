@@ -23,6 +23,7 @@ export default class Post
 				# Else...
 				return PostContent(data)
 			@COMMENTS = new LazyPromise => fetch_post.then ([ post_data, comments_data ]) -> new PostComments(post_data)
+			@official_url = ''
 		else if data
 			# Have the post data, just not the comments.
 			@id = 't3_' + data.id
@@ -45,6 +46,7 @@ export default class Post
 				else
 					API.get('/comments/' + data.id, { sort: data.suggested_sort or 'confidence' })
 					.then ([ post_data, comments_data ]) ->	new PostComments(comments_data)
+			@official_url = data.url
 		else
 			throw new Error()
 
@@ -97,7 +99,7 @@ class PostContent
 				@data =	[ new Image(r.preview.images[0]) ]
 			when r.is_self
 				@type = 'text'
-				@data = r.selftext_html ? ''
+				@data = r.selftext ? ''
 			else
 				switch r.domain
 					when 'i.redd.it'

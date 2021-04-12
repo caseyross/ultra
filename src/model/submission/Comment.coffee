@@ -31,5 +31,5 @@ export default class Comment
 			quarantined: r.quarantine
 			removed: r.body is '[removed]'
 			saved: r.saved
-		@text = r.body_html
+		@text = r.body
 		@submit_date = new Date(r.created_utc * 1000)

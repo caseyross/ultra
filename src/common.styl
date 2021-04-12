@@ -1,14 +1,20 @@
+*
+	box-sizing border-box
+a
+	text-decoration none
+	color inherit
+h1, h2, h3, h4, h5, h6,
+figure,
+menu,
+ol, ul
+	margin 0
+	padding 0
 iframe
 video
 	width 854px
 	height 480px
-menu
-	margin 0
-	padding 0
-
 .md
-	* + p
-		margin-top 1em
+	white-space pre-wrap
 	a
 		color steelblue
 		text-decoration none
@@ -57,38 +63,3 @@ menu
 .text-alpha
 	font-weight bold
 	text-transform uppercase
-*[data-menu]
-	position relative
-	&::after
-		content ''
-		position absolute
-		left 0
-		top 0
-		width 100%
-		height 100%
-		frame-color = darkkhaki
-		frame-length = 20px
-		background-image:
-			linear-gradient(to right, frame-color frame-length, transparent frame-length),
-			linear-gradient(to right, frame-color frame-length, transparent frame-length),
-			linear-gradient(to bottom, frame-color frame-length, transparent frame-length),
-			linear-gradient(to bottom, frame-color frame-length, transparent frame-length)
-		background-size:
-			100% 1px,
-			100% 1px,
-			1px 100%,
-			1px 100%
-		background-position:
-			-(frame-length / 2) 0%,
-			-(frame-length / 2) 100%,
-			0% (-(frame-length / 2)),
-			100% (-(frame-length / 2))
-		background-repeat:
-			repeat-x,
-			repeat-x,
-			repeat-y,
-			repeat-y
-		pointer-events none
-		opacity 0
-	&:hover::after
-		opacity 1

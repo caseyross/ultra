@@ -1,18 +1,17 @@
 script.
 	export comment = null
-	export top_level = false
+	export depth = 0
 	import { MoreComments } from '/src/model'
 
 {#if comment instanceof MoreComments}
-	p.p-4.text-gray-400 more ({comment.ids.length})
+	button(style='margin-left: {depth * 20}px') more ({comment.ids.length})
 {:else}
-	article(id='{comment.id}')
-		.comment.p-4
-			a.avatar(href='u/{comment.author.name}') A
-			{@html Markdown.to_HTML(comment.text)}
-		.replies
-			{#each comment.replies as reply}
-				svelte:self(comment={reply})
+	.comment(style='margin-left: {depth * 20}px')
+		.meta
+			a.avatar(href='/u/{comment.author.name}') A
+		{@html Markdown.to_HTML(comment.text)}
+	{#each comment.replies as reply}
+		svelte:self(comment={reply} depth={depth + 1})
 
 style.
 	.comment
@@ -21,12 +20,16 @@ style.
 		gap 2rem
 		width 640px
 		overflow-wrap anywhere
+		margin-top 3rem
+	.meta
+		height 100%
+		background repeating-linear-gradient(to bottom, white 4px, black 4px, white 5px, white 8px)
 	.avatar
-		background var(--black)
-		color white
-		width 16px
-		height 16px
-		border-radius 50%
+		background var(--white)
+		color var(--black)
+		border 1px solid
+		width 17px
+		height 17px
 		display flex
 		justify-content center
 		align-items center

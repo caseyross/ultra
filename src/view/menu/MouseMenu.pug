@@ -65,6 +65,7 @@ script.
 						visible = true
 						break
 	DEADZONE_RADIUS_PX = 24
+	### TODO: calculating on mousemove is a performance issue, change to only mousedown
 	document.addEventListener 'mousemove',
 		(e) ->
 			if visible
@@ -83,6 +84,7 @@ script.
 							'top'
 					else
 						''
+	###
 	document.addEventListener 'mouseup',
 		(e) ->
 			if visible

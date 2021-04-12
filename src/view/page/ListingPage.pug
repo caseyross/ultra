@@ -4,23 +4,20 @@ script.
 	import ListingItem from './ListingItem.pug'
 	$: ordinal = (submission) -> page.submissions.indexOf(submission) + 1
 
-ol.list-none
+table
 	{#each page.submissions as submission}
-		li
-			.ordinal {ordinal(submission)}
-			ListingItem(submission={submission} selected={selection === submission.id})
-			.arrow ►
+		tr
+			td.ordinal {ordinal(submission)}
+			td
+				ListingItem(submission={submission} selected={selection === submission.id})
+			td.arrow ►
 
 style.
-	li
-		display grid
-		grid-template-columns 10rem 1fr 10rem
 	.ordinal
 		width 8rem
 		height 8rem
 		background var(--black)
-		color white
-		border-radius 50%
+		color var(--white)
 		display flex
 		justify-content center
 		align-items center
