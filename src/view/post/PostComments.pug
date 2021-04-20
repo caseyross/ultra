@@ -1,0 +1,16 @@
+script.
+	export COMMENTS = new LazyPromise -> Promise.resolve null
+	import { AWAIT } from '/src/effect'
+	import CommentTree from '../comment/CommentTree'
+
+.comments
+	AWAIT(let:v p={COMMENTS})
+		{#if v.length === 0}
+			span [No comments.]
+		{:else}
+			{#each v as data}
+				CommentTree(data={data} depth={0})
+
+style.
+	.comments
+		padding 1em 0

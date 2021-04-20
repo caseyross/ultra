@@ -101,21 +101,21 @@ call_api = ({ method, path, body }) ->
 
 window.API =
 	authorization_url: "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=account,creddits,edit,flair,history,identity,livemanage,modconfig,modcontributors,modflair,modlog,modmail,modothers,modposts,modself,modwiki,mysubreddits,privatemessages,read,report,save,structuredstyles,submit,subscribe,vote,wikiedit,wikiread&client_id=#{CLIENT_ID}&redirect_uri=#{REDIRECT_URI}&state=x"
-	get: (url, options = {}) ->
+	get: (endpoint, options = {}) ->
 		# Delete keys with empty values.
 		for name, value of options
 			if not value and value isnt 0 then delete options[name]
 		options.raw_json = 1
 		call_api({
 			method: 'GET',
-			path: url + '?' + (new URLSearchParams(options)).toString()
+			path: '/' + endpoint + '?' + (new URLSearchParams(options)).toString()
 		})
-	post: (url, content = {}) ->
+	post: (endpoint, content = {}) ->
 		# Delete keys with empty values.
 		for name, value of content
 			if not value and value isnt 0 then delete content[name]
 		call_api({
 			method: 'POST',
-			path: url,
+			path: '/' + endpoint,
 			body: new URLSearchParams(content)
 		})

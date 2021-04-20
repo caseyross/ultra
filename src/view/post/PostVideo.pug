@@ -1,0 +1,9 @@
+script.
+	export data = null
+
+video(controls='true')
+	{#each data.tracks.video as representation}
+		source(src={representation.href} type={representation.mime_type})
+audio(controls='true')
+	{#each data.tracks.audio as representation}
+		source(src={representation.href} type={representation.mime_type})

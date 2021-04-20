@@ -1,1 +1,1 @@
-export { default as LOAD } from './LOAD.pug'
+export { default as AWAIT } from './AWAIT.pug'

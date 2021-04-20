@@ -1,0 +1,21 @@
+script.
+	export item = null
+	import CommentSnapshot from '/src/model/thing/CommentSnapshot'
+	import PostSnapshot from '/src/model/thing/PostSnapshot'
+	import CommentTree from '../comment/CommentTree'
+	import PostComments from '../post/PostComments'
+	import PostContent from '../post/PostContent'
+
+.detail-pane
+	{#if item instanceof PostSnapshot}
+		PostContent(content={item.content})
+		PostComments(COMMENTS={item.REPLIES})
+	{:else if item instanceof CommentSnapshot}
+		CommentTree(comment={item})
+
+style.
+	.detail-pane
+		width 100%
+		height 100%
+		overflow auto
+		padding 5%

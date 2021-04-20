@@ -1,0 +1,36 @@
+script.
+	export data = null
+	export depth = 0
+	import CommentSnapshot from '/src/model/thing/CommentSnapshot'
+	import MoreCommentsReference from '/src/model/thing/MoreCommentsReference'
+
+{#if data instanceof CommentSnapshot}
+	.comment(style='margin-left: {depth * 20}px')
+		.meta
+			a.avatar(href='/u/{data.author.name}') {data.author.name[0]}
+		{@html Markdown.to_HTML(data.content)}
+	{#each data.replies as reply}
+		svelte:self(data={reply} depth={depth + 1})
+{:else if data instanceof MoreCommentsReference}
+	button(style='margin-left: {depth * 20}px') {data.ids.length} more...
+
+style.
+	.comment
+		display grid
+		grid-template-columns 16px 1fr
+		gap 2rem
+		width 640px
+		overflow-wrap anywhere
+		margin-top 3rem
+	.meta
+		height 100%
+		background repeating-linear-gradient(to bottom, white 4px, #888 4px, white 5px, white 8px)
+	.avatar
+		background var(--white)
+		color var(--black)
+		border 1px solid
+		width 17px
+		height 17px
+		display flex
+		justify-content center
+		align-items center

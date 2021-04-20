@@ -1,0 +1,19 @@
+script.
+	export image = []
+	design_width = 720
+	design_height = 720
+
+figure
+	img(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
+	{#if image.caption.text || image.caption.href}
+		figcaption
+			{#if image.caption.text}
+				| {image.caption.text}
+			{#if image.caption.href}
+				a(href={image.caption.href}) {image.caption.href}
+
+style.
+	img
+		max-width 854px
+		max-height 854px
+		cursor zoom-in

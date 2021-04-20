@@ -1,9 +1,0 @@
-script.
-	export comments = []
-	import Comment from '../comment/Comment'
-
-{#if comments.length === 0}
-	span [No comments.]
-{:else}
-	{#each comments as comment}
-		Comment(comment={comment} depth={0})

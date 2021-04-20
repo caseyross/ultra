@@ -1,0 +1,34 @@
+script.
+	export items = []
+	export selection_id = ''
+	import CommentSnapshot from '/src/model/thing/CommentSnapshot'
+	import PostSnapshot from '/src/model/thing/PostSnapshot'
+	import CommentTree from '../comment/CommentTree'
+	import PostTitle from '../post/PostTitle'
+	$: ordinal = (item) -> items.indexOf(item) + 1
+
+table
+	{#each items as item}
+		tr(class:selected={selection_id === item.id})
+			td.arrow ►
+			td
+				{#if item instanceof PostSnapshot}
+					PostTitle(post={item})
+				{:else if item instanceof CommentSnapshot}
+					CommentTree(comment={item})
+			td.ordinal {ordinal(item)}
+
+style.
+	table
+		width 100%
+		height 100%
+		overflow auto
+	.ordinal
+		width 8rem
+		height 8rem
+		background var(--black)
+		color var(--white)
+		display flex
+		justify-content center
+		align-items center
+		font-size 16px

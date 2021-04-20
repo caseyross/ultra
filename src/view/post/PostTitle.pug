@@ -1,0 +1,14 @@
+script.
+	export post = null
+
+a(href='#{post.id}' on:auxclick={() => window.open(post.permalink)})
+	h2.title {post.content.title}
+
+style.
+	.title
+		overflow-wrap anywhere
+		font-size 16px
+		font-weight normal
+		line-height 1
+		letter-spacing -0.1em
+		text-align right

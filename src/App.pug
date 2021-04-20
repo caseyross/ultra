@@ -1,0 +1,17 @@
+script.
+	import AccountState from '/src/model/state/AccountState'
+	import FeedState from '/src/model/state/FeedState'
+	import Feed from '/src/view/feed/Feed'
+	import MouseMenu from '/src/view/menu/MouseMenu'
+	account = new AccountState()
+	feed = new FeedState()
+	document.addEventListener 'mousedown', (e) ->
+		if e.buttons is 1 and e.target.href
+			e.preventDefault()
+			history.pushState(null, '', e.target.href)
+			feed = new FeedState()
+	window.addEventListener 'hashchange', ->
+		feed.selection_id = location.hash[1..]
+
+Feed(feed={feed})
+MouseMenu
