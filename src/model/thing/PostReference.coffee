@@ -6,8 +6,9 @@ export default class PostReference
 		@id = id
 		@DATA = new LazyPromise ->
 			API.get('comments/' + id)
-			.then ([ post_data, comments_data ]) ->
-				new PostSnapshot({
-					...post_data,
-					replies: new ThingList(comments_data)
-				})
+			.then ([ posts, comments ]) ->
+				{
+					...(new ThingList(posts))[0],
+					REPLIES: new LazyPromise ->
+						Promise.resolve new ThingList(comments)
+				}

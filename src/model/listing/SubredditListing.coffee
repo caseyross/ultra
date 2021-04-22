@@ -6,6 +6,7 @@ export default class SubredditListing extends Listing
 		@href = '/' + name
 		@name = 'r/' + name
 		@display_name = name
+		@is_pure = true
 		@page_config = (sort = 'hot') -> switch sort
 			when 'hour', 'day', 'week', 'month', 'year', 'all'
 				endpoint: 'r/' + name + '/top'

@@ -9,22 +9,27 @@ import UserReference from './UserReference'
 
 export default class PostSnapshot
 	constructor: (r) ->
-		@activity =
-			awards: [] # TODO
-			crossposts: r.crosspost_parent_list
-			liked: r.likes
-			saved: r.saved
-			score: new Score { value: r.score, hidden: r.hide_score }
+		# BASIC DATA
 		@author = new UserReference r.author
+		@created_at = new Date(r.created_utc * 1000)
 		@content = content(r)
-		@date =
-			create: new Date(r.created_utc * 1000)
-			edit: new Date(r.edited * 1000)
-		@distinguish = r.distinguished or 'poster'
-		@flair =
-			author: new Flair { text: r.author_flair_text, color: r.author_flair_background_color }
-			title: new Flair { text: r.link_flair_text, color: r.link_flair_background_color }
+		@distinguish = r.distinguished or 'original-poster'
+		@edited_at = new Date(r.edited * 1000)
+		@flairs =
+			author: new Flair
+				text: r.author_flair_text
+				color: r.author_flair_background_color
+			title: new Flair
+				text: r.link_flair_text
+				color: r.link_flair_background_color
 		@id = r.id
+		@permalink = r.permalink
+		@subreddit = new SubredditReference r.subreddit
+		# ACTIVITY
+		@awards = [] # TODO
+		@crossposts = r.crosspost_parent_list
+		@score = new Score { value: r.score, hidden: r.hide_score }
+		# COMMENTS
 		@REPLIES =
 			if r.replies?.length
 				new LazyPromise -> Promise.resolve r.replies
@@ -36,22 +41,23 @@ export default class PostSnapshot
 						sort: r.suggested_sort
 					.then ([ post_data, comments_data ]) ->
 						new ThingList comments_data
-		@permalink = r.permalink
-		@state =
-			archived: r.archived
-			contest: r.contest_mode
-			edited: r.edited
-			hidden: r.hidden
-			locked: r.locked
-			nsfw: r.over_18
-			oc: r.is_original_content
-			quarantined: r.quarantine
-			spoiler: r.spoiler
-			sticky: r.stickied or r.pinned
-		@subreddit = new SubredditReference r.subreddit
+		# STATES
+		@archived = r.archived
+		@contest = r.contest_mode
+		@edited = r.edited
+		@hid = r.hidden
+		@liked = r.likes
+		@locked = r.locked
+		@nsfw = r.over_18
+		@oc = r.is_original_content
+		@pinned = r.pinned
+		@quarantined = r.quarantine
+		@saved = r.saved
+		@spoiler = r.spoiler
+		@stickied = r.stickied
 
 content = (r) ->
-	url = new URL(if r.url.startsWith 'http' then r.url else 'https://reddit.com' + r.url)
+	url = new URL(if r.url.startsWith 'http' then r.url else 'https://www.reddit.com' + r.url)
 	title = r.title
 	type = 'link'
 	data = r.url
@@ -102,14 +108,19 @@ content = (r) ->
 					src: "https://www.youtube-nocookie.com/embed/#{url.pathname.split('/')[1]}"
 					allow: 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
 			when 'reddit.com', 'np.reddit.com', 'old.reddit.com', 'new.reddit.com'
-				[ _, _, _, _, _, post_id, _, comment_id ] = url.pathname.split('/')
+				[ _, _, _, _, post_id, _, comment_id ] = url.pathname.split('/')
 				if comment_id
 					type = 'comment'
 					DATA = new LazyPromise ->
 						API.get 'comments/' + post_id,
 							comment: comment_id
 							context: 3
-						.then ([ post_data, comments_data ]) -> new PostSnapshot({ ...post_data, replies: new ThingList(comments_data) })
+						.then ([ posts, comments ]) ->
+							{
+								...(new ThingList(posts))[0],
+								REPLIES: new LazyPromise ->
+									Promise.resolve new ThingList(comments)
+							}
 	return {
 		title,
 		type,

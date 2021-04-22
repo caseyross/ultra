@@ -5,6 +5,7 @@ export default class Listing
 		@href = ''
 		@name = ''
 		@display_name = ''
+		@is_pure = false
 		@page_config = ->
 			endpoint: ''
 			options: {}
