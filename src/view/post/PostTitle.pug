@@ -1,12 +1,10 @@
 script.
 	export post = null
 
-a(href='#{post.id}' on:auxclick={() => window.open(post.permalink)})
-	h2.title {post.content.title}
+.title {post.content.title}
 
 style.
 	.title
-		font-size 14px
-		font-weight normal
+		font-size 16px
 		line-height 1
 		overflow-wrap anywhere

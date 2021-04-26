@@ -1,7 +1,7 @@
 script.
 	export image = []
-	design_width = 720
-	design_height = 720
+	design_width = 854
+	design_height = 854
 
 figure
 	img(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})

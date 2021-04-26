@@ -7,17 +7,46 @@ script.
 svelte:head
 	title {feed.listing.display_name}
 main
+	.this-feed
+		.frontpage-feed
+			{#if feed.thing}
+				AWAIT(let:v p={feed.thing.INFO})
+					img(src={v.icon.best_fit(64, 64).href} alt='')
+			{:else}
+				| X
 	nav
-	.name
-		h1 {feed.listing.display_name}
-		h1 1
+		.core-feeds
+			.other-feeds-set-selector ▼ Defaults
+			{#each [1,2,3,4,5] as value}
+				.other-feed {value}
+		.other-feeds
+			.other-feeds-set-selector ▲ Account
+			{#each [1,2,3,4,5] as value}
+				.other-feed {value}
+			.vitals
+				label.quota-monitor
+					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+				label.server-monitor
+					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+				label.downlink-monitor
+					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+	.feed-information.hide-scrollbar
+		.feed-name-and-icon
+			.other-feed Y
+			h1 {feed.listing.display_name}
+		{#if feed.thing}
+			AWAIT(let:v p={feed.thing.INFO})
+				p {v.tagline}
+				.feed-sidebar {@html Markdown.to_HTML(v.sidebar)}
 	AWAIT(let:v p={feed.PAGE})
-		.feed-items
+		.feed-items.hide-scrollbar
 			{#if feed.listing.is_pure}
-				FeedItemList(items={v.things.filter(t => t.stickied)} selection_id={feed.selection_id})
+				{#if v.things.some(t => t.stickied)}
+					FeedItemList(items={v.things.filter(t => t.stickied)} selection_id={feed.selection_id} format='sticky')
 				FeedItemList(items={v.things.filter(t => !t.stickied)} selection_id={feed.selection_id})
 			{:else}
-				FeedItemList(items={v.things.filter(t => t.pinned)} selection_id={feed.selection_id})
+				{#if v.things.some(t => t.pinned)}
+					FeedItemList(items={v.things.filter(t => t.pinned)} selection_id={feed.selection_id} format='sticky')
 				FeedItemList(items={v.things.filter(t => !t.pinned)} selection_id={feed.selection_id})
 		{#key feed.selection_id}
 			FeedItemDetail(item={v.things.find(x => x.id === feed.selection_id)})
@@ -27,8 +56,10 @@ style.
 		height 100%
 		width 100%
 		display grid
-		grid-template-columns 4fr 1fr 7fr 12fr
-		grid-template-rows 100%
+		grid-template-columns 27rem 1fr
+		grid-template-rows 20rem 1fr
+		grid-template-areas 'top-left far-top' 'far-left body'
+		gap 0 8rem
 		font 400 12px/16px 'Iosevka Aile'
 		-webkit-font-smoothing antialiased
 		-moz-osx-font-smoothing grayscale
@@ -40,19 +71,70 @@ style.
 			--white rgb(29 32 38)
 			--black #e3e3e3
 		color var(--black)
-	.name
+	.this-feed
+		grid-area top-left
+	nav
+		grid-area far-left
+		height 100%
 		display flex
 		flex-flow column nowrap
+	.core-feeds
+		flex 1
+		display flex
+		flex-flow column nowrap
+	.frontpage-feed
+		height 66px
+		width 66px
+		display flex
+		justify-content center
+		align-items center	
+		margin 4px	
+		border-radius 50%
+		border 1px solid
+		& img
+			height 64px
+			width 64px
+			clip-path circle(50%)
+	.other-feeds
+		flex 1
+		display flex
+		flex-flow column-reverse wrap
+	.other-feeds-set-selector
+		padding 4px 14px
+	.other-feed
+		height 32px
+		width 32px
+		display flex
+		justify-content center
 		align-items center
-		justify-content space-between
-	h1
-		width 1ch
-		font-size 60px
-		font-weight normal
-		line-height 1em
-		text-transform uppercase
-		word-break break-all
+		border 1px solid
+		border-radius 50%
+		margin 4px
+	.vitals
+		display flex
+		flex-flow column nowrap
+		& label
+			margin 4px
+		& meter
+			appearance none
+			width 3rem
+			border 1px solid
+			background darkseagreen
+	.quota-monitor meter
+		height 18rem
+	.feed-information
+		display none
+		height 100%
+		width 100%
+		overflow auto
+		padding-left 4rem
+	.feed-sidebar
+		color gray
 	.feed-items
+		grid-area far-top
 		width 100%
 		height 100%
-		overflow auto
+		overflow-x auto
+		overflow-y hidden
+		display flex
+		padding-top 5rem

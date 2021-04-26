@@ -2,8 +2,8 @@ script.
 	export p = null
 
 {#await p.run()}
-	.h-full.bg-yellow-400.text-white LOADING
+	span [Loading]
 {:then v}
 	slot(v={v})
 {:catch e}
-	.h-full.bg-red-400.text-white {e}
+	.error-tag(title={e}) [Error!]

@@ -1,22 +1,39 @@
 script.
 	export items = []
 	export selection_id = ''
+	export format = ''
 	import CommentSnapshot from '/src/model/thing/CommentSnapshot'
 	import PostSnapshot from '/src/model/thing/PostSnapshot'
 	import CommentTree from '../comment/CommentTree'
 	import PostTitle from '../post/PostTitle'
 
-ol
+ol(class={format})
 	{#each items as item}
 		li(class:selected={selection_id === item.id})
-			{#if item instanceof PostSnapshot}
-				PostTitle(post={item})
-			{:else if item instanceof CommentSnapshot}
-				CommentTree(comment={item})
+			a(href='#{item.id}' on:auxclick={() => window.open(item.permalink)})
+				{#if item instanceof PostSnapshot}
+					PostTitle(post={item})
+				{:else if item instanceof CommentSnapshot}
+					CommentTree(data={item})
 
 style.
 	ol
-		padding 8ch
+		height 100%
+		display flex
+		flex-flow row nowrap
+		list-style none
+		counter-reset item
+		& li::marker
+			content counter(item)
+		&.sticky li::marker
+			content 'S' counter(item)
 	li
-		width 55ch
-		padding 1ch
+		height 100%
+		flex 0 0 48rem
+		counter-increment item
+		&.selected
+			border-bottom 1px solid
+	a
+		display block
+		height 100%
+		margin-right 16px

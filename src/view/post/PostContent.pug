@@ -14,8 +14,11 @@ script.
 		{#each content.data as image}
 			PostImage(image={image})
 	{:else if content.type === 'text'}
-		article
-			{@html Markdown.to_HTML(content.data)}
+		article.post-text
+			{#if content.data.length}
+				{@html Markdown.to_HTML(content.data)}
+			{:else}
+				p [No submission text.]
 	{:else if content.type === 'comment'}
 		AWAIT(let:v p={content.DATA})
 			PostComments(COMMENTS={v.REPLIES})

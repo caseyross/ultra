@@ -75,7 +75,7 @@ content = (r) ->
 			data =	[ new Image(r.preview.images[0]) ]
 		when r.is_self
 			type = 'text'
-			data = r.selftext ? ''
+			data = r.selftext
 		else switch r.domain
 			when 'i.redd.it'
 				type = 'image'

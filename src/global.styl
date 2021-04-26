@@ -13,15 +13,24 @@ menu,
 ol, ul
 	margin 0
 	padding 0
+h1, h2, h3, h4, h5, h6
+	font-size inherit
+	font-weight normal
+	margin 1em 0
+ol, ul
+	list-style-position inside
 iframe
 video
 	width 854px
 	height 480px
 .md
-	width 55ch
-	padding 1ch
 	white-space pre-wrap
-	background rgba(0,0,0,0.03)
+	word-break break-word
+	.comment > &
+	.post-text > &
+		width 55ch
+		padding 8px
+		background rgba(0,0,0,0.03)
 	a
 		color steelblue
 		text-decoration none
@@ -63,6 +72,14 @@ video
 		list-style square
 		padding-left 4rem
 		margin 1ch 0
+.error-tag
+	height 100%
+	width 100%
+	display flex
+	justify-content center
+	align-items center
+	background salmon
+	color white
 .hide-scrollbar
 	scrollbar-width none
 .hide-scrollbar::-webkit-scrollbar

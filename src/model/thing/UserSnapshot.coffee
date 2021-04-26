@@ -1,15 +1,31 @@
-export default class UserSnapshot # TODO: better alignment with api response
+import Image from '../wrapper/Image'
+
+export default class UserSnapshot
 	constructor: (r) ->
-		@text =
-			tagline: r.public_description_html
-			sidebar: r.description_html
-		@images =
-			banner: r.banner_background_image or r.mobile_banner_image or r.banner_img or ''
-			icon: r.community_icon or r.icon_img or ''
-			header: r.header_img or ''
-		@color = r.primary_color or r.key_color or 'transparent'
-		@meta =
-			create_date: new Date(r.created_utc * 1000)
-			nsfw: r.over18
-			online_user_count: r.active_user_count or r.accounts_active
-			subscriber_count: r.subscribers
+		# BASIC DATA
+		@created_at = new Date(r.created_utc * 1000)
+		@id = r.id
+		# TEXT CUSTOMIZATION
+		@display_name = r.name
+		@tagline = r.subreddit.public_description
+		# VISUAL CUSTOMIZATION
+		@banner = new Image
+			p: []
+			s: [{
+				u: r.subreddit.banner_img or ''
+			}]
+		@color = r.subreddit.primary_color or r.subreddit.key_color or 'transparent'
+		@icon = new Image
+			p: []
+			s: [{
+				u: r.subreddit.icon_img or ''
+			}]
+		# ACTIVITY
+		@comment_karma = r.comment_karma
+		@follower_count = r.subreddit.subscribers
+		@post_karma = r.link_karma
+		# STATES
+		@admin = r.is_employee
+		@nsfw = r.subreddit.over18
+		@premium = r.is_gold
+		@quarantined = r.quarantine

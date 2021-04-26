@@ -6,7 +6,7 @@ script.
 .comments
 	AWAIT(let:v p={COMMENTS})
 		{#if v.length === 0}
-			span [No comments.]
+			p [No comments.]
 		{:else}
 			{#each v as data}
 				CommentTree(data={data} depth={0})
