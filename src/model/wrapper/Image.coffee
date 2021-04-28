@@ -36,11 +36,11 @@ export default class Image
 		@caption =
 			text: r.caption ? ''
 			href: r.link ? ''
-	best_fit: (target_width, target_height) =>
-		@resolutions.fold(@resolutions[0], (current_best, next) ->
-			if current_best.width < target_width and current_best.height < target_height
+	biggest: () => @resolutions.last()
+	dimension_target: ({ width, height }) =>
+		@resolutions.fold(@resolutions[0], (best, next) ->
+			if best.width < width and best.height < height
 				return next
-			return current_best
+			return best
 		)
-	largest: () => @resolutions.last()
 				

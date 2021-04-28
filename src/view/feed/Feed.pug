@@ -11,7 +11,7 @@ main
 		.frontpage-feed
 			{#if feed.thing}
 				AWAIT(let:v p={feed.thing.INFO})
-					img(src={v.icon.best_fit(64, 64).href} alt='')
+					img(src={v.icon.dimension_target({ width: 64, height: 64 }).href} alt='')
 			{:else}
 				| X
 	nav
@@ -56,11 +56,11 @@ style.
 		height 100%
 		width 100%
 		display grid
-		grid-template-columns 27rem 1fr
-		grid-template-rows 20rem 1fr
-		grid-template-areas 'top-left far-top' 'far-left body'
-		gap 0 8rem
+		grid-template-columns 24rem 72rem 1fr
+		grid-template-rows 36rem 1fr
+		grid-template-areas 'top-left left body' 'far-left left body'
 		font 400 12px/16px 'Iosevka Aile'
+		font-feature-settings 'kern'
 		-webkit-font-smoothing antialiased
 		-moz-osx-font-smoothing grayscale
 		--white white
@@ -78,29 +78,31 @@ style.
 		height 100%
 		display flex
 		flex-flow column nowrap
+		padding-left 8px
 	.core-feeds
 		flex 1
 		display flex
 		flex-flow column nowrap
 	.frontpage-feed
-		height 66px
-		width 66px
+		height 72px
+		width 72px
 		display flex
 		justify-content center
 		align-items center	
-		margin 4px	
+		margin 12px	
 		border-radius 50%
-		border 1px solid
+		border 2px solid
 		& img
 			height 64px
 			width 64px
 			clip-path circle(50%)
+			object-fit contain
 	.other-feeds
 		flex 1
 		display flex
 		flex-flow column-reverse wrap
 	.other-feeds-set-selector
-		padding 4px 14px
+		padding 4px 0 4px 13px
 	.other-feed
 		height 32px
 		width 32px
@@ -131,10 +133,6 @@ style.
 	.feed-sidebar
 		color gray
 	.feed-items
-		grid-area far-top
-		width 100%
+		grid-area left
 		height 100%
-		overflow-x auto
-		overflow-y hidden
-		display flex
-		padding-top 5rem
+		overflow auto

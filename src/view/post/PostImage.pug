@@ -1,10 +1,8 @@
 script.
 	export image = []
-	design_width = 854
-	design_height = 854
 
 figure
-	img(src={image.best_fit(design_width, design_height).href} alt='' on:click={window.open(image.largest().href, '_blank', 'noreferrer')})
+	img(src={image.dimension_target({ width: Infinity, height: 640 }).href} alt='' on:click={window.open(image.biggest().href, '_blank', 'noreferrer')})
 	{#if image.caption.text || image.caption.href}
 		figcaption
 			{#if image.caption.text}
@@ -13,7 +11,19 @@ figure
 				a(href={image.caption.href}) {image.caption.href}
 
 style.
+	figure
+		position relative
+		margin-right 1px
+	figcaption
+		position absolute
+		top 0
+		left 0
+		padding 2rem
+		background white
+		border 1px solid
+		border-radius 2rem
+		word-break break-word
 	img
-		max-width 854px
-		max-height 854px
+		max-height 640px
+		border-radius 2rem
 		cursor zoom-in

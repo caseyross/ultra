@@ -5,7 +5,7 @@ script.
 	import PostImage from './PostImage'
 	import PostVideo from './PostVideo'
 
-.content
+.content.hide-scrollbar
 	{#if content.type === 'iframe'}
 		iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
 	{:else if content.type === 'video'}
@@ -26,3 +26,11 @@ script.
 		a(href={content.data}) {content.data}
 	{:else}
 		.error-tag [UNKNOWN CONTENT]
+
+style.
+	.content
+		display grid
+		grid-auto-flow column
+		width 100%
+		overflow auto
+		justify-content flex-start

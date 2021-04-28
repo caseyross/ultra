@@ -23,6 +23,7 @@ iframe
 video
 	width 854px
 	height 480px
+	border-radius 2rem
 .md
 	white-space pre-wrap
 	word-break break-word
@@ -82,8 +83,8 @@ video
 	color white
 .hide-scrollbar
 	scrollbar-width none
-.hide-scrollbar::-webkit-scrollbar
-	width 0
+	&::-webkit-scrollbar
+		display none
 .text-alpha
 	font-weight bold
 	text-transform uppercase

@@ -18,22 +18,28 @@ ol(class={format})
 
 style.
 	ol
-		height 100%
-		display flex
-		flex-flow row nowrap
+		display grid
+		grid-auto-flow row
+		grid-auto-rows 20rem
 		list-style none
 		counter-reset item
-		& li::marker
-			content counter(item)
-		&.sticky li::marker
-			content 'S' counter(item)
 	li
-		height 100%
-		flex 0 0 48rem
 		counter-increment item
-		&.selected
-			border-bottom 1px solid
+		position relative
+		&::before
+			content counter(item)
+			position absolute
+			top 10rem
+			left 8rem
+			font-size 16rem
+			font-weight 900
+			color lightgray
+		&.selected::before
+			color orangered
+		ol.sticky &::before
+			content 'S'
 	a
+		position relative
 		display block
 		height 100%
-		margin-right 16px
+		padding 4rem 4rem 0 8rem
