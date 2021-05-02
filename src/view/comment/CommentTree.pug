@@ -1,35 +1,36 @@
 script.
 	export data = null
-	export depth = 0
 	import CommentSnapshot from '/src/model/thing/CommentSnapshot'
 	import MoreCommentsReference from '/src/model/thing/MoreCommentsReference'
+	import DistinguishTag from '../shared/DistinguishTag'
 
-{#if data instanceof CommentSnapshot}
-	.comment(style='margin-left: {depth * 32}px')
-		.meta
-			a.avatar(href='/u/{data.author.name}') {data.author.name[0]}
-		{@html Markdown.to_HTML(data.content)}
-	{#each data.replies as reply}
-		svelte:self(data={reply} depth={depth + 1})
-{:else if data instanceof MoreCommentsReference}
-	button(style='margin-left: {depth * 32}px') {data.ids.length} more...
+.comment-tree
+	{#if data instanceof MoreCommentsReference}
+		button {data.ids.length} more
+	{:else if data instanceof CommentSnapshot}
+		.comment
+			.comment-meta
+				{#if data.distinguish}
+					DistinguishTag(distinguish={data.distinguish})
+				a(href='/u/{data.author.name}') {data.author.name}
+			{@html Markdown.to_HTML(data.content)}
+		{#if data.replies.length}
+			.replies
+				{#each data.replies as reply}
+					svelte:self(data={reply})
 
 style.
+	.comment-tree
+		margin-top 1em
 	.comment
-		display grid
-		grid-template-columns 16px 1fr
-		gap 4px
-		overflow-wrap anywhere
-		margin-top 8px
-	.meta
-		height 100%
-		background repeating-linear-gradient(to bottom, white 4px, #888 4px, white 5px, white 8px)
-	.avatar
-		background var(--white)
-		color var(--black)
-		border 1px solid
-		width 16px
-		height 16px
-		display flex
-		justify-content center
-		align-items center
+		width 55ch
+		padding 3rem 4rem
+		border 1px solid lightgray
+		border-radius 10px
+	.comment-meta
+		position relative
+		background white
+		color lightgray
+		font-size 10px
+	.replies
+		padding-left 10rem

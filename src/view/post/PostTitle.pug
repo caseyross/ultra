@@ -1,10 +1,16 @@
 script.
 	export post = null
 
-span {post.content.title}
+.post-title
+	.post-meta
+		a(href='u/{post.author.name}') {post.author.name}
+	a(href='#{post.id}' on:auxclick={() => window.open(post.permalink)}) {post.content.title}
+	.post-meta {post.flairs.title.text}
 
 style.
-	span
-		font-size 12px
-		line-height 1
-		overflow-wrap anywhere
+	.post-title
+		margin 2rem
+		font-size 15px
+	.post-meta
+		font-size 10px
+		color lightgray

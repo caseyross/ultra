@@ -10,36 +10,11 @@ script.
 ol(class={format})
 	{#each items as item}
 		li(class:selected={selection_id === item.id})
-			a(href='#{item.id}' on:auxclick={() => window.open(item.permalink)})
-				{#if item instanceof PostSnapshot}
-					PostTitle(post={item})
-				{:else if item instanceof CommentSnapshot}
-					CommentTree(data={item})
+			{#if item instanceof PostSnapshot}
+				PostTitle(post={item})
+			{:else if item instanceof CommentSnapshot}
+				CommentTree(data={item})
 
 style.
 	ol
-		display grid
-		grid-auto-flow row
-		grid-auto-rows 20rem
 		list-style none
-		counter-reset item
-	li
-		counter-increment item
-		position relative
-		&::before
-			content counter(item)
-			position absolute
-			top 10rem
-			left 8rem
-			font-size 16rem
-			font-weight 900
-			color lightgray
-		&.selected::before
-			color orangered
-		ol.sticky &::before
-			content 'S'
-	a
-		position relative
-		display block
-		height 100%
-		padding 4rem 4rem 0 8rem

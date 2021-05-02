@@ -6,7 +6,7 @@ script.
 	import PostComments from '../post/PostComments'
 	import PostContent from '../post/PostContent'
 
-.detail-pane
+.detail-pane.hide-scrollbar
 	{#if item instanceof PostSnapshot}
 		PostContent(content={item.content})
 		PostComments(COMMENTS={item.REPLIES})
@@ -15,8 +15,9 @@ script.
 
 style.
 	.detail-pane
-		grid-area body
+		grid-area center-right
 		width 100%
 		height 100%
 		overflow auto
-		padding-top 5rem
+		border-left 1px solid
+		padding-left 10rem

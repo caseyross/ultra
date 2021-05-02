@@ -8,21 +8,25 @@ svelte:head
 	title {feed.listing.display_name}
 main
 	.this-feed
-		.frontpage-feed
-			{#if feed.thing}
-				AWAIT(let:v p={feed.thing.INFO})
-					img(src={v.icon.dimension_target({ width: 64, height: 64 }).href} alt='')
-			{:else}
-				| X
+		{#if feed.thing}
+			AWAIT(let:v p={feed.thing.INFO})
+				img(src={v.icon.dimension_target({ width: 64, height: 64 }).href} alt='')
+		{:else}
+			| X
+		h1 {feed.listing.display_name}
 	nav
-		.core-feeds
-			.other-feeds-set-selector ▼ Defaults
-			{#each [1,2,3,4,5] as value}
-				.other-feed {value}
+		.global-feeds
+			.other-feeds-set-selector Global
+			.other-feed A
+			.other-feed P
 		.other-feeds
-			.other-feeds-set-selector ▲ Account
-			{#each [1,2,3,4,5] as value}
+			.other-feeds-set-selector Subbed
+			{#each [1,2,3,4,5,6,7,8,9] as value}
 				.other-feed {value}
+		.account-feeds
+			.other-feeds-set-selector Account
+			{#each ['M','MM','Q'] as value}
+				.account-feed {value}
 			.vitals
 				label.quota-monitor
 					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
@@ -30,14 +34,6 @@ main
 					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
 				label.downlink-monitor
 					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
-	.feed-information.hide-scrollbar
-		.feed-name-and-icon
-			.other-feed Y
-			h1 {feed.listing.display_name}
-		{#if feed.thing}
-			AWAIT(let:v p={feed.thing.INFO})
-				p {v.tagline}
-				.feed-sidebar {@html Markdown.to_HTML(v.sidebar)}
 	AWAIT(let:v p={feed.PAGE})
 		.feed-items.hide-scrollbar
 			{#if feed.listing.is_pure}
@@ -56,9 +52,9 @@ style.
 		height 100%
 		width 100%
 		display grid
-		grid-template-columns 24rem 72rem 1fr
-		grid-template-rows 36rem 1fr
-		grid-template-areas 'top-left left body' 'far-left left body'
+		grid-template-columns 12.5% 37.5% 37.5% 12.5%
+		grid-template-rows 20rem 1fr 20rem
+		grid-template-areas 'top-left top-center-left top-center-right top-right' 'left center-left center-right right' 'bottom-left bottom-center-left bottom-center-right bottom-right'
 		font 400 12px/16px 'Iosevka Aile'
 		font-feature-settings 'kern'
 		-webkit-font-smoothing antialiased
@@ -73,36 +69,32 @@ style.
 		color var(--black)
 	.this-feed
 		grid-area top-left
+		display flex
+		align-items center
+		img
+			height 64px
+			width 64px
+			object-fit contain
+			clip-path circle(50%)
+			margin 4px
+		h1
+			font-size 18px
+			margin 2rem
 	nav
-		grid-area far-left
+		grid-area left
 		height 100%
 		display flex
 		flex-flow column nowrap
-		padding-left 8px
-	.core-feeds
-		flex 1
-		display flex
-		flex-flow column nowrap
-	.frontpage-feed
-		height 72px
-		width 72px
-		display flex
-		justify-content center
-		align-items center	
-		margin 12px	
-		border-radius 50%
-		border 2px solid
-		& img
-			height 64px
-			width 64px
-			clip-path circle(50%)
-			object-fit contain
-	.other-feeds
+	.account-feeds
 		flex 1
 		display flex
 		flex-flow column-reverse wrap
+	.other-feeds
+		flex 1
+		display flex
+		flex-flow column nowrap
 	.other-feeds-set-selector
-		padding 4px 0 4px 13px
+		padding 4px 8px
 	.other-feed
 		height 32px
 		width 32px
@@ -112,27 +104,25 @@ style.
 		border 1px solid
 		border-radius 50%
 		margin 4px
-	.vitals
+	.account-feed
+		height 32px
+		width 32px
 		display flex
-		flex-flow column nowrap
+		justify-content center
+		align-items center
+		border 1px solid
+		margin 4px
+	.vitals
 		& label
 			margin 4px
 		& meter
 			appearance none
-			width 3rem
+			width 8rem
 			border 1px solid
 			background darkseagreen
-	.quota-monitor meter
-		height 18rem
-	.feed-information
-		display none
-		height 100%
-		width 100%
-		overflow auto
-		padding-left 4rem
-	.feed-sidebar
-		color gray
 	.feed-items
-		grid-area left
+		grid-area center-left
 		height 100%
 		overflow auto
+		padding-right 20rem
+		padding-left 20rem

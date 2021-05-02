@@ -2,7 +2,7 @@ script.
 	export image = []
 
 figure
-	img(src={image.dimension_target({ width: Infinity, height: 640 }).href} alt='' on:click={window.open(image.biggest().href, '_blank', 'noreferrer')})
+	img(src={image.dimension_target({ width: 640, height: Infinity }).href} alt='' on:click={window.open(image.biggest().href, '_blank', 'noreferrer')})
 	{#if image.caption.text || image.caption.href}
 		figcaption
 			{#if image.caption.text}
@@ -24,6 +24,6 @@ style.
 		border-radius 2rem
 		word-break break-word
 	img
-		max-height 640px
+		max-width 640px
 		border-radius 2rem
 		cursor zoom-in
