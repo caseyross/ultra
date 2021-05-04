@@ -1,16 +1,22 @@
 export default class Video
 	constructor: (r) ->
+		if not r.fallback_url
+			alert r
 		@width = r.width
 		@height = r.height
 		@tracks =
 			if r.fallback_url # reddit hosted video
-				audio: [
-					new MediaSource {
-						mime_type: 'audio/mp4'
-						codec: 'mp4a.40.2'
-						href: r.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio')
-					}
-				]
+				audio:
+					if r.is_gif
+						[]
+					else
+						[
+							new MediaSource {
+								mime_type: 'audio/mp4'
+								codec: 'mp4a.40.2'
+								href: r.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio')
+							}
+						]
 				video: [
 					new MediaSource {
 						mime_type: 'video/mp4'
