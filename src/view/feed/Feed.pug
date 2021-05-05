@@ -36,15 +36,8 @@ main
 					meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
 	AWAIT(let:v p={feed.PAGE})
 		.feed-items.hide-scrollbar
-			{#if feed.listing.is_pure}
-				{#if v.things.some(t => t.stickied)}
-					FeedItemList(items={v.things.filter(t => t.stickied)} selection_id={feed.selection_id} format='sticky')
-				FeedItemList(items={v.things.filter(t => !t.stickied)} selection_id={feed.selection_id})
-			{:else}
-				{#if v.things.some(t => t.pinned)}
-					FeedItemList(items={v.things.filter(t => t.pinned)} selection_id={feed.selection_id} format='sticky')
-				FeedItemList(items={v.things.filter(t => !t.pinned)} selection_id={feed.selection_id})
-		{#key feed.selection_id}
+			FeedItemList(items={v.things} selection_id={feed.selection_id})
+		{#if feed.selection_id}
 			FeedItemDetail(item={v.things.find(x => x.id === feed.selection_id)})
 
 style.
@@ -52,10 +45,10 @@ style.
 		height 100%
 		width 100%
 		display grid
-		grid-template-columns 12.5% 37.5% 37.5% 12.5%
+		grid-template-columns 20rem 1fr 20rem
 		grid-template-rows 20rem 1fr 20rem
-		grid-template-areas 'top-left top-center-left top-center-right top-right' 'left center-left center-right right' 'bottom-left bottom-center-left bottom-center-right bottom-right'
-		font 400 12px/16px 'Iosevka Aile'
+		grid-template-areas 'top-left top-center top-right' 'left center right' 'bottom-left bottom-center bottom-right'
+		font 400 12px/1.333 'Iosevka Aile'
 		font-feature-settings 'kern'
 		-webkit-font-smoothing antialiased
 		-moz-osx-font-smoothing grayscale
@@ -121,7 +114,7 @@ style.
 			border 1px solid
 			background darkseagreen
 	.feed-items
-		grid-area center-left
+		grid-area center
 		height 100%
 		overflow auto
 		padding-right 20rem

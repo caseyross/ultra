@@ -5,15 +5,16 @@ script.
 	import MouseMenu from '/src/view/menu/MouseMenu'
 	account = new AccountState()
 	feed = new FeedState()
-	###
 	document.addEventListener 'mousedown', (e) ->
-		console.log e
-		if e.buttons is 1 and e.target.href
-			console.log 'nav'
-			e.preventDefault()
-			history.pushState(null, '', e.target.href)
-			feed = new FeedState()
-	###
+		switch e.buttons
+			when 1
+				for element in e.path
+					if element.dataset.href
+						location.hash = element.dataset.href
+						e.preventDefault()
+						break
+			when 2
+				location.hash = ''
 	window.addEventListener 'hashchange', ->
 		feed.selection_id = location.hash[1..]
 
