@@ -2,8 +2,8 @@ script.
 	export p = null
 
 {#await p.run()}
-	span [Loading]
+	span [Loading...]
 {:then v}
 	slot(v={v})
 {:catch e}
-	.error-tag(title={e}) [Error!]
+	.error(title={e}) [Error!]

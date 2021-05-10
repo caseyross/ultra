@@ -1,0 +1,43 @@
+script.
+	export feed = null
+	import { AWAIT } from '../effect'
+	import Comment from '/src/model/Comment'
+	import Listing from '/src/model/Listing'
+	import Post from '/src/model/Post'
+	import CommentTree from '../partial/CommentTree'
+
+AWAIT(let:v p={feed.PAGE})
+	ol.hide-scrollbar
+		{#each v.things as item}
+			li
+				a(href={item.href})
+					{#if item instanceof Post}
+						{#if item.content.type === 'image'}
+							img(src={item.content.data[0].dimension_target({ width: 320, height: 320 }).href})
+						{:else}
+							.post-title {item.content.title}
+							.post-meta {item.flairs.title.text}
+					{:else if item instanceof Comment}
+						CommentTree(data={item})
+
+style.
+	ol
+		list-style none
+		display grid
+		grid-template-columns repeat(5, 1fr)
+		grid-template-rows repeat(2, 1fr)
+	li
+		margin 2rem
+	a
+		display block
+		width 320px
+		height 320px
+	img
+		width 100%
+		height 100%
+		object-fit cover
+	.post-title
+		font-size 36px
+	.post-meta
+		font-size 10px
+		color lightgray

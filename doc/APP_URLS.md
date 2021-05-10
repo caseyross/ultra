@@ -1,9 +1,7 @@
 
-genshin_impact/cday
-genshin_impact/week/500#t3_mfsjdk
-u/gallowboob/search-sldkfj
-c/gallowboob-food/flair-donut/100
-m/inbox/unread
-s/saved/old
-mm
-q
+r/politics/new
+r/politics/post/j3j432/comment/fsj34j3
+
+u/gallowboob/post/nfds34
+
+m/gallowboob-food/flair-donut/100

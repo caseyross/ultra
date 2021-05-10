@@ -1,9 +1,9 @@
 script.
 	export COMMENTS = new LazyPromise -> Promise.resolve null
-	import { AWAIT } from '/src/effect'
-	import CommentTree from '../comment/CommentTree'
+	import { AWAIT } from '../effect'
+	import CommentTree from './CommentTree'
 
-.comments
+section
 	AWAIT(let:v p={COMMENTS})
 		{#if v.length === 0}
 			p [No comments.]

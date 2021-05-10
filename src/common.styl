@@ -1,8 +1,22 @@
 *
 	box-sizing border-box
+html
+	font-size 25% // 1rem = 4px
 body
-	height 100vh
-	width 100vw
+	// font
+	font 400 12px/1.333 'Iosevka Aile'
+	font-feature-settings 'kern'
+	-webkit-font-smoothing antialiased
+	-moz-osx-font-smoothing grayscale
+	// colors
+	--white white
+	--lightgray lightgray
+	--black black
+	--orangered orangered
+	&[colortheme=dark]
+		--white rgb(29 32 38)
+		--black #e3e3e3
+	color var(--black)
 button
 	border 0
 	font inherit
@@ -74,7 +88,11 @@ video
 		list-style square
 		padding-left 4rem
 		margin 1ch 0
-.error-tag
+.hide-scrollbar
+	scrollbar-width none
+	&::-webkit-scrollbar
+		display none
+.error-message
 	height 100%
 	width 100%
 	display flex
@@ -82,10 +100,3 @@ video
 	align-items center
 	background salmon
 	color white
-.hide-scrollbar
-	scrollbar-width none
-	&::-webkit-scrollbar
-		display none
-.text-alpha
-	font-weight bold
-	text-transform uppercase

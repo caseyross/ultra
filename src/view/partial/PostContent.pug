@@ -1,11 +1,11 @@
 script.
 	export content = null
-	import { AWAIT } from '/src/effect'
+	import { AWAIT } from '../effect'
 	import PostComments from './PostComments'
 	import PostImage from './PostImage'
 	import PostVideo from './PostVideo'
 
-.content.hide-scrollbar
+article.hide-scrollbar
 	{#if content.type === 'iframe'}
 		iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
 	{:else if content.type === 'video'}
@@ -14,21 +14,20 @@ script.
 		{#each content.data as image}
 			PostImage(image={image})
 	{:else if content.type === 'text'}
-		article.post-text
-			{#if content.data.length}
-				{@html Markdown.to_HTML(content.data)}
-			{:else}
-				p [No submission text.]
+		{#if content.data.length}
+			{@html Markdown.to_HTML(content.data)}
+		{:else}
+			p [No submission text.]
 	{:else if content.type === 'comment'}
 		AWAIT(let:v p={content.DATA})
 			PostComments(COMMENTS={v.REPLIES})
 	{:else if content.type === 'link'}
 		a(href={content.data}) {content.data}
 	{:else}
-		.error-tag [UNKNOWN CONTENT]
+		.error-message [UNKNOWN CONTENT]
 
 style.
-	.content
+	article
 		display grid
 		grid-auto-flow column
 		width 100%

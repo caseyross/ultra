@@ -1,13 +1,13 @@
 script.
 	export data = null
-	import CommentSnapshot from '/src/model/thing/CommentSnapshot'
-	import MoreCommentsReference from '/src/model/thing/MoreCommentsReference'
-	import DistinguishTag from '../shared/DistinguishTag'
+	import Comment from '/src/model/Comment'
+	import MoreComments from '/src/model/MoreComments'
+	import DistinguishTag from './DistinguishTag'
 
 .comment-tree
-	{#if data instanceof MoreCommentsReference}
+	{#if data instanceof MoreComments}
 		button {data.ids.length} more
-	{:else if data instanceof CommentSnapshot}
+	{:else if data instanceof Comment}
 		.comment
 			.comment-meta
 				{#if data.distinguish}

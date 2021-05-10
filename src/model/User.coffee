@@ -1,6 +1,6 @@
-import Image from '../wrapper/Image'
+import Image from './Image'
 
-export default class UserSnapshot
+export default class User
 	constructor: (r) ->
 		# BASIC DATA
 		@created_at = new Date(r.created_utc * 1000)

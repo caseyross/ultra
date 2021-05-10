@@ -2,7 +2,8 @@ script.
 	export image = []
 
 figure
-	img(src={image.dimension_target({ width: 640, height: Infinity }).href} alt='' on:click={window.open(image.biggest().href, '_blank', 'noreferrer')})
+	a(href={image.biggest().href} data-layer-type='image')
+		img(src={image.dimension_target({ width: 640, height: Infinity }).href} alt='')
 	{#if image.caption.text || image.caption.href}
 		figcaption
 			{#if image.caption.text}

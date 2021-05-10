@@ -1,16 +1,11 @@
-import Flair from '../wrapper/Flair'
-import Score from '../wrapper/Score'
+import Flair from './Flair'
+import Score from './Score'
+import Listing from './Listing'
 
-import MoreCommentsReference from './MoreCommentsReference'
-import PostReference from './PostReference'
-import ThingList from './ThingList'
-import SubredditReference from './SubredditReference'
-import UserReference from './UserReference'
-
-export default class CommentSnapshot
+export default class Comment
 	constructor: (r) ->
 		# BASIC DATA
-		@author = new UserReference r.author
+		@author = r.author
 		@content = r.body ? ''
 		@created_at = new Date(r.created_utc * 1000)
 		@distinguish = switch
@@ -18,24 +13,24 @@ export default class CommentSnapshot
 			when r.is_submitter then 'original-poster'
 			else ''
 		@edited_at = new Date(r.edited * 1000)
-		@flairs =
-			author: new Flair
-				color: r.author_flair_background_color
-				text: r.author_flair_text
+		@flair = new Flair
+			color: r.author_flair_background_color
+			text: r.author_flair_text
+		@href = '/r/' + r.subreddit + '/post/' + r.link_id[3..] + '/comment/' + r.id
 		@id = r.id
 		@post =
-			ref: new PostReference r.link_id[3..]
+			id: r.link_id[3..]
 			title: r.link_title
-		@subreddit = new SubredditReference r.subreddit
+		@subreddit = r.subreddit
 		# ACTIVITY
 		@awards = [] # TODO
 		@controversiality = r.controversiality
 		@score = new Score { hidden: r.score_hidden, value: r.score }
 		# REPLIES
-		@replies = new ThingList(r.replies)
+		@replies = new Listing(r.replies)
 		# STATES
 		@edited = r.edited
-		@hid = r.hidden
+		@hidden = r.hidden
 		@liked = r.likes
 		@locked = r.locked
 		@nsfw = r.over_18

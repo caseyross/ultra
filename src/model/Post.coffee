@@ -1,16 +1,13 @@
-import Flair from '../wrapper/Flair'
-import Image from '../wrapper/Image'
-import Score from '../wrapper/Score'
-import Video from '../wrapper/Video'
+import Flair from './Flair'
+import Image from './Image'
+import Listing from './Listing'
+import Score from './Score'
+import Video from './Video'
 
-import ThingList from './ThingList'
-import SubredditReference from './SubredditReference'
-import UserReference from './UserReference'
-
-export default class PostSnapshot
+export default class Post
 	constructor: (r) ->
 		# BASIC DATA
-		@author = new UserReference r.author
+		@author = r.author
 		@created_at = new Date(r.created_utc * 1000)
 		@content = content(r)
 		@distinguish = r.distinguished or 'original-poster'
@@ -22,9 +19,9 @@ export default class PostSnapshot
 			title: new Flair
 				text: r.link_flair_text
 				color: r.link_flair_background_color
+		@href = '/r/' + r.subreddit + '/post/' + r.id
 		@id = r.id
-		@permalink = r.permalink
-		@subreddit = new SubredditReference r.subreddit
+		@subreddit = r.subreddit
 		# ACTIVITY
 		@awards = [] # TODO
 		@crossposts = r.crosspost_parent_list
@@ -40,7 +37,7 @@ export default class PostSnapshot
 					API.get 'comments/' + r.id,
 						sort: r.suggested_sort
 					.then ([ post_data, comments_data ]) ->
-						new ThingList comments_data
+						new Listing comments_data
 		# STATES
 		@archived = r.archived
 		@contest = r.contest_mode
@@ -117,9 +114,9 @@ content = (r) ->
 							context: 3
 						.then ([ posts, comments ]) ->
 							{
-								...(new ThingList(posts))[0],
+								...(new Listing(posts))[0],
 								REPLIES: new LazyPromise ->
-									Promise.resolve new ThingList(comments)
+									Promise.resolve new Listing(comments)
 							}
 	return {
 		title,

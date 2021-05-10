@@ -1,5 +1,5 @@
-import PostSnapshot from './PostSnapshot'
-import ThingList from './ThingList'
+import Post from './Post'
+import Listing from './Listing'
 
 export default class PostReference
 	constructor: (id) ->
@@ -8,7 +8,7 @@ export default class PostReference
 			API.get('comments/' + id)
 			.then ([ posts, comments ]) ->
 				{
-					...(new ThingList(posts))[0],
+					...(new Listing(posts))[0],
 					REPLIES: new LazyPromise ->
-						Promise.resolve new ThingList(comments)
+						Promise.resolve new Listing(comments)
 				}

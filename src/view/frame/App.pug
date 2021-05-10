@@ -1,0 +1,99 @@
+script.
+
+	import Feed from '/src/model/Feed'
+	import Post from '/src/model/Post'
+
+	getLayers = (url) ->
+		layers = [{
+			type: 'directory'
+			href: ''
+			data: {} # TODO
+		}]
+		[ _, a, b, c, d, e, f ] = url.pathname.split('/')
+		p = new URLSearchParams(url.search)
+		if a.length > 1
+			if ['awardsgiven', 'awardsreceived', 'downvoted', 'hidden', 'mail', 'modmail', 'modqueue', 'saved', 'upvoted'].includes(a)
+				[ a, b, c, d, e, f ] = [ 'i', a, b, c, d, e ]
+			else
+				[ a, b, c, d, e, f ] = [ 'r', a, b, c, d, e ]
+		if b
+			if ['new', 'rising', 'hot', 'top', 'controversial'].includes(c)
+				layers.push
+					type: 'feed'
+					href: '/' + a + '/' + b
+					data: new Feed { prefix: a, name: b, sort: c, limit: p.get('limit') } 
+			else
+				layers.push
+					type: 'feed'
+					href: '/' + a + '/' + b
+					data: new Feed { prefix: a, name: b, sort: p.get('sort'), limit: p.get('limit') }
+				switch c
+					when 'wiki'
+						layers.push
+							type: 'wiki'
+							href: url.pathname # can have 1 or 2 levels + hash link to a heading
+							data: {} # TODO
+					when 'comments', 'post'
+						if f
+							layers.push
+								type: 'post'
+								href: '/' + a + '/' + b + '/post/' + d + '/comment/' + f
+								data: new Post { id: d, commentId: f }
+						else if d
+							layers.push
+								type: 'post'
+								href: '/' + a + '/' + b + '/post/' + d
+								data: new Post { id: d }
+		return layers
+
+	layers = getLayers(location)
+	history.replaceState({}, '', layers.last().href)
+	
+	document.addEventListener 'mousedown', (e) ->
+		switch e.buttons
+			when 1
+				for element in e.href
+					if element.href
+						target_url = new URL element.href
+						if target_url.origin is location.origin
+							layers = [ ...layers, getLayers(target_url).last() ]
+						else if element.dataset.layerType
+							layers = [
+								...layers,
+								{
+									type: element.dataset.layerType
+									href: layers.last().href
+									data: target_url.href
+								}
+							]
+						else if element.dataset.gotoLayer
+							layers.length = element.dataset.gotoLayer
+						else
+							location.href = target_url.href
+							return
+						history.pushState({}, '', layers.last().href)
+						e.preventDefault()
+						break
+			when 2
+				layers.length = layers.length - 1
+				history.pushState({}, '', layers.last().href)
+				e.preventDefault()
+	
+	import Layer from './Layer'
+
+svelte:head
+	title {layers.last().type}
+{#each layers as layer, i}
+	Layer(layer={layer} top={i === layers.length - 1})
+{#if layers.last().type !== 'image'}
+	nav
+		ol
+			{#each layers as layer, i}
+				li
+					a(href={layer.href} data-goto-layer={i}) {layer.type}
+
+style.
+	nav
+		position fixed
+		top 0
+		right 0
