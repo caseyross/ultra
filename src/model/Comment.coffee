@@ -1,6 +1,6 @@
+import Comments from './Comments'
 import Flair from './Flair'
 import Score from './Score'
-import Listing from './Listing'
 
 export default class Comment
 	constructor: (r) ->
@@ -27,7 +27,7 @@ export default class Comment
 		@controversiality = r.controversiality
 		@score = new Score { hidden: r.score_hidden, value: r.score }
 		# REPLIES
-		@replies = new Listing(r.replies)
+		@replies = new Comments(r.replies)
 		# STATES
 		@edited = r.edited
 		@hidden = r.hidden

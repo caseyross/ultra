@@ -1,3 +1,3 @@
-export default class MoreComments
+export default class CommentsLoadable
 	constructor: (r) ->
 		@ids = r.children

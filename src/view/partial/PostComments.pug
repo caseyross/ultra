@@ -1,12 +1,9 @@
 script.
-	export COMMENTS = new LazyPromise -> Promise.resolve null
-	import { AWAIT } from '../effect'
+	export comments = []
 	import CommentTree from './CommentTree'
 
 section
-	AWAIT(let:v p={COMMENTS})
-		{#if v.length === 0}
-			p [No comments.]
-		{:else}
-			{#each v as data}
-				CommentTree(data={data})
+	{#each comments as comment}
+		CommentTree(data={comment})
+	{:else}
+		p [No comments.]

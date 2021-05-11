@@ -1,64 +1,80 @@
+import Comments from './Comments'
 import Flair from './Flair'
 import Image from './Image'
-import Listing from './Listing'
 import Score from './Score'
 import Video from './Video'
 
 export default class Post
-	constructor: (r) ->
-		# BASIC DATA
-		@author = r.author
-		@created_at = new Date(r.created_utc * 1000)
-		@content = content(r)
-		@distinguish = r.distinguished or 'original-poster'
-		@edited_at = new Date(r.edited * 1000)
-		@flairs =
-			author: new Flair
-				text: r.author_flair_text
-				color: r.author_flair_background_color
-			title: new Flair
-				text: r.link_flair_text
-				color: r.link_flair_background_color
-		@href = '/r/' + r.subreddit + '/post/' + r.id
-		@id = r.id
-		@subreddit = r.subreddit
-		# ACTIVITY
-		@awards = [] # TODO
-		@crossposts = r.crosspost_parent_list
-		@score = new Score { value: r.score, hidden: r.hide_score }
-		# COMMENTS
-		@REPLIES =
-			if r.replies?.length
-				new LazyPromise -> Promise.resolve r.replies
-			else if r.num_comments is 0
-				new LazyPromise -> Promise.resolve []
-			else
-				new LazyPromise ->
-					API.get 'comments/' + r.id,
-						sort: r.suggested_sort
-					.then ([ post_data, comments_data ]) ->
-						new Listing comments_data
-		# STATES
-		@archived = r.archived
-		@contest = r.contest_mode
-		@edited = r.edited
-		@hid = r.hidden
-		@liked = r.likes
-		@locked = r.locked
-		@nsfw = r.over_18
-		@oc = r.is_original_content
-		@pinned = r.pinned
-		@quarantined = r.quarantine
-		@saved = r.saved
-		@spoiler = r.spoiler
-		@stickied = r.stickied
+	constructor: ({ id, comment_id, data }) ->
+		if data
+			@id = data.id
+			@comment_id = data.comment_id
+			@POST = new LazyPromise -> Promise.resolve post data
+			@COMMENTS = new LazyPromise ->
+				if data.num_comments is 0
+					Promise.resolve []
+				else
+					API.get 'comments/' + data.id,
+						comment: data.comment_id
+						context: if data.comment_id then 3 else ''
+						sort: data.suggested_sort # TODO: check effect
+					.then ([ posts, comments ]) ->
+						new Comments comments
+		else
+			@id = id
+			@comment_id = comment_id
+			promise =
+				API.get 'comments/' + id,
+					comment: comment_id
+					context: if comment_id then 3 else ''
+				.then ([ posts, comments ]) ->
+					[
+						post posts.data.children[0].data
+						new Comments comments
+					]
+			@POST = new LazyPromise -> promise.then (result) -> result[0]
+			@COMMENTS = new LazyPromise -> promise.then (result) -> result[1]
+
+post = (r) ->
+	# BASIC DATA
+	author: r.author
+	created_at: new Date(r.created_utc * 1000)
+	content: content(r)
+	distinguish: r.distinguished or 'original-poster'
+	edited_at: new Date(r.edited * 1000)
+	flairs:
+		author: new Flair
+			text: r.author_flair_text
+			color: r.author_flair_background_color
+		title: new Flair
+			text: r.link_flair_text
+			color: r.link_flair_background_color
+	href: '/r/' + r.subreddit + '/post/' + r.id
+	subreddit: r.subreddit
+	title: r.title
+	# ACTIVITY
+	awards: [] # TODO
+	crossposts: r.crosspost_parent_list
+	score: new Score { value: r.score, hidden: r.hide_score }
+	# STATES
+	archived: r.archived
+	contest: r.contest_mode
+	edited: r.edited
+	hidden: r.hidden
+	liked: r.likes
+	locked: r.locked
+	nsfw: r.over_18
+	oc: r.is_original_content
+	pinned: r.pinned
+	quarantined: r.quarantine
+	saved: r.saved
+	spoiler: r.spoiler
+	stickied: r.stickied
 
 content = (r) ->
-	url = new URL(if r.url.startsWith 'http' then r.url else 'https://www.reddit.com' + r.url)
-	title = r.title
 	type = 'link'
 	data = r.url
-	DATA = new LazyPromise -> Promise.resolve null
+	url = new URL(if r.url.startsWith 'http' then r.url else 'https://www.reddit.com' + r.url)
 	switch
 		when r.media?.reddit_video
 			type = 'video'
@@ -108,19 +124,11 @@ content = (r) ->
 				[ _, _, _, _, post_id, _, comment_id ] = url.pathname.split('/')
 				if comment_id
 					type = 'comment'
-					DATA = new LazyPromise ->
-						API.get 'comments/' + post_id,
-							comment: comment_id
-							context: 3
-						.then ([ posts, comments ]) ->
-							{
-								...(new Listing(posts))[0],
-								REPLIES: new LazyPromise ->
-									Promise.resolve new Listing(comments)
-							}
+					data = new Post { id: post_id, comment_id: comment_id }
+				else if post_id
+					type = 'post'
+					data = new Post { id: post_id }
 	return {
-		title,
 		type,
-		data,
-		DATA
+		data
 	}

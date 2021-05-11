@@ -1,20 +1,20 @@
 import Comment from './Comment'
-import MoreComments from './MoreComments'
+import CommentsLoadable from './CommentsLoadable'
 import Post from './Post'
 
-export default class Listing
+export default class Anythings
 	constructor: (r) ->
 		return [] unless r?.kind is 'Listing' and r?.data?.children instanceof Array
 		return r.data.children.map (child) ->
 			switch child.kind
 				when 'Listing'
-					new Listing(child.data)
+					new Anythings(child.data)
 				when 't1'
 					new Comment(child.data)
 				when 't2'
 					null #TODO
 				when 't3'
-					new Post(child.data)
+					new Post { data: child.data } # TODO: Consider whether we can remove knowledge here
 				when 't4'
 					null #TODO
 				when 't5'
@@ -22,4 +22,4 @@ export default class Listing
 				when 't6'
 					null #TODO
 				when 'more'
-					new MoreComments(child.data)
+					new CommentsLoadable(child.data)

@@ -19,8 +19,8 @@ article.hide-scrollbar
 		{:else}
 			p [No submission text.]
 	{:else if content.type === 'comment'}
-		AWAIT(let:v p={content.DATA})
-			PostComments(COMMENTS={v.REPLIES})
+		AWAIT(let:v p={content.data.COMMENTS})
+			PostComments(comments={v})
 	{:else if content.type === 'link'}
 		a(href={content.data}) {content.data}
 	{:else}

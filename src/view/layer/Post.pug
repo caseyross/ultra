@@ -1,12 +1,18 @@
 script.
 	export post = null
+	import { AWAIT } from '../effect'
 	import PostComments from '../partial/PostComments'
 	import PostContent from '../partial/PostContent'
 
 article
-	h1 {post.content.title}
-	address {post.author.name}
-	PostContent(content={post.content})
-	PostComments(COMMENTS={post.REPLIES})
+	AWAIT(let:v p={post.POST})
+		h1 {v.title}
+		address {v.author}
+		{#if v.content.type === 'post'}
+			p [OTHER POST]
+		{:else}
+			PostContent(content={v.content})
+	AWAIT(let:v p={post.COMMENTS})
+		PostComments(comments={v})
 
 style.

@@ -2,7 +2,6 @@ script.
 	export feed = null
 	import { AWAIT } from '../effect'
 	import Comment from '/src/model/Comment'
-	import Listing from '/src/model/Listing'
 	import Post from '/src/model/Post'
 	import CommentTree from '../partial/CommentTree'
 
@@ -10,14 +9,16 @@ AWAIT(let:v p={feed.PAGE})
 	ol.hide-scrollbar
 		{#each v.things as item}
 			li
-				a(href={item.href})
-					{#if item instanceof Post}
-						{#if item.content.type === 'image'}
-							img(src={item.content.data[0].dimension_target({ width: 320, height: 320 }).href})
-						{:else}
-							.post-title {item.content.title}
-							.post-meta {item.flairs.title.text}
-					{:else if item instanceof Comment}
+				{#if item instanceof Post}
+					AWAIT(let:v p={item.POST})
+						a(href={v.href})
+							{#if v.content.type === 'image'}
+								img(src={v.content.data[0].dimension_target({ width: 320, height: 320 }).href})
+							{:else}
+								.post-title {v.title}
+								.post-meta {v.flairs.title.text}
+				{:else if item instanceof Comment}
+					a(href={item.href})
 						CommentTree(data={item})
 
 style.

@@ -6,7 +6,7 @@ script.
 	getLayers = (url) ->
 		layers = [{
 			type: 'directory'
-			href: ''
+			href: '/'
 			data: {} # TODO
 		}]
 		[ _, a, b, c, d, e, f ] = url.pathname.split('/')
@@ -49,14 +49,22 @@ script.
 	layers = getLayers(location)
 	history.replaceState({}, '', layers.last().href)
 	
+	document.addEventListener 'click', (e) ->
+		if e.buttons < 3
+			e.preventDefault()
+
+	document.addEventListener 'contextmenu', (e) ->
+		unless e.altKey
+			e.preventDefault()
+
 	document.addEventListener 'mousedown', (e) ->
 		switch e.buttons
 			when 1
-				for element in e.href
+				for element in e.path
 					if element.href
 						target_url = new URL element.href
-						if target_url.origin is location.origin
-							layers = [ ...layers, getLayers(target_url).last() ]
+						if element.dataset.gotoLayer
+							layers.length = Number(element.dataset.gotoLayer) + 1
 						else if element.dataset.layerType
 							layers = [
 								...layers,
@@ -66,18 +74,16 @@ script.
 									data: target_url.href
 								}
 							]
-						else if element.dataset.gotoLayer
-							layers.length = element.dataset.gotoLayer
+						else if target_url.origin is location.origin
+							layers = [ ...layers, getLayers(target_url).last() ]
 						else
-							location.href = target_url.href
-							return
+							return location.href = target_url.href
 						history.pushState({}, '', layers.last().href)
-						e.preventDefault()
 						break
 			when 2
-				layers.length = layers.length - 1
-				history.pushState({}, '', layers.last().href)
-				e.preventDefault()
+				if layers.length > 1
+					layers.length = layers.length - 1
+					history.pushState({}, '', layers.last().href)
 	
 	import Layer from './Layer'
 

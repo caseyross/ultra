@@ -1,4 +1,4 @@
-import Listing from './Listing'
+import Anythings from './Anythings'
 
 api_config = (type, name, sort) ->
 	switch type
@@ -59,4 +59,4 @@ export default class Feed
 				} 
 			.then (data) ->
 				next_after: data.data.after
-				things: new Listing(data)
+				things: new Anythings(data)

@@ -1,18 +1,18 @@
 script.
 	export data = null
 	import Comment from '/src/model/Comment'
-	import MoreComments from '/src/model/MoreComments'
+	import CommentsLoadable from '/src/model/CommentsLoadable'
 	import DistinguishTag from './DistinguishTag'
 
 .comment-tree
-	{#if data instanceof MoreComments}
+	{#if data instanceof CommentsLoadable}
 		button {data.ids.length} more
 	{:else if data instanceof Comment}
 		.comment
 			.comment-meta
 				{#if data.distinguish}
 					DistinguishTag(distinguish={data.distinguish})
-				a(href='/u/{data.author.name}') {data.author.name}
+				a(href='/u/{data.author}') {data.author}
 			{@html Markdown.to_HTML(data.content)}
 		{#if data.replies.length}
 			.replies
