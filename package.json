@@ -2,7 +2,7 @@
 	"license": "CC-BY-NC-SA-4.0",
 	"devDependencies": {
 		"clean-webpack-plugin": "^4.0.0-alpha.0",
-		"coffee-loader": "^2.0.0",
+		"coffee-loader": "^3.0.0",
 		"coffeescript": "^2.5.1",
 		"copy-webpack-plugin": "^8.1.1",
 		"css-loader": "^5.2.4",
@@ -11,11 +11,11 @@
 		"style-loader": "^2.0.0",
 		"stylus": "^0.54.8",
 		"stylus-loader": "^5.0.0",
-		"svelte": "^3.38.1",
+		"svelte": "^3.38.2",
 		"svelte-loader": "^3.1.1",
-		"svelte-preprocess": "^4.7.2",
-		"webpack": "^5.36.2",
-		"webpack-cli": "^4.6.0",
+		"svelte-preprocess": "^4.7.3",
+		"webpack": "^5.37.0",
+		"webpack-cli": "^4.7.0",
 		"webpack-dev-server": "^3.11.2"
 	},
 	"scripts": {
