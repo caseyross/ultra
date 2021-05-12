@@ -47,6 +47,7 @@ script.
 		return layers
 
 	layers = getLayers(location)
+	layers.last().tapped = true
 	history.replaceState({}, '', layers.last().href)
 	
 	document.addEventListener 'click', (e) ->
@@ -78,11 +79,13 @@ script.
 							layers = [ ...layers, getLayers(target_url).last() ]
 						else
 							return location.href = target_url.href
+						layers.last().tapped = true
 						history.pushState({}, '', layers.last().href)
 						break
 			when 2
 				if layers.length > 1
 					layers.length = layers.length - 1
+					layers.last().tapped = true
 					history.pushState({}, '', layers.last().href)
 	
 	import Layer from './Layer'
@@ -90,16 +93,27 @@ script.
 svelte:head
 	title {layers.last().type}
 {#each layers as layer, i}
-	Layer(layer={layer} top={i === layers.length - 1})
+	{#if layer.tapped}
+		main(class:hidden={i < layers.length - 1})
+			Layer(layer={layer})
 {#if layers.last().type !== 'image'}
 	nav
 		ol
 			{#each layers as layer, i}
 				li
-					a(href={layer.href} data-goto-layer={i}) {layer.type}
+					a(href={layer.href} data-goto-layer={i} class:untapped={!layer.tapped}) {layer.type}
 
 style.
+	main
+		position fixed
+		top 0
+		left 0
+		&.hidden
+			content-visibility hidden
 	nav
 		position fixed
 		top 0
 		right 0
+	a
+		&.untapped
+			opacity 0.5
