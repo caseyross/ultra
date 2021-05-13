@@ -5,31 +5,22 @@ script.
 	import PostImage from './PostImage'
 	import PostVideo from './PostVideo'
 
-article.hide-scrollbar
-	{#if content.type === 'iframe'}
-		iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
-	{:else if content.type === 'video'}
-		PostVideo(data={content.data})
-	{:else if content.type === 'image'}
-		{#each content.data as image}
-			PostImage(image={image})
-	{:else if content.type === 'text'}
-		{#if content.data.length}
-			{@html Markdown.to_HTML(content.data)}
-		{:else}
-			p [No submission text.]
-	{:else if content.type === 'comment'}
-		AWAIT(let:v p={content.data.COMMENTS})
-			PostComments(comments={v})
-	{:else if content.type === 'link'}
-		a(href={content.data}) {content.data}
+{#if content.type === 'iframe'}
+	iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
+{:else if content.type === 'video'}
+	PostVideo(data={content.data})
+{:else if content.type === 'image'}
+	{#each content.data as image}
+		PostImage(image={image})
+{:else if content.type === 'text'}
+	{#if content.data.length}
+		{@html Markdown.to_HTML(content.data)}
 	{:else}
-		.error-message [UNKNOWN CONTENT]
-
-style.
-	article
-		display grid
-		grid-auto-flow column
-		width 100%
-		overflow auto
-		justify-content flex-start
+		p [No submission text.]
+{:else if content.type === 'comment'}
+	AWAIT(let:v p={content.data.COMMENTS})
+		PostComments(comments={v})
+{:else if content.type === 'link'}
+	a(href={content.data}) {content.data}
+{:else}
+	.error-message [UNKNOWN CONTENT]

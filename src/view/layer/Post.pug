@@ -6,8 +6,9 @@ script.
 
 article
 	AWAIT(let:v p={post.POST})
-		h1 {v.title}
-		address {v.author}
+		header
+			h1 {v.title}
+			address {v.author}
 		{#if v.content.type === 'post'}
 			p [OTHER POST]
 		{:else}
@@ -16,3 +17,10 @@ article
 		PostComments(comments={v})
 
 style.
+	article
+		padding-left 4rem
+	header
+		margin 2em 0
+	h1
+		font-size 22px
+		margin 0
