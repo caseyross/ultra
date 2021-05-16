@@ -2,47 +2,53 @@ script.
 	export feed = null
 	import { AWAIT } from '../effect'
 	import Comment from '/src/model/Comment'
+	import Message from '/src/model/Message'
 	import Post from '/src/model/Post'
 	import CommentTree from '../partial/CommentTree'
 
 AWAIT(let:v p={feed.PAGE})
 	ol.hide-scrollbar
 		{#each v.things as item}
-			li
-				{#if item instanceof Post}
-					AWAIT(let:v p={item.POST})
-						a(href={v.href})
-							{#if v.content.type === 'image'}
-								img(src={v.content.data[0].dimension_target({ width: 320, height: 320 }).href})
-							{:else}
-								.post-title {v.title}
-								.post-meta {v.flairs.title.text}
-				{:else if item instanceof Comment}
+			{#if item instanceof Post}
+				AWAIT(let:v p={item.POST})
+					{#if !v.stickied}
+						li
+							a(href={v.href})
+								{#if v.content.type === 'image'}
+									img(src={v.content.data[0].dimension_target({ width: 320, height: 320 }).href})
+								{:else}
+									.post-title {v.title}
+			{:else if item instanceof Comment}
+				li
 					a(href={item.href})
 						CommentTree(data={item})
+			{:else if item instanceof Message}
+				li
+					a(href='') [Message]
 
 style.
 	ol
-		display flex
-		flex-flow row wrap
+		display grid
+		grid-template-columns repeat(3, 216px)
+		grid-template-rows repeat(3, 216px)
+		place-content center
+		gap 3rem
 	li
-		margin 2rem
+		height 100%
+		width 100%
 		overflow hidden
 		text-overflow ellipsis
 	a
 		display block
-		box-sizing content-box
-		width 216px
-		height 216px
-		border 1px solid
-	img
 		width 100%
 		height 100%
+		text-decoration none
+		color black
+	img
+		height 100%
+		width 100%
 		object-fit cover
-		object-position top left
+		object-position center
 	.post-title
-		font-size 36px
+		font-size 26px
 		font-weight bold
-	.post-meta
-		font-size 10px
-		color lightgray

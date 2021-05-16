@@ -100,7 +100,7 @@ call_api = ({ method, path, body }) ->
 		Promise.reject(new RateLimitError("Request would exceed Reddit API frequency limit. Wait #{ratelimit_wait // 1000} seconds."))
 
 window.API =
-	authorization_url: "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=account,creddits,edit,flair,history,identity,livemanage,modconfig,modcontributors,modflair,modlog,modmail,modothers,modposts,modself,modwiki,mysubreddits,privatemessages,read,report,save,structuredstyles,submit,subscribe,vote,wikiedit,wikiread&client_id=#{CLIENT_ID}&redirect_uri=#{REDIRECT_URI}&state=x"
+	login_url: "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=account,creddits,edit,flair,history,identity,livemanage,modconfig,modcontributors,modflair,modlog,modmail,modothers,modposts,modself,modwiki,mysubreddits,privatemessages,read,report,save,structuredstyles,submit,subscribe,vote,wikiedit,wikiread&client_id=#{CLIENT_ID}&redirect_uri=#{REDIRECT_URI}&state=x"
 	get: (endpoint, options = {}) ->
 		# Delete keys with empty values.
 		for name, value of options

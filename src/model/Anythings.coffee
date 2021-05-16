@@ -1,5 +1,6 @@
 import Comment from './Comment'
 import CommentsLoadable from './CommentsLoadable'
+import Message from './Message'
 import Post from './Post'
 
 export default class Anythings
@@ -16,7 +17,7 @@ export default class Anythings
 				when 't3'
 					new Post { data: child.data } # TODO: Consider whether we can remove knowledge here
 				when 't4'
-					null #TODO
+					new Message(child.data)
 				when 't5'
 					null #TODO
 				when 't6'

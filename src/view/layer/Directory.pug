@@ -5,9 +5,9 @@ nav
 	ol.global-feeds
 		h1.other-feeds-set-selector Global
 		li
-			a(href='/r/all') A
+			a(href='/r/all') all
 		li
-			a(href='/r/popular') P
+			a(href='/r/popular') popular
 	ol.other-feeds
 		h1.other-feeds-set-selector Subbed
 		{#each subreddits as subreddit}
@@ -15,9 +15,10 @@ nav
 				a(href='/r/{subreddit}') {subreddit}
 	ol.account-feeds
 		h1.other-feeds-set-selector Account
-		{#each ['M','MM','Q'] as value}
-			li
-				a {value}
+		li
+			a(href='/i/saved') Saved
+		li
+			a(href='/i/mail') Mail
 	.vitals
 		label.quota-monitor
 			meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
@@ -25,6 +26,10 @@ nav
 			meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
 		label.downlink-monitor
 			meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+	{#if localStorage.api_key_refresh_token}
+		a(href='?logout') Log out
+	{:else}
+		a(href={API.login_url}) Log in
 
 style.
 	nav
@@ -34,8 +39,8 @@ style.
 	.other-feeds-set-selector
 		padding 4px 8px
 	a
-		height 256px
-		width 256px
+		height 128px
+		width 128px
 		display flex
 		justify-content center
 		align-items center

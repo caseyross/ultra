@@ -8,7 +8,8 @@ article
 	AWAIT(let:v p={post.POST})
 		header
 			h1 {v.title}
-			address {v.author}
+			address
+				a(href='/u/{v.author}') {v.author}
 		{#if v.content.type === 'post'}
 			p [OTHER POST]
 		{:else}
@@ -18,9 +19,10 @@ article
 
 style.
 	article
-		padding-left 4rem
+		width 640px
 	header
 		margin 2em 0
+		text-align center
 	h1
 		font-size 22px
 		margin 0

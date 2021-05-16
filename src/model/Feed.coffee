@@ -13,6 +13,8 @@ api_config = (type, name, sort) ->
 				else
 					endpoint: sort or ''
 					query: {}
+		when 'mail'
+			endpoint: 'message/inbox'
 		when 'profile'
 			endpoint: 'user/' + name + '/overview'
 			query: switch sort
@@ -22,6 +24,8 @@ api_config = (type, name, sort) ->
 					{ sort: 'controversial', t: sort[1..] }
 				else
 					{ sort: sort }
+		when 'saved'
+			endpoint: 'user/caseyross/saved'
 		when 'subreddit'
 			switch sort
 				when 'hour', 'day', 'week', 'month', 'year', 'all'
@@ -54,7 +58,7 @@ export default class Feed
 			API.get api_config(@type, @name, @sort).endpoint,
 				{
 					after: '',
-					limit: @limit or 25,
+					limit: @limit or 9,
 					...api_config(@type, @name, @sort).query
 				} 
 			.then (data) ->
