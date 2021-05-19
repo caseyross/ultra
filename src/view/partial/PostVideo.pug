@@ -15,7 +15,7 @@ script.
 			audio.currentTime = video.currentTime
 		video.addEventListener 'playing', (e) ->
 			if audio.paused then audio.play()
-
+			
 video(bind:this={video} controls='true')
 	{#each data.tracks.video as representation}
 		source(src={representation.href} type={representation.mime_type})

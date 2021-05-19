@@ -13,9 +13,10 @@ body
 	--lightgray lightgray
 	--black black
 	--orangered orangered
-	&[colortheme=dark]
-		--white rgb(29 32 38)
-		--black #e3e3e3
+	&
+		--white black
+		--black white
+	background var(--white)
 	color var(--black)
 button
 	border 0
@@ -93,7 +94,7 @@ video
 	scrollbar-width none
 	&::-webkit-scrollbar
 		display none
-.error-message
+.error
 	height 100%
 	width 100%
 	display flex

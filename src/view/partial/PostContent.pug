@@ -10,8 +10,9 @@ script.
 {:else if content.type === 'video'}
 	PostVideo(data={content.data})
 {:else if content.type === 'image'}
-	{#each content.data as image}
-		PostImage(image={image})
+	.gallery
+		{#each content.data as image}
+			PostImage(image={image})
 {:else if content.type === 'text'}
 	{#if content.data.length}
 		{@html Markdown.to_HTML(content.data)}
@@ -23,4 +24,10 @@ script.
 {:else if content.type === 'link'}
 	a(href={content.data}) {content.data}
 {:else}
-	.error-message [UNKNOWN CONTENT]
+	.error [UNKNOWN CONTENT]
+
+style.
+	.gallery
+		display flex
+		flex-flow row wrap
+		justify-content center

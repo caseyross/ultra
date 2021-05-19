@@ -3,7 +3,7 @@ script.
 
 figure
 	a(href={image.biggest().href} data-layer-type='image')
-		img(src={image.dimension_target({ width: 640, height: Infinity }).href} alt='')
+		img(src={image.dimension_target({ width: 720, height: 720 }).href} alt='')
 	{#if image.caption.text || image.caption.href}
 		figcaption
 			{#if image.caption.text}
@@ -20,11 +20,9 @@ style.
 		top 0
 		left 0
 		padding 2rem
-		background white
-		border 1px solid
-		border-radius 2rem
 		word-break break-word
+		color orangered
 	img
-		max-width 640px
-		border 1px solid
+		max-width 1280px
+		max-height 720px
 		cursor zoom-in

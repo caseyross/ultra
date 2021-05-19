@@ -119,14 +119,16 @@ style.
 	nav
 		position fixed
 		top 0
-		left 0
+		bottom 0
+		display flex
+		flex-flow column-reverse nowrap
 		li
 			margin 4rem
 		a
 			&.untapped
 				opacity 0.5
 			img
-				height 64px
-				width 64px
+				height 32px
+				width 32px
 				border-radius 50%
-				border 1px solid
+				background orangered

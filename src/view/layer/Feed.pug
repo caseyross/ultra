@@ -13,7 +13,7 @@ AWAIT(let:v p={feed.PAGE})
 				AWAIT(let:v p={item.POST})
 					{#if !v.stickied}
 						li
-							a(href={v.href} style='color: {v.flairs.title.color}')
+							a(href={v.href})
 								{#if v.content.type === 'image'}
 									img(src={v.content.data[0].dimension_target({ width: 216, height: 216 }).href})
 								{:else}
@@ -32,23 +32,22 @@ style.
 		grid-template-columns repeat(3, 216px)
 		grid-template-rows repeat(3, 216px)
 		place-content center
-		gap 5rem
+		gap 3rem
 	li
 		height 100%
 		width 100%
 	a
 		text-decoration none
-		color black
+		color inherit
 	img
 	.post-title
 		height 100%
 		width 100%
 	img
-		object-fit contain
+		object-fit cover
 	.post-title
-		display grid
-		place-items center
 		overflow hidden
-		padding 3rem
-		text-align center
-		font 20px monospace
+		padding 7rem
+		border 1px solid
+		font-size 20px
+		word-break break-word
