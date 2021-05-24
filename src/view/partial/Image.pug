@@ -1,0 +1,57 @@
+script.
+	export data = []
+	export height = undefined
+	export width = undefined
+	export maxHeight = height or Infinity
+	export maxWidth = width or Infinity
+	export maxPixels = Infinity
+	export enableZoom = false
+	
+	zoomResolution = data.resolve { targetWidth: Infinity, targetHeight: Infinity, targetPixels: Infinity }
+	resolution = data.resolve { targetWidth: maxWidth, targetHeight: maxHeight, targetPixels: maxPixels }
+
+	constraint =
+		if maxHeight and maxWidth
+			constrain_ratio = maxWidth / maxHeight
+			if data.aspect_ratio < constrain_ratio
+				'maxHeight'
+			else if data.aspect_ratio > constrain_ratio
+				'maxWidth'
+		else if maxHeight
+			'maxHeight'
+		else if maxWidth
+			'maxWidth'
+	if width is undefined
+		width =
+			if height and data.aspect_ratio
+				height * data.aspect_ratio
+			else if constraint is 'maxHeight'
+				Math.min(resolution.width, maxHeight * data.aspect_ratio)
+			else
+				Math.min(resolution.width, maxWidth)
+	if height is undefined
+		height = width / data.aspect_ratio
+
+	imgStyle = "height: #{height}px; width: #{width}px"
+
+figure
+	{#if enableZoom}
+		a(href={zoomResolution.href} data-layer-type='image')
+			img(src={resolution.href} style={imgStyle} alt='')
+	{:else}
+		img(src={resolution.href} style={imgStyle} alt='')
+	{#if data.caption}
+		figcaption {data.caption.text}
+			{#if data.caption.href}
+				a(href={data.caption.href}) {data.caption.href}
+
+style.
+	figure
+		position relative
+	figcaption
+		position absolute
+		top 0
+		left 0
+		padding 2rem
+		word-break break-word
+		color orangered

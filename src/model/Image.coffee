@@ -1,46 +1,55 @@
 export default class Image
 	constructor: (r) ->
-		@resolutions = switch
+		# NOTE: reddit only reports the true image height for the source image. The resized versions of the image have a height field, but it doesn't correspond to the actual height of the image.
+		switch
 			when r.status and not (r.status is 'valid')
-				[{
+				@aspect_ratio = 1
+				@resolutions = [{
 					width: 640
-					height: 640
 					href: '' # TODO: Add error image for invalid images
 				}]
 			when r.s
-				if r.s.gif
-					[{
-						width: r.s.x
-						height: r.s.y
-						href: r.s.gif
-					}]
-				else
-					r.p.concat(r.s).map (resolution) ->
-						width: resolution.x
-						height: resolution.y
-						href: resolution.u
+				@aspect_ratio = r.s.x / r.s.y
+				@resolutions =
+					if r.s.gif
+						[{
+							width: r.s.x
+							href: r.s.gif
+						}]
+					else
+						r.p.concat(r.s).map (resolution) ->
+							width: resolution.x
+							href: resolution.u
 			when r.variants?.gif
-				[{
-					width: r.variants.gif.source.width
-					height: r.variants.gif.source.height
-					href: r.variants.gif.source.url
-				}]
+				@aspect_ratio = r.variants.gif.source.width / r.variants.gif.source.height
+				@resolutions =
+					[{
+						width: r.variants.gif.source.width
+						href: r.variants.gif.source.url
+					}]
 			when r.source
-				r.resolutions.concat(r.source).map (resolution) ->
+				@aspect_ratio = r.source.width / r.source.height
+				@resolutions = r.resolutions.concat(r.source).map (resolution) ->
 					width: resolution.width
-					height: resolution.height
 					href: resolution.url
 			else
-				[]
+				@aspect_ratio = 1
+				@resolutions = []
 		@resolutions.sort (a, b) -> a.width - b.width
 		@caption =
-			text: r.caption ? ''
-			href: r.link ? ''
-	biggest: () => @resolutions.last()
-	dimension_target: ({ width, height }) =>
-		@resolutions.fold(@resolutions[0], (best, next) ->
-			if best.width < width and best.height < height
-				return next
-			return best
+			if r.caption or r.link
+				text: r.caption ? ''
+				href: r.link ? ''
+			else
+				null
+	resolve: ({ targetWidth = Infinity, targetHeight = Infinity, targetPixels = Infinity }) =>
+		@resolutions.fold(
+			@resolutions[0],
+			(best, next) =>
+				currentWidth = best.width
+				currentHeight = best.width / @aspect_ratio
+				currentPixels = best.width * best.width / @aspect_ratio 
+				if currentWidth < targetWidth and currentHeight < targetHeight and currentPixels < targetPixels
+					return next
+				return best
 		)
-				

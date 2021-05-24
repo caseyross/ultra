@@ -4,12 +4,13 @@ script.
 	import PostComments from '../partial/PostComments'
 	import PostContent from '../partial/PostContent'
 
+svelte:head
+	{#await post.POST.run() then v}
+		title {v.title}
 article
 	AWAIT(let:v p={post.POST})
 		header
 			h1 {v.title}
-			address
-				a(href='/u/{v.author}') {v.author}
 		{#if v.content.type === 'post'}
 			p [OTHER POST]
 		{:else}
@@ -19,16 +20,11 @@ article
 
 style.
 	article
-		width 80vw
+		width 100%
 		display flex
 		flex-flow column nowrap
 		align-items center
 	header
-		margin 4em 0 2em 0
-		width 960px
-		text-align center
+		margin 5em 0 4em 0
 	h1
-		font 20px monospace
-		margin 0
-	address
-		display none
+		font 20px Tahoma

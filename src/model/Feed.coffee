@@ -39,7 +39,7 @@ api_config = (type, name, sort) ->
 					query: {}
 
 export default class Feed
-	constructor: ({ prefix, name, sort, limit })->
+	constructor: ({ prefix, name, sort, after })->
 		@type = switch prefix
 			# i: private feeds
 			when 'i'
@@ -53,14 +53,14 @@ export default class Feed
 				'profile'
 		@name = name
 		@sort = sort
-		@limit = limit
-		@PAGE = new LazyPromise => # PERF: May be faster to remove laziness, since this always needs to run ASAP after page load anyway
+		@PAGE = new LazyPromise =>
 			API.get api_config(@type, @name, @sort).endpoint,
 				{
-					after: '',
-					limit: @limit or 9,
+					after: after,
+					limit: 9,
 					...api_config(@type, @name, @sort).query
 				} 
 			.then (data) ->
-				next_after: data.data.after
 				things: new Anythings(data)
+				next_page:
+					href: '/' + prefix + '/' + name + '?after=' + data.data.after + (if sort then '&sort=' + sort else '')

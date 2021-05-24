@@ -1,53 +1,42 @@
 script.
 	export feed = null
 	import { AWAIT } from '../effect'
-	import Comment from '/src/model/Comment'
-	import Message from '/src/model/Message'
-	import Post from '/src/model/Post'
-	import CommentTree from '../partial/CommentTree'
+	import FeedItem from '../partial/FeedItem.pug'
 
-AWAIT(let:v p={feed.PAGE})
-	ol.hide-scrollbar
-		{#each v.things as item}
-			{#if item instanceof Post}
-				AWAIT(let:v p={item.POST})
-					{#if !v.stickied}
-						li
-							a(href={v.href})
-								{#if v.content.type === 'image'}
-									img(src={v.content.data[0].dimension_target({ width: 216, height: 216 }).href})
-								{:else}
-									.post-title {v.title}
-			{:else if item instanceof Comment}
-				li
-					a(href={item.href})
-						CommentTree(data={item})
-			{:else if item instanceof Message}
-				li
-					a(href='') [Message]
+svelte:head
+	title r/{feed.name}
+.feed
+	AWAIT(let:v p={feed.PAGE})
+		div
+		div
+		div
+		ol.hide-scrollbar.stickies
+			{#each v.things.filter(x => x.stickied) as item}
+				FeedItem(item={item})
+		ol.hide-scrollbar
+			{#each v.things.filter(x => !x.stickied && !x.pinned) as item}
+				FeedItem(item={item})
+		ol.hide-scrollbar.pins
+			{#each v.things.filter(x => x.stickied) as item}
+				FeedItem(item={item})
+		div
+		div
+			a(href={v.next_page.href}) Page 2 ->
+		div
 
 style.
+	.feed
+		height 100%
+		width 100%
+		display grid
+		grid-template-columns 1fr 720px 1fr
+		grid-template-rows 1fr 720px 1fr
 	ol
 		display grid
-		grid-template-columns repeat(3, 216px)
-		grid-template-rows repeat(3, 216px)
+		grid-template-columns repeat(3, 240px)
+		grid-template-rows repeat(3, 240px)
 		place-content center
-		gap 3rem
-	li
-		height 100%
-		width 100%
-	a
-		text-decoration none
-		color inherit
-	img
-	.post-title
-		height 100%
-		width 100%
-	img
-		object-fit cover
-	.post-title
-		overflow hidden
-		padding 7rem
-		border 1px solid
-		font-size 20px
-		word-break break-word
+		&.stickies
+		&.pins
+			grid-template-columns 240px
+			visibility hidden

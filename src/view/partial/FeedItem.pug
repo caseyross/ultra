@@ -1,0 +1,36 @@
+script.
+	export item = null
+	import { AWAIT } from '../effect'
+	import Comment from '/src/model/Comment'
+	import Message from '/src/model/Message'
+	import Post from '/src/model/Post'
+	import CommentTree from './CommentTree'
+	import Image from './Image'
+
+li
+	a(href={item.href})
+		{#if item instanceof Post}
+			AWAIT(let:v p={item.POST})
+				{#if v.content.type === 'image'}
+					Image(data={v.content.data[0]} maxWidth={216} maxHeight={216})
+				{:else}
+					.post-title.hide-scrollbar {v.title}
+		{:else if item instanceof Comment}
+			CommentTree(data={item})
+		{:else if item instanceof Message}
+			p [Message]
+
+style.
+	li
+		height 100%
+		width 100%
+		padding 3rem
+	a
+		text-decoration none
+		color inherit
+	.post-title
+		max-height 216px
+		max-width 216px
+		overflow auto
+		font 20px serif
+		word-break break-word

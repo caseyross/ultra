@@ -2,7 +2,7 @@ script.
 	export content = null
 	import { AWAIT } from '../effect'
 	import PostComments from './PostComments'
-	import PostImage from './PostImage'
+	import PostGallery from './PostGallery'
 	import PostVideo from './PostVideo'
 
 {#if content.type === 'iframe'}
@@ -10,9 +10,7 @@ script.
 {:else if content.type === 'video'}
 	PostVideo(data={content.data})
 {:else if content.type === 'image'}
-	.gallery
-		{#each content.data as image}
-			PostImage(image={image})
+	PostGallery(images={content.data})
 {:else if content.type === 'text'}
 	{#if content.data.length}
 		{@html Markdown.to_HTML(content.data)}
@@ -25,9 +23,3 @@ script.
 	a(href={content.data}) {content.data}
 {:else}
 	.error [UNKNOWN CONTENT]
-
-style.
-	.gallery
-		display flex
-		flex-flow row wrap
-		justify-content center

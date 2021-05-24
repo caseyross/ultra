@@ -21,12 +21,12 @@ script.
 				layers.push
 					type: 'feed'
 					href: '/' + a + '/' + b
-					data: new Feed { prefix: a, name: b, sort: c, limit: p.get('limit') } 
+					data: new Feed { prefix: a, name: b, sort: c, after: p.get('after') } 
 			else
 				layers.push
 					type: 'feed'
 					href: '/' + a + '/' + b
-					data: new Feed { prefix: a, name: b, sort: p.get('sort'), limit: p.get('limit') }
+					data: new Feed { prefix: a, name: b, sort: p.get('sort'), after: p.get('after') }
 				switch c
 					when 'wiki'
 						layers.push

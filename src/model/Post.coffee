@@ -7,6 +7,10 @@ import Video from './Video'
 export default class Post
 	constructor: ({ id, comment_id, data }) ->
 		if data
+			@pinned = data.pinned # duplicated for feed item display
+			@stickied = data.stickied # duplicated for feed item display
+			@href = '/r/' + data.subreddit + '/post/' + data.id # duplicated for feed item display
+			@score = new Score { value: data.score, hidden: data.hide_score } # duplicated for feed item display
 			@id = data.id
 			@comment_id = data.comment_id
 			@POST = new LazyPromise -> Promise.resolve post data
