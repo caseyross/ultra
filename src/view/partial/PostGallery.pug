@@ -3,30 +3,34 @@ script.
 	import Image from './Image'
 	current = 0
 
-section(style="grid-template-columns: {images.length > 1 ? '1fr auto 1fr' : '1fr'}")
-	{#if images.length > 1}
-		nav.previous-images
-			{#each images as image, i}
-				{#if i < current}
-					button(on:mousedown={() => current = i})
-						Image(data={image} height={64})
+section
+	nav.previous-images
+		{#each images as image, i}
+			{#if i < current}
+				button(on:mousedown={() => current = i})
+					Image(data={image} height={64})
 	{#key current}
-		Image(data={images[current]} maxWidth={960} maxHeight={720} maxPixels={518400} enableZoom={true})
-	{#if images.length > 1}
-		nav.next-images
-			{#each images as image, i}
-				{#if i > current}
-					button(on:mousedown={() => current = i})
-						Image(data={image} height={64})
+		Image(data={images[current]} maxWidth={854} maxHeight={854} enableZoom={true})
+	nav.next-images
+		{#each images as image, i}
+			{#if i > current}
+				button(on:mousedown={() => current = i})
+					Image(data={image} height={64})
 
 style.
 	section
-		display grid
-		gap 3rem
+		display flex
+		flex-flow column nowrap
+		align-items flex-end
 	nav
-		display grid
+		display none
 		grid-auto-flow column
 		align-items flex-start
 		gap 3rem
+		padding 0 3rem
 	.previous-images
 		justify-content flex-end
+	.next-images
+		justify-content flex-start
+	button
+		height 64px

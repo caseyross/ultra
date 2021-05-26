@@ -9,29 +9,36 @@ script.
 		button {data.ids.length} more
 	{:else if data instanceof Comment}
 		.comment
+			.score {data.score.value}
 			.comment-meta
 				{#if data.distinguish}
 					DistinguishTag(distinguish={data.distinguish})
 				a(href='/u/{data.author}') {data.author}
-			{@html Markdown.to_HTML(data.content)}
+			div
+				{@html Markdown.to_HTML(data.content)}
 		{#if data.replies.length}
 			.replies
 				{#each data.replies as reply}
 					svelte:self(data={reply})
 
 style.
-	.comment-tree
-		margin-top 1em
 	.comment
-		display inline-block
+		display grid
+		grid-template-columns 15rem 1fr
+		align-items flex-start
+		margin-bottom 2em
 		max-width 640px
-		font 13px Tahoma
+	.score
+		display flex
+		justify-content flex-end
+		align-items center
+		font-size 10px
+		color gray
+		padding-right 2rem
 	.comment-meta
-		display inline-block
-		font 10px Courier
+		display none
+		font-size 10px
 		margin-bottom 1rem
-	a
-		text-decoration none
-		color wheat
 	.replies
-		padding-left 10rem
+		margin-left 15rem
+		border-left 1px solid gray

@@ -3,6 +3,7 @@
 html
 	font-size 25% // 1rem = 4px
 body
+	margin 0
 	// font
 	font 400 12px/1.333 'Iosevka Aile'
 	font-feature-settings 'kern'
@@ -10,20 +11,28 @@ body
 	-moz-osx-font-smoothing grayscale
 	// colors
 	--white white
+	--gainsboro gainsboro
 	--lightgray lightgray
 	--black black
 	--orangered orangered
 	&
 		--white black
+		--gainsboro #333
 		--black white
 	background var(--white)
 	color var(--black)
+a
+	text-decoration none
+	color salmon
+	&:visited
+		color lightsteelblue
+address
+	font-style normal
 button
 	padding 0
 	border 0
 	font inherit
 	cursor pointer
-body,
 figure,
 menu,
 ol, ul
@@ -38,22 +47,10 @@ ol, ul
 img
 video
 	box-sizing content-box
-iframe
-	border 0
-iframe
-video
-	width 1280px
-	height 720px
 .md
 	white-space pre-wrap
 	word-break break-word
 	overflow-wrap anywhere
-	a
-		color steelblue
-		text-decoration none
-		border-bottom 2px solid lightsteelblue
-		&:visited
-			color lightsteelblue
 	blockquote
 		font-style italic
 	code
@@ -73,7 +70,7 @@ video
 		border 1px dashed red
 		overflow auto
 	table
-		font 12px/1.5 monospace
+		font 12px/16px 'Iosevka Aile'
 		overflow-wrap break-word
 		margin 0 0 6px 0
 		border 1px solid
@@ -84,7 +81,7 @@ video
 	th
 		vertical-align bottom
 		font-weight normal
-		background gainsboro
+		background var(--gainsboro)
 	ul
 		list-style square
 		padding-left 4rem

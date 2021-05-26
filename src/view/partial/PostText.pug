@@ -1,0 +1,14 @@
+script.
+	export html = ''
+
+{#if html}
+	.text {@html Markdown.to_HTML(html)}
+{:else}
+	p [No submission text.]
+
+style.
+	.text
+		width 640px
+		font 16px sans-serif
+		border 1px solid
+		padding 3em

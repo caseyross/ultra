@@ -63,7 +63,6 @@ script.
 			when 1
 				for element in e.path
 					if element.href
-						target_url = new URL element.href
 						if element.dataset.gotoLayer
 							layers.length = Number(element.dataset.gotoLayer) + 1
 						else if element.dataset.layerType
@@ -72,13 +71,15 @@ script.
 								{
 									type: element.dataset.layerType
 									href: layers.last().href
-									data: target_url.href
+									data: element.href
 								}
 							]
-						else if target_url.origin is location.origin
-							layers = [ ...layers, getLayers(target_url).last() ]
+						else if element.origin is location.origin
+							layers = [ ...layers, getLayers(new URL element.href).last() ]
+						else if element.target is '_blank'
+							return window.open(element.href)
 						else
-							return location.href = target_url.href
+							return location.href = element.href
 						layers.last().tapped = true
 						history.pushState({}, '', layers.last().href)
 						break
@@ -112,8 +113,6 @@ style.
 		height 100vh
 		width 100vw
 		overflow auto
-		display grid
-		justify-content center
 		&.hidden
 			content-visibility hidden
 	nav

@@ -3,6 +3,7 @@ script.
 	import { AWAIT } from '../effect'
 	import PostComments from './PostComments'
 	import PostGallery from './PostGallery'
+	import PostText from './PostText'
 	import PostVideo from './PostVideo'
 
 {#if content.type === 'iframe'}
@@ -12,10 +13,7 @@ script.
 {:else if content.type === 'image'}
 	PostGallery(images={content.data})
 {:else if content.type === 'text'}
-	{#if content.data.length}
-		{@html Markdown.to_HTML(content.data)}
-	{:else}
-		p [No submission text.]
+	PostText(html={content.data})
 {:else if content.type === 'comment'}
 	AWAIT(let:v p={content.data.COMMENTS})
 		PostComments(comments={v})
@@ -23,3 +21,15 @@ script.
 	a(href={content.data}) {content.data}
 {:else}
 	.error [UNKNOWN CONTENT]
+
+style.
+	iframe
+		width 854px
+		height 480px
+		border 0
+	a
+		max-width 854px
+		padding 10rem
+		border 1px solid
+		font-size 89px
+		word-break break-all
