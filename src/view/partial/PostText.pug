@@ -3,10 +3,11 @@ script.
 
 section
 	nav [No headings.]
-	{#if html}
-		.text {@html Markdown.to_HTML(html)}
-	{:else}
-		p [No submission text.]
+	.text
+		{#if html}
+			| {@html html}
+		{:else}
+			p [No submission text.]
 
 style.
 	section

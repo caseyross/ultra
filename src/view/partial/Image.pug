@@ -1,47 +1,25 @@
 script.
 	export data = []
-	export height = undefined
-	export width = undefined
-	export maxHeight = height or Infinity
-	export maxWidth = width or Infinity
+	export minWidth = 0
+	export minHeight = 0
+	export minPixels = 0
+	export maxWidth = Infinity
+	export maxHeight = Infinity
 	export maxPixels = Infinity
 	export enableZoom = false
 	
-	zoomResolution = data.resolve { targetWidth: Infinity, targetHeight: Infinity, targetPixels: Infinity }
-	resolution = data.resolve { targetWidth: maxWidth, targetHeight: maxHeight, targetPixels: maxPixels }
+	zoomResolution = data.resolve { maxWidth: Infinity, maxHeight: Infinity, maxPixels: Infinity }
+	resolution = data.resolve { minWidth, minHeight, minPixels, maxWidth, maxHeight, maxPixels }
 
-	constraint =
-		if maxHeight and maxWidth
-			constrain_ratio = maxWidth / maxHeight
-			if data.aspect_ratio < constrain_ratio
-				'maxHeight'
-			else if data.aspect_ratio > constrain_ratio
-				'maxWidth'
-		else if maxHeight
-			'maxHeight'
-		else if maxWidth
-			'maxWidth'
-	if width is undefined
-		width =
-			if height and data.aspect_ratio
-				height * data.aspect_ratio
-			else if constraint is 'maxHeight'
-				Math.min(resolution.width, maxHeight * data.aspect_ratio)
-			else
-				Math.min(resolution.width, maxWidth)
-	if height is undefined
-		height = width / data.aspect_ratio
-	
-	pixels = width * height
-	if maxPixels < pixels
-		width = width * Math.sqrt(maxPixels / pixels)
-		height = height * Math.sqrt(maxPixels / pixels)
-
-	imgStyle = "height: #{height}px; width: #{width}px"
+	imgStyle = ''
+	if maxWidth < Infinity
+		imgStyle += 'max-width:' + maxWidth + 'px;'
+	if maxHeight < Infinity
+		imgStyle += 'max-height:' + maxHeight + 'px;'
 
 figure
 	{#if enableZoom}
-		a(href={zoomResolution.href} data-layer-type='image')
+		a(href={zoomResolution.href} title='Click to see image at original size')
 			img(src={resolution.href} style={imgStyle} alt='')
 	{:else}
 		img(src={resolution.href} style={imgStyle} alt='')
@@ -56,4 +34,4 @@ style.
 		justify-content space-between
 		margin-bottom 1rem
 	img
-		border 1px solid
+		border-top 6px solid salmon

@@ -42,14 +42,16 @@ export default class Image
 				href: r.link ? ''
 			else
 				null
-	resolve: ({ targetWidth = Infinity, targetHeight = Infinity, targetPixels = Infinity }) =>
+	resolve: ({ minWidth, minHeight, minPixels, maxWidth, maxHeight, maxPixels }) =>
 		@resolutions.fold(
 			@resolutions[0],
-			(best, next) =>
-				currentWidth = best.width
-				currentHeight = best.width / @aspect_ratio
-				currentPixels = best.width * best.width / @aspect_ratio 
-				if currentWidth < targetWidth and currentHeight < targetHeight and currentPixels < targetPixels
+			(current, next) =>
+				width = current.width
+				height = current.width / @aspect_ratio
+				pixels = current.width * current.width / @aspect_ratio
+				if width < minWidth or height < minHeight or pixels < minPixels
 					return next
-				return best
+				if width >= maxWidth or height >= maxHeight or pixels >= maxPixels
+					return current
+				return next
 		)

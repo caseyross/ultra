@@ -24,7 +24,7 @@ export default class Comment
 		@subreddit = r.subreddit
 		# ACTIVITY
 		@awards = [] # TODO
-		@controversiality = r.controversiality
+		@controversial = Boolean(r.controversiality) # labeled as either 1 or 0, even though the property name sounds like a scalar value
 		@score = new Score { hidden: r.score_hidden, value: r.score }
 		# REPLIES
 		@replies = new Comments(r.replies)

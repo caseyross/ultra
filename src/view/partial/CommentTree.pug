@@ -1,25 +1,25 @@
 script.
-	export data = null
+	export comment = null
 	import Comment from '/src/model/Comment'
 	import CommentsLoadable from '/src/model/CommentsLoadable'
 	import DistinguishTag from './DistinguishTag'
 
 .comment-tree
-	{#if data instanceof CommentsLoadable}
-		button {data.ids.length} more
-	{:else if data instanceof Comment}
+	{#if comment instanceof CommentsLoadable}
+		button {comment.ids.length} more
+	{:else if comment instanceof Comment}
 		.comment
-			.score {data.score.value}
+			.score {comment.score.text}
 			.comment-meta
-				{#if data.distinguish}
-					DistinguishTag(distinguish={data.distinguish})
-				a(href='/u/{data.author}') {data.author}
+				{#if comment.distinguish}
+					DistinguishTag(distinguish={comment.distinguish})
+				a(href='/u/{comment.author}') {comment.author}
 			div
-				{@html Markdown.to_HTML(data.content)}
-		{#if data.replies.length}
+				{@html comment.content}
+		{#if comment.replies.length}
 			.replies
-				{#each data.replies as reply}
-					svelte:self(data={reply})
+				{#each comment.replies as reply}
+					svelte:self(comment={reply})
 
 style.
 	.comment
