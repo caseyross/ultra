@@ -2,7 +2,7 @@ script.
 	export comments = []
 	import CommentTree from './CommentTree'
 
-section
+section.hide-scrollbar
 	{#each comments as comment}
 		CommentTree(data={comment})
 	{:else}
@@ -10,5 +10,7 @@ section
 
 style.
 	section
+		height 100%
+		overflow auto
 		width 854px
 		padding 3em 0

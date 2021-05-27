@@ -1,14 +1,24 @@
 script.
 	export html = ''
 
-{#if html}
-	.text {@html Markdown.to_HTML(html)}
-{:else}
-	p [No submission text.]
+section
+	nav [No headings.]
+	{#if html}
+		.text {@html Markdown.to_HTML(html)}
+	{:else}
+		p [No submission text.]
 
 style.
+	section
+		display grid
+		grid-template-columns 200px 640px
+		align-items flex-start
+		gap 16px
+	nav
+		color #555
+		border 1px solid
+		padding 2em
 	.text
 		width 640px
-		font 16px sans-serif
 		border 1px solid
-		padding 3em
+		padding 2em

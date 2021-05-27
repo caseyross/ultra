@@ -1,5 +1,6 @@
 window.Markdown =
 	to_HTML: (string) ->
+		return string
 		html = '<div class="md">'
 		positions = []
 		prev2 = ''

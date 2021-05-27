@@ -8,7 +8,7 @@ svelte:head
 	{#await post.POST.run() then v}
 		title {v.title}
 article
-	.content
+	.content.hide-scrollbar
 		AWAIT(let:v p={post.POST})
 			PostContent(content={v.content})
 	.meta
@@ -24,18 +24,25 @@ article
 
 style.
 	article
+		height 100%
 		width 100%
 		display grid
 		grid-template-columns 1fr 1fr
 	.content
-		margin 15rem 0
+		height 100%
+		overflow auto
+		padding 24rem 0
 		display flex
 		flex-flow column nowrap
 		align-items flex-end
-	h1
-		font-size 26px
+	.meta
+		height 100%
+		padding 24rem 0
 	header
-		margin 15rem 13rem
+		width 800px
+		margin 0 15rem
+	h1
+		font 26px 'Fabrikat Normal'
 	address
 		display flex
 		flex-flow column nowrap

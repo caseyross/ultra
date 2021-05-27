@@ -6,7 +6,7 @@ export default class Comment
 	constructor: (r) ->
 		# BASIC DATA
 		@author = r.author
-		@content = r.body ? ''
+		@content = r.body_html ? ''
 		@created_at = new Date(r.created_utc * 1000)
 		@distinguish = switch
 			when r.distinguished then r.distinguished
