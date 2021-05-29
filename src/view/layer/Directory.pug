@@ -1,18 +1,18 @@
 script.
 	subreddits = ['analog', 'genshin_impact', 'tulsa']
+	users = ['KeyserSosa', 'kn0thing', 'spez']
 
 nav
-	ol.global-feeds
-		h1.other-feeds-set-selector Global
-		li
-			a(href='/r/all') all
-		li
-			a(href='/r/popular') popular
 	ol.other-feeds
-		h1.other-feeds-set-selector Subbed
+		h1.other-feeds-set-selector Subscriptions
 		{#each subreddits as subreddit}
 			li
 				a(href='/r/{subreddit}') {subreddit}
+	ol.user-feeds
+		h1.other-feeds-set-selector Following
+		{#each users as user}
+			li
+				a(href='/u/{user}') {user}
 	ol.account-feeds
 		h1.other-feeds-set-selector Account
 		li
@@ -33,8 +33,6 @@ nav
 
 style.
 	nav
-		height 100%
-	ol
 		display flex
 	.other-feeds-set-selector
 		padding 4px 8px

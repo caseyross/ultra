@@ -1,25 +1,21 @@
 script.
 	export html = ''
 
-section
-	nav [No headings.]
-	.text
-		{#if html}
-			| {@html html}
-		{:else}
-			p [No submission text.]
+section.text
+	nav.table-of-contents [No headings.]
+	{#if html}
+		| {@html html}
+	{:else}
+		p [No submission text.]
 
 style.
-	section
-		display grid
-		grid-template-columns 200px 640px
-		align-items flex-start
-		gap 16px
 	nav
+		position absolute
+		top 0
+		right calc(100% + 16px)
+		width 25%
 		color #555
-		border 1px solid
-		padding 2em
 	.text
-		width 640px
-		border 1px solid
+		position relative
 		padding 2em
+		border 1px solid

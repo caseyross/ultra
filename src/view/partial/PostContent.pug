@@ -6,31 +6,31 @@ script.
 	import PostText from './PostText'
 	import PostVideo from './PostVideo'
 
-{#if content.type === 'iframe'}
-	iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
-{:else if content.type === 'video'}
-	PostVideo(data={content.data})
-{:else if content.type === 'image'}
-	PostGallery(images={content.data})
-{:else if content.type === 'text'}
-	PostText(html={content.data})
-{:else if content.type === 'comment'}
-	AWAIT(let:v p={content.data.COMMENTS})
-		PostComments(comments={v})
-{:else if content.type === 'link'}
-	a(href={content.data}) {content.data}
-{:else}
-	.error [UNKNOWN CONTENT]
+section.content
+	{#if content.type === 'iframe'}
+		iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
+	{:else if content.type === 'video'}
+		PostVideo(data={content.data})
+	{:else if content.type === 'image'}
+		PostGallery(images={content.data})
+	{:else if content.type === 'text'}
+		PostText(html={content.data})
+	{:else if content.type === 'comment'}
+		AWAIT(let:v p={content.data.COMMENTS})
+			PostComments(comments={v})
+	{:else if content.type === 'link'}
+		a(href={content.data}) {content.data}
+	{:else}
+		.error [UNKNOWN CONTENT]
 
 style.
+	section
+		margin-top 5rem
 	iframe
-		width 800px
-		height 450px
-		border 0
-	a
-		max-width 800px
-		padding 10rem
 		border 1px solid
+	a
+		padding 10rem
 		font-size 48px
 		font-weight 900
 		word-break break-all
+		border 1px solid

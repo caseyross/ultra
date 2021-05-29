@@ -4,10 +4,10 @@ script.
 
 section
 	{#each images as image}
-		Image(data={image} minWidth={640} maxWidth={960} enableZoom={true})
+		Image(data={image} minWidth={800} maxWidth={800} enableZoom={true})
 
 style.
 	section
-		display flex
-		flex-flow column nowrap
-		align-items flex-end
+		display grid
+		grid-auto-flow row
+		gap 3rem

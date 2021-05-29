@@ -7,35 +7,19 @@ svelte:head
 	title r/{feed.name}
 .feed
 	AWAIT(let:v p={feed.PAGE})
-		div
-		div
-		div
-		ol.hide-scrollbar.stickies
+		ol.stickies
 			{#each v.things.filter(x => x.stickied) as item}
 				FeedItem(item={item})
-		ol.hide-scrollbar
+		ol
 			{#each v.things.filter(x => !x.stickied && !x.pinned) as item}
 				FeedItem(item={item})
-		ol.hide-scrollbar.pins
-			{#each v.things.filter(x => x.stickied) as item}
-				FeedItem(item={item})
-		div
-		div
 			a(href={v.next_page.href}) Page 2 ->
-		div
 
 style.
 	.feed
-		height 100%
-		width 100%
-		display grid
-		grid-template-columns 1fr 720px 1fr
-		grid-template-rows 1fr 720px 1fr
+		display flex
 	ol
-		display grid
-		grid-template-columns repeat(3, 1fr)
-		place-content center
-		&.stickies
-		&.pins
-			grid-template-columns 240px
-			visibility hidden
+		display flex
+		flex-flow row wrap
+	.stickies
+		flex-flow column nowrap

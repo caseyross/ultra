@@ -16,7 +16,7 @@ li
 				{:else}
 					.post-title.hide-scrollbar {v.title}
 		{:else if item instanceof Comment}
-			CommentTree(data={item})
+			CommentTree(comment={item})
 		{:else if item instanceof Message}
 			p [Message]
 

@@ -7,45 +7,33 @@ script.
 svelte:head
 	{#await post.POST.run() then v}
 		title {v.title}
-article
-	.content.hide-scrollbar
-		AWAIT(let:v p={post.POST})
-			PostContent(content={v.content})
-	.meta
+.post
+	article
 		AWAIT(let:v p={post.POST})
 			header
 				h1 {v.title}
 				address
 					a(href='/u/{v.author}') {v.author}
+					| &nbsp;->&nbsp;
 					span {v.subreddit}
-					time {v.created_at.toRelativeString()}
+					| ,&nbsp;
+					time {v.created_at.asHumanReadableAgo()}
+			PostContent(content={v.content})
 		AWAIT(let:v p={post.COMMENTS})
 			PostComments(comments={v})
+	nav
 
 style.
+	.post
+		display grid
+		grid-template-columns 1fr 123px
 	article
-		height 100%
-		width 100%
-		display grid
-		grid-template-columns 50% 50%
-	.content
-		height 100%
-		overflow auto
-		display flex
-		flex-flow column nowrap
-		align-items flex-end
-	.meta
-		height 100%
-		display grid
-		grid-template-rows 20vh 80vh
-	header
-		margin-left 15rem
-		margin-top 10rem
-		border-bottom 1px solid
+		width 800px
+		padding 6rem 0
+		
 	h1
 		font 26px 'Fabrikat Normal'
 	address
 		display flex
-		flex-flow column nowrap
 		color gray
 		font-size 20px
