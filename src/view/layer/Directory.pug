@@ -1,55 +1,41 @@
 script.
-	subreddits = ['analog', 'genshin_impact', 'tulsa']
+	subreddits = ['analog', 'Genshin_Impact', 'tulsa']
 	users = ['KeyserSosa', 'kn0thing', 'spez']
 
 nav
-	ol.other-feeds
-		h1.other-feeds-set-selector Subscriptions
-		{#each subreddits as subreddit}
-			li
-				a(href='/r/{subreddit}') {subreddit}
-	ol.user-feeds
-		h1.other-feeds-set-selector Following
-		{#each users as user}
-			li
-				a(href='/u/{user}') {user}
 	ol.account-feeds
-		h1.other-feeds-set-selector Account
+		h1 Account
+		hr
 		li
 			a(href='/i/saved') Saved
 		li
-			a(href='/i/mail') Mail
-	.vitals
-		label.quota-monitor
-			meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
-		label.server-monitor
-			meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
-		label.downlink-monitor
-			meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
-	{#if localStorage.api_key_refresh_token}
-		a(href='?logout') Log out
-	{:else}
-		a(href={API.login_url}) Log in
+			{#if localStorage.api_key_refresh_token}
+				a(href='?logout') Log out
+			{:else}
+				a(href={API.login_url}) Log in
+	ol.other-feeds
+		h1 Subreddits
+		hr
+		{#each subreddits as subreddit}
+			li
+				a(href='/r/{subreddit}') {subreddit}
+	ol.other-feeds
+		h1 Multireddits
+		hr
+		{#each ['all, popular'] as subreddit}
+			li
+				a(href='/r/{subreddit}') {subreddit}
+	ol.user-feeds
+		h1 Following
+		hr
+		{#each users as user}
+			li
+				a(href='/u/{user}') {user}
 
 style.
 	nav
 		display flex
-	.other-feeds-set-selector
-		padding 4px 8px
-	a
-		height 128px
-		width 128px
-		display flex
-		justify-content center
-		align-items center
-		border 1px solid
-		border-radius 50%
-		margin 2rem
-	.vitals
-		& label
-			margin 4px
-		& meter
-			appearance none
-			width 8rem
-			border 1px solid
-			background darkseagreen
+	ol
+		width 240px
+	h1
+		font 900 19px 'Fabrikat Normal'

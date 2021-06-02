@@ -56,9 +56,13 @@ post = (r) ->
 	href: '/r/' + r.subreddit + '/post/' + r.id
 	subreddit: r.subreddit
 	title: r.title
+	xpost_parent:
+		if r.crosspost_parent_list
+			new Post(r.crosspost_parent_list[0])
+		else
+			null
 	# ACTIVITY
 	awards: [] # TODO
-	crossposts: r.crosspost_parent_list
 	score: new Score { value: r.score, hidden: r.hide_score }
 	# STATES
 	archived: r.archived

@@ -93,42 +93,95 @@ script.
 
 svelte:head
 	title {layers.last().type}
+{#each layers as layer, i}
+	{#if layer.tapped}
+		main.hide-scrollbar(class:hidden={i < layers.length - 1})
+			Layer(layer={layer})
 nav
-	a(href='/' data-goto-layer={0} class:dimmed={layers.length > 1})
+	a.logo(href={layers[0].href} data-goto-layer={0})
 		img.logo-icon
 		{#if layers.length === 1}
 			span.logo-text Ares
-main
-	{#each layers as layer, i}
-		{#if layer.tapped}
-			.layer.hide-scrollbar(class:hidden={i < layers.length - 1})
-				Layer(layer={layer})
+a.messages-waiting(href='/messages')
+	data.counter {Math.trunc(Math.random() * 10)}
+	| messages
+data.version PRE-PROTOTYPE
+a.feedback(href='/') REPORT A BUG
+.vitals
+	label.quota-monitor
+		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+	label.server-monitor
+		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+	label.downlink-monitor
+		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
 
 style.
 	main
-		width 100%
-		height 100%
-	.layer
-		position absolute
-		height 100%
+		position fixed
+		top 0
+		left 0
+		width 100vw
+		height 100vh
 		overflow auto
-		&.hidden
-			content-visibility hidden
-	nav
 		display flex
 		flex-flow column nowrap
-		a
-			margin 4rem
-			&.dimmed
-				opacity 0.5
-				&:hover
-					opacity 1
-			img
-				height 32px
-				width 32px
-				border-radius 50%
-				background salmon
-			.logo-text
-				font 900 26px 'Fabrikat Normal'
-				letter-spacing -1px
-				color gray
+		align-items center
+		&.hidden
+			filter blur(24px)
+	nav
+		position fixed
+		top 0
+		left 0
+		margin 4rem
+		display flex
+		align-items center
+	.logo
+		&.dimmed
+			opacity 0.5
+			&:hover
+				opacity 1
+	.logo-icon
+		height 32px
+		width 32px
+		border-radius 50%
+		background salmon
+	.logo-text
+		font 900 26px 'Fabrikat Normal'
+		letter-spacing -1px
+		color gray
+	.messages-waiting
+		position fixed
+		top 0
+		right 0
+		margin 4rem
+		font 900 19px 'Fabrikat Normal'
+		color gray
+	.counter
+		font 900 26px 'Fabrikat Normal'
+		letter-spacing -1px
+		color salmon
+	.version
+		position fixed
+		bottom 0
+		left 0
+		padding 4rem
+		font 900 12px 'Fabrikat Normal'
+		color lightgray
+	.feedback
+		position fixed
+		bottom 0
+		right 0
+		padding 4rem
+		font 900 12px 'Fabrikat Normal'
+		color gray
+		&:hover
+			color salmon
+	.vitals
+		margin 4rem
+		display flex
+		flex-flow column nowrap
+		display none
+		& meter
+			appearance none
+			width 8rem
+			background darkseagreen
