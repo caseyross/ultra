@@ -2,12 +2,15 @@ script.
 	export images = []
 	import Image from './Image'
 
-section
+section.hide-scrollbar
 	{#each images as image}
-		Image(data={image} minWidth={800} maxWidth={800} enableZoom={true})
+		Image(image={image} minW={640} maxH={innerHeight - 40} maxW={innerWidth - 40} enableZoom={true})
 
 style.
 	section
+		padding 4rem 8rem
+		max-width 100%
+		overflow auto
 		display grid
-		grid-auto-flow row
-		gap 1rem
+		grid-auto-flow column
+		gap 2rem

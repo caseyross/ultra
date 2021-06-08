@@ -2,8 +2,12 @@ script.
 	export comments = []
 	import CommentTree from './CommentTree'
 
-section.comments
+.comments
 	{#each comments as comment}
 		CommentTree(comment={comment})
 	{:else}
 		p [No comments.]
+
+style.
+	.comments
+		width 960px

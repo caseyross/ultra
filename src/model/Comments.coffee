@@ -2,9 +2,9 @@ import Comment from './Comment'
 import CommentsLoadable from './CommentsLoadable'
 
 export default class Comments
-	constructor: (r) ->
-		return [] unless r?.kind is 'Listing' and r?.data?.children instanceof Array
-		return r.data.children.map (child) ->
+	constructor: (d) ->
+		return [] unless d?.kind is 'Listing' and d?.data?.children instanceof Array
+		return d.data.children.map (child) ->
 			switch child.kind
 				when 'Listing'
 					new Comments(child.data)

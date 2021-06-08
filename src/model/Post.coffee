@@ -39,68 +39,68 @@ export default class Post
 			@POST = new LazyPromise -> promise.then (result) -> result[0]
 			@COMMENTS = new LazyPromise -> promise.then (result) -> result[1]
 
-post = (r) ->
+post = (d) ->
 	# BASIC DATA
-	author: r.author
-	created_at: new Date(r.created_utc * 1000)
-	content: content(r)
-	distinguish: r.distinguished or 'original-poster'
-	edited_at: new Date(r.edited * 1000)
+	author: d.author
+	created_at: new Date(d.created_utc * 1000)
+	content: content(d)
+	distinguish: d.distinguished or 'original-poster'
+	edited_at: new Date(d.edited * 1000)
 	flairs:
 		author: new Flair
-			text: r.author_flair_text
-			color: r.author_flair_background_color
+			text: d.author_flair_text
+			color: d.author_flair_background_color
 		title: new Flair
-			text: r.link_flair_text
-			color: r.link_flair_background_color
-	href: '/r/' + r.subreddit + '/post/' + r.id
-	subreddit: r.subreddit
-	title: r.title
+			text: d.link_flair_text
+			color: d.link_flair_background_color
+	href: '/r/' + d.subreddit + '/post/' + d.id
+	subreddit: d.subreddit
+	title: d.title
 	xpost_parent:
-		if r.crosspost_parent_list
-			new Post(r.crosspost_parent_list[0])
+		if d.crosspost_parent_list
+			new Post(d.crosspost_parent_list[0])
 		else
 			null
 	# ACTIVITY
 	awards: [] # TODO
-	score: new Score { value: r.score, hidden: r.hide_score }
+	score: new Score { value: d.score, hidden: d.hide_score }
 	# STATES
-	archived: r.archived
-	contest: r.contest_mode
-	edited: r.edited
-	hidden: r.hidden
-	liked: r.likes
-	locked: r.locked
-	nsfw: r.over_18
-	oc: r.is_original_content
-	pinned: r.pinned
-	quarantined: r.quarantine
-	saved: r.saved
-	spoiler: r.spoiler
-	stickied: r.stickied
+	archived: d.archived
+	contest: d.contest_mode
+	edited: d.edited
+	hidden: d.hidden
+	liked: d.likes
+	locked: d.locked
+	nsfw: d.over_18
+	oc: d.is_original_content
+	pinned: d.pinned
+	quarantined: d.quarantine
+	saved: d.saved
+	spoiler: d.spoiler
+	stickied: d.stickied
 
-content = (r) ->
+content = (d) ->
 	type = 'link'
-	data = r.url
-	url = new URL(if r.url.startsWith 'http' then r.url else 'https://www.reddit.com' + r.url)
+	data = d.url
+	url = new URL(if d.url.startsWith 'http' then d.url else 'https://www.reddit.com' + d.url)
 	switch
-		when r.media?.reddit_video
+		when d.media?.reddit_video
 			type = 'video'
-			data = new Video(r.media.reddit_video)
-		when r.is_gallery
+			data = new Video(d.media.reddit_video)
+		when d.is_gallery
 			type = 'image'
-			data = r.gallery_data.items.map (item) ->
-				new Image { ...r.media_metadata[item.media_id], caption: item.caption, link: item.outbound_url }
-		when r.post_hint is 'image'
+			data = d.gallery_data.items.map (item) ->
+				new Image { ...d.media_metadata[item.media_id], caption: item.caption, link: item.outbound_url }
+		when d.post_hint is 'image'
 			type = 'image'
-			data =	[ new Image(r.preview.images[0]) ]
-		when r.is_self
+			data =	[ new Image(d.preview.images[0]) ]
+		when d.is_self
 			type = 'text'
-			data = r.selftext_html
-		else switch r.domain
+			data = d.selftext_html
+		else switch d.domain
 			when 'i.redd.it'
 				type = 'image'
-				data = [ new Image { p: [], s: [{ u: r.url }] } ]
+				data = [ new Image { p: [], s: [{ u: d.url }] } ]
 			when 'gfycat.com'
 				type = 'iframe'
 				data =

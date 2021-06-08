@@ -6,30 +6,13 @@ script.
 svelte:head
 	title r/{feed.name}
 .feed
-	AWAIT(let:v p={feed.PAGE})
-		section
-			h1 Stickied Posts
-			hr
-			ol.stickies
-				{#each v.things.filter(x => x.stickied) as item}
+	AWAIT(let:v p={feed.ITEMS(9)})
+		ol
+			{#each v.filter(x => !x.stickied && !x.pinned) as item}
+				li
 					FeedItem(item={item})
-		section
-			h1 Posts
-			hr
-			ol
-				{#each v.things.filter(x => !x.stickied && !x.pinned) as item}
-					FeedItem(item={item})
-				a(href={v.next_page.href}) Page 2 ->
-
 style.
-	.feed
-		display flex
 	section
 		margin 8rem
-	ol
-		display flex
-		flex-flow row wrap
-	.stickies
-		flex-flow column nowrap
 	h1
 		font 900 19px 'Fabrikat Normal'

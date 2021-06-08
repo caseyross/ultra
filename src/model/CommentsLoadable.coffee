@@ -1,3 +1,3 @@
 export default class CommentsLoadable
-	constructor: (r) ->
-		@ids = r.children
+	constructor: (d) ->
+		@ids = d.children

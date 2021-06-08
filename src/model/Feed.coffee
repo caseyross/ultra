@@ -39,7 +39,7 @@ api_config = (type, name, sort) ->
 					query: {}
 
 export default class Feed
-	constructor: ({ prefix, name, sort, after })->
+	constructor: ({ prefix, name })->
 		@type = switch prefix
 			# i: private feeds
 			when 'i'
@@ -52,15 +52,11 @@ export default class Feed
 			when 'u'
 				'profile'
 		@name = name
-		@sort = sort
-		@PAGE = new LazyPromise =>
-			API.get api_config(@type, @name, @sort).endpoint,
+		@ITEMS = (limit, sort, after) => new LazyPromise =>
+			API.get api_config(@type, @name, sort).endpoint,
 				{
 					after: after,
-					limit: 9,
-					...api_config(@type, @name, @sort).query
+					limit: limit,
+					...api_config(@type, @name, sort).query
 				} 
-			.then (data) ->
-				things: new Anythings(data)
-				next_page:
-					href: '/' + prefix + '/' + name + '?after=' + data.data.after + (if sort then '&sort=' + sort else '')
+			.then (data) -> new Anythings(data)

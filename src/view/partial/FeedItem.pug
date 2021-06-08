@@ -7,18 +7,17 @@ script.
 	import CommentTree from './CommentTree'
 	import Image from './Image'
 
-li
-	a(href={item.href})
-		{#if item instanceof Post}
-			AWAIT(let:v p={item.POST})
-				{#if v.content.type === 'image'}
-					Image(data={v.content.data[0]} maxWidth={216} maxHeight={216})
-				{:else}
-					.post-title.hide-scrollbar {v.title}
-		{:else if item instanceof Comment}
-			CommentTree(comment={item})
-		{:else if item instanceof Message}
-			p [Message]
+a(href={item.href})
+	{#if item instanceof Post}
+		AWAIT(let:v p={item.POST})
+			{#if v.content.type === 'image'}
+				Image(image={v.content.data[0]} maxW={216} maxH={216})
+			{:else}
+				.post-title.hide-scrollbar {v.title}
+	{:else if item instanceof Comment}
+		CommentTree(comment={item})
+	{:else if item instanceof Message}
+		p [Message]
 
 style.
 	.post-title

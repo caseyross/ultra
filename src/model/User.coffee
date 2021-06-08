@@ -1,31 +1,31 @@
 import Image from './Image'
 
 export default class User
-	constructor: (r) ->
+	constructor: (d) ->
 		# BASIC DATA
-		@created_at = new Date(r.created_utc * 1000)
-		@id = r.id
+		@created_at = new Date(d.created_utc * 1000)
+		@id = d.id
 		# TEXT CUSTOMIZATION
-		@display_name = r.name
-		@tagline = r.subreddit.public_description
+		@display_name = d.name
+		@tagline = d.subreddit.public_description
 		# VISUAL CUSTOMIZATION
 		@banner = new Image
 			p: []
 			s: [{
-				u: r.subreddit.banner_img or ''
+				u: d.subreddit.banner_img or ''
 			}]
-		@color = r.subreddit.primary_color or r.subreddit.key_color or 'transparent'
+		@color = d.subreddit.primary_color or d.subreddit.key_color or 'transparent'
 		@icon = new Image
 			p: []
 			s: [{
-				u: r.subreddit.icon_img or ''
+				u: d.subreddit.icon_img or ''
 			}]
 		# ACTIVITY
-		@comment_karma = r.comment_karma
-		@follower_count = r.subreddit.subscribers
-		@post_karma = r.link_karma
+		@comment_karma = d.comment_karma
+		@follower_count = d.subreddit.subscribers
+		@post_karma = d.link_karma
 		# STATES
-		@admin = r.is_employee
-		@nsfw = r.subreddit.over18
-		@premium = r.is_gold
-		@quarantined = r.quarantine
+		@admin = d.is_employee
+		@nsfw = d.subreddit.over18
+		@premium = d.is_gold
+		@quarantined = d.quarantine

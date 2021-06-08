@@ -1,57 +1,60 @@
+# NOTE:
+# Reddit only reports a reliable image height for the source image of a series. The reported height for resized images is generally incorrect.
+# Thus, we need to determine the resized image heights ourselves.
 export default class Image
-	constructor: (r) ->
-		# NOTE: reddit only reports the true image height for the source image. The resized versions of the image have a height field, but it doesn't correspond to the actual height of the image.
+	constructor: (d) ->
 		switch
-			when r.status and not (r.status is 'valid')
-				@aspect_ratio = 1
-				@resolutions = [{
-					width: 640
-					href: '' # TODO: Add error image for invalid images
+			when d.status and not (d.status is 'valid')
+				@aspect = 1
+				@sizes = [{
+					w: 640
+					u: '' # TODO: Add error image for invalid images
 				}]
-			when r.s
-				@aspect_ratio = r.s.x / r.s.y
-				@resolutions =
-					if r.s.gif
+			when d.s
+				@aspect = d.s.x / d.s.y
+				@sizes =
+					if d.s.gif
 						[{
-							width: r.s.x
-							href: r.s.gif
+							w: d.s.x
+							u: d.s.gif
 						}]
 					else
-						r.p.concat(r.s).map (resolution) ->
-							width: resolution.x
-							href: resolution.u
-			when r.variants?.gif
-				@aspect_ratio = r.variants.gif.source.width / r.variants.gif.source.height
-				@resolutions =
+						d.p.concat(d.s).map (resolution) ->
+							w: resolution.x
+							u: resolution.u
+			when d.variants?.gif
+				@aspect = d.variants.gif.source.width / d.variants.gif.source.height
+				@sizes =
 					[{
-						width: r.variants.gif.source.width
-						href: r.variants.gif.source.url
+						w: d.variants.gif.source.width
+						u: d.variants.gif.source.url
 					}]
-			when r.source
-				@aspect_ratio = r.source.width / r.source.height
-				@resolutions = r.resolutions.concat(r.source).map (resolution) ->
-					width: resolution.width
-					href: resolution.url
+			when d.source
+				@aspect = d.source.width / d.source.height
+				@sizes = d.resolutions.concat(d.source).map (resolution) ->
+					w: resolution.width
+					u: resolution.url
 			else
-				@aspect_ratio = 1
-				@resolutions = []
-		@resolutions.sort (a, b) -> a.width - b.width
+				@aspect = 1
+				@sizes = []
+		@sizes.sort (a, b) -> a.w - b.w
+		for s in @sizes
+			s.h = s.w / @aspect
 		@caption =
-			if r.caption or r.link
-				text: r.caption ? ''
-				href: r.link ? ''
+			if d.caption or d.link
+				t: d.caption ? ''
+				u: d.link ? ''
 			else
 				null
-	resolve: ({ minWidth, minHeight, minPixels, maxWidth, maxHeight, maxPixels }) =>
-		@resolutions.fold(
-			@resolutions[0],
-			(current, next) =>
-				width = current.width
-				height = current.width / @aspect_ratio
-				pixels = current.width * current.width / @aspect_ratio
-				if width < minWidth or height < minHeight or pixels < minPixels
-					return next
-				if width >= maxWidth or height >= maxHeight or pixels >= maxPixels
-					return current
-				return next
+	pick: ({ minW, maxW, cutW, minH, maxH, cutH }) =>
+		@sizes.fold(
+			@sizes[0],
+			(a, b) => switch
+				when a.w < minW then b
+				when a.h < minH then b
+				when a.w >= maxW then a
+				when a.h >= maxH then a
+				when b.w > cutW then a
+				when b.h > cutH then a
+				else b
 		)

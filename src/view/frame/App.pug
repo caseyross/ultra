@@ -97,14 +97,15 @@ svelte:head
 	{#if layer.tapped}
 		main.hide-scrollbar(class:hidden={i < layers.length - 1})
 			Layer(layer={layer})
-nav
-	a.logo(href={layers[0].href} data-goto-layer={0})
-		img.logo-icon
-		{#if layers.length === 1}
-			span.logo-text Ares
-a.messages-waiting(href='/messages')
-	data.counter {Math.trunc(Math.random() * 10)}
-	| messages
+{#if layers.length === 1}
+	nav
+		a.logo(href={layers[0].href} data-goto-layer={0})
+			img.logo-icon
+				span.logo-text Ares
+{#if layers.length === 1}
+	a.messages-waiting(href='/messages')
+		data.counter {Math.trunc(Math.random() * 10)}
+		| messages
 data.version PRE-PROTOTYPE
 a.feedback(href='/') REPORT A BUG
 .vitals
@@ -127,7 +128,7 @@ style.
 		flex-flow column nowrap
 		align-items center
 		&.hidden
-			filter blur(24px)
+			content-visibility hidden
 	nav
 		position fixed
 		top 0

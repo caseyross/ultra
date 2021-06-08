@@ -23,20 +23,28 @@ article
 
 style.
 	article
-		margin 6em
-		box-sizing content-box
-		width 800px
-		padding 3em
-		border 1px solid
-		border-radius 2em
-		background var(--white)
-	h1
-		font 900 27px 'Iosevka Fixed Curly'
-		margin-bottom 1rem
-	address
+		width 100%
 		display flex
-		font 900 12px 'Fabrikat Normal'
+		flex-flow column nowrap
+		align-items center
+	header
+		position absolute
+		top 1rem
+		left 1rem
+	h1
+		padding 0.5em 1em
+		background var(--white)
+		border 2px solid
+	address
+		padding 4rem 8rem
+		display flex
+		font 900 10px 'Iosevka Fixed Curly'
 		color gray
-		margin-bottom 6rem
+		background var(--white)
+		opacity 0
+		header:hover &
+			opacity 1
+	h1
+		font 900 14px 'Iosevka Fixed Curly'
 	time
 		text-transform uppercase

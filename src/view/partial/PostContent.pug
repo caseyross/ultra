@@ -6,29 +6,26 @@ script.
 	import PostText from './PostText'
 	import PostVideo from './PostVideo'
 
-section.content
-	{#if content.type === 'iframe'}
-		iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
-	{:else if content.type === 'video'}
-		PostVideo(data={content.data})
-	{:else if content.type === 'image'}
-		PostGallery(images={content.data})
-	{:else if content.type === 'text'}
-		PostText(html={content.data})
-	{:else if content.type === 'comment'}
-		AWAIT(let:v p={content.data.COMMENTS})
-			PostComments(comments={v})
-	{:else if content.type === 'link'}
-		a(href={content.data}) {content.data}
-	{:else}
-		.error [UNKNOWN CONTENT]
+{#if content.type === 'iframe'}
+	iframe(src={content.data.src} allowfullscreen='true' allow={content.data.allow})
+{:else if content.type === 'video'}
+	PostVideo(data={content.data})
+{:else if content.type === 'image'}
+	PostGallery(images={content.data})
+{:else if content.type === 'text'}
+	PostText(html={content.data})
+{:else if content.type === 'comment'}
+	AWAIT(let:v p={content.data.COMMENTS})
+		PostComments(comments={v})
+{:else if content.type === 'link'}
+	a(href={content.data}) {content.data}
+{:else}
+	.error [UNKNOWN CONTENT]
 
 style.
-	section
-		margin-bottom 5rem
 	iframe
-		width 800px
-		height 450px
+		width 1920px
+		height 969px
 		border 1px solid
 	a
 		word-break break-all

@@ -3,38 +3,38 @@ import Flair from './Flair'
 import Score from './Score'
 
 export default class Comment
-	constructor: (r) ->
+	constructor: (d) ->
 		# BASIC DATA
-		@author = r.author
-		@content = r.body_html ? ''
-		@created_at = new Date(r.created_utc * 1000)
+		@author = d.author
+		@content = d.body_html ? ''
+		@created_at = new Date(d.created_utc * 1000)
 		@distinguish = switch
-			when r.distinguished then r.distinguished
-			when r.is_submitter then 'original-poster'
+			when d.distinguished then d.distinguished
+			when d.is_submitter then 'original-poster'
 			else ''
-		@edited_at = new Date(r.edited * 1000)
+		@edited_at = new Date(d.edited * 1000)
 		@flair = new Flair
-			color: r.author_flair_background_color
-			text: r.author_flair_text
-		@href = '/r/' + r.subreddit + '/post/' + r.link_id[3..] + '/comment/' + r.id
-		@id = r.id
+			color: d.author_flair_background_color
+			text: d.author_flair_text
+		@href = '/r/' + d.subreddit + '/post/' + d.link_id[3..] + '/comment/' + d.id
+		@id = d.id
 		@post =
-			id: r.link_id[3..]
-			title: r.link_title
-		@subreddit = r.subreddit
+			id: d.link_id[3..]
+			title: d.link_title
+		@subreddit = d.subreddit
 		# ACTIVITY
 		@awards = [] # TODO
-		@controversial = Boolean(r.controversiality) # labeled as either 1 or 0, even though the property name sounds like a scalar value
-		@score = new Score { hidden: r.score_hidden, value: r.score }
+		@controversial = Boolean(d.controversiality) # labeled as either 1 or 0, even though the property name sounds like a scalar value
+		@score = new Score { hidden: d.score_hidden, value: d.score }
 		# REPLIES
-		@replies = new Comments(r.replies)
+		@replies = new Comments(d.replies)
 		# STATES
-		@edited = r.edited
-		@hidden = r.hidden
-		@liked = r.likes
-		@locked = r.locked
-		@nsfw = r.over_18
-		@removed = r.body is '[removed]'
-		@saved = r.saved
-		@stickied = r.stickied
+		@edited = d.edited
+		@hidden = d.hidden
+		@liked = d.likes
+		@locked = d.locked
+		@nsfw = d.over_18
+		@removed = d.body is '[removed]'
+		@saved = d.saved
+		@stickied = d.stickied
 			
