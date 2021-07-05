@@ -1,0 +1,6 @@
+script.
+	export content = {}
+
+{#if content.type === 'link'}
+	a(href={content.href}) {content.href}
+	iframe(src={content.href})

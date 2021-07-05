@@ -1,0 +1,16 @@
+script.
+	import Comment from './Comment.pug'
+	import MoreCommentTrees from './MoreCommentTrees.pug'
+	export comment = {}
+
+Comment(comment={comment})
+{#if comment.replies}
+	.comment-replies
+		{#each comment.replies as reply}
+			svelte:self(comment={reply})
+			MoreCommentTrees(moreComments={reply})
+
+style.
+	.comment-replies
+		padding-left 40px
+		border-left 1px solid var(--lightgray)

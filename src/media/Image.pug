@@ -1,0 +1,18 @@
+script.
+	export image = null
+	export minW = 0
+	export maxW = Infinity
+	export cutW = Infinity
+	export minH = 0
+	export maxH = Infinity
+	export cutH = Infinity
+
+	res = image.pick { minW, maxW, cutW, minH, maxH, cutH }
+	
+	style = ''
+	if maxW < Infinity
+		style += 'max-width:' + maxW + 'px;'
+	if res.w > minW and maxH < Infinity
+		style += 'max-height:' + maxH + 'px;'
+
+img(src={res.u} style={style})

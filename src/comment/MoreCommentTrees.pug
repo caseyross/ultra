@@ -1,0 +1,11 @@
+script.
+	import CommentTree from './CommentTree.pug'
+	import MoreComments from './MoreComments.coffee'
+	export moreComments = {}
+
+{#if moreComments instanceof MoreComments}
+	{#await moreComments.comments}
+		button(on:mousedown={moreComments.getComments()}) more
+	{:then comments}
+		{#each comments as comment}
+			CommentTree(comment={comment})

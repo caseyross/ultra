@@ -1,0 +1,14 @@
+script.
+	import Comment from './Comment.coffee'
+	export comment = {}
+
+{#if comment instanceof Comment}
+	.comment
+		a.avatar(href='/u/{comment.author}') u/{comment.author} {comment.score.text}
+		{@html comment.content}
+
+style.
+	.comment
+		display grid
+		grid-template-columns 40px 640px
+		font 12px 'Iosevka Aile'

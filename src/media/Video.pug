@@ -1,0 +1,29 @@
+script.
+	export data = null
+	video = null
+	audio = null
+	
+	import { onMount } from 'svelte'
+	onMount () =>
+		video.addEventListener 'play', (e) ->
+			audio.play()
+		video.addEventListener 'pause', (e) ->
+			audio.pause()
+		video.addEventListener 'seeked', (e) ->
+			audio.currentTime = video.currentTime
+		video.addEventListener 'waiting', (e) ->
+			audio.pause()
+			audio.currentTime = video.currentTime
+		video.addEventListener 'playing', (e) ->
+			if audio.paused then audio.play()
+			
+video(bind:this={video} controls='true')
+	{#each data.video as representation}
+		source(src={representation.href} type={representation.mime_type})
+audio(bind:this={audio})
+	{#each data.audio as representation}
+		source(src={representation.href} type={representation.mime_type})
+
+style.
+	audio
+		display none

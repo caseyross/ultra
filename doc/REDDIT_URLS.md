@@ -25,7 +25,7 @@ Subreddits
 		?context={number}																	...NUMBER OF ANCESTORS TO SHOW FOR COMMENT TREE
 
 Subreddit Lists
---------------=
+---------------
 
 	subreddits																			TRENDING SUBREDDITS
 	subreddits/new																		NEW SUBREDDITS

@@ -126,9 +126,9 @@ pugToSvelte = input => {
 
 module.exports = {
 	mode: 'production',
-	entry: './src/main.js',
+	entry: './src/init.coffee',
 	output: {
-		filename: 'bundle.js',
+		filename: 'index.js',
 		path: path.resolve(__dirname, 'public'),
 		publicPath: '/', // location of output files relative to the web server root
 	},

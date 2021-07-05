@@ -1,0 +1,6 @@
+script.
+	import Video from '../../media/Video.pug'
+	export content = {}
+
+{#if content.type === 'video'}
+	Video(data={content.video})

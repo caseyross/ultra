@@ -1,0 +1,13 @@
+script.
+	import CommentTree from '../comment/CommentTree.pug'
+	import MoreCommentTrees from '../comment/MoreCommentTrees.pug'
+	export comments = []
+
+.comments
+	{#each comments as comment}
+		CommentTree(comment={comment})
+		MoreCommentTrees(comment={comment})
+	{:else}
+		p [No comments.]
+
+style.

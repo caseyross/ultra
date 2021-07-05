@@ -1,0 +1,112 @@
+script.
+	import Feed from './feed/Feed'
+	import Post from './post/Post'
+	import WikiPage from './wiki/WikiPage'
+	export state = {}
+
+	document.addEventListener 'click', (e) =>
+		if e.buttons < 3
+			e.preventDefault()
+
+	document.addEventListener 'contextmenu', (e) =>
+		unless e.altKey
+			e.preventDefault()
+
+	document.addEventListener 'mousedown', (e) =>
+		switch e.buttons
+			when 1
+				for element in e.path
+					if element.href
+						if element.origin is location.origin
+							history.pushState({}, '', element.href)
+							state.update()
+							state = state
+						else if element.target is '_blank'
+							return open(element.href)
+						else
+							return location.href = element.href
+						break
+
+svelte:head
+	{#await state.story.get() then story}
+		title {story.title}
+nav
+	a.logo(href='/')
+		img.logo-icon
+			span.logo-text Ares
+	a.messages-waiting(href='/mail')
+		data.counter {Math.trunc(Math.random() * 10)}
+		| messages
+{#await state.story.get() then story}
+	Post(post={story})
+	WikiPage(page={story})
+Feed(feed={state.feed})
+data.version PRE-PROTOTYPE
+a.feedback(href='/mail/compose') REPORT A BUG
+.vitals
+	label.quota-monitor
+		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+	label.server-monitor
+		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+	label.downlink-monitor
+		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+
+style.
+	nav
+		position fixed
+		top 0
+		left 0
+		margin 4rem
+		display flex
+		align-items center
+		display none
+	.logo
+		&.dimmed
+			opacity 0.5
+			&:hover
+				opacity 1
+	.logo-icon
+		height 32px
+		width 32px
+		border-radius 50%
+		background salmon
+	.logo-text
+		font 900 26px 'Fabrikat Normal'
+		letter-spacing -1px
+		color gray
+	.messages-waiting
+		position fixed
+		top 0
+		right 0
+		margin 4rem
+		font 900 19px 'Fabrikat Normal'
+		color gray
+	.counter
+		font 900 26px 'Fabrikat Normal'
+		letter-spacing -1px
+		color salmon
+	.version
+		position fixed
+		bottom 0
+		left 0
+		padding 4rem
+		font 900 12px 'Fabrikat Normal'
+		color lightgray
+	.feedback
+		position fixed
+		bottom 0
+		right 0
+		padding 4rem
+		font 900 12px 'Fabrikat Normal'
+		color gray
+		&:hover
+			color salmon
+	.vitals
+		margin 4rem
+		display flex
+		flex-flow column nowrap
+		display none
+		& meter
+			appearance none
+			width 8rem
+			background darkseagreen

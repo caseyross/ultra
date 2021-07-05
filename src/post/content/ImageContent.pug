@@ -1,0 +1,21 @@
+script.
+	import Image from '../../media/Image.pug'
+	export content = {}
+
+{#if content.type === 'image'}
+	section.hide-scrollbar
+		{#each content.images as i}
+			figure
+				Image(image={i} minW={640} maxH={969} maxW={1080})
+				{#if i.caption}
+					figcaption {i.caption.t}
+						{#if i.caption.u}
+							a(href={i.caption.u}) {i.caption.u}
+
+style.
+	section
+		max-width 100%
+		overflow auto
+		display grid
+		grid-auto-flow column
+		gap 2rem

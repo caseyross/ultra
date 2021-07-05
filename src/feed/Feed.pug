@@ -1,0 +1,28 @@
+script.
+	import PostItem from './PostItem.pug'
+	import Feed from './Feed.coffee'
+	export feed = {}
+
+{#if feed instanceof Feed}
+	nav
+		{#each feed.sections as section}
+			{#await section.get()}
+			{:then items}
+				section
+					h1 {section.description}
+					ol
+						{#each items as item}
+							li
+								PostItem(post={item})
+
+style.
+	nav
+		position fixed
+		top 10%
+		left 10%
+		width 20%
+		box-shadow 0 0 10rem lightgray
+	li
+		height 64px
+		padding 2rem
+		border 1px solid lightgray

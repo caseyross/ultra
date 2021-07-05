@@ -1,0 +1,26 @@
+script.
+	import CommentSection from './CommentSection.pug'
+	import EmbedContent from './content/EmbedContent.pug'
+	import ImageContent from './content/ImageContent.pug'
+	import LinkContent from './content/LinkContent.pug'
+	import RedditContent from './content/RedditContent.pug'
+	import SelfContent from './content/SelfContent.pug'
+	import VideoContent from './content/VideoContent.pug'
+	import Post from './Post.coffee'
+	export post = {}
+	replySort = post.defaultReplySort
+
+{#if post instanceof Post}
+	article
+		EmbedContent(content={post.content})
+		ImageContent(content={post.content})
+		LinkContent(content={post.content})
+		RedditContent(content={post.content})
+		SelfContent(content={post.content})
+		VideoContent(content={post.content})
+		{#await post.getReplies({ sort: replySort }) then replies}
+			CommentSection(comments={replies})
+
+style.
+	article
+		padding-left 33%

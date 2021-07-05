@@ -1,0 +1,8 @@
+script.
+	import Post from '../post/Post.coffee'
+	export post = {}
+
+{#if post instanceof Post}
+	a(href={post.href}) {post.title}
+
+style.

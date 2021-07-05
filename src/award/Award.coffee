@@ -1,0 +1,1 @@
+export default Award = () ->  @[k] = v for k, v of {}
