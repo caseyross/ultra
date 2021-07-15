@@ -1,5 +1,5 @@
 import './common.styl'
-import './prototype_extensions.coffee'
+import './lib.coffee'
 import { get, post } from './API.coffee'
 window.API =
 	get: get
@@ -8,12 +8,6 @@ import { CacheKey, CacheKeySave } from './Cache.coffee'
 window.CacheKey = CacheKey
 window.CacheKeySave = CacheKeySave
 
-import State from './State.coffee'
-state = new State()
-state.update()
-
-import App from './App.pug'
-new App
+import Router from './Router.pug'
+new Router
 	target: document.body
-	props:
-		state: state

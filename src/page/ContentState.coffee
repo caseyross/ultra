@@ -1,16 +1,15 @@
-import MultiredditFeed from './feed/MultiredditFeed.coffee'
-import PostReference from './post/PostReference.coffee'
-import Story from './Story.coffee'
-import SubredditFeed from './feed/SubredditFeed.coffee'
-import SubredditOverviewFeed from './feed/SubredditOverviewFeed.coffee'
-import WikiPage from './wiki/WikiPage.coffee'
+import MultiredditFeed from '../feed/MultiredditFeed.coffee'
+import PostReference from '../post/PostReference.coffee'
+import Story from '../Story.coffee'
+import SubredditFeed from '../feed/SubredditFeed.coffee'
+import SubredditOverviewFeed from '../feed/SubredditOverviewFeed.coffee'
+import WikiPage from '../wiki/WikiPage.coffee'
 
-export default class State
+export default class ContentState
 
 	constructor: ->  @[k] = v for k, v of {
 		story: new Story()
 		feed: null
-		account: null
 	}
 
 	update: =>

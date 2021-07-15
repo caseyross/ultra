@@ -6,7 +6,7 @@ export default class MoreComments
 		comments: new Promise((f, r) -> {})
 	}
 
-	getComments: () =>
+	getComments: ->
 		this.comments = API.get
 			endpoint: '/api/morechildren'
 			options:

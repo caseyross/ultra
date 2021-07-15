@@ -1,0 +1,13 @@
+script.
+	import Content from './page/Content.pug'
+	import LoggingIn from './page/LoggingIn.pug'
+	import { finishLogin } from './API.coffee'
+	params = new URLSearchParams(location.search)
+
+{#if params.has('code')}
+	{#await finishLogin(params.get('code'), params.get('state'))}
+		LoggingIn
+	{:then}
+		Content
+{:else}
+	Content

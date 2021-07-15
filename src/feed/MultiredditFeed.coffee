@@ -10,7 +10,7 @@ export default class MultiredditFeed extends Feed
 				[
 					{
 						description: sort + ' Posts'
-						get: () ->
+						get: ->
 							getListingSlice
 								endpoint: '/r/' + name + '/' + sort.split('-')[0]
 								options:

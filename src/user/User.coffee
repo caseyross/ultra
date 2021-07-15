@@ -10,6 +10,7 @@ export default class User
 		tagline: data.subreddit.public_description
 		isRedditEmployee: data.is_employee
 		hasRedditPremium: data.is_gold
+		isSuspended: data.is_suspended
 		profileIsNSFW: data.subreddit.over18
 		profileIsQuarantined: data.quarantine
 
@@ -27,3 +28,4 @@ export default class User
 		numberOfFollowers: data.subreddit.subscribers
 
 	}
+

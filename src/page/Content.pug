@@ -1,8 +1,12 @@
 script.
-	import Feed from './feed/Feed'
-	import Post from './post/Post'
-	import WikiPage from './wiki/WikiPage'
-	export state = {}
+	import Account from '../user/Account.pug'
+	import Feed from '../feed/Feed.pug'
+	import Post from '../post/Post.pug'
+	import WikiPage from '../wiki/WikiPage.pug'
+
+	import ContentState from './ContentState.coffee'
+	state = new ContentState()
+	state.update()
 
 	document.addEventListener 'click', (e) =>
 		if e.buttons < 3
@@ -40,6 +44,7 @@ nav
 {#await state.story.get() then story}
 	Post(post={story})
 	WikiPage(page={story})
+Account
 Feed(feed={state.feed})
 data.version PRE-PROTOTYPE
 a.feedback(href='/mail/compose') REPORT A BUG

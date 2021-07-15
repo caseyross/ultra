@@ -1,4 +1,4 @@
-import GenericThingArray from '../GenericThingArray.coffee'
+import ThingArray from '../ThingArray.coffee'
 import RepliesArray from '../comment/RepliesArray.coffee'
 import Story from '../Story.coffee'
 
@@ -16,6 +16,6 @@ export default class PostReference extends Story
 			.then ([ a, b ]) =>
 				CacheKeySave 't3_' + this.id + '_comments',
 					new RepliesArray(b, this.id)
-				post = new GenericThingArray(a)[0]
+				post = new ThingArray(a)[0]
 				console.log post
 				post

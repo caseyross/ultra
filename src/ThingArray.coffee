@@ -5,7 +5,7 @@ import Post from './post/Post.coffee'
 import Subreddit from './subreddit/Subreddit.coffee'
 import User from './user/User.coffee'
 
-export default class GenericThingArray
+export default class ThingArray
 
 	constructor: (data) ->
 
