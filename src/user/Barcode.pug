@@ -1,0 +1,30 @@
+script.
+	export username = ''
+	export role = ''
+	switch role
+		when 'submitter'
+			color = 'cornflowerblue'
+			text = 'OP'
+		when 'moderator'
+			color = 'darkseagreen'
+			text = 'MOD'
+		when 'admin'
+			color = 'orangered'
+			text = 'ADMIN'
+		when 'special'
+			color = 'crimson'
+			text = 'VIP'
+	
+a(href='/u/{username}' style='color: {color}')
+	{#if role}
+		span(style='background-color: {color}')
+style.
+	a
+		display flex
+		height 20px
+		width 32px
+		border 1px solid
+		color black
+	span
+		margin 1rem
+		width 22px

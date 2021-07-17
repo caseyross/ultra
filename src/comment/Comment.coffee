@@ -14,13 +14,13 @@ export default class Comment
 		href: '/r/' + data.subreddit + '/post/' + data.link_id[3..] + '/comment/' + data.id
 		
 		author: data.author
-		authorDistinguish: switch
-			when data.distinguished then data.distinguished
-			when data.is_submitter then 'original-poster'
-			else ''
 		authorFlair: new Flair
 			color: data.author_flair_background_color
 			text: data.author_flair_text
+		authorRole: switch
+			when data.distinguished then data.distinguished
+			when data.is_submitter then 'submitter'
+			else ''
 		
 		createDate: new Date(1000 * data.created_utc)
 		editDate: new Date(1000 * data.edited)

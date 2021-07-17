@@ -1,12 +1,12 @@
 script.
-	import CommentTree from '../comment/CommentTree.pug'
-	import MoreCommentTrees from '../comment/MoreCommentTrees.pug'
+	import Comment from '../comment/Comment.pug'
+	import MoreComments from '../comment/MoreComments.pug'
 	export comments = []
 
 .comments
 	{#each comments as comment}
-		CommentTree(comment={comment})
-		MoreCommentTrees(comment={comment})
+		Comment(comment={comment})
+		MoreComments(comment={comment})
 	{:else}
 		p [No comments.]
 

@@ -15,10 +15,10 @@ export default class Post
 		href: '/r/' + data.subreddit + '/post/' + data.id
 
 		author: data.author
-		authorDistinguish: data.distinguished or 'original-poster'
 		authorFlair: new Flair
 			text: data.author_flair_text
 			color: data.author_flair_background_color
+		authorRole: data.distinguished or 'submitter'
 		
 		createDate: new Date(1000 * data.created_utc)
 		editDate: new Date(1000 * (data.edited or data.created_utc))

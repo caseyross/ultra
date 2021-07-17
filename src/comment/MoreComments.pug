@@ -1,5 +1,5 @@
 script.
-	import CommentTree from './CommentTree.pug'
+	import Comment from './Comment.pug'
 	import MoreComments from './MoreComments.coffee'
 	export moreComments = {}
 
@@ -8,4 +8,4 @@ script.
 		button(on:mousedown={moreComments.getComments()}) more
 	{:then comments}
 		{#each comments as comment}
-			CommentTree(comment={comment})
+			Comment(comment={comment})

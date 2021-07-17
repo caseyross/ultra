@@ -1,14 +1,31 @@
 script.
+	import Barcode from '../user/Barcode.pug'
+	import MoreComments from './MoreComments.pug'
 	import Comment from './Comment.coffee'
 	export comment = {}
 
 {#if comment instanceof Comment}
 	.comment
-		a.avatar(href='/u/{comment.author}') u/{comment.author} {comment.score.text}
+		.meta
+			Barcode(username={comment.author} role={comment.authorRole})
+			span.score {comment.score.text}
 		{@html comment.content}
+		.replies
+			{#if comment.replies}
+				{#each comment.replies as reply}
+					svelte:self(comment={reply})
 
 style.
 	.comment
-		display grid
-		grid-template-columns 40px 640px
-		font 12px 'Iosevka Aile'
+		margin-top 3em
+		width 60ch
+		font 400 12px 'PT Sans Caption'
+	.meta
+		display flex
+		margin-bottom 1rem
+	.score
+		margin-left 8px
+		font-weight bold
+	.replies
+		padding-left 40px
+		border-left 1px solid lightgray
