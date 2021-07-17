@@ -1,5 +1,6 @@
 script.
 	import Account from '../user/Account.pug'
+	import Destinations from './Destinations.pug'
 	import Feed from '../feed/Feed.pug'
 	import Post from '../post/Post.pug'
 	import WikiPage from '../wiki/WikiPage.pug'
@@ -30,22 +31,24 @@ script.
 						else
 							return location.href = element.href
 						break
+	
+	showDestinations = no
+	document.addEventListener 'keydown', (e) =>
+		switch e.key
+			when 'Escape'
+				showDestinations = !showDestinations
 
 svelte:head
 	{#await state.story.get() then story}
 		title {story.title}
-nav
-	a.logo(href='/')
-		img.logo-icon
-			span.logo-text Ares
-	a.messages-waiting(href='/mail')
-		data.counter {Math.trunc(Math.random() * 10)}
-		| messages
 {#await state.story.get() then story}
 	Post(post={story})
 	WikiPage(page={story})
 Account
 Feed(feed={state.feed})
+a.logo(href='/')
+	img.logo-icon
+		span.logo-text Ares
 data.version PRE-PROTOTYPE
 a.feedback(href='/mail/compose') REPORT A BUG
 .vitals
@@ -55,17 +58,13 @@ a.feedback(href='/mail/compose') REPORT A BUG
 		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
 	label.downlink-monitor
 		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
+{#if showDestinations}
+	Destinations
 
 style.
-	nav
-		position fixed
-		top 0
-		left 0
-		margin 4rem
-		display flex
-		align-items center
-		display none
 	.logo
+		display none
+		margin 4rem
 		&.dimmed
 			opacity 0.5
 			&:hover
