@@ -1,0 +1,104 @@
+script.
+	export destinations = []
+
+	query = []
+	matches = []
+	matchCharactersToStrings = (chars, strings) ->
+		matches = []
+		for string in strings
+			toMatch = [...chars]
+			matchedIndices = []
+			for char, i in string
+				if char.toLowerCase() is toMatch[0].toLowerCase()
+					matchedIndices.push(i)
+					toMatch.shift()
+					if toMatch.length is 0
+						matches.push {
+							string
+							matchedIndices
+						}
+						break
+		return matches
+	document.addEventListener 'keydown', (e) ->
+		if '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/'.indexOf(e.key) >= 0
+			query.push(e.key)
+			matches = matchCharactersToStrings(query, destinations)
+		else if e.key is 'Backspace'
+			if e.ctrlKey
+				query = []
+			else
+				query.pop()
+			if query.length > 0
+				matches = matchCharactersToStrings(query, destinations)
+		else if e.code is 'Enter'
+			if e.shiftKey
+				location.pathname = if query[0] is '/' then query.join('') else '/' + query.join('')
+			else if matches.length > 0
+				location.pathname = '/r/' + matches[0].string
+		query = query
+		matches.sort((a, b) -> a.matchedIndices.fold(0, (x, y) -> x + y - b.matchedIndices.fold(0, (x, y) -> x + y))).slice(0, 10)
+		
+{#if query.length > 0}
+	form
+		label#input Direct input
+			output {query.join('')}
+				button
+					kbd Shift + Enter
+		label#matches Best match
+			{#each matches as match, j}
+				output
+					{#each match.string as char, i}
+						{#if match.matchedIndices.includes(i)}
+							mark {char}
+						{:else}
+							span {char}
+					button
+						kbd {j === 0 ? 'Enter' : j}
+			{:else}
+				output Nothing matched.
+
+style.
+	form
+		position fixed
+		top 0
+		left 0
+		height 100vh
+		width 100vw
+		overflow auto
+		padding 13vh 30vw
+		padding-right 0
+		background inherit
+	label
+		display block
+	label + label
+		margin-top 10vh
+	output
+		display block
+		color rgba(0,0,0,0.5)
+		*
+			display inline-block
+			line-height 1
+	#input
+		output
+			font-size 3vh
+	#matches
+		output
+			font-size 3vh
+		output:first-child
+			font-size 9vmin
+	mark
+		background-color initial
+		color black
+		font-weight 900
+	button
+		margin 1ch 2ch
+		padding 4px 13px 6px 12px
+		background inherit
+		border 1px solid
+		border-radius 0.5ch
+		font 500 14px 'Fabrikat Normal'
+		color rgba(0,0,0,0.5)
+		position fixed
+		right 70vw
+	kbd
+		font inherit

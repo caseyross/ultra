@@ -37,6 +37,8 @@ script.
 		switch e.key
 			when 'Escape'
 				showDestinations = !showDestinations
+			when '/'
+				showDestinations = yes
 
 svelte:head
 	{#await state.story.get() then story}

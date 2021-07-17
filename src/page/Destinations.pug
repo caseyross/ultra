@@ -1,71 +1,20 @@
 script.
 	import { fade } from 'svelte/transition'
-	
+	import DestinationSearch from './DestinationSearch.pug'
 	subreddits = ['analog', 'Genshin_Impact', 'Hololive', 'LivestreamFail']
-	query = []
-	match = null
-	document.addEventListener 'keydown', (e) ->
-		if 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-/'.indexOf(e.key) >= 0
-			query.push(e.key)
-			match =
-				if '/' in query
-					query.join('')
-				else
-					matchCharactersToString(query, subreddits)
-		else if e.key is 'Backspace'
-			query.pop()
-			if query.length > 0
-				match =
-					if '/' in query
-						query.join('')
-					else
-						matchCharactersToString(query, subreddits)
-			else
-				match = null
-		else if e.code is 'Enter'
-			if match
-				location.pathname =
-					if typeof match is 'string'
-						if match[0] is '/' then match else '/' + match
-					else
-						'/r/' + match.string
-		query = query
-
-	matchCharactersToString = (chars, strings) ->
-		charsLeft = strings.map(-> [...chars])
-		positions = strings.map(-> [])
-		i = 0
-		while i < strings.map((s) -> s.length).fold(0, (a, b) -> Math.max(a, b))
-			for string, j in strings
-				if string[i] and string[i].toLowerCase() is charsLeft[j][0].toLowerCase()
-					positions[j].push(i)
-					charsLeft[j].shift()
-					if charsLeft[j].length is 0
-						return
-							string: string
-							matchedIndices: positions[j]
-			i += 1
-		return null
 
 nav(transition:fade={{ duration: 160 }})
-	{#if query.length > 0}
-		output {query}
-		{#if match}
-			{#if typeof match === 'string'}
-				output {match}
-			{:else}
-				output {match.string}
-	{:else}
-		section
-			h1 Subreddits
-			ol
-				{#each subreddits as name}
-					li
-						a(href='/r/{name}') {name}
-		section
-			h1 Multireddits
-		section
-			h1 Users
+	section
+		h1 Subreddits
+		ol
+			{#each subreddits as name}
+				li
+					a(href='/r/{name}') {name}
+	section
+		h1 Multireddits
+	section
+		h1 Users
+	DestinationSearch(destinations={subreddits})
 
 style.
 	nav
@@ -83,7 +32,7 @@ style.
 		flex-flow row wrap
 	h1
 		text-transform uppercase
-	li ~ li
+	li + li
 		margin-left 1ch
 	a
 		font-size 3vh

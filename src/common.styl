@@ -28,9 +28,7 @@ body
 	color var(--black)
 a
 	text-decoration none
-	color salmon
-	&:visited
-		color lightsteelblue
+	color inherit
 address
 	font-style normal
 button
@@ -57,6 +55,10 @@ video
 .md
 	word-break break-word
 	overflow-wrap anywhere
+	a
+		color salmon
+		&:visited
+			color lightsteelblue
 	blockquote
 		margin 0
 		opacity 0.5
