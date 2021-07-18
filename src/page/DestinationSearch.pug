@@ -6,18 +6,30 @@ script.
 	matchCharactersToStrings = (chars, strings) ->
 		matches = []
 		for string in strings
-			toMatch = [...chars]
+			lowercaseString = string.toLowerCase()
+			toMatch = [...chars].map (c) -> c.toLowerCase()
 			matchedIndices = []
-			for char, i in string
-				if char.toLowerCase() is toMatch[0].toLowerCase()
+			if toMatch.length > 1
+				fullMatchIndex = lowercaseString.indexOf(toMatch.join(''))
+				if fullMatchIndex >= 0
+					matches.push {
+						string
+						matchedIndices: toMatch.map (c, i) -> fullMatchIndex + i
+						penalty: fullMatchIndex
+					}
+					continue
+			for char, i in lowercaseString
+				if char is toMatch[0]
 					matchedIndices.push(i)
 					toMatch.shift()
 					if toMatch.length is 0
 						matches.push {
 							string
 							matchedIndices
+							penalty: 20 + matchedIndices.fold 0, (a, b) -> a + b
 						}
 						break
+		matches.sort (a, b) -> a.penalty - b.penalty
 		return matches
 	document.addEventListener 'keydown', (e) ->
 		if '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/'.indexOf(e.key) >= 0
@@ -36,7 +48,6 @@ script.
 			else if matches.length > 0
 				location.pathname = '/r/' + matches[0].string
 		query = query
-		matches.sort((a, b) -> a.matchedIndices.fold(0, (x, y) -> x + y - b.matchedIndices.fold(0, (x, y) -> x + y))).slice(0, 10)
 		
 {#if query.length > 0}
 	form

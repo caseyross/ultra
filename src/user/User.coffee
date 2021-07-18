@@ -19,8 +19,10 @@ export default class User
 		proileMainColor: data.subreddit.primary_color or ''
 		profileSecondaryColor: data.subreddit.key_color or ''
 		iconImage: new Image
+			p: []
 			s: [{ u: data.subreddit.icon_img or '' }]
 		profileBannerImage: new Image
+			p: []
 			s: [{ u: data.subreddit.banner_img or '' }]
 		
 		postKarma: data.link_karma

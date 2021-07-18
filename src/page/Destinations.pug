@@ -1,20 +1,32 @@
 script.
 	import { fade } from 'svelte/transition'
 	import DestinationSearch from './DestinationSearch.pug'
-	subreddits = ['analog', 'Genshin_Impact', 'Hololive', 'LivestreamFail']
 
-nav(transition:fade={{ duration: 160 }})
-	section
-		h1 Subreddits
-		ol
-			{#each subreddits as name}
-				li
-					a(href='/r/{name}') {name}
-	section
-		h1 Multireddits
-	section
-		h1 Users
-	DestinationSearch(destinations={subreddits})
+	import { getListingSlice } from '../API.coffee'
+	getSubscriptions = ->
+		getListingSlice
+			endpoint: '/subreddits/mine/subscriber'
+			options:
+				limit: 100
+		.then (subscriptions) ->
+			subscriptions.sort (a, b) -> if a.name < b.name then -1 else 1
+	getPopular = ->
+		getListingSlice
+			endpoint: '/subreddits/popular'
+
+nav(transition:fade={{ duration: 80 }})
+	{#await getSubscriptions() then subscriptions}
+		section
+			h1 Subreddits
+			ol
+				{#each subscriptions as subscription}
+					li
+						a(href='/r/{subscription.displayName}') {subscription.displayName}
+		section
+			h1 Multireddits
+		section
+			h1 Users
+		DestinationSearch(destinations={subscriptions.map((s) => s.displayName)})
 
 style.
 	nav
@@ -35,4 +47,5 @@ style.
 	li + li
 		margin-left 1ch
 	a
-		font-size 3vh
+		font-size 6vh
+		color rgba(0,0,0,0.5)
