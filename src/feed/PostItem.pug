@@ -3,6 +3,9 @@ script.
 	export post = {}
 
 {#if post instanceof Post}
-	a(href={post.href}) {post.title}
+	.post-item
+		a(href={post.href}) {post.title}
 
 style.
+	.post-item
+		font-size 2vh

@@ -6,7 +6,7 @@ export default class Subreddit
 
 		id: data.id
 		name: data.display_name.toLowerCase()
-		displayName: data.display_name
+		displayName: if data.display_name.startsWith 'u_' then data.display_name[2..] else data.display_name
 		tagline: data.public_description
 		longDescription: data.description
 		isNSFW: data.over18

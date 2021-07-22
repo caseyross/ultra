@@ -6,7 +6,7 @@ script.
 	section.hide-scrollbar
 		{#each content.images as i}
 			figure
-				Image(image={i} minW={640} maxH={969} maxW={1080})
+				Image(image={i} maxH={969} maxW={640})
 				{#if i.caption}
 					figcaption {i.caption.t}
 						{#if i.caption.u}
@@ -16,6 +16,4 @@ style.
 	section
 		max-width 100%
 		overflow auto
-		display grid
-		grid-auto-flow column
 		gap 2rem

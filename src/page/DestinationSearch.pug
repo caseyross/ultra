@@ -42,7 +42,7 @@ script.
 				query.pop()
 			if query.length > 0
 				matches = matchCharactersToStrings(query, destinations)
-		else if e.code is 'Enter'
+		else if e.key is 'Enter'
 			if e.shiftKey
 				location.pathname = if query[0] is '/' then query.join('') else '/' + query.join('')
 			else if matches.length > 0
@@ -50,7 +50,7 @@ script.
 		query = query
 		
 {#if query.length > 0}
-	form
+	form.hide-scrollbar
 		label#input Direct input
 			output {query.join('')}
 				button
@@ -63,8 +63,12 @@ script.
 							mark {char}
 						{:else}
 							span {char}
-					button
-						kbd {j === 0 ? 'Enter' : j}
+					{#if j === 0}
+						button
+							kbd Enter
+					{:else if j < 10}
+						button
+							kbd Alt + {j}
 			{:else}
 				output Nothing matched.
 
@@ -109,7 +113,7 @@ style.
 		border-radius 0.5ch
 		font 500 14px 'Fabrikat Normal'
 		color rgba(0,0,0,0.5)
-		position fixed
+		position absolute
 		right 70vw
 	kbd
 		font inherit

@@ -3,7 +3,7 @@ script.
 	import MoreComments from '../comment/MoreComments.pug'
 	export comments = []
 
-.comments
+.comments.hide-scrollbar
 	{#each comments as comment}
 		Comment(comment={comment})
 		MoreComments(comment={comment})
@@ -11,3 +11,12 @@ script.
 		p [No comments.]
 
 style.
+	.comments
+		position fixed
+		top 0
+		right 0
+		width 30vw
+		height 100vh
+		overflow auto
+		padding-left 5vw
+		padding-right 5vw

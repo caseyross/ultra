@@ -24,11 +24,14 @@ export finishLogin = (voucher, redirect_path) ->
 		LS.keyVal = json.access_token
 		LS.keyExp = (1000 * json.expires_in) + Date.now()
 		LS.userKey = json.refresh_token
-		get
-			endpoint: '/api/v1/me'
-		.then (user) ->
-			LS.userPic = user.subreddit.icon_img
-			LS.userName = user.name
+		Promise.all([
+			get
+				endpoint: '/api/v1/me'
+			.then (user) ->
+				LS.userPic = user.subreddit.icon_img
+				LS.userName = user.name
+			getUserSubreddits()
+		]).then ->
 			history.replaceState({}, '', location.origin + redirect_path)
 			location.reload()
 
@@ -39,6 +42,8 @@ export logout = ->
 	delete LS.userKey
 	delete LS.userName
 	delete LS.userPic
+	delete LS.userSubreddits
+	delete LS.userUsers
 	location.reload()
 
 
@@ -126,3 +131,25 @@ export getListingSlice = ({ endpoint, options }) ->
 		options: options
 	.then (x) ->
 		new ThingArray(x)
+
+getPopularSubreddits = ->
+	getListingSlice
+		endpoint: '/subreddits/popular'
+
+getUserSubreddits = ->
+	getListingSlice
+		endpoint: '/subreddits/mine/subscriber'
+		options:
+			limit: 100
+	.then (subreddits) ->
+		subreddits.sort (a, b) -> if a.name < b.name then -1 else 1
+		LS.userSubreddits =
+			subreddits
+			.filter (s) -> not s.name.startsWith('u_')
+			.map (s) -> s.displayName
+			.join()
+		LS.userUsers =
+			subreddits
+			.filter (s) -> s.name.startsWith('u_')
+			.map (s) -> s.displayName
+			.join()

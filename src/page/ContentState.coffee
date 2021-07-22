@@ -22,23 +22,23 @@ export default class ContentState
 				switch c
 					when 'comments', 'post'
 						if d
-							return this.story = new PostReference
+							this.story = new PostReference
 								id: d
 								commentId: f
 					when 'wiki'
-						return this.story = new WikiPage
+						this.story = new WikiPage
 							path: location.pathname # can have 1 or 2 levels + hash link to a heading
 				if b
 					if p.get('sort')
-						return this.feed = new SubredditFeed
+						this.feed = new SubredditFeed
 							name: b
 							sort: p.get('sort')
 					else if ['new', 'rising', 'hot', 'top', 'controversial'].includes(c)
-						return this.feed = new SubredditFeed
+						this.feed = new SubredditFeed
 							name: b
 							sort: c
 					else
-						return this.feed = new SubredditOverviewFeed
+						this.feed = new SubredditOverviewFeed
 							name: b
 			else
 				this.feed = new MultiredditFeed
