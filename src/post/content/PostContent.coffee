@@ -13,7 +13,8 @@ export default class PostContent
 				@video = new Video(data.media.reddit_video)
 			when data.is_gallery
 				@type = 'image'
-				@images = data.gallery_data.items.map (x) -> new Image { ...data.media_metadata[x.media_id], caption: x.caption, link: x.outbound_url }
+				@images = data.gallery_data.items.map (x) ->
+					new Image { ...data.media_metadata[x.media_id], caption: x.caption, link: x.outbound_url }
 			when data.post_hint is 'image'
 				@type = 'image'
 				@images = [ new Image(data.preview.images[0]) ]

@@ -31,6 +31,7 @@ script.
 						break
 		matches.sort (a, b) -> a.penalty - b.penalty
 		return matches
+	selectedMatch = 0
 	document.addEventListener 'keydown', (e) ->
 		if '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/'.indexOf(e.key) >= 0
 			query.push(e.key)
@@ -46,7 +47,7 @@ script.
 			if e.shiftKey
 				location.pathname = if query[0] is '/' then query.join('') else '/' + query.join('')
 			else if matches.length > 0
-				location.pathname = '/r/' + matches[0].string
+				location.pathname = '/r/' + matches[selectedMatch].string
 		query = query
 		
 {#if query.length > 0}

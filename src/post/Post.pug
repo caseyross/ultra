@@ -1,5 +1,5 @@
 script.
-	import CommentSection from './CommentSection.pug'
+	import CommentSection from '../comment/CommentSection.pug'
 	import EmbedContent from './content/EmbedContent.pug'
 	import ImageContent from './content/ImageContent.pug'
 	import LinkContent from './content/LinkContent.pug'
@@ -8,7 +8,7 @@ script.
 	import VideoContent from './content/VideoContent.pug'
 	import Post from './Post.coffee'
 	export post = {}
-	replySort = post.defaultReplySort
+	console.log 'POST', post
 
 {#if post instanceof Post}
 	article.hide-scrollbar
@@ -18,8 +18,9 @@ script.
 		RedditContent(content={post.content})
 		SelfContent(content={post.content})
 		VideoContent(content={post.content})
-		{#await post.getReplies({ sort: replySort }) then replies}
-			CommentSection(comments={replies})
+	{#await post.comments then comments}
+		.comments.hide-scrollbar
+			CommentSection(comments={comments})
 
 style.
 	article
@@ -31,3 +32,12 @@ style.
 		overflow auto
 		display grid
 		place-content center
+	.comments
+		position fixed
+		top 0
+		right 0
+		width 30vw
+		height 100vh
+		overflow auto
+		padding-left 5vw
+		padding-right 5vw

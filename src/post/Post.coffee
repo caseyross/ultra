@@ -28,7 +28,6 @@ export default class Post
 			text: data.link_flair_text
 			color: data.link_flair_background_color
 		content: new PostContent(data)
-		defaultReplySort: data.suggestedSort
 		isContestMode: data.contest_mode
 		isNSFW: data.over_18
 		isOC: data.is_original_content
@@ -49,16 +48,15 @@ export default class Post
 		userSaved: data.saved
 		userHid: data.hidden
 
+		comments:
+			cached 't3_' + data.id,
+				API.get
+					endpoint: '/comments/' + data.id
+			.then ([x, y]) ->
+				new RepliesArray(y)
+
 	}
 
-	getReplies: ({ sort }) =>
-		CacheKey 't3_' + this.id + '_comments', =>
-			API.get
-				endpoint: '/comments/' + this.id
-				options:
-					sort: sort
-			.then ([ a, b ]) =>
-				new RepliesArray(b, this.id)
 	upvote: =>
 		API.post
 			endpoint: '/api/vote'

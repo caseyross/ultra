@@ -132,6 +132,13 @@ export getListingSlice = ({ endpoint, options }) ->
 	.then (x) ->
 		new ThingArray(x)
 
+export getFusedListingSlice = ({ endpoint, options }) ->
+	get
+		endpoint: endpoint
+		options: options
+	.then ([ x, y ]) ->
+		[ new ThingArray(x), new ThingArray(y) ]
+
 getPopularSubreddits = ->
 	getListingSlice
 		endpoint: '/subreddits/popular'

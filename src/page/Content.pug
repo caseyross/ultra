@@ -41,9 +41,9 @@ script.
 				showDestinations = yes
 
 svelte:head
-	{#await state.story.get() then story}
+	{#await state.story then story}
 		title {story.title}
-{#await state.story.get() then story}
+{#await state.story then story}
 	Post(post={story})
 	WikiPage(page={story})
 Account

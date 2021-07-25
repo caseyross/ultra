@@ -1,14 +1,13 @@
 import MultiredditFeed from '../feed/MultiredditFeed.coffee'
-import PostReference from '../post/PostReference.coffee'
-import Story from '../Story.coffee'
 import SubredditFeed from '../feed/SubredditFeed.coffee'
 import SubredditOverviewFeed from '../feed/SubredditOverviewFeed.coffee'
+import ThingArray from '../ThingArray.coffee'
 import WikiPage from '../wiki/WikiPage.coffee'
 
 export default class ContentState
 
 	constructor: ->  @[k] = v for k, v of {
-		story: new Story()
+		story: Promise.resolve {}
 		feed: null
 	}
 
@@ -22,12 +21,17 @@ export default class ContentState
 				switch c
 					when 'comments', 'post'
 						if d
-							this.story = new PostReference
-								id: d
-								commentId: f
+							this.story =
+								cached 't3_' + d,
+									API.get
+										endpoint: '/comments/' + d
+								.then ([x, y]) ->
+									new ThingArray(x)[0]
 					when 'wiki'
-						this.story = new WikiPage
-							path: location.pathname # can have 1 or 2 levels + hash link to a heading
+						this.story = Promise.resolve(
+							new WikiPage
+								path: location.pathname # can have 1 or 2 levels + hash link to a heading
+						)
 				if b
 					if p.get('sort')
 						this.feed = new SubredditFeed
