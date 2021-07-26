@@ -9,11 +9,12 @@ export default class SubredditFeed extends Feed
 			{
 				description: sort + ' Posts'
 				get: () =>
-					getListingSlice
-						endpoint: '/r/' + name + '/' + sort.split('-')[0]
-						options:
-							limit: if sort is 'hot' then 12 else 10
-							t: sort.split('-')[1]
+					cached 'r/' + name + '/' + sort, ->
+						getListingSlice
+							endpoint: '/r/' + name + '/' + sort.split('-')[0]
+							options:
+								limit: if sort is 'hot' then 12 else 10
+								t: sort.split('-')[1]
 					.then (x) -> x.filter (y) -> not y.isStickied
 					.then (x) -> x.slice 0, 10
 			}

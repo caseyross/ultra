@@ -11,11 +11,12 @@ export default class MultiredditFeed extends Feed
 					{
 						description: sort + ' Posts'
 						get: ->
-							getListingSlice
-								endpoint: '/r/' + name + '/' + sort.split('-')[0]
-								options:
-									limit: 10
-									t: sort.split('-')[1]
+							cached user + '/' + name + '/' + sort, ->
+								getListingSlice
+									endpoint: '/r/' + name + '/' + sort.split('-')[0]
+									options:
+										limit: 10
+										t: sort.split('-')[1]
 					}
 				]
 			else

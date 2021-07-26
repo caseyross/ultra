@@ -1,8 +1,8 @@
 cache = {}
 
-export cached = (key, value) ->
+export cached = (key, func) ->
 	if cache[key]
 		console.log('Cache hit: ' + key, cache[key])
 		return cache[key]
 	console.log('Cache miss: ' + key)
-	return cache[key] = value
+	return cache[key] = func()

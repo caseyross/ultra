@@ -3,7 +3,6 @@ script.
 	import Destinations from './Destinations.pug'
 	import Feed from '../feed/Feed.pug'
 	import Post from '../post/Post.pug'
-	import WikiPage from '../wiki/WikiPage.pug'
 
 	import ContentState from './ContentState.coffee'
 	state = new ContentState()
@@ -43,76 +42,8 @@ script.
 svelte:head
 	{#await state.story then story}
 		title {story.title}
+Feed(feed={state.feed})
 {#await state.story then story}
 	Post(post={story})
-	WikiPage(page={story})
-Account
-Feed(feed={state.feed})
-a.logo(href='/')
-	img.logo-icon
-		span.logo-text Ares
-data.version PRE-PROTOTYPE
-a.feedback(href='/mail/compose') REPORT A BUG
-.vitals
-	label.quota-monitor
-		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
-	label.server-monitor
-		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
-	label.downlink-monitor
-		meter(min='0' max='600' low='0' high='0' optimum='0' value='0')
 {#if showDestinations}
 	Destinations
-
-style.
-	.logo
-		display none
-		margin 4rem
-		&.dimmed
-			opacity 0.5
-			&:hover
-				opacity 1
-	.logo-icon
-		height 32px
-		width 32px
-		border-radius 50%
-		background salmon
-	.logo-text
-		font 900 26px 'Fabrikat Normal'
-		letter-spacing -1px
-		color gray
-	.messages-waiting
-		position fixed
-		top 0
-		right 0
-		margin 4rem
-		font 900 19px 'Fabrikat Normal'
-		color gray
-	.counter
-		font 900 26px 'Fabrikat Normal'
-		letter-spacing -1px
-		color salmon
-	.version
-		position fixed
-		bottom 0
-		left 0
-		padding 4rem
-		font 900 12px 'Fabrikat Normal'
-		color lightgray
-	.feedback
-		position fixed
-		bottom 0
-		right 0
-		padding 4rem
-		font 900 12px 'Fabrikat Normal'
-		color gray
-		&:hover
-			color salmon
-	.vitals
-		margin 4rem
-		display flex
-		flex-flow column nowrap
-		display none
-		& meter
-			appearance none
-			width 8rem
-			background darkseagreen

@@ -1,5 +1,5 @@
 export default class Feed
 
-	constructor: ->  @[k] = v for k, v of {
+	constructor: (url) ->  @[k] = v for k, v of {
 		sections: []
 	}

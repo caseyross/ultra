@@ -49,7 +49,7 @@ export default class Post
 		userHid: data.hidden
 
 		comments:
-			cached 't3_' + data.id,
+			cached 't3_' + data.id, ->
 				API.get
 					endpoint: '/comments/' + data.id
 			.then ([x, y]) ->

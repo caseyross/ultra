@@ -2,13 +2,13 @@ import MultiredditFeed from '../feed/MultiredditFeed.coffee'
 import SubredditFeed from '../feed/SubredditFeed.coffee'
 import SubredditOverviewFeed from '../feed/SubredditOverviewFeed.coffee'
 import ThingArray from '../ThingArray.coffee'
-import WikiPage from '../wiki/WikiPage.coffee'
 
 export default class ContentState
 
 	constructor: ->  @[k] = v for k, v of {
+		subreddit: Promise.resolve {}
+		feed: {}
 		story: Promise.resolve {}
-		feed: null
 	}
 
 	update: =>
@@ -22,17 +22,17 @@ export default class ContentState
 					when 'comments', 'post'
 						if d
 							this.story =
-								cached 't3_' + d,
+								cached 't3_' + d, ->
 									API.get
 										endpoint: '/comments/' + d
 								.then ([x, y]) ->
 									new ThingArray(x)[0]
-					when 'wiki'
-						this.story = Promise.resolve(
-							new WikiPage
-								path: location.pathname # can have 1 or 2 levels + hash link to a heading
-						)
 				if b
+					this.subreddit = cached 'r/' + b + '/about', ->
+						API.get
+							endpoint: '/r/' + b + '/about'
+						.then (x) ->
+							new ThingArray(x)[0]
 					if p.get('sort')
 						this.feed = new SubredditFeed
 							name: b

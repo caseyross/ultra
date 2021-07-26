@@ -3,6 +3,11 @@ script.
 	import LoggingIn from './page/LoggingIn.pug'
 	import { finishLogin } from './API.coffee'
 	params = new URLSearchParams(location.search)
+	ratelimitCount = ''
+	setInterval(
+		-> ratelimitCount = LS.calls.split(',').length,
+		6000
+	)
 
 {#if params.has('code')}
 	{#await finishLogin(params.get('code'), params.get('state'))}
@@ -11,3 +16,12 @@ script.
 		Content
 {:else}
 	Content
+#ratelimit {ratelimitCount}
+
+style.
+	#ratelimit
+		position fixed
+		top 0
+		right 0
+		color blue
+		font bold 16px monospace
