@@ -4,7 +4,7 @@ script.
 	export feed = {}
 
 {#if feed instanceof Feed}
-	nav
+	nav.hide-scrollbar
 		{#each feed.sections as section}
 			{#await section.get()}
 			{:then items}
@@ -18,11 +18,9 @@ script.
 style.
 	nav
 		position fixed
-		top 10vh
-		left 0
+		top 0
+		right 50%
 		width 30vw
-		height 90vh
-		padding-left 5vw
-		padding-right 5vw
-	li
-		padding 1em
+		height 100vh
+		overflow auto
+		padding 10vh 5vw

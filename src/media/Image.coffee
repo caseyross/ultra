@@ -48,15 +48,14 @@ export default class Image
 			else
 				null
 
-	pick: ({ minW, maxW, cutW, minH, maxH, cutH }) =>
+	pick: ({ minH, minW, maxH, maxW, maxP }) =>
 		@sizes.fold(
 			@sizes[0],
 			(a, b) => switch
+				when b.w * b.h <= maxP then b
 				when a.w < minW then b
 				when a.h < minH then b
 				when a.w >= maxW then a
 				when a.h >= maxH then a
-				when b.w > cutW then a
-				when b.h > cutH then a
 				else b
 		)

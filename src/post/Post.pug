@@ -18,26 +18,14 @@ script.
 		RedditContent(content={post.content})
 		SelfContent(content={post.content})
 		VideoContent(content={post.content})
-	{#await post.comments then comments}
-		.comments.hide-scrollbar
+		{#await post.comments then comments}
 			CommentSection(comments={comments})
 
 style.
 	article
 		position fixed
 		top 0
-		left 30vw
-		width 40vw
+		left 50%
 		height 100vh
 		overflow auto
-		display grid
-		place-content center
-	.comments
-		position fixed
-		top 0
-		right 0
-		width 30vw
-		height 100vh
-		overflow auto
-		padding-left 5vw
-		padding-right 5vw
+		padding 10vh 0

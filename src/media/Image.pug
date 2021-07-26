@@ -1,13 +1,12 @@
 script.
 	export image = null
-	export minW = 0
-	export maxW = Infinity
-	export cutW = Infinity
 	export minH = 0
+	export minW = 0
 	export maxH = Infinity
-	export cutH = Infinity
+	export maxW = Infinity
+	export maxP = Infinity
 
-	res = image.pick { minW, maxW, cutW, minH, maxH, cutH }
+	res = image.pick { minH, minW, maxH, maxW, maxP }
 	
 	style = ''
 	if maxW < Infinity

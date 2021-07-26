@@ -3,9 +3,24 @@ script.
 	export post = {}
 
 {#if post instanceof Post}
-	.post-item
-		a(href={post.href}) {post.title}
+	a(href={post.href})
+		.meta
+			span.flair {post.titleFlair.text}
+		.title {post.title}
 
 style.
-	.post-item
-		font-size 2vh
+	a
+		display block
+		padding 1ch 2ch
+		border-radius 1ch
+		background gainsboro
+		border 1px solid white
+	.meta
+		margin-bottom 2px
+	.flair
+		padding 1px 4px
+		background gray
+		color white
+		border-radius 4px
+	.title
+		font-size 15px
