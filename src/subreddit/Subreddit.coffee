@@ -2,7 +2,7 @@ import Image from '../media/Image.coffee'
 
 export default class Subreddit
 
-	constructor: (data) ->  @[k] = v for k, v of {
+	constructor: (data) -> @[k] = v for k, v of {
 
 		id: data.id
 		name: data.display_name.toLowerCase()

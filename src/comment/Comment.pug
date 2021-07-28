@@ -1,14 +1,13 @@
 script.
-	import Barcode from '../user/Barcode.pug'
 	import MoreComments from './MoreComments.pug'
+	import Placard from '../user/Placard.pug'
 	import Comment from './Comment.coffee'
 	export comment = {}
 
 {#if comment instanceof Comment}
 	.comment
 		.meta
-			Barcode(username={comment.author} role={comment.authorRole})
-			span.score {comment.score.text}
+			Placard(name={comment.author} flair={comment.authorFlair} subredditName={comment.subredditName})
 		{@html comment.content}
 		.replies
 			{#if comment.replies}
@@ -19,7 +18,6 @@ style.
 	.comment
 		margin-top 3em
 		width 60ch
-		font 400 12px 'PT Sans Caption'
 	.meta
 		display flex
 		margin-bottom 1rem

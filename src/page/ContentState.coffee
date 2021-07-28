@@ -2,6 +2,7 @@ import MultiredditFeed from '../feed/MultiredditFeed.coffee'
 import SubredditFeed from '../feed/SubredditFeed.coffee'
 import SubredditOverviewFeed from '../feed/SubredditOverviewFeed.coffee'
 import ThingArray from '../ThingArray.coffee'
+import { getEmojis } from '../API.coffee'
 
 export default class ContentState
 
@@ -12,7 +13,7 @@ export default class ContentState
 	}
 
 	update: =>
-		[ _, a, b, c, d, e, f ] = location.pathname.split('/')
+		[ _, a, b, c, d, e, f ] = location.pathname.split('/').map((x) -> x?.toLowerCase())
 		p = new URLSearchParams(location.search)
 		if a.length > 1
 			[ a, b, c, d, e, f ] = [ 'r', a, b, c, d, e ]
@@ -33,6 +34,8 @@ export default class ContentState
 							endpoint: '/r/' + b + '/about'
 						.then (x) ->
 							new ThingArray(x)[0]
+					if LS.userKey
+						cached 'r/' + b + '/emojis', -> getEmojis(b)
 					if p.get('sort')
 						this.feed = new SubredditFeed
 							name: b

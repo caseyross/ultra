@@ -160,3 +160,15 @@ getUserSubreddits = ->
 			.filter (s) -> s.name.startsWith('u_')
 			.map (s) -> s.displayName
 			.join()
+
+export getEmojis = (subredditName) ->
+	API.get
+		endpoint: '/api/v1/' + subredditName + '/emojis/all'
+	.then (x) ->
+		emojis = []
+		for category of x
+			if category isnt 'snoomojis'
+				for emoji of x[category]
+					[ _, _, _, id, name ] = x[category][emoji].url.split('/')
+					emojis.push(name + ':' + id)
+		LS['emojis@' + subredditName] = emojis.join(',')

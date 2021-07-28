@@ -1,6 +1,6 @@
-import Flair from '../shared/Flair'
+import Flair from '../shared/Flair.coffee'
 import RepliesArray from './RepliesArray.coffee'
-import Score from '../shared/Score'
+import Score from '../shared/Score.coffee'
 
 export default class Comment
 
@@ -10,7 +10,8 @@ export default class Comment
 		postId: data.link_id[3..]
 		postTitle: data.link_title
 		postIsNSFW: data.over_18
-		subredditName: data.subreddit
+		subredditName: data.subreddit.toLowerCase()
+		subredditDisplayName: data.subreddit
 		href: '/r/' + data.subreddit + '/post/' + data.link_id[3..] + '/comment/' + data.id
 		
 		author: data.author
