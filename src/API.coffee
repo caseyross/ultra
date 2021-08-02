@@ -1,5 +1,5 @@
-import ThingArray from './ThingArray.coffee'
-
+import { cached } from './Cache.coffee'
+import Model from './Model.coffee'
 
 REDDIT_CLIENT_ID = '3-XWy138GarDUw'
 REDDIT_LOGIN_REDIRECT_URI = 'https://localhost:8080/login'
@@ -125,26 +125,24 @@ export post = ({ endpoint, content = {} }) ->
 		path: endpoint
 		body: new URLSearchParams(content)
 
-export getListingSlice = ({ endpoint, options }) ->
-	get
-		endpoint: endpoint
-		options: options
-	.then (x) ->
-		new ThingArray(x)
 
-export getFusedListingSlice = ({ endpoint, options }) ->
+export getListingItems = ({ endpoint, quantity, beforeId, afterId }) ->
 	get
 		endpoint: endpoint
-		options: options
-	.then ([ x, y ]) ->
-		[ new ThingArray(x), new ThingArray(y) ]
+		options:
+			limit: quantity
+			before: beforeId
+			after: afterId
+	.then (x) ->
+		new Model(x)
+
 
 getPopularSubreddits = ->
-	getListingSlice
+	getListingItems
 		endpoint: '/subreddits/popular'
 
 getUserSubreddits = ->
-	getListingSlice
+	getListingItems
 		endpoint: '/subreddits/mine/subscriber'
 		options:
 			limit: 100
@@ -161,14 +159,109 @@ getUserSubreddits = ->
 			.map (s) -> s.displayName
 			.join()
 
-export getEmojis = (subredditName) ->
-	API.get
-		endpoint: '/api/v1/' + subredditName + '/emojis/all'
-	.then (x) ->
-		emojis = []
-		for category of x
-			if category isnt 'snoomojis'
-				for emoji of x[category]
-					[ _, _, _, id, name ] = x[category][emoji].url.split('/')
-					emojis.push(name + ':' + id)
-		LS['emojis@' + subredditName] = emojis.join(',')
+
+export getSubredditInformation = (subredditName) ->
+	cached 'r/' + subredditName + '/information', ->
+		get
+			endpoint: '/r/' + subredditName + '/about'
+		.then (x) ->
+			new Model(x)
+			
+export getUserInformation = (userName) ->
+	cached 'u/' + userName + '/about', ->
+		get
+			endpoint: '/user/' + userName + '/about'
+		.then (x) ->
+			new Model(x)
+
+
+export getSubredditRules = (subredditName) ->
+	cached 'r/' + subredditName + '/rules', ->
+		get
+			endpoint: '/r/' + subredditName + '/about/rules'
+		.then (x) ->
+			console.log x
+
+export getSubredditSidebar = (subredditName) ->
+	cached 'r/' + subredditName + '/sidebar', ->
+		get
+			endpoint: '/r/' + subredditName + '/about/sidebar'
+		.then (x) ->
+			console.log x
+
+export getSubredditEmojis = (subredditName) ->
+	if LS.userKey
+		cached 'r/' + subredditName + '/emojis', ->
+			get
+				endpoint: '/api/v1/' + subredditName + '/emojis/all'
+			.then (x) ->
+				emojis = []
+				for category of x
+					if category isnt 'snoomojis'
+						for emoji of x[category]
+							[ _, _, _, id, name ] = x[category][emoji].url.split('/')
+							emojis.push(name + ':' + id)
+				if emojis.length
+					LS['emojis@' + subredditName] = emojis.join(',')
+	else
+		Promise.resolve()
+
+
+export getFrontpagePosts = ({ quantity }) ->
+	cached 'r/frontpage', ->
+		getListingItems
+			endpoint: '/'
+			quantity: quantity
+
+export getSubredditPosts = (subredditName, { quantity }) ->
+	cached 'r/' + subredditName, ->
+		getListingItems
+			endpoint: '/r/' + subredditName
+			quantity: quantity
+
+export getMultiredditPosts = (multiredditNamespace, multiredditName, { quantity }) ->
+	cached 'm/' + multiredditNamespace + '/' + multiredditName, ->
+		if multiredditNamespace is 'r'
+			getListingItems
+				endpoint: '/r/' + multiredditName
+				quantity: quantity
+		else
+			getListingItems
+				endpoint: '/api/multi/u' + multiredditNamespace + '/m/' + multiredditName 
+				quantity: quantity
+			.then (x) ->
+				console.log x
+
+export getUserItems = (userName, { quantity }) ->
+	cached 'u/' + userName + '/items', ->
+		getListingItems
+			endpoint: '/user/' + userName + '/overview'
+			quantity: quantity
+
+export getUserPosts = (userName, { quantity }) ->
+	cached 'u/' + userName + '/posts', ->
+		getListingItems
+			endpoint: '/user/' + userName + '/posts'
+			quantity: quantity
+
+export getUserComments = (userName, { quantity }) ->
+	cached 'u/' + userName + '/comments', ->
+		getListingItems
+			endpoint: '/user/' + userName + '/comments'
+			quantity: quantity
+
+
+export getPost = (id) ->
+	cached 't3_' + id, ->
+		get
+			endpoint: '/comments/' + id
+	.then ([x, y]) ->
+		# The post's comments are handled separately via the Post constructor.
+		new Model(x)[0]
+
+export getPostComments = (id) ->
+	cached 't3_' + id, ->
+		get
+			endpoint: '/comments/' + id
+	.then ([x, y]) ->
+		new Model(y)

@@ -1,0 +1,13 @@
+script.
+	import Comment from '../comment/Comment.pug'
+	import Feed from '../channel/Feed.pug'
+	import Post from '../post/Post.pug'
+	import Channel from '../channel/Channel.coffee'
+	export channel = null
+	selectedItem = null
+	selectItem = (item) -> selectedItem = item
+
+{#await channel.getItems(10) then items}
+	Feed(items={items} selectedItem={selectedItem} selectItem={selectItem})
+Comment(comment={selectedItem})
+Post(post={selectedItem})

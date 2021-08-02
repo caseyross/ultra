@@ -1,0 +1,15 @@
+script.
+	import PostFlair from './PostFlair.pug'
+	import Post from './Post.coffee'
+	export post = {}
+
+{#if post instanceof Post}
+	.meta
+		PostFlair(flair={post.titleFlair})
+	.title {post.title}
+
+style.
+	.meta
+		margin-bottom 2px
+	.title
+		font-size 15px

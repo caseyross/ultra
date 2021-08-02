@@ -7,7 +7,7 @@ script.
 {#if comment instanceof Comment}
 	.comment
 		.meta
-			Placard(name={comment.author} flair={comment.authorFlair} subredditName={comment.subredditName})
+			Placard(name={comment.authorName} flair={comment.authorFlair} subredditName={comment.subredditName})
 		{@html comment.content}
 		.replies
 			{#if comment.replies}
@@ -21,9 +21,6 @@ style.
 	.meta
 		display flex
 		margin-bottom 1rem
-	.score
-		margin-left 8px
-		font-weight bold
 	.replies
 		padding-left 40px
 		border-left 1px solid lightgray

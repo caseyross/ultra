@@ -1,0 +1,10 @@
+script.
+	import Feed from '../channel/Feed.pug'
+	import Post from '../post/Post.pug'
+	export channel = null
+	selectedPost = null
+	selectPost = (post) -> selectedPost = post
+
+{#await channel.getItems(10) then posts}
+	Feed(items={posts} selectedItem={selectedPost} selectItem={selectPost})
+Post(post={selectedPost})

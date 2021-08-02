@@ -1,9 +1,7 @@
 import Flair from '../shared/Flair.coffee'
-import Image from '../media/Image.coffee'
 import PostContent from './content/PostContent.coffee'
-import RepliesArray from '../comment/RepliesArray.coffee'
 import Score from '../shared/Score.coffee'
-import Video from '../media/Video.coffee'
+import { getPostComments, post } from '../API.coffee'
 
 export default class Post
 
@@ -14,7 +12,7 @@ export default class Post
 		crosspostParent: data.crosspost_parent_list
 		href: '/r/' + data.subreddit + '/post/' + data.id
 
-		author: data.author
+		authorName: data.author
 		authorFlair: new Flair
 			text: data.author_flair_text
 			color: data.author_flair_background_color
@@ -48,50 +46,45 @@ export default class Post
 		userSaved: data.saved
 		userHid: data.hidden
 
-		comments:
-			cached 't3_' + data.id, ->
-				API.get
-					endpoint: '/comments/' + data.id
-			.then ([x, y]) ->
-				new RepliesArray(y)
+		comments: getPostComments(data.id)
 
 	}
 
 	upvote: =>
-		API.post
+		post
 			endpoint: '/api/vote'
 			content:
 				id: 't3_' + this.id
 				dir: 1
 	unvote: =>
-		API.post
+		post
 			endpoint: '/api/vote'
 			content:
 				id: 't3_' + this.id
 				dir: 0
 	downvote: =>
-		API.post
+		post
 			endpoint: '/api/vote'
 			content:
 				id: 't3_' + this.id
 				dir: -1
 	save: =>
-		API.post
+		post
 			endpoint: '/api/save'
 			content:
 				id: 't3_' + this.id
 	unsave: =>
-		API.post
+		post
 			endpoint: '/api/unsave'
 			content:
 				id: 't3_' + this.id
 	hide: =>
-		API.post
+		post
 			endpoint: '/api/hide'
 			content:
 				id: 't3_' + this.id
 	unhide: =>
-		API.post
+		post
 			endpoint: '/api/unhide'
 			content:
 				id: 't3_' + this.id

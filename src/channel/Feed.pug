@@ -1,0 +1,18 @@
+script.
+	import FeedComment from '../comment/FeedComment.pug'
+	import FeedPost from '../post/FeedPost.pug'
+	export items = []
+	export selectItem = -> {}
+	export selectedItem = {}
+
+ol
+	{#each items as item}
+		li
+			button(on:mousedown={selectItem(item)})
+				FeedComment(comment={item})
+				FeedPost(post={item})
+
+style.
+	button
+		height 64px
+		overflow hidden

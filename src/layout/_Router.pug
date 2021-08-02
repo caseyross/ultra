@@ -1,0 +1,74 @@
+script.
+	import Destinations from './Destinations.pug'
+	import DetachedPost from './DetachedPost.pug'
+	import FrontPage from './FrontPage.pug'
+	import LoggingIn from './LoggingIn.pug'
+	import Subreddit from './Subreddit.pug'
+	import UserProfile from './UserProfile.pug'
+	import URLState from '../URLState.coffee'
+
+	urlState = new URLState()
+
+	document.addEventListener 'click', (e) =>
+		if e.buttons < 3
+			e.preventDefault()
+	document.addEventListener 'contextmenu', (e) =>
+		unless e.altKey
+			e.preventDefault()
+	document.addEventListener 'mousedown', (e) =>
+		switch e.buttons
+			when 1
+				for element in e.path
+					if element.href
+						if element.origin is location.origin
+							urlState = new URLState(element.href)
+						else if element.target is '_blank'
+							return open(element.href)
+						else
+							return location.href = element.href
+						break
+
+	showDestinations = no
+	document.addEventListener 'keydown', (e) =>
+		switch e.key
+			when 'Escape', 'Enter'
+				showDestinations = !showDestinations
+			when '/'
+				showDestinations = yes
+				
+	ratelimitCount = ''
+	setInterval(
+		-> ratelimitCount = LS.calls.split(',').length,
+		6000
+	)
+
+
+{#if urlState.page === 'logging-in'}
+	{#await urlState.finishLogin}
+		LoggingIn
+	{:then}
+		svelte:self
+{:else}
+	{#if urlState.page === 'front'}
+		FrontPage
+	{:else if urlState.page === 'channel'}
+		{#if urlState.channel.type === 'subreddit'}
+			Subreddit(channel={urlState.channel})
+		{:else if urlState.channel.type === 'multireddit'}
+			Multireddit(channel={urlState.channel})
+		{:else if urlState.channel.type === 'user'}
+			UserProfile(channel={urlState.channel})
+	{:else if urlState.page === 'detached-post'}
+		{#await urlState.getPost then post}
+			DetachedPost(post={post})
+	{#if showDestinations}
+		Destinations
+	#ratelimit {ratelimitCount}
+
+style.
+	#ratelimit
+		position fixed
+		top 0
+		right 0
+		color blue
+		font bold 16px monospace

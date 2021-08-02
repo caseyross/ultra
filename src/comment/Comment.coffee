@@ -1,6 +1,7 @@
 import Flair from '../shared/Flair.coffee'
-import RepliesArray from './RepliesArray.coffee'
+import Model from '../Model.coffee'
 import Score from '../shared/Score.coffee'
+import { post } from '../API.coffee'
 
 export default class Comment
 
@@ -14,7 +15,7 @@ export default class Comment
 		subredditDisplayName: data.subreddit
 		href: '/r/' + data.subreddit + '/post/' + data.link_id[3..] + '/comment/' + data.id
 		
-		author: data.author
+		authorName: data.author
 		authorFlair: new Flair
 			color: data.author_flair_background_color
 			text: data.author_flair_text
@@ -27,7 +28,7 @@ export default class Comment
 		editDate: new Date(1000 * data.edited)
 
 		content: data.body_html ? ''
-		replies: new RepliesArray(data.replies, this.postId)
+		replies: new Model(data.replies)
 		isPinned: data.stickied
 		wasEdited: data.edited
 		wasDeleted: data.body is '[removed]'
@@ -44,40 +45,40 @@ export default class Comment
 	}
 		
 	upvote: =>
-		API.post
+		post
 			endpoint: '/api/vote'
 			content:
 				id: 't1_' + this.id
 				dir: 1
 	unvote: =>
-		API.post
+		post
 			endpoint: '/api/vote'
 			content:
 				id: 't1_' + this.id
 				dir: 0
 	downvote: =>
-		API.post
+		post
 			endpoint: '/api/vote'
 			content:
 				id: 't1_' + this.id
 				dir: -1
 	save: =>
-		API.post
+		post
 			endpoint: '/api/save'
 			content:
 				id: 't1_' + this.id
 	unsave: =>
-		API.post
+		post
 			endpoint: '/api/unsave'
 			content:
 				id: 't1_' + this.id
 	hide: =>
-		API.post
+		post
 			endpoint: '/api/hide'
 			content:
 				id: 't1_' + this.id
 	unhide: =>
-		API.post
+		post
 			endpoint: '/api/unhide'
 			content:
 				id: 't1_' + this.id

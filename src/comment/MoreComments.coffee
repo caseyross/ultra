@@ -1,3 +1,5 @@
+import { get } from '../API.coffee'
+
 export default class MoreComments
 
 	constructor: (data, post_id) -> @[k] = v for k, v of {
@@ -6,7 +8,7 @@ export default class MoreComments
 	}
 
 	load: =>
-		API.get
+		get
 			endpoint: '/api/morechildren'
 			options:
 				link_id: 't3_' + this.post_id

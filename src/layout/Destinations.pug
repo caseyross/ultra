@@ -1,6 +1,8 @@
 script.
 	import { fade } from 'svelte/transition'
 	import DestinationSearch from './DestinationSearch.pug'
+	subreddits = LS.userSubreddits.split(',')
+	users = LS.userUsers.split(',')
 
 nav(transition:fade={{ duration: 80 }})
 	h1 Personal
@@ -19,15 +21,15 @@ nav(transition:fade={{ duration: 80 }})
 			a All
 	h1 Subs
 	ol
-		{#each LS.userSubreddits.split(',') as name}
+		{#each subreddits as name}
 			li
 				a(href='/r/{name}') {name}
 	h1 Users
 	ol
-		{#each LS.userUsers.split(',') as name}
+		{#each users as name}
 			li
 				a(href='/u/{name}') {name}
-	DestinationSearch(destinations={(LS.userSubreddits + ',' + LS.userUsers).split(',')})
+	DestinationSearch(destinations={subreddits.concat(users)})
 
 style.
 	nav

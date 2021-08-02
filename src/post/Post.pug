@@ -8,16 +8,16 @@ script.
 	import VideoContent from './content/VideoContent.pug'
 	import Post from './Post.coffee'
 	export post = {}
-	console.log 'POST', post
 
 {#if post instanceof Post}
 	article.hide-scrollbar
-		EmbedContent(content={post.content})
-		ImageContent(content={post.content})
-		LinkContent(content={post.content})
-		RedditContent(content={post.content})
-		SelfContent(content={post.content})
-		VideoContent(content={post.content})
+		{#key post.content}
+			EmbedContent(content={post.content})
+			ImageContent(content={post.content})
+			LinkContent(content={post.content})
+			RedditContent(content={post.content})
+			SelfContent(content={post.content})
+			VideoContent(content={post.content})
 		{#await post.comments then comments}
 			CommentSection(comments={comments})
 
