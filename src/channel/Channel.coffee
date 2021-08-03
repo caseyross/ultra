@@ -1,5 +1,6 @@
 import {
 	getFrontpagePosts
+	getMultiredditPosts
 	getSubredditInformation
 	getSubredditPosts
 	getUserComments

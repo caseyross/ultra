@@ -13,28 +13,27 @@ script.
 			.split(':')
 			.map (s) ->
 				if emojis[s]
-					"<img src='https://emoji.redditmedia.com/#{emojis[s]}/#{s}' class='flair-emoji'>"
+					"<img src='https://emoji.redditmedia.com/#{emojis[s]}/#{s}' class='flair-emoji' title=':#{s}:' alt=#{s}>"
 				else
 					s
 			.join('')
 
-span.placard
+.placard
 	a.name(href='/u/{name}') {name}
 	{#if flairHTML}
 		span.flair {@html flairHTML}
 
 style.
 	.placard
-		background gray
-		color white
+		color rgba(0,0,0,0.5)
 		border-radius 4px
+		border 1px solid
 	.name
 	.flair
-		padding 2px 4px
+		display inline-block
+		padding 1px 4px
 	.flair
-		background lightgray
-		color black
-		border-radius 0 4px 4px 0
+		border-left 1px solid
 	:global(.flair-emoji)
 		height 20px
 		width 20px

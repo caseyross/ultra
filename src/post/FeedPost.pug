@@ -5,11 +5,23 @@ script.
 
 {#if post instanceof Post}
 	.meta
+		a.subreddit(href='/r/{post.subredditName}')
+			span.r r
+			span {post.subredditName}
 		PostFlair(flair={post.titleFlair})
 	.title {post.title}
 
 style.
 	.meta
 		margin-bottom 2px
+	.subreddit
+		border 1px solid
+		padding 1px 4px
+		border-radius 4px
+		background linear-gradient(120deg, rgba(0,0,0,0.5) 20px, transparent 20px)
+		.r
+			color white
+			margin-right 16px
+			
 	.title
 		font-size 15px

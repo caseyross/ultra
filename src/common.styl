@@ -43,9 +43,10 @@ ol, ul
 	margin 0
 	padding 0
 h1, h2, h3, h4, h5, h6
-	font-size inherit
-	font-weight normal
+	font-size 1em
 	margin 0
+h1
+	font-size 1.25em
 ol, ul
 	list-style none
 p
@@ -62,21 +63,17 @@ video
 			color lightsteelblue
 	blockquote
 		margin 0
+		padding-left 1em
+		border-left 1px solid
 		opacity 0.5
 	code
 		font-weight bold
 		color red
-	h1
-		font-size 1.333em
-		font-weight 900
-	h2, h3, h4, h5, h6
-		font-size 1.1666em
-		font-weight 700
 	hr
 		margin-top 1em
 	ol
 		list-style decimal
-		padding-left 4rem
+		padding-left 2em
 	pre
 		display inline-block
 		white-space pre
@@ -84,32 +81,33 @@ video
 		border 1px dashed red
 		overflow auto
 	table
-		overflow-wrap break-word
-		border 1px solid
+		table-layout fixed
+		width 100%
+		white-space pre
+		border-collapse collapse
 	td, th
+		overflow hidden
+		text-align left
+		border 1px solid rgba(0,0,0,0.1)
 		padding 0 1ch
-	td
-		vertical-align top
-	th
-		vertical-align bottom
-		font-weight normal
-		background var(--gainsboro)
 	ul
-		list-style square
-		padding-left 4rem
-	* + blockquote,
-	* + code,
+		list-style circle
+		padding-left 2em
 	* + h1,
 	* + h2,
 	* + h3,
 	* + h4,
 	* + h5,
-	* + h6,
+	* + h6
+		margin-top 3em
+		text-transform uppercase
+	* + blockquote,
+	* + code,
 	* + ol,
 	* + p,
 	* + table,
 	* + ul
-		margin-top 1ch
+		margin-top 0.5em
 .hide-scrollbar
 	scrollbar-width none
 	&::-webkit-scrollbar
