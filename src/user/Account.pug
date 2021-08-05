@@ -4,30 +4,23 @@ script.
 {#if LS.userKey}
 	button(on:mousedown={() => logout()})
 		img.user-img(src={LS.userPic})
-		span Log out
+		span {LS.userName}
 {:else}
 	button(on:mousedown={() => startLogin()})
-		img.no-user-img
 		span Log in
 
 style.
 	button
 		position fixed
-		top 5%
-		left 10%
+		top 1vw
+		right 1vw
 		height 48px
-		background white
-		box-shadow 0 0 10rem lightgray
 		padding 2rem
+		border 1px solid
+		border-radius 1ch
 		display flex
 		align-items center
 	img
-		height 32px
-		width 32px
-		border-radius 50%
-	.user-img
-		background lightgoldenrod
-	.no-user-img
-		border 1px solid lightgray
-	span
-		margin-left 2rem
+		height 64px
+		width 64px
+		margin-right 2rem

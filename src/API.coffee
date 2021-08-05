@@ -30,7 +30,7 @@ export finishLogin = (voucher, redirect_path) ->
 			.then (user) ->
 				LS.userPic = user.subreddit.icon_img
 				LS.userName = user.name
-			getUserSubreddits()
+			getUserSubscriptions()
 		]).then ->
 			history.replaceState({}, '', location.origin + redirect_path)
 			location.reload()
@@ -137,21 +137,25 @@ export getListingItems = ({ endpoint, ...options }) ->
 getPopularSubreddits = ->
 	getListingItems
 		endpoint: '/subreddits/popular'
+	.then (subreddits) ->
+		LS.popularSubreddits =
+			subreddits
+			.filter (s) -> s.name isnt 'home'
+			.map (s) -> s.displayName
+			.join()
 
-getUserSubreddits = ->
+getUserSubscriptions = ->
 	getListingItems
 		endpoint: '/subreddits/mine/subscriber'
 		limit: 100
 	.then (subreddits) ->
-		subreddits.sort (a, b) -> if a.name < b.name then -1 else 1
-		LS.userSubreddits =
+		LS.userSubscriptions =
 			subreddits
-			.filter (s) -> not s.name.startsWith('u_')
-			.map (s) -> s.displayName
-			.join()
-		LS.userUsers =
-			subreddits
-			.filter (s) -> s.name.startsWith('u_')
+			.sort (a, b) -> if a.name < b.name then -1 else 1
+			.sort (a, b) ->
+				if a.name.startsWith('u_') and b.name.startsWith('u_') then return 0
+				if a.name.startsWith('u_') then return 1
+				if b.name.startsWith('u_') then return -1
 			.map (s) -> s.displayName
 			.join()
 

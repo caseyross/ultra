@@ -1,35 +1,16 @@
 script.
-	import { fade } from 'svelte/transition'
+	import Account from '../user/Account.pug'
 	import DestinationSearch from './DestinationSearch.pug'
-	subreddits = LS.userSubreddits.split(',')
-	users = LS.userUsers.split(',')
+	destinations = (if LS.userKey then LS.userSubscriptions else LS.popularSubreddits).split(',')
 
-nav(transition:fade={{ duration: 80 }})
-	h1 Personal
-	ol
-		li
-			a Mail
-		li
-			a Saved
-	h1 Multis
-	ol
-		li
-			a Home
-		li
-			a Popular
-		li
-			a All
-	h1 Subs
-	ol
-		{#each subreddits as name}
-			li
-				a(href='/r/{name}') {name}
-	h1 Users
-	ol
-		{#each users as name}
-			li
-				a(href='/u/{name}') {name}
-	DestinationSearch(destinations={subreddits.concat(users)})
+nav
+	section
+		ol
+			{#each destinations as displayName}
+				li
+					a(href='{displayName}') {displayName}
+	Account
+	DestinationSearch(destinations={destinations})
 
 style.
 	nav
@@ -39,18 +20,16 @@ style.
 		height 100vh
 		width 100vw
 		overflow auto
-		padding 13vh 10vw
+		padding 10vh 10vw
 		background salmon
-		display grid
-		grid-template-rows 6vh 1fr
-		grid-auto-flow column
 	ol
-		height 100%
+		width 100%
 		display flex
-		flex-flow column wrap
-	li
+		flex-flow row wrap
+	a
+		display inline-block
 		font-size 2vh
 		opacity 0.5
-		&:hover
-			font-weight 900
-			opacity 1
+		padding 0.5em 1em
+		border 1px solid
+		border-radius 999px

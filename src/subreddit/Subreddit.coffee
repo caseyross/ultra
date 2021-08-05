@@ -11,9 +11,10 @@ export default class Subreddit
 
 			id: data.id
 			name: data.display_name.toLowerCase()
-			displayName: if data.display_name.startsWith 'u_' then data.display_name[2..] else data.display_name
-			tagline: data.public_description
-			longDescription: data.description
+			displayName: if data.display_name.startsWith 'u_' then 'u/' + data.display_name[2..] else 'r/' + data.display_name
+			title: data.title
+			blurb: data.public_description
+			sidebar: data.description
 			isNSFW: data.over18
 			isPrivate: data.subreddit_type is 'private'
 			isRestricted: data.subreddit_type is 'restricted'

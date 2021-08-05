@@ -11,7 +11,7 @@ export default class URLState
 		p = new URLSearchParams(location.search)
 		if p.has('code')
 			@page = 'logging-in'
-			@finishLogin = finishLogin(params.get('code'), params.get('state'))
+			@finishLogin = finishLogin(p.get('code'), p.get('state'))
 			return
 
 		@page = 'front'

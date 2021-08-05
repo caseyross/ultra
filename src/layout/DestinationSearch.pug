@@ -47,7 +47,7 @@ script.
 			if e.shiftKey
 				location.pathname = if query[0] is '/' then query.join('') else '/' + query.join('')
 			else if matches.length > 0
-				location.pathname = '/r/' + matches[selectedMatch].string
+				location.pathname = '/' + matches[selectedMatch].string
 		query = query
 		
 {#if query.length > 0}
@@ -102,10 +102,6 @@ style.
 			font-size 3vh
 		output:first-child
 			font-size 9vmin
-	mark
-		background-color initial
-		color black
-		font-weight 900
 	button
 		margin 1ch 2ch
 		padding 4px 13px 6px 12px
