@@ -1,0 +1,91 @@
+script.
+	import RadioButtonLinkGroup from '../shared/RadioButtonLinkGroup.pug'
+	export subredditName = ''
+	export sort = ''
+	options = [
+		[
+			{
+				text: 'New'
+				value: 'new'
+			}
+			{
+				text: 'Rising'
+				value: 'rising'
+			}
+			{
+				text: 'Hot'
+				value: 'hot'
+			}
+		]
+		[
+			{
+				text: 'H'
+				value: 'top/hour'
+			}
+			{
+				text: 'D'
+				value: 'top/day'
+			}
+			{
+				text: 'W'
+				value: 'top/week'
+			}
+			{
+				text: 'M'
+				value: 'top/month'
+			}
+			{
+				text: 'Y'
+				value: 'top/year'
+			}
+			{
+				text: 'A'
+				value: 'top/all'
+			}
+		]
+		[
+			{
+				text: 'H'
+				value: 'controversial/hour'
+			}
+			{
+				text: 'D'
+				value: 'controversial/day'
+			}
+			{
+				text: 'W'
+				value: 'controversial/week'
+			}
+			{
+				text: 'M'
+				value: 'controversial/month'
+			}
+			{
+				text: 'Y'
+				value: 'controversial/year'
+			}
+			{
+				text: 'A'
+				value: 'controversial/all'
+			}
+		]
+	].map (a) -> a.map (x) -> {
+		...x
+		href: '/r/' + subredditName + '/' + x.value
+	}
+
+form
+	RadioButtonLinkGroup(options={options[0]} selectedValue={sort})
+	RadioButtonLinkGroup(groupLabel='Top:' options={options[1]} selectedValue={sort})
+	RadioButtonLinkGroup(groupLabel='Cvl:' options={options[2]} selectedValue={sort})
+
+style.
+	form
+		position fixed
+		bottom 91vh
+		left 320px
+		margin 0 1vw
+		width calc(640px - 2vw)
+		display flex
+		background rgba(0,0,0,0.1)
+		padding 4px

@@ -126,13 +126,10 @@ export post = ({ endpoint, content = {} }) ->
 		body: new URLSearchParams(content)
 
 
-export getListingItems = ({ endpoint, quantity, beforeId, afterId }) ->
+export getListingItems = ({ endpoint, ...options }) ->
 	get
 		endpoint: endpoint
-		options:
-			limit: quantity
-			before: beforeId
-			after: afterId
+		options: options
 	.then (x) ->
 		new Model(x)
 
@@ -144,8 +141,7 @@ getPopularSubreddits = ->
 getUserSubreddits = ->
 	getListingItems
 		endpoint: '/subreddits/mine/subscriber'
-		options:
-			limit: 100
+		limit: 100
 	.then (subreddits) ->
 		subreddits.sort (a, b) -> if a.name < b.name then -1 else 1
 		LS.userSubreddits =
@@ -166,14 +162,6 @@ export getSubredditInformation = (subredditName) ->
 			endpoint: '/r/' + subredditName + '/about'
 		.then (x) ->
 			new Model(x)
-			
-export getUserInformation = (userName) ->
-	cached 'u/' + userName + '/about', ->
-		get
-			endpoint: '/user/' + userName + '/about'
-		.then (x) ->
-			new Model(x)
-
 
 export getSubredditRules = (subredditName) ->
 	cached 'r/' + subredditName + '/rules', ->
@@ -205,50 +193,48 @@ export getSubredditEmojis = (subredditName) ->
 					LS['emojis@' + subredditName] = emojis.join(',')
 	else
 		Promise.resolve()
+			
+export getUserInformation = (userName) ->
+	cached 'u/' + userName + '/about', ->
+		get
+			endpoint: '/user/' + userName + '/about'
+		.then (x) ->
+			new Model(x)
 
 
-export getFrontpagePosts = ({ quantity }) ->
-	cached 'r/frontpage', ->
+export getFrontpagePosts = ({ sort = 'best', quantity }) ->
+	cached ['r/frontpage', sort, quantity].join('/'), ->
 		getListingItems
-			endpoint: '/'
-			quantity: quantity
+			endpoint: '/' + sort.split('/')[0]
+			limit: quantity
+			t: sort.split('/')[1]
 
-export getSubredditPosts = (subredditName, { quantity }) ->
-	cached 'r/' + subredditName, ->
+export getSubredditPosts = (subredditName, { sort = 'hot', quantity }) ->
+	cached ['r', subredditName, sort, quantity].join('/'), ->
 		getListingItems
-			endpoint: '/r/' + subredditName
-			quantity: quantity
+			endpoint: '/r/' + subredditName + '/' + sort.split('/')[0]
+			limit: quantity
+			t: sort.split('/')[1]
 
-export getMultiredditPosts = (multiredditNamespace, multiredditName, { quantity }) ->
-	cached 'm/' + multiredditNamespace + '/' + multiredditName, ->
+export getMultiredditPosts = (multiredditNamespace, multiredditName, { sort = 'hot', quantity }) ->
+	cached ['m', multiredditNamespace, multiredditName, sort, quantity].join('/'), ->
 		if multiredditNamespace is 'r'
-			getListingItems
-				endpoint: '/r/' + multiredditName
-				quantity: quantity
+			getSubredditPosts(multiredditName, { sort, quantity })
 		else
 			getListingItems
-				endpoint: '/api/multi/u' + multiredditNamespace + '/m/' + multiredditName 
-				quantity: quantity
+				endpoint: '/api/multi/u' + multiredditNamespace + '/m/' + multiredditName + '/' + sort.split('/')[0]
+				limit: quantity
+				t: sort.split('/')[1]
 			.then (x) ->
 				console.log x
 
-export getUserItems = (userName, { quantity }) ->
-	cached 'u/' + userName + '/items', ->
+export getUserItems = (userName, { filter = 'overview', sort = 'new', quantity }) ->
+	cached ['u', userName, filter, sort, quantity].join('/'), ->
 		getListingItems
-			endpoint: '/user/' + userName + '/overview'
-			quantity: quantity
-
-export getUserPosts = (userName, { quantity }) ->
-	cached 'u/' + userName + '/posts', ->
-		getListingItems
-			endpoint: '/user/' + userName + '/posts'
-			quantity: quantity
-
-export getUserComments = (userName, { quantity }) ->
-	cached 'u/' + userName + '/comments', ->
-		getListingItems
-			endpoint: '/user/' + userName + '/comments'
-			quantity: quantity
+			endpoint: '/user/' + userName + '/' + filter
+			limit: quantity
+			sort: sort.split('/')[0]
+			t: sort.split('/')[1]
 
 
 export getPost = (id) ->

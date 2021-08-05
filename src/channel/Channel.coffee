@@ -16,7 +16,7 @@ export default class Channel
 	constructor: (id) ->
 		@id = id
 		@type = 'frontpage'
-		[ a, b, c ] = id.split('/')
+		[ a, b, c, d, e ] = id.split('/')
 		switch a
 			when 'r'
 				switch b
@@ -28,18 +28,34 @@ export default class Channel
 						@type = 'subreddit'
 						@name = b
 						@source = getSubredditInformation(b)
+				if c
+					@sort = c
+					if d
+						@sort = c + '/' + d
 			when 'u'
 				@type = 'user'
 				@name = b
 				@source = getUserInformation(b)
+				switch c
+					when 'new', 'hot', 'top', 'controversial'
+						@sort = c
+						if d
+							@sort = c + '/' + d
+					else
+						if c
+							@filter = c
+							if d
+								@sort = d
+								if e
+									@sort = d + '/' + e
 
 	getItems: (quantity) =>
 		switch @type
 			when 'frontpage'
-				getFrontpagePosts({ quantity })
+				getFrontpagePosts({ @sort, quantity })
 			when 'subreddit'
-				getSubredditPosts(@name, { quantity })
+				getSubredditPosts(@name, { @sort, quantity })
 			when 'multireddit'
-				getMultiredditPosts(@namespace, @name, { quantity })
+				getMultiredditPosts(@namespace, @name, { @sort, quantity })
 			when 'user'
-				getUserItems(@name, { quantity })
+				getUserItems(@name, { @filter, @sort, quantity })

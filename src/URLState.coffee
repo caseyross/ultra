@@ -25,6 +25,6 @@ export default class URLState
 			@getPost = getPost(d)
 		else if a and b
 			@page = 'channel'
-			@channel = new Channel(a + '/' + b)
+			@channel = new Channel([a, b, c, d, e, f, p.get('t')].filter((x) -> x).join('/'))
 		
 		console.log @

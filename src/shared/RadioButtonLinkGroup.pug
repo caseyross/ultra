@@ -1,0 +1,27 @@
+script.
+	export groupLabel = ''
+	export options = []
+	export selectedValue = ''
+
+.fieldset
+	{#if groupLabel}
+		legend {groupLabel}
+	{#each options as option}
+		a(href={option.href})
+			label(class:checked={selectedValue === option.value}) {option.text}
+				input(type='radio' value={option.value} checked={selectedValue === option.value})
+
+style.
+	.fieldset
+		display flex
+	legend
+		margin-right 8px
+	label
+		border 1px solid
+		display inline-flex
+		padding 4px
+		&.checked
+			background red
+	input
+		appearance none
+		margin 0
