@@ -42,8 +42,7 @@ export logout = ->
 	delete LS.userKey
 	delete LS.userName
 	delete LS.userPic
-	delete LS.userSubreddits
-	delete LS.userUsers
+	delete LS.userSubscriptions
 	location.reload()
 
 
@@ -167,19 +166,17 @@ export getSubredditInformation = (subredditName) ->
 		.then (x) ->
 			new Model(x)
 
-export getSubredditRules = (subredditName) ->
-	cached 'r/' + subredditName + '/rules', ->
+export getSubredditWidgets = (subredditName) ->
+	cached 'r/' + subredditName + '/widgets', ->
 		get
-			endpoint: '/r/' + subredditName + '/about/rules'
+			endpoint: '/r/' + subredditName + '/api/widgets'
 		.then (x) ->
-			console.log x
-
-export getSubredditSidebar = (subredditName) ->
-	cached 'r/' + subredditName + '/sidebar', ->
-		get
-			endpoint: '/r/' + subredditName + '/about/sidebar'
-		.then (x) ->
-			console.log x
+			widgets =
+				basicInfo: x.items[x.layout.idCardWidget]
+				moderators: x.items[x.layout.moderatorWidget]
+				topbar: x.layout.topbar.order.map (id) -> x.items[id]
+				sidebar: x.layout.sidebar.order.map (id) -> x.items[id]
+			console.log widgets
 
 export getSubredditEmojis = (subredditName) ->
 	if LS.userKey
