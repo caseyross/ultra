@@ -1,0 +1,30 @@
+script.
+	export flair = {}
+	export subredditName = ''
+	emojis = {}
+	flairHTML = flair.text
+	if LS['emojis@' + subredditName]
+		for emoji in LS['emojis@' + subredditName].split(',')
+			[code, id] = emoji.split(':')
+			emojis[code] = id
+		flairHTML =
+			flair.text
+			.split(':')
+			.map (s) ->
+				if emojis[s]
+					"<img src='https://emoji.redditmedia.com/#{emojis[s]}/#{s}' class='flair-emoji' title=':#{s}:' alt=#{s}>"
+				else
+					s
+			.join('')
+
+{#if flairHTML}
+	span {@html flairHTML}
+
+style.
+	span
+		padding 0px 5px
+		height 20px
+		display flex
+	:global(.flair-emoji)
+		height 20px
+		width 20px

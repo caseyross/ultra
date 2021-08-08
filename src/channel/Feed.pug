@@ -4,24 +4,26 @@ script.
 	export items = []
 	export selectItem = -> {}
 	export selectedItem = {}
+	export showFlair = false
 
 ol
 	{#each items as item}
 		li
 			button(on:mousedown={selectItem(item)})
 				FeedComment(comment={item})
-				FeedPost(post={item})
+				FeedPost(post={item} showFlair={showFlair})
 
 style.
 	ol
 		position fixed
-		top 0
+		top 10vh
 		left 16.6%
 		width 33.3%
-		padding 10vh 1vw 0 1vw
+		padding-right 1vw
 	button
 		height 68px
 		width 100%
 		overflow hidden
 		text-align left
-		padding 14px 16px
+		background white
+		padding 1em

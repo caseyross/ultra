@@ -3,6 +3,7 @@ script.
 	import EmbedContent from './content/EmbedContent.pug'
 	import ImageContent from './content/ImageContent.pug'
 	import LinkContent from './content/LinkContent.pug'
+	import Placard from '../user/Placard.pug'
 	import RedditContent from './content/RedditContent.pug'
 	import SelfContent from './content/SelfContent.pug'
 	import VideoContent from './content/VideoContent.pug'
@@ -11,6 +12,7 @@ script.
 
 {#if post instanceof Post}
 	article.hide-scrollbar
+		Placard(name={post.authorName} flair={post.authorFlair} subredditName={post.subredditName} role={post.authorRole})
 		{#key post.content}
 			EmbedContent(content={post.content})
 			ImageContent(content={post.content})
@@ -28,5 +30,5 @@ style.
 		left 50%
 		height 100vh
 		overflow auto
-		margin 10vh 0
-		max-width 854px
+		padding 10vh 0
+		width 854px

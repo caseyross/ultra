@@ -1,12 +1,15 @@
 script.
+	import Flair from '../shared/Flair.pug'
 	export flair = {}
+	export subredditName = ''
 
 {#if flair.text}
-	span {flair.text}
+	span
+		Flair(flair={flair} subredditName={subredditName})
 
 style.
 	span
-		padding 1px 4px
+		padding 0 1ch
 		color rgba(0,0,0,0.5)
-		border-radius 4px
+		border-radius 1ch
 		border 1px solid

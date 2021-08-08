@@ -8,6 +8,6 @@ script.
 
 {#key channel}
 	{#await channel.getItems(10) then posts}
-		Feed(items={posts} selectedItem={selectedPost} selectItem={selectPost})
+		Feed(items={posts} selectedItem={selectedPost} selectItem={selectPost} showFlair={true})
 	SubredditFilterGroup(subredditName={channel.name} sort={channel.sort})
 	Post(post={selectedPost})

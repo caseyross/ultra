@@ -8,7 +8,8 @@ export default class Post
 	constructor: (data) -> @[k] = v for k, v of {
 
 		id: data.id
-		subredditName: data.subreddit
+		subredditName: data.subreddit.toLowerCase()
+		subredditDisplayName: data.subreddit
 		crosspostParent: data.crosspost_parent_list
 		href: '/r/' + data.subreddit + '/post/' + data.id
 
@@ -16,7 +17,7 @@ export default class Post
 		authorFlair: new Flair
 			text: data.author_flair_text
 			color: data.author_flair_background_color
-		authorRole: data.distinguished or 'submitter'
+		authorRole: data.distinguished
 		
 		createDate: new Date(1000 * data.created_utc)
 		editDate: new Date(1000 * (data.edited or data.created_utc))

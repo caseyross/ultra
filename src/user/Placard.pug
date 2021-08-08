@@ -1,39 +1,31 @@
 script.
+	import Flair from '../shared/Flair.pug'
 	export name = ''
 	export flair = {}
 	export subredditName = ''
-	emojis = {}
-	flairHTML = flair.text
-	if LS['emojis@' + subredditName]
-		for emoji in LS['emojis@' + subredditName].split(',')
-			[code, id] = emoji.split(':')
-			emojis[code] = id
-		flairHTML =
-			flair.text
-			.split(':')
-			.map (s) ->
-				if emojis[s]
-					"<img src='https://emoji.redditmedia.com/#{emojis[s]}/#{s}' class='flair-emoji' title=':#{s}:' alt=#{s}>"
-				else
-					s
-			.join('')
+	export role = ''
 
 .placard
-	a.name(href='/u/{name}') {name}
-	{#if flairHTML}
-		span.flair {@html flairHTML}
+	a.name(href='/u/{name}' class={role || ''}) {name}
+	Flair(flair={flair} subredditName={subredditName})
 
 style.
 	.placard
+		display flex
 		color rgba(0,0,0,0.5)
-		border-radius 4px
-		border 1px solid
 	.name
-	.flair
-		display inline-block
-		padding 1px 4px
-	.flair
-		border-left 1px solid
-	:global(.flair-emoji)
-		height 20px
-		width 20px
+		padding 0px 5px
+		&.submitter
+			background cornflowerblue
+			color white
+		&.moderator
+			background green
+			color white
+		&.admin
+			background orangered
+			color white
+		&.special
+			background violet
+			color white
+		&.deleted
+			color red

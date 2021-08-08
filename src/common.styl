@@ -5,7 +5,7 @@ html
 body
 	margin 0
 	// font
-	font 400 14px/1.5 'Karla'
+	font 400 10pt/1.5 'Karla'
 	word-spacing 0.25em
 	font-feature-settings 'kern'
 	-webkit-font-smoothing antialiased
@@ -37,16 +37,13 @@ button
 	border 0
 	font inherit
 	cursor pointer
+h1, h2, h3, h4, h5, h6
+	margin 0
 figure,
 menu,
 ol, ul
 	margin 0
 	padding 0
-h1, h2, h3, h4, h5, h6
-	font-size 1em
-	margin 0
-h1
-	font-size 1.25em
 ol, ul
 	list-style none
 p
@@ -55,12 +52,25 @@ img
 video
 	box-sizing content-box
 .md
+	display inline-block
+	padding calc(1ch + 0.25em) 2ch
+	background white
+	border-radius 1ch
 	word-break break-word
 	overflow-wrap anywhere
+	font 500 10pt/1.3333 'Karla'
+	.md-spoiler-text
+		background gray
+		color gray
+		&:focus, &:hover
+			background initial
+			color initial
+	& > * + *
+		margin-top 10pt
 	a
-		color salmon
+		color dodgerblue
 		&:visited
-			color lightsteelblue
+			color steelblue
 	blockquote
 		margin 0
 		padding-left 1em
@@ -69,8 +79,16 @@ video
 	code
 		font-weight bold
 		color red
+	h1, h2, h3, h4, h5, h6
+		text-transform uppercase
+		letter-spacing -0.1em
+	h1
+		font-size 2em
+	h2, h3, h4, h5, h6
+		font-size 1.5em
 	hr
 		margin-top 1em
+		border 1px dashed
 	ol
 		list-style decimal
 		padding-left 2em
@@ -93,21 +111,6 @@ video
 	ul
 		list-style circle
 		padding-left 2em
-	* + h1,
-	* + h2,
-	* + h3,
-	* + h4,
-	* + h5,
-	* + h6
-		margin-top 3em
-		text-transform uppercase
-	* + blockquote,
-	* + code,
-	* + ol,
-	* + p,
-	* + table,
-	* + ul
-		margin-top 0.5em
 .hide-scrollbar
 	scrollbar-width none
 	&::-webkit-scrollbar

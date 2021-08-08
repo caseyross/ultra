@@ -1,6 +1,15 @@
 script.
+	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import Comment from './Comment.coffee'
 	export comment = {}
 
 {#if comment instanceof Comment}
+	.meta
+		SubredditTag(name='{comment.subredditName}')
 	{@html comment.content}
+
+style.
+	.meta
+		display flex
+		justify-content space-between
+		align-items flex-end

@@ -1,30 +1,24 @@
 script.
+	import Placard from '../user/Placard.pug'
 	import PostFlair from './PostFlair.pug'
+	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import Post from './Post.coffee'
 	export post = {}
+	export showFlair = false
 
 {#if post instanceof Post}
 	.meta
-		a.subreddit(href='/r/{post.subredditName}')
-			span.r r
-			span {post.subredditName}
-		PostFlair(flair={post.titleFlair})
-	.title {post.title}
+		Placard(name={post.authorName} flair={post.authorFlair} subredditName={post.subredditName} role={post.authorRole})
+		{#if showFlair}
+			PostFlair(flair={post.titleFlair} subredditName={post.subredditName})
+		{:else}
+			SubredditTag(name={post.subredditName})
+	.title(title={post.title}) {post.title}
 
 style.
 	.meta
-		margin-bottom 2px
-	.subreddit
-		border 1px solid
-		padding 1px 8px
-		border-radius 4px
-		background linear-gradient(120deg, rgba(0,0,0,0.5) 12px, transparent 16px)
-		.r
-			vertical-align top
-			font-size 10px
-			font-weight bold
-			color white
-			margin-right 8px
-			
+		display flex
+		justify-content space-between
+		align-items flex-end
 	.title
-		font-size 15px
+		font-size 18px

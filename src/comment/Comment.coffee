@@ -20,6 +20,7 @@ export default class Comment
 			color: data.author_flair_background_color
 			text: data.author_flair_text
 		authorRole: switch
+			when data.author is '[deleted]' then 'deleted'
 			when data.distinguished then data.distinguished
 			when data.is_submitter then 'submitter'
 			else ''
@@ -31,7 +32,6 @@ export default class Comment
 		replies: new Model(data.replies)
 		isPinned: data.stickied
 		wasEdited: data.edited
-		wasDeleted: data.body is '[removed]'
 
 		score: new Score
 			value: data.score
