@@ -20,19 +20,24 @@ Date::ago = ->
 			count: Math.trunc(h)
 			unit: 'h'
 	d = h / 24
-	if d < 30
+	if d < 7
 		return
 			count: Math.trunc(d)
 			unit: 'd'
-	mon = d / 30
-	if m < 12
+	wk = d / 7
+	if wk < 4
 		return
-			count: Math.trunc(mon)
-			unit: 'mon'
-	y = m / 12
+			count: Math.trunc(wk)
+			unit: 'wk'
+	mo = d / 28
+	if mo < 12
+		return
+			count: Math.trunc(mo)
+			unit: 'mo'
+	yr = mo / 12
 	return
-		count: Math.trunc(y)
-		unit: 'y'
+		count: Math.trunc(yr)
+		unit: 'yr'
 
 String::cColor = ->
 	if not (@startsWith('#') and @length is 7)

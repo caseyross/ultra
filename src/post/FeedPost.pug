@@ -8,9 +8,11 @@ script.
 
 {#if post instanceof Post}
 	.feed-post
-		.score {post.score.text}
+		.data
+			.score {post.score.text}
+			.time {post.createDate.ago().count}{post.createDate.ago().unit}
 		.md(class={post.isStickied || post.isSuperStickied ? 'stickied' : ''}) {post.title}
-			.meta
+			.tags
 				span
 				{#if showFlair}
 					PostFlair(flair={post.titleFlair} subredditName={post.subredditName})
@@ -22,7 +24,7 @@ style.
 		position relative
 		display grid
 		grid-template-columns 64px 64ch
-	.score
+	.data
 		padding-right 1ch
 		color rgba(0,0,0,0.5)
 		text-align right
@@ -33,7 +35,7 @@ style.
 	.stickied
 		background green
 		color white
-	.meta
+	.tags
 		position absolute
 		top -1rem
 		width 75%
