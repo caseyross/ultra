@@ -9,8 +9,8 @@ script.
 {#if post instanceof Post}
 	.feed-post
 		.data
-			.score {post.score.text}
 			.time {post.createDate.ago().count}{post.createDate.ago().unit}
+			.score {post.score.text}
 		.md(class={post.isStickied || post.isSuperStickied ? 'stickied' : ''}) {post.title}
 			.tags
 				span

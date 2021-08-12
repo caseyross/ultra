@@ -9,35 +9,33 @@ script.
 	import URLState from '../URLState.coffee'
 
 	urlState = new URLState()
-
-	document.addEventListener 'click', (e) =>
-		if e.buttons < 3
-			e.preventDefault()
-	document.addEventListener 'contextmenu', (e) =>
-		unless e.altKey
-			e.preventDefault()
-	document.addEventListener 'mousedown', (e) =>
-		switch e.buttons
-			when 1
-				for element in e.path
-					if element.href
-						if element.origin is location.origin
-							urlState = new URLState(element.href)
-						else if element.target is '_blank'
-							return open(element.href)
-						else
-							return location.href = element.href
-						break
-
-	showDestinations = no
-	document.addEventListener 'keydown', (e) =>
-		switch e.key
-			when 'Escape', 'Enter'
-				showDestinations = !showDestinations
-			when '/'
-				showDestinations = yes
-				
 	ratelimitCount = ''
+	showDestinations = no
+
+	activateLink = (link) -> switch
+		when not link then return
+		when link.origin is location.origin then urlState = new URLState(link.href)
+		when link.target is '_blank' then open(link.href)
+		else location.href = link.href
+	addEventListener 'click',
+		(e) => if e.buttons is 1 then e.preventDefault()
+		{ capture: true }
+	addEventListener 'mousedown',
+		(e) =>
+			if e.buttons is 1 and not (e.altKey or e.ctrlKey or e.metaKey)
+				activateLink(e.target.closest('a'))
+		{ capture: true }
+	addEventListener 'keydown',
+		(e) => switch e.key
+			when 'Enter'
+				if e.target.tagName is 'A'
+					e.preventDefault()
+					activateLink(e.target)
+			when 'Escape'
+				showDestinations = !showDestinations
+		{ capture: true }
+	addEventListener 'popstate',
+		(e) => urlState = new URLState()
 	setInterval(
 		-> ratelimitCount = LS.calls.split(',').length,
 		6000
