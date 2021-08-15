@@ -1,6 +1,7 @@
 script.
 	import Account from '../user/Account.pug'
 	import DestinationSearch from './DestinationSearch.pug'
+	import SubredditTag from '../subreddit/SubredditTag.pug'
 	destinations = (if LS.userKey then LS.userSubscriptions else LS.popularSubreddits).split(',')
 
 nav
@@ -8,7 +9,7 @@ nav
 		ol
 			{#each destinations as displayName}
 				li
-					a(href='{displayName}') {displayName}
+					SubredditTag(name={displayName})
 	Account
 	DestinationSearch(destinations={destinations})
 
@@ -26,10 +27,3 @@ style.
 		width 100%
 		display flex
 		flex-flow row wrap
-	a
-		display inline-block
-		font-size 2vh
-		opacity 0.5
-		padding 0.5em 1em
-		border 1px solid
-		border-radius 999px

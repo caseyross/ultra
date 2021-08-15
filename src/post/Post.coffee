@@ -26,6 +26,7 @@ export default class Post
 		titleFlair: new Flair
 			text: data.link_flair_text
 			color: data.link_flair_background_color
+		domain: data.domain
 		content: new PostContent(data)
 		isContestMode: data.contest_mode
 		isNSFW: data.over_18

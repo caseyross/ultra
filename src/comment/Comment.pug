@@ -7,31 +7,26 @@ script.
 {#if comment instanceof Comment}
 	.comment
 		.meta
-			span {comment.score.text}
 		.main
+			Placard(score={comment.score} name={comment.authorName} flair={comment.authorFlair} subredditName={comment.subredditName} role={comment.authorRole})
 			{@html comment.content}
-			.body-meta
-				span
-				Placard(name={comment.authorName} flair={comment.authorFlair} subredditName={comment.subredditName} role={comment.authorRole})
 			.replies
 				{#if comment.replies}
 					{#each comment.replies as reply}
 						svelte:self(comment={reply})
 
+
 style.
 	.comment
 		margin-top 1em
+		position relative
 		display grid
-		grid-template-columns 49px 64ch
+		grid-template-columns 24px 1fr
 	:global(.replies > .comment)
 		margin-top 0.5em
 	.meta
 		padding-right 1ch
 		color rgba(0,0,0,0.5)
 		text-align right
-	.body-meta
-		display none
-		flex-flow column nowrap
-		justify-content space-between
 	.replies
 		border-left 1px solid lightgray

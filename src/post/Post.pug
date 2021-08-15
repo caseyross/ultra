@@ -12,7 +12,7 @@ script.
 
 {#if post instanceof Post}
 	article.hide-scrollbar
-		Placard(name={post.authorName} flair={post.authorFlair} subredditName={post.subredditName} role={post.authorRole})
+		Placard(score={post.score} name={post.authorName} flair={post.authorFlair} subredditName={post.subredditName} role={post.authorRole})
 		{#key post.content}
 			EmbedContent(content={post.content})
 			ImageContent(content={post.content})
@@ -31,4 +31,4 @@ style.
 		height 100vh
 		overflow auto
 		padding 10vh 0
-		width 854px
+		width 856px

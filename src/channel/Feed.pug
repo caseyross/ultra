@@ -9,7 +9,7 @@ script.
 ol
 	{#each items as item}
 		li
-			button(on:mousedown={selectItem(item)})
+			button(on:mousedown={selectItem(item)} class:stickied={item.isStickied || item.isSuperStickied} class:selected={item === selectedItem})
 				FeedComment(comment={item})
 				FeedPost(post={item} showFlair={showFlair})
 
@@ -17,10 +17,25 @@ style.
 	ol
 		position fixed
 		top 10vh
-		left 16.6%
-		width 33.3%
+		right 50%
+		width 400px
+	li
+		padding 0.5em
 	button
 		width 100%
 		text-align left
-		background transparent
-		padding 0.5em
+		border 2px solid
+		border-radius 1ch
+		background white
+		color black
+		border-color black
+		&.stickied
+			background green
+			color white
+		&:hover
+		&:focus
+			background lightsalmon
+			color white
+		&.selected
+			background orangered
+			color white

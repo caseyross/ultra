@@ -1,20 +1,24 @@
 script.
 	import Flair from '../shared/Flair.pug'
+	export score = {}
 	export name = ''
 	export flair = {}
 	export subredditName = ''
 	export role = ''
 
 .placard
+	{#if score.text}
+		.score {score.text}
 	a.name(href='/u/{name}' class={role || ''}) {name}
 	Flair(flair={flair} subredditName={subredditName})
 
 style.
 	.placard
 		display flex
-		color rgba(0,0,0,0.5)
-	.name
+		font 10px 'Iosevka Aile Web'
+	.score
 		padding 0px 5px
+		background lightgray
 		&.submitter
 			background cornflowerblue
 			color white

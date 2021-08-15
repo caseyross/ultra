@@ -5,6 +5,4 @@ export default class Score
 			@text = '*'
 		else
 			@value = value
-			@text = switch
-				when value > 0 then '+' + String(value)
-				else String(value)
+			@text = String(value)
