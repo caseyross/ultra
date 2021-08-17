@@ -6,36 +6,63 @@ script.
 	export selectedItem = {}
 	export showFlair = false
 
-ol
-	{#each items as item}
-		li
-			button(on:mousedown={selectItem(item)} class:stickied={item.isStickied || item.isSuperStickied} class:selected={item === selectedItem})
-				FeedComment(comment={item})
-				FeedPost(post={item} showFlair={showFlair})
+section.hide-scrollbar
+	ol
+		{#each items as item}
+			li
+				button(on:mousedown={selectItem(item)} class:stickied={item.isStickied || item.isSuperStickied} class:selected={item === selectedItem})
+					.icon
+						{#if item.content}
+							{#if item.content.type === 'link'}
+								| ⟀
+							{:else if item.content.type === 'self'}
+								{#if item.content.selftext}
+									| ⋅
+								{:else}
+									| ∴
+							{:else if item.content.type === 'image'}
+								{#if item.content.images.length > 1}
+									| ⊞
+								{:else}
+									| ▫
+							{:else if item.content.type === 'video'}
+								| ‣
+							{:else if item.content.type === 'embed'}
+								| ⋗
+							{:else if item.content.type === 'reddit'}
+								| ⊙
+					.item
+						FeedComment(comment={item})
+						FeedPost(post={item} showFlair={showFlair})
 
 style.
-	ol
+	section
 		position fixed
-		top 10vh
-		right 50%
-		width 400px
-	li
-		padding 0.5em
+		top 0
+		left 160px
+		height 100vh
+		width 480px
+		overflow auto
+		padding 20px
 	button
 		width 100%
+		padding 0.5em
 		text-align left
-		border 2px solid
-		border-radius 1ch
+		display grid
+		grid-template-columns 40px 1fr
 		background white
 		color black
-		border-color black
+		border 1px solid transparent
 		&.stickied
 			background green
 			color white
 		&:hover
 		&:focus
-			background lightsalmon
-			color white
+			border-color lightgray
 		&.selected
-			background orangered
-			color white
+			border-color black
+	.icon
+		font-size 32px
+		display flex
+		justify-content center
+		align-items center

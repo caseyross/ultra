@@ -1,0 +1,28 @@
+script.
+	import EmbedContent from './EmbedContent.pug'
+	import ImageContent from './ImageContent.pug'
+	import LinkContent from './LinkContent.pug'
+	import RedditContent from './RedditContent.pug'
+	import SelfContent from './SelfContent.pug'
+	import VideoContent from './VideoContent.pug'
+	export content = null
+
+
+section.hide-scrollbar
+	{#key content}
+		EmbedContent(content={content})
+		ImageContent(content={content})
+		LinkContent(content={content})
+		RedditContent(content={content})
+		SelfContent(content={content})
+		VideoContent(content={content})
+
+style.
+	section
+		position fixed
+		top 0
+		left 640px
+		height 100vh
+		width 640px
+		overflow auto
+		padding 20px 0

@@ -42,11 +42,11 @@ export default class PostContent
 					when 'youtube.com'
 						unless u.pathname.split('/')[1] is 'clip' # clip URLs don't contain the information necessary for embedding
 							@type = 'embed'
-							@src = "https://www.youtube-nocookie.com/embed/#{u.searchParams.get('v')}"
+							@src = "https://www.youtube.com/embed/#{u.searchParams.get('v')}"
 							@allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
 					when 'youtu.be'
 						@type = 'embed'
-						@src = "https://www.youtube-nocookie.com/embed/#{u.pathname.split('/')[1]}"
+						@src = "https://www.youtube.com/embed/#{u.pathname.split('/')[1]}"
 						@allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
 					when 'reddit.com', 'np.reddit.com', 'old.reddit.com', 'new.reddit.com'
 						[ _, _, _, _, post_id, _, comment_id ] = u.pathname.split('/')

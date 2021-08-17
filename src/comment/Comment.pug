@@ -6,27 +6,19 @@ script.
 
 {#if comment instanceof Comment}
 	.comment
-		.meta
-		.main
-			Placard(score={comment.score} name={comment.authorName} flair={comment.authorFlair} subredditName={comment.subredditName} role={comment.authorRole})
-			{@html comment.content}
-			.replies
-				{#if comment.replies}
-					{#each comment.replies as reply}
-						svelte:self(comment={reply})
+		Placard(score={comment.score} name={comment.authorName} flair={comment.authorFlair} subredditName={comment.subredditName} role={comment.authorRole})
+		{@html comment.content}
+		.replies
+			{#if comment.replies}
+				{#each comment.replies as reply}
+					svelte:self(comment={reply})
 
 
 style.
 	.comment
 		margin-top 1em
-		position relative
-		display grid
-		grid-template-columns 24px 1fr
 	:global(.replies > .comment)
 		margin-top 0.5em
-	.meta
-		padding-right 1ch
-		color rgba(0,0,0,0.5)
-		text-align right
 	.replies
+		padding-left 20px
 		border-left 1px solid lightgray
