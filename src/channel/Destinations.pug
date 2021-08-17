@@ -1,5 +1,5 @@
 script.
-	import Account from '../user/Account.pug'
+	import Account from '../account/Account.pug'
 	import DestinationSearch from './DestinationSearch.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	destinations = (if LS.userKey then LS.userSubscriptions else LS.popularSubreddits).split(',')
@@ -22,7 +22,7 @@ style.
 		width 100vw
 		overflow auto
 		padding 10vh 10vw
-		background salmon
+		background white
 	ol
 		width 100%
 		display flex

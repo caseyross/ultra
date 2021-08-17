@@ -1,6 +1,6 @@
-import Flair from '../shared/Flair.coffee'
+import Flair from '../media/Flair.coffee'
 import Model from '../Model.coffee'
-import Score from '../shared/Score.coffee'
+import Score from '../media/Score.coffee'
 import { post } from '../API.coffee'
 
 export default class Comment

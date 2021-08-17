@@ -1,6 +1,6 @@
-import Flair from '../shared/Flair.coffee'
-import PostContent from './content/PostContent.coffee'
-import Score from '../shared/Score.coffee'
+import Content from '../content/Content.coffee'
+import Flair from '../media/Flair.coffee'
+import Score from '../media/Score.coffee'
 import { getPostComments, post } from '../API.coffee'
 
 export default class Post
@@ -27,7 +27,7 @@ export default class Post
 			text: data.link_flair_text
 			color: data.link_flair_background_color
 		domain: data.domain
-		content: new PostContent(data)
+		content: new Content(data)
 		isContestMode: data.contest_mode
 		isNSFW: data.over_18
 		isOC: data.is_original_content

@@ -7,8 +7,7 @@ script.
 	import VideoContent from './VideoContent.pug'
 	export content = null
 
-
-section.hide-scrollbar
+article
 	{#key content}
 		EmbedContent(content={content})
 		ImageContent(content={content})
@@ -18,11 +17,8 @@ section.hide-scrollbar
 		VideoContent(content={content})
 
 style.
-	section
-		position fixed
-		top 0
-		left 640px
-		height 100vh
-		width 640px
-		overflow auto
-		padding 20px 0
+	article
+		border 1px solid
+		display flex
+		flex-flow column nowrap
+		align-items center

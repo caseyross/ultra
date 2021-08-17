@@ -1,7 +1,7 @@
-import Image from '../../media/Image.coffee'
-import Video from '../../media/Video.coffee'
+import Image from '../media/Image.coffee'
+import Video from '../media/Video.coffee'
 
-export default class PostContent
+export default class Content
 
 	constructor: (data) ->
 

@@ -3,20 +3,21 @@ script.
 	import MoreComments from './MoreComments.pug'
 	export comments = []
 
-section.hide-scrollbar
+.comments
 	{#each comments as comment}
 		Comment(comment={comment})
 		MoreComments(more={comment})
 	{:else}
 		p [No comments.]
+.minimap
 
 style.
-	section
-		width 640px
+	.comments
+		padding-right 20px
+	.minimap
 		position fixed
 		top 0
 		right 0
-		height 100vh
-		width 640px
-		overflow auto
-		padding 20px
+		height 100%
+		width 20px
+		border-left 1px solid

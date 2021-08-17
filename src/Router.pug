@@ -1,12 +1,8 @@
 script.
-	import Destinations from './Destinations.pug'
-	import DetachedPost from './DetachedPost.pug'
-	import FrontPage from './FrontPage.pug'
-	import LoggingIn from './LoggingIn.pug'
-	import Multireddit from './Multireddit.pug'
-	import Subreddit from './Subreddit.pug'
-	import UserProfile from './UserProfile.pug'
-	import URLState from '../URLState.coffee'
+	import Channel from './channel/Channel.pug'
+	import Destinations from './channel/Destinations.pug'
+	import LoggingIn from './account/LoggingIn.pug'
+	import URLState from './URLState.coffee'
 
 	urlState = new URLState()
 	ratelimitCount = ''
@@ -48,15 +44,8 @@ script.
 	{:then}
 		svelte:self
 {:else}
-	{#if urlState.page === 'front'}
-		FrontPage
-	{:else if urlState.page === 'channel'}
-		{#if urlState.channel.type === 'subreddit'}
-			Subreddit(channel={urlState.channel})
-		{:else if urlState.channel.type === 'multireddit'}
-			Multireddit(channel={urlState.channel})
-		{:else if urlState.channel.type === 'user'}
-			UserProfile(channel={urlState.channel})
+	{#if urlState.page === 'front' || urlState.page === 'channel'}
+		Channel(channel={urlState.channel})
 	{:else if urlState.page === 'detached-post'}
 		{#await urlState.getPost then post}
 			DetachedPost(post={post})
