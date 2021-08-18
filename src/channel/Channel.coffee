@@ -32,6 +32,8 @@ export default class Channel
 					@sort = c
 					if d
 						@sort = c + '/' + d
+				else
+					@sort = 'hot'
 			when 'u'
 				@type = 'user'
 				@name = b
@@ -48,6 +50,8 @@ export default class Channel
 								@sort = d
 								if e
 									@sort = d + '/' + e
+						else
+							@sort = 'new'
 
 	getItems: (quantity) =>
 		switch @type

@@ -76,11 +76,12 @@ script.
 
 form
 	RadioButtonLinkGroup(options={options[0]} selectedValue={sort})
-	RadioButtonLinkGroup(groupLabel='Top:' options={options[1]} selectedValue={sort})
-	RadioButtonLinkGroup(groupLabel='Cvl:' options={options[2]} selectedValue={sort})
+	#top-controversial
+		RadioButtonLinkGroup(groupLabel='Top:' options={options[1]} selectedValue={sort})
+		RadioButtonLinkGroup(groupLabel='Cvl:' options={options[2]} selectedValue={sort})
 
 style.
 	form
 		background rgba(0,0,0,0.1)
 		display flex
-		align-items flex-end
+		justify-content space-between

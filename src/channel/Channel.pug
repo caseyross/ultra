@@ -10,9 +10,9 @@ script.
 	selectItem = (item) -> selectedItem = item
 	columnWidths = [
 		innerWidth / 12
-		innerWidth / 12 * 3 - 1
-		innerWidth / 12 * 4 + 2
-		innerWidth / 12 * 4 - 1
+		innerWidth / 12 * 3 - 48 - 1
+		innerWidth / 12 * 4 + 96 + 2
+		innerWidth / 12 * 4 - 48 - 1
 	]
 	
 
@@ -27,7 +27,6 @@ svelte:head
 	section.hide-scroll#feed
 		{#await channel.getItems(10) then items}
 			Feed(items={items} selectedItem={selectedItem} selectItem={selectItem} showFlair={channel.type === 'subreddit'})
-	menu#content-actions
 	section.hide-scroll#content
 		{#if selectedItem instanceof Post}
 			Content(content={selectedItem.content})
@@ -50,9 +49,11 @@ style.
 		overflow auto
 	#feed
 	#feed-actions
-		padding 0 20px
+		padding 0 4em
 		border-bottom 1px dotted
+	#content
+		grid-row 1 / span 2
 	#comments
 	#comments-actions
-		padding 0 20px
+		padding 0 4em
 		border-bottom 1px dotted

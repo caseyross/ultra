@@ -52,10 +52,10 @@ export default class Image
 		@sizes.fold(
 			@sizes[0],
 			(a, b) => switch
-				when b.w * b.h <= maxP then b
 				when a.w < minW then b
 				when a.h < minH then b
 				when a.w >= maxW then a
 				when a.h >= maxH then a
+				when a.w * a.h > maxP then a
 				else b
 		)
