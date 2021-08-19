@@ -1,5 +1,7 @@
 .yarn
 .yarnrc
+design
 node_modules
+spec
 static/licensed
 public
