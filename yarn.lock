@@ -2846,6 +2846,11 @@ pug-strip-comments@^2.0.0:
   dependencies:
     pug-error "^2.0.0"
 
+pug-to-svelte@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/pug-to-svelte/-/pug-to-svelte-1.0.0.tgz#22fc57dece8c8d6dc677c23076cf635231dff88f"
+  integrity sha512-2yI4xOfcx138WJ2HbIa2FAjJs9hHwpGxFOZrOI8dZmpu0WhQGnredlfAfJxUEWkkqq3enVR4ENczKs3B2ySdyQ==
+
 pug-walk@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/pug-walk/-/pug-walk-2.0.0.tgz#417aabc29232bb4499b5b5069a2b2d2a24d5f5fe"
