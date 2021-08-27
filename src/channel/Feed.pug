@@ -13,8 +13,8 @@ script.
 table
 	thead
 		tr
-			th Time
-			th Comments
+			th Age
+			th Cmts
 			th Score
 			th Type
 			th Title
@@ -54,11 +54,15 @@ table
 							| {item.title}
 
 style.
+	table
+		background var(--white)
+	tbody
+		vertical-align top
 	button
 		width 100%
 		padding 0.5em
 		text-align left
-		background white
+		background inherit
 		color black
 		border 1px solid transparent
 		&.stickied

@@ -1,11 +1,11 @@
 script.
-	import Comment from './Comment.pug'
+	import TopLevelComment from './TopLevelComment.pug'
 	import MoreComments from './MoreComments.pug'
 	export comments = []
 
 .comments
 	{#each comments as comment}
-		Comment(comment={comment})
+		TopLevelComment(comment={comment})
 		MoreComments(more={comment})
 	{:else}
 		p [No comments.]
@@ -13,6 +13,9 @@ script.
 
 style.
 	.comments
+		display flex
+		flex-flow column nowrap
+		gap 4px 
 		padding-right 20px
 	.minimap
 		position fixed

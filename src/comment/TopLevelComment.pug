@@ -1,0 +1,23 @@
+script.
+	import Comment from './Comment.pug'
+	export comment = null
+
+article.top-level-comment
+	span.score {comment.score}
+	Comment(comment={comment})
+
+style.
+	.top-level-comment
+		position relative
+		margin-top 1em
+		margin-left 2em
+		background var(--white)
+		border-radius 1em
+	.score
+		position absolute
+		top -0.5em
+		right calc(100% - 2ch)
+		padding 0 1ch
+		background salmon
+		color white
+		border-radius 1rem

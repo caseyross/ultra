@@ -10,17 +10,17 @@ script.
 	export channel = new Channel('')
 	selectedItem = null
 	selectItem = (item) -> selectedItem = item
-	columnWidths = [
-		innerWidth / 12
-		innerWidth / 12 * 3 - 48 - 1
-		innerWidth / 12 * 4 + 96 + 2
-		innerWidth / 12 * 4 - 48 - 1
-	]
+	columnWidths = """
+		#{innerWidth / 12}px
+		#{innerWidth / 12 * 3 - 18}px
+		1fr
+		#{innerWidth / 12 * 4 - 18}px
+	"""
 	
 
 svelte:head
 	title [{channel.name}]
-.channel(style='grid-template-columns: {columnWidths.map(w => w + "px").join(" ")}')
+.channel(style='grid-template-columns: {columnWidths}')
 	nav
 		a(href='/')
 			h1 Home
@@ -57,10 +57,9 @@ svelte:head
 	section.hide-scroll#feed
 		{#await channel.getItems(10) then items}
 			Feed(items={items} selectedItem={selectedItem} selectItem={selectItem} showFlair={channel.type === 'subreddit'})
+	menu#content-actions
 	section.hide-scroll#content
 		{#if selectedItem instanceof Post}
-			h1 {selectedItem.title}
-			Placard(score={selectedItem.score} name={selectedItem.authorName} flair={selectedItem.authorFlair} subredditName={selectedItem.subredditName} role={selectedItem.authorRole})
 			Content(content={selectedItem.content})
 	menu#comments-actions
 	section.hide-scroll#comments
@@ -75,18 +74,14 @@ style.
 		display grid
 		grid-template-rows 40px 1fr
 		grid-auto-flow column
+		gap 8px
+		background gainsboro
 	nav
 		grid-row 1 / span 2
 		border-right 1px solid
 	section
 		overflow auto
-	#feed
 	#feed-actions
-		padding 0 4em
-		border-bottom 1px dotted
-	#content
-		grid-row 1 / span 2
-	#comments
+	#content-actions
 	#comments-actions
-		padding 0 4em
-		border-bottom 1px dotted
+		border-bottom 2px dashed

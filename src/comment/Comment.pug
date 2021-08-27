@@ -3,29 +3,18 @@ script.
 	import Placard from '../user/Placard.pug'
 	import Comment from './Comment.coffee'
 	export comment = {}
-	export depth = 0
 
 {#if comment instanceof Comment}
-	.comment(style='grid-template-columns: 4em {depth * 1}em 1fr')
-		.score(class:hidden={depth > 0}) {comment.score}
-		.indent o
+	.comment
 		{@html comment.content}
-	{#each comment.replies as reply}
-		svelte:self(comment={reply} depth={depth + 1})
+		.replies
+			{#each comment.replies as reply}
+				svelte:self(comment={reply})
 
 
 style.
 	.comment
-		padding 1.5em
-		display grid
-		align-items flex-start
-		gap 1ch
-	.score
-		justify-self flex-end
-		padding 0 1ch
-		background lightgray
-		border-radius 1rem
-	.indent
-		justify-self flex-end
-	.hidden
-		visibility hidden
+		padding 1em 2em
+	.replies
+		padding-left 1em
+		border-left 1px solid lightgray
