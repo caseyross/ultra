@@ -11,7 +11,7 @@ export default class Subreddit
 
 			id: data.id
 			name: data.display_name.toLowerCase()
-			displayName: if data.display_name.startsWith 'u_' then 'u/' + data.display_name[2..] else 'r/' + data.display_name
+			displayName: data.display_name
 			title: data.title
 			blurb: data.public_description
 			sidebar: data.description

@@ -1,6 +1,5 @@
 import Content from '../content/Content.coffee'
 import Flair from '../media/Flair.coffee'
-import Score from '../media/Score.coffee'
 import { getPostComments, post } from '../API.coffee'
 
 export default class Post
@@ -40,14 +39,13 @@ export default class Post
 		wasEdited: data.edited
 		wasDeleted: data.selftext is '[removed]'
 
-		score: new Score
-			value: data.score
-			hidden: data.hide_score
+		score: if data.hide_score then NaN else data.score
 		userUpvoted: data.likes is true
 		userDownvoted: data.likes is false
 		userSaved: data.saved
 		userHid: data.hidden
 
+		commentCount: data.num_comments
 		comments: getPostComments(data.id)
 
 	}

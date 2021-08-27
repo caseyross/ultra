@@ -7,8 +7,8 @@ script.
 	export role = ''
 
 .placard
-	{#if score.text}
-		.score {score.text}
+	{#if score}
+		.score {score}
 	a.name(href='/u/{name}' class={role || ''}) {name}
 	Flair(flair={flair} subredditName={subredditName})
 

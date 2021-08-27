@@ -1,12 +1,12 @@
 script.
 	import Channel from './channel/Channel.pug'
-	import Destinations from './channel/Destinations.pug'
+	import ChannelDirectory from './channel/ChannelDirectory.pug'
 	import LoggingIn from './account/LoggingIn.pug'
 	import URLState from './URLState.coffee'
 
 	urlState = new URLState()
 	ratelimitCount = ''
-	showDestinations = no
+	showDirectory = no
 
 	activateLink = (link) -> switch
 		when not link then return
@@ -14,11 +14,11 @@ script.
 		when link.target is '_blank' then open(link.href)
 		else location.href = link.href
 	addEventListener 'click',
-		(e) => if e.buttons is 1 then e.preventDefault()
+		(e) => if e.button is 0 then e.preventDefault()
 		{ capture: true }
 	addEventListener 'mousedown',
 		(e) =>
-			if e.buttons is 1 and not (e.altKey or e.ctrlKey or e.metaKey)
+			if e.button is 0 and not (e.altKey or e.ctrlKey or e.metaKey)
 				activateLink(e.target.closest('a'))
 		{ capture: true }
 	addEventListener 'keydown',
@@ -28,7 +28,7 @@ script.
 					e.preventDefault()
 					activateLink(e.target)
 			when 'Escape'
-				showDestinations = !showDestinations
+				showDirectory = !showDirectory
 		{ capture: true }
 	addEventListener 'popstate',
 		(e) => urlState = new URLState()
@@ -49,8 +49,8 @@ script.
 	{:else if urlState.page === 'detached-post'}
 		{#await urlState.getPost then post}
 			DetachedPost(post={post})
-	{#if showDestinations}
-		Destinations
+	{#if showDirectory}
+		ChannelDirectory
 	#ratelimit {ratelimitCount}
 
 style.

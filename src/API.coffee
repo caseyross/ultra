@@ -42,9 +42,9 @@ export logout = ->
 	delete LS.userKey
 	delete LS.userName
 	delete LS.userPic
-	delete LS.userSubscriptions
+	delete LS.userSubreddits
+	delete LS.userUsers
 	location.reload()
-
 
 waitForRenewal = (f) -> if LS.renewalPending then setTimeout(waitForRenewal, 20, f) else f()
 forceNewRenewal = (f) -> if LS.renewalPending then delete LS.renewalPending; f(renewKey()) else f()
@@ -147,15 +147,17 @@ getUserSubscriptions = ->
 	getListingItems
 		endpoint: '/subreddits/mine/subscriber'
 		limit: 100
-	.then (subreddits) ->
-		LS.userSubscriptions =
-			subreddits
-			.sort (a, b) -> if a.name < b.name then -1 else 1
-			.sort (a, b) ->
-				if a.name.startsWith('u_') and b.name.startsWith('u_') then return 0
-				if a.name.startsWith('u_') then return 1
-				if b.name.startsWith('u_') then return -1
+	.then (subscriptions) ->
+		LS.userSubreddits =
+			subscriptions
 			.map (s) -> s.displayName
+			.filter (s) -> not s.startsWith('u_')
+			.join()
+		LS.userUsers =
+			subscriptions
+			.map (s) -> s.displayName
+			.filter (s) -> s.startsWith('u_')
+			.map (s) -> s[2..]
 			.join()
 
 

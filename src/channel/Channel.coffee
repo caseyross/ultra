@@ -16,6 +16,7 @@ export default class Channel
 	constructor: (id) ->
 		@id = id
 		@type = 'frontpage'
+		@name = 'frontpage'
 		[ a, b, c, d, e ] = id.split('/')
 		switch a
 			when 'r'

@@ -1,6 +1,5 @@
 import Flair from '../media/Flair.coffee'
 import Model from '../Model.coffee'
-import Score from '../media/Score.coffee'
 import { post } from '../API.coffee'
 
 export default class Comment
@@ -33,9 +32,7 @@ export default class Comment
 		isPinned: data.stickied
 		wasEdited: data.edited
 
-		score: new Score
-			value: data.score
-			hidden: data.score_hidden
+		score: if data.score_hidden then NaN else data.score
 		isControversial: Boolean(data.controversiality)
 		userUpvoted: data.likes is true
 		userDownvoted: data.likes is false

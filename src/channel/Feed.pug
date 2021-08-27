@@ -5,12 +5,27 @@ script.
 	export selectItem = -> {}
 	export selectedItem = {}
 	export showFlair = false
+	totalComments = items.fold(0, (a, b) -> a + (b.commentCount or 0))
+	totalScore = items.fold(0, (a, b) -> a + (b.score or 0))
+	interpColor = (zeroColor, oneColor, fraction) ->
+		if fraction < 0.5 then zeroColor else oneColor
 
-ol
-	{#each items as item}
-		li
-			button(on:mousedown={selectItem(item)} class:stickied={item.isStickied || item.isSuperStickied} class:selected={item === selectedItem})
-				.icon
+table
+	thead
+		tr
+			th Time
+			th Comments
+			th Score
+			th Type
+			th Title
+	tbody
+		{#each items as item}
+			tr
+				td.time-since(style='background: {interpColor("white", "darkseagreen", 1 / Math.log(Math.log(Math.log(Date.now() - item.createDate.valueOf()))))}')
+					time(datetime={item.createDate.toString()}) {item.createDate.ago().count}{item.createDate.ago().unit}
+				td.comment-count(style='background: {interpColor("white", "gold", Math.log(item.commentCount) / Math.log(totalComments))}') {item.commentCount} 
+				td.score(style='background: {interpColor("white", "orangered", Math.log(item.score) / Math.log(totalScore))}') {item.score}
+				td.icon
 					{#if item.content}
 						{#if item.content.type === 'link'}
 							| ⟀
@@ -30,17 +45,19 @@ ol
 							| ⋗
 						{:else if item.content.type === 'reddit'}
 							| ⊙
-				.item
-					FeedComment(comment={item})
-					FeedPost(post={item} showFlair={showFlair})
+				td
+					button(on:mousedown={selectItem(item)} class:stickied={item.isStickied || item.isSuperStickied} class:selected={item === selectedItem})
+						{#if item.content.type === 'link'}
+							a(href={item.content.href}) {item.title}
+								span.domain ({item.domain})
+						{:else}
+							| {item.title}
 
 style.
 	button
 		width 100%
 		padding 0.5em
 		text-align left
-		display grid
-		grid-template-columns 40px 1fr
 		background white
 		color black
 		border 1px solid transparent
@@ -52,6 +69,10 @@ style.
 			border-color lightgray
 		&.selected
 			border-color black
+	.time-since
+	.comment-count
+	.score
+		text-align right
 	.icon
 		font-size 32px
 		display flex

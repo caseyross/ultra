@@ -15,6 +15,7 @@ export default class URLState
 			return
 
 		@page = 'front'
+		@channel = new Channel('')
 		
 		[ _, a, b, c, d, e, f ] = location.pathname.split('/').map((x) -> x?.toLowerCase())
 		if a.length > 1

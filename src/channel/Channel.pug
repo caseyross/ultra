@@ -1,7 +1,9 @@
 script.
+	import Account from '../account/Account.pug'
 	import Comments from '../comment/Comments.pug'
 	import Content from '../content/Content.pug'
 	import Feed from './Feed.pug'
+	import Placard from '../user/Placard.pug'
 	import SubredditFilters from '../subreddit/SubredditFilters.pug'
 	import Channel from './Channel.coffee'
 	import Post from '../post/Post.coffee'
@@ -20,7 +22,35 @@ svelte:head
 	title [{channel.name}]
 .channel(style='grid-template-columns: {columnWidths.map(w => w + "px").join(" ")}')
 	nav
+		a(href='/')
+			h1 Home
+		a(href='/r/all')
+			h1 All
+		a(href='/r/popular')
+			h1 Popular
+		hr
+		{#if LS.userKey}
+			h2 Subscriptions
+			{#if LS.userSubreddits}
+				h3 Subreddits
+				ol
+					{#each LS.userSubreddits.split(',') as name}
+						li
+							a(href='/r/{name}') {name}
+			{#if LS.userUsers}
+				h3 Users
+				ol
+					{#each LS.userUsers.split(',') as name}
+						li
+							a(href='/u/{name}') {name}
+		{:else}
+			h2 Trending Subreddits
+				ol
+					{#each LS.popularSubreddits.split(',') as name}
+						li
+							a(href='/r/{name}') {name}
 
+		Account
 	menu#feed-actions
 		{#if channel.type === 'subreddit'}
 			SubredditFilters(subredditName={channel.name} sort={channel.sort})
@@ -29,6 +59,8 @@ svelte:head
 			Feed(items={items} selectedItem={selectedItem} selectItem={selectItem} showFlair={channel.type === 'subreddit'})
 	section.hide-scroll#content
 		{#if selectedItem instanceof Post}
+			h1 {selectedItem.title}
+			Placard(score={selectedItem.score} name={selectedItem.authorName} flair={selectedItem.authorFlair} subredditName={selectedItem.subredditName} role={selectedItem.authorRole})
 			Content(content={selectedItem.content})
 	menu#comments-actions
 	section.hide-scroll#comments
@@ -45,6 +77,7 @@ style.
 		grid-auto-flow column
 	nav
 		grid-row 1 / span 2
+		border-right 1px solid
 	section
 		overflow auto
 	#feed

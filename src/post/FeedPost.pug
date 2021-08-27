@@ -19,9 +19,6 @@ script.
 					span.domain ({post.domain})
 			{:else}
 				| {post.title}
-		.data
-			Placard(score={post.score} name={post.authorName} flair={post.authorFlair} subredditName={post.subredditName} role={post.authorRole})
-			span.time {post.createDate.ago().count}{post.createDate.ago().unit}
 
 style.
 	.domain
@@ -30,7 +27,3 @@ style.
 		display flex
 		justify-content flex-end
 		text-align right
-	.data
-		font 400 10pt 'Iosevka Aile Web'
-		display flex
-		justify-content space-between
