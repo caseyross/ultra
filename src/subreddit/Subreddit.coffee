@@ -26,11 +26,11 @@ export default class Subreddit
 			createDate: new Date(1000 * data.created_utc)
 
 			mainColor: data.primary_color or ''
-			secondaryColor: data.key_color or ''
-			iconImage: new Image
+			auxColor: data.key_color or ''
+			icon: new Image
 				p: []
 				s: [{ u: data.community_icon or data.icon_img or '' }]
-			bannerImage: new Image
+			banner: new Image
 				p: []
 				s: [{ u: data.banner_background_image or data.mobile_banner_img or data.banner_img or '' }]
 

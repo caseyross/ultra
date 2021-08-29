@@ -1,0 +1,14 @@
+script.
+	import Image from '../media/Image.pug'
+	export user = null
+
+figure
+	Image(image={user.subreddit.icon} maxH={64} maxW={64})
+	figcaption {user.displayName}
+
+style.
+	figure
+		padding 1em 2em
+		display flex
+		flex-flow column nowrap
+		align-items center 

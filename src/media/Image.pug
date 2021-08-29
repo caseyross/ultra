@@ -5,6 +5,7 @@ script.
 	export maxH = Infinity
 	export maxW = Infinity
 	export maxP = Infinity
+	export alt = ''
 
 	res = image.pick { minH, minW, maxH, maxW, maxP }
 	
@@ -14,4 +15,4 @@ script.
 	if res.w > minW and maxH < Infinity
 		style += 'max-height:' + maxH + 'px;'
 
-img(src={res.u} style={style})
+img(src={res.u} style={style} alt={alt})

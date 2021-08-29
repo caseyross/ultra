@@ -1,21 +1,21 @@
 script.
-	import TopLevelComment from './TopLevelComment.pug'
 	import MoreComments from './MoreComments.pug'
+	import TopLevelComment from './TopLevelComment.pug'
 	export comments = []
+	export commentCount = NaN
 
 .comments
 	{#each comments as comment}
 		TopLevelComment(comment={comment})
 		MoreComments(more={comment})
-	{:else}
-		p [No comments.]
 .minimap
 
 style.
 	.comments
 		display flex
 		flex-flow column nowrap
-		gap 4px 
+		align-items flex-start
+		gap 4px
 		padding-right 20px
 	.minimap
 		position fixed

@@ -2,9 +2,11 @@ script.
 	import Account from '../account/Account.pug'
 	import Comments from '../comment/Comments.pug'
 	import Content from '../content/Content.pug'
-	import Feed from './Feed.pug'
+	import Feed from '../feed/Feed.pug'
 	import Placard from '../user/Placard.pug'
 	import SubredditFilters from '../subreddit/SubredditFilters.pug'
+	import SubredditHeroNameplate from '../subreddit/SubredditHeroNameplate.pug'
+	import UserHeroNameplate from '../user/UserHeroNameplate.pug'
 	import Channel from './Channel.coffee'
 	import Post from '../post/Post.coffee'
 	export channel = new Channel('')
@@ -21,67 +23,45 @@ script.
 svelte:head
 	title [{channel.name}]
 .channel(style='grid-template-columns: {columnWidths}')
-	nav
-		a(href='/')
-			h1 Home
-		a(href='/r/all')
-			h1 All
-		a(href='/r/popular')
-			h1 Popular
-		hr
-		{#if LS.userKey}
-			h2 Subscriptions
-			{#if LS.userSubreddits}
-				h3 Subreddits
-				ol
-					{#each LS.userSubreddits.split(',') as name}
-						li
-							a(href='/r/{name}') {name}
-			{#if LS.userUsers}
-				h3 Users
-				ol
-					{#each LS.userUsers.split(',') as name}
-						li
-							a(href='/u/{name}') {name}
-		{:else}
-			h2 Trending Subreddits
-				ol
-					{#each LS.popularSubreddits.split(',') as name}
-						li
-							a(href='/r/{name}') {name}
-
-		Account
-	menu#feed-actions
-		{#if channel.type === 'subreddit'}
-			SubredditFilters(subredditName={channel.name} sort={channel.sort})
+	section#nav
+		nav
+			{#if channel.type === 'subreddit'}
+				{#await channel.source then subreddit}
+					SubredditHeroNameplate(subreddit={subreddit})
+					SubredditFilters(subredditName={channel.name} sort={channel.sort})
+			{:else if channel.type === 'user'}
+				{#await channel.source then user}
+					UserHeroNameplate(user={user})
+		nav
+			Account
 	section.hide-scroll#feed
 		{#await channel.getItems(10) then items}
 			Feed(items={items} selectedItem={selectedItem} selectItem={selectItem} showFlair={channel.type === 'subreddit'})
-	menu#content-actions
 	section.hide-scroll#content
 		{#if selectedItem instanceof Post}
 			Content(content={selectedItem.content})
-	menu#comments-actions
 	section.hide-scroll#comments
 		{#if selectedItem instanceof Post}
 			{#await selectedItem.comments then comments}
-				Comments(comments={comments})
+				Comments(comments={comments} commentCount={selectedItem.commentCount})
 
 style.
 	.channel
 		height 100vh
 		width 100vw
 		display grid
-		grid-template-rows 40px 1fr
 		grid-auto-flow column
 		gap 8px
 		background gainsboro
-	nav
-		grid-row 1 / span 2
-		border-right 1px solid
 	section
 		overflow auto
-	#feed-actions
-	#content-actions
-	#comments-actions
-		border-bottom 2px dashed
+	#nav
+		margin-top 1em
+		height calc(100% - 2em)
+		background var(--white)
+		border-top-right-radius 1em
+		border-bottom-right-radius 1em
+		padding 1em 2em
+		display flex
+		flex-flow column nowrap
+		justify-content space-between
