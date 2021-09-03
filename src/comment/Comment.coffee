@@ -1,6 +1,6 @@
+import API from '../api/API.coffee'
+import Model from '../model/Model.coffee'
 import Flair from '../media/Flair.coffee'
-import Model from '../Model.coffee'
-import { post } from '../API.coffee'
 
 export default class Comment
 
@@ -28,7 +28,7 @@ export default class Comment
 		editDate: new Date(1000 * data.edited)
 
 		content: data.body_html ? ''
-		replies: new Model(data.replies)
+		replies: new Model(data.replies) # Array[Comment/MoreComments]
 		isPinned: data.stickied
 		wasEdited: data.edited
 
@@ -42,40 +42,33 @@ export default class Comment
 	}
 		
 	upvote: =>
-		post
+		API.post
 			endpoint: '/api/vote'
-			content:
-				id: 't1_' + this.id
-				dir: 1
+			id: 't1_' + this.id
+			dir: 1
 	unvote: =>
-		post
+		API.post
 			endpoint: '/api/vote'
-			content:
-				id: 't1_' + this.id
-				dir: 0
+			id: 't1_' + this.id
+			dir: 0
 	downvote: =>
-		post
+		API.post
 			endpoint: '/api/vote'
-			content:
-				id: 't1_' + this.id
-				dir: -1
+			id: 't1_' + this.id
+			dir: -1
 	save: =>
-		post
+		API.post
 			endpoint: '/api/save'
-			content:
-				id: 't1_' + this.id
+			id: 't1_' + this.id
 	unsave: =>
-		post
+		API.post
 			endpoint: '/api/unsave'
-			content:
-				id: 't1_' + this.id
+			id: 't1_' + this.id
 	hide: =>
-		post
+		API.post
 			endpoint: '/api/hide'
-			content:
-				id: 't1_' + this.id
+			id: 't1_' + this.id
 	unhide: =>
-		post
+		API.post
 			endpoint: '/api/unhide'
-			content:
-				id: 't1_' + this.id
+			id: 't1_' + this.id

@@ -1,5 +1,6 @@
-import { finishLogin, getPost } from './API.coffee'
-import Channel from './channel/Channel.coffee'
+import { finishLogin } from '../api/login.coffee'
+import { getPost } from '../post/Post.coffee'
+import Channel from '../channel/Channel.coffee'
 
 export default class URLState
 

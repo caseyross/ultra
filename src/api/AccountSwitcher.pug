@@ -1,9 +1,9 @@
 script.
-	import { logout, startLogin } from '../API.coffee'
+	import { startLogin, logout } from '../api/login.coffee'
 
 {#if LS.userKey}
 	button(on:mousedown={() => logout()})
-		img.user-img(src={LS.userPic})
+		img.user-img(src={LS.userPic} alt='')
 {:else}
 	button(on:mousedown={() => startLogin()}) Log in
 

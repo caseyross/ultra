@@ -1,10 +1,10 @@
 script.
 	import Channel from './channel/Channel.pug'
 	import ChannelDirectory from './channel/ChannelDirectory.pug'
-	import LoggingIn from './account/LoggingIn.pug'
-	import URLState from './URLState.coffee'
+	import LoggingIn from './api/LoggingIn.pug'
+	import URLState from './url/URLState.coffee'
 
-	urlState = new URLState()
+	export urlState = new URLState()
 	ratelimitCount = ''
 	showDirectory = no
 
@@ -32,6 +32,7 @@ script.
 		{ capture: true }
 	addEventListener 'popstate',
 		(e) => urlState = new URLState()
+
 	setInterval(
 		-> ratelimitCount = LS.calls.split(',').length,
 		6000
@@ -46,9 +47,6 @@ script.
 {:else}
 	{#if urlState.page === 'front' || urlState.page === 'channel'}
 		Channel(channel={urlState.channel})
-	{:else if urlState.page === 'detached-post'}
-		{#await urlState.getPost then post}
-			DetachedPost(post={post})
 	{#if showDirectory}
 		ChannelDirectory
 	#ratelimit {ratelimitCount}

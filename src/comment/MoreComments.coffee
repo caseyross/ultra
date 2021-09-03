@@ -1,4 +1,4 @@
-import { get } from '../API.coffee'
+import API from '../api/API.coffee'
 
 export default class MoreComments
 
@@ -7,9 +7,7 @@ export default class MoreComments
 		post_id: post_id
 	}
 
-	load: =>
-		get
-			endpoint: '/api/morechildren'
-			options:
-				link_id: 't3_' + this.post_id
-				children: this.ids
+	load: => API.get
+		endpoint: '/api/morechildren'
+		link_id: 't3_' + this.post_id
+		children: this.ids

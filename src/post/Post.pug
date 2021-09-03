@@ -1,0 +1,44 @@
+script.
+	import Content from '../content/Content.pug'
+	import Post from '../post/Post.coffee'
+	export post = null
+	export showFlair = false
+	export selected = false
+	export select = -> {}
+
+{#if post instanceof Post}
+	article(on:mousedown={select(post)} class:selected={selected} class:stickied={post.isStickied || post.isSuperStickied})
+		.meta
+		.body
+			h2 {post.title}
+			Content(content={post.content})
+			data
+				| posted by
+				a(href='u/{post.authorName}') u/{post.authorName}
+				time {post.createDate.ago().count}{post.createDate.ago().unit}
+				| ago 
+
+style.
+	article
+		margin 1em 0
+		display grid
+		grid-template-columns 192px 1fr
+		align-items flex-start
+		gap 1em
+		opacity 0.5
+		&.selected
+			opacity 1
+	.meta
+	.body
+		padding 1em 2em
+		background var(--white)
+		border-radius 1em
+	.meta
+		position sticky
+		top 0
+	.body
+		margin-top 1em
+	data
+		display block
+		text-align right
+		opacity 0.5

@@ -3,19 +3,9 @@ script.
 	import PostFlair from '../post/PostFlair.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	export post = {}
-	export showFlair = false
-	export selected = false
-	export select = -> {}
 
-button(on:mousedown={select(post)} class:selected={selected} class:stickied={post.isStickied || post.isSuperStickied})
+button
 	.title
-		{#if post.content.type === 'link'}
-			a(href={post.content.href}) {post.title}
-		{:else}
-			| {post.title}
-	.hanging-tags
-		.tag.score {post.score}
-	.left-tags
 		.tag.type-icon
 			{#if post.content}
 				{#if post.content.type === 'link'}
@@ -40,15 +30,17 @@ button(on:mousedown={select(post)} class:selected={selected} class:stickied={pos
 			PostFlair(flair={post.titleFlair} subredditName={post.subredditName})
 		{:else}
 			SubredditTag(name={post.subredditName})
-	.right-tags
-		.tag.comment-count  {post.commentCount} 
+		{#if post.content.type === 'link'}
+			a(href={post.content.href}) {post.title}
+		{:else}
+			| {post.title}
+	.tags
 		time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
 
 style.
 	button
 		position relative
-		background #9b9b9b
-		color white
+		background var(--white)
 		margin-top 1em
 		margin-left 2em
 		border-radius 1em
@@ -59,20 +51,17 @@ style.
 			color white
 		&:hover
 		&:focus
-			background gray
+			background #333
 			color white
 		&.selected
-			background var(--white)
+			background wheat
 			color var(--black)
+	.title
+		display flex
 	.tags
 		position absolute
 		top -0.5em
-	.hanging-tags
 		right calc(100% - 2ch)
-	.left-tags
-		left 2ch
-	.right-tags
-		right -2ch
 	.tag
 		padding 0 1ch
 		border-radius 1rem

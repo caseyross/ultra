@@ -1,16 +1,11 @@
-import {
-	getFrontpagePosts
-	getMultiredditPosts
-	getSubredditInformation
-	getSubredditPosts
-	getUserComments
-	getUserInformation
-	getUserItems
-	getUserPosts
-} from '../API.coffee'
+import { getFrontpagePosts, getMultiredditPosts } from '../multireddit/Multireddit.coffee'
+import { getSubreddit, getSubredditPosts } from '../subreddit/Subreddit.coffee'
+import { getUser, getUserItems } from '../user/User.coffee'
 
-# A channel represents any Reddit data source that can provide a list of posts, comments, and/or messages.
-# A channel may have a source representing where that list originates.
+# A channel represents the union of two related things that are, for practical reasons, separated in the Reddit API:
+# 1. A Reddit object (generally a subreddit or user account)
+# 2. The various data streams "owned" by that object (e.g. lists of posts, comments or messages)
+
 export default class Channel
 
 	constructor: (id) ->
@@ -28,7 +23,7 @@ export default class Channel
 					else
 						@type = 'subreddit'
 						@name = b
-						@source = getSubredditInformation(b)
+						@source = getSubreddit(b)
 				if c
 					@sort = c
 					if d
@@ -38,7 +33,7 @@ export default class Channel
 			when 'u'
 				@type = 'user'
 				@name = b
-				@source = getUserInformation(b)
+				@source = getUser(b)
 				switch c
 					when 'new', 'hot', 'top', 'controversial'
 						@sort = c

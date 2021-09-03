@@ -7,22 +7,10 @@ script.
 	import VideoContent from './VideoContent.pug'
 	export content = null
 
-article
-	{#key content}
-		EmbedContent(content={content})
-		ImageContent(content={content})
-		LinkContent(content={content})
-		RedditContent(content={content})
-		SelfContent(content={content})
-		VideoContent(content={content})
-
-style.
-	article
-		margin 1em 0
-		display flex
-		flex-flow column nowrap
-		align-items center
-		gap 0.5em
-		padding 0.5em 0
-		background var(--white)
-		border-radius 1em
+.content
+	EmbedContent(content={content})
+	ImageContent(content={content})
+	LinkContent(content={content})
+	RedditContent(content={content})
+	SelfContent(content={content})
+	VideoContent(content={content})

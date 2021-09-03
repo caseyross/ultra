@@ -2,7 +2,7 @@ script.
 	export content = {}
 
 {#if content.type === 'embed'}
-	iframe(src={content.src} allowfullscreen='true' allow={content.allow} )
+	iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Embed from {(new URL(content.src)).host}')
 
 style.
 	iframe

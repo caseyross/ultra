@@ -1,30 +1,17 @@
 script.
-	import Account from '../account/Account.pug'
-	import Comments from '../comment/Comments.pug'
-	import Content from '../content/Content.pug'
+	import AccountSwitcher from '../api/AccountSwitcher.pug'
 	import Feed from '../feed/Feed.pug'
-	import Placard from '../user/Placard.pug'
 	import SubredditFilters from '../subreddit/SubredditFilters.pug'
 	import SubredditHeroNameplate from '../subreddit/SubredditHeroNameplate.pug'
 	import UserHeroNameplate from '../user/UserHeroNameplate.pug'
 	import Channel from './Channel.coffee'
-	import Post from '../post/Post.coffee'
 	export channel = new Channel('')
-	selectedItem = null
-	selectItem = (item) -> selectedItem = item
-	columnWidths = """
-		#{innerWidth / 12}px
-		#{innerWidth / 12 * 3 - 18}px
-		1fr
-		#{innerWidth / 12 * 4 - 18}px
-	"""
-	
 
 svelte:head
 	title [{channel.name}]
-.channel(style='grid-template-columns: {columnWidths}')
-	section#nav
-		nav
+.channel(style='grid-template-columns: {window.innerWidth / 10}px 1fr')
+	nav
+		section
 			{#if channel.type === 'subreddit'}
 				{#await channel.source then subreddit}
 					SubredditHeroNameplate(subreddit={subreddit})
@@ -32,18 +19,10 @@ svelte:head
 			{:else if channel.type === 'user'}
 				{#await channel.source then user}
 					UserHeroNameplate(user={user})
-		nav
-			Account
-	section.hide-scroll#feed
-		{#await channel.getItems(10) then items}
-			Feed(items={items} selectedItem={selectedItem} selectItem={selectItem} showFlair={channel.type === 'subreddit'})
-	section.hide-scroll#content
-		{#if selectedItem instanceof Post}
-			Content(content={selectedItem.content})
-	section.hide-scroll#comments
-		{#if selectedItem instanceof Post}
-			{#await selectedItem.comments then comments}
-				Comments(comments={comments} commentCount={selectedItem.commentCount})
+		section
+			AccountSwitcher
+	{#await channel.getItems(10) then items}
+		Feed(items={items} showFlair={channel.type === 'subreddit'})
 
 style.
 	.channel
@@ -53,9 +32,7 @@ style.
 		grid-auto-flow column
 		gap 8px
 		background gainsboro
-	section
-		overflow auto
-	#nav
+	nav
 		margin-top 1em
 		height calc(100% - 2em)
 		background var(--white)

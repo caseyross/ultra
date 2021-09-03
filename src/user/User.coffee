@@ -1,3 +1,4 @@
+import API from '../api/API.coffee'
 import Subreddit from '../subreddit/Subreddit.coffee'
 
 export default class User
@@ -21,3 +22,16 @@ export default class User
 
 	}
 
+
+export getUser = (userName) -> API.get
+	endpoint: '/user/' + userName + '/about'
+	cache: 'u/' + userName + '/about'
+	automodel: true # User
+
+export getUserItems = (userName, { filter = 'overview', sort = 'new', quantity }) -> API.get
+	endpoint: '/user/' + userName + '/' + filter
+	limit: quantity
+	sort: sort.split('/')[0]
+	t: sort.split('/')[1]
+	cache: ['u', userName, filter, sort, quantity].join('/')
+	automodel: true # Array[Post/Comment]

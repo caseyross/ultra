@@ -1,10 +1,10 @@
-import Award from './award/Award.coffee'
-import Comment from './comment/Comment.coffee'
-import Message from './message/Message.coffee'
-import MoreComments from './comment/MoreComments.coffee'
-import Post from './post/Post.coffee'
-import Subreddit from './subreddit/Subreddit.coffee'
-import User from './user/User.coffee'
+import Award from '../award/Award.coffee'
+import Comment from '../comment/Comment.coffee'
+import Message from '../message/Message.coffee'
+import MoreComments from '../comment/MoreComments.coffee'
+import Post from '../post/Post.coffee'
+import Subreddit from '../subreddit/Subreddit.coffee'
+import User from '../user/User.coffee'
 
 export default class Model
 

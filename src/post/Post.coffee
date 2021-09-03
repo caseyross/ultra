@@ -1,6 +1,7 @@
+import API from '../api/API.coffee'
+import Model from '../model/Model.coffee'
 import Content from '../content/Content.coffee'
 import Flair from '../media/Flair.coffee'
-import { getPostComments, post } from '../API.coffee'
 
 export default class Post
 
@@ -51,40 +52,48 @@ export default class Post
 	}
 
 	upvote: =>
-		post
+		API.post
 			endpoint: '/api/vote'
-			content:
-				id: 't3_' + this.id
-				dir: 1
+			id: 't3_' + this.id
+			dir: 1
 	unvote: =>
-		post
+		API.post
 			endpoint: '/api/vote'
-			content:
-				id: 't3_' + this.id
-				dir: 0
+			id: 't3_' + this.id
+			dir: 0
 	downvote: =>
-		post
+		API.post
 			endpoint: '/api/vote'
-			content:
-				id: 't3_' + this.id
-				dir: -1
+			id: 't3_' + this.id
+			dir: -1
 	save: =>
-		post
+		API.post
 			endpoint: '/api/save'
-			content:
-				id: 't3_' + this.id
+			id: 't3_' + this.id
 	unsave: =>
-		post
+		API.post
 			endpoint: '/api/unsave'
-			content:
-				id: 't3_' + this.id
+			id: 't3_' + this.id
 	hide: =>
-		post
+		API.post
 			endpoint: '/api/hide'
-			content:
-				id: 't3_' + this.id
+			id: 't3_' + this.id
 	unhide: =>
-		post
+		API.post
 			endpoint: '/api/unhide'
-			content:
-				id: 't3_' + this.id
+			id: 't3_' + this.id
+
+export getPost = (id) ->
+	API.get
+		endpoint: '/comments/' + id
+		cache: 't3_' + id
+	.then ([x, y]) ->
+		# The post's comments are handled separately.
+		new Model(x)[0] # Post
+
+export getPostComments = (id) ->
+	API.get
+		endpoint: '/comments/' + id
+		cache: 't3_' + id
+	.then ([x, y]) ->
+		new Model(y) # Array[Comment/MoreComments]

@@ -4,7 +4,7 @@ script.
 	export comments = []
 	export commentCount = NaN
 
-.comments
+.comments.hide-scroll
 	{#each comments as comment}
 		TopLevelComment(comment={comment})
 		MoreComments(more={comment})
@@ -12,6 +12,8 @@ script.
 
 style.
 	.comments
+		height 100vh
+		overflow auto
 		display flex
 		flex-flow column nowrap
 		align-items flex-start
