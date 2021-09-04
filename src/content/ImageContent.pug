@@ -1,12 +1,16 @@
 script.
 	import Image from '../media/Image.pug'
 	export content = {}
+	galleryExpanded = content.images?.length < 2
 
 {#if content.type === 'image'}
-	{#each content.images as i}
-		figure
-			Image(image={i} maxW={640})
-			{#if i.caption}
-				figcaption {i.caption.t}
-					{#if i.caption.u}
-						a(href={i.caption.u}) {i.caption.u}
+	{#each content.images as image, i}
+		{#if i === 0 || galleryExpanded}
+			figure
+				Image(image={image} maxW={640})
+				{#if image.caption}
+					figcaption {image.caption.t}
+						{#if image.caption.u}
+							a(href={image.caption.u}) {image.caption.u}
+	{#if !galleryExpanded}
+		button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...

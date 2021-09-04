@@ -9,7 +9,7 @@ script.
 
 svelte:head
 	title [{channel.name}]
-.channel(style='grid-template-columns: {window.innerWidth / 10}px 1fr')
+.channel
 	nav
 		section
 			{#if channel.type === 'subreddit'}
@@ -29,7 +29,7 @@ style.
 		height 100vh
 		width 100vw
 		display grid
-		grid-auto-flow column
+		grid-template-columns 638px 1fr
 		gap 8px
 		background gainsboro
 	nav

@@ -2,9 +2,13 @@ script.
 	export content = {}
 
 {#if content.type === 'link'}
-	a(href={content.href}) {content.href}
+	a(href={content.href}) {(new URL(content.href)).host}
 
 style.
 	a
+		display flex
+		justify-content center
+		padding 0.5em
 		font-size 2em
-		margin 1em 0
+		background cornflowerblue
+		color white

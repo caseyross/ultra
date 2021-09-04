@@ -2,6 +2,11 @@
 	box-sizing border-box
 html
 	font-size 25% // 1rem = 4px
+@import url('https://rsms.me/inter/inter.css');
+html { font-family: 'Inter', sans-serif; }
+@supports (font-variation-settings: normal) {
+  html { font-family: 'Inter var', sans-serif; }
+}
 body
 	margin 0
 	height 100vh
@@ -61,6 +66,7 @@ img
 iframe
 img
 video
+	margin 0 auto
 	border-radius 0.5em
 .md
 	word-break break-word

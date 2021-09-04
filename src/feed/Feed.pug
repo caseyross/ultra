@@ -29,9 +29,12 @@ script.
 
 style.
 	.feed
-		display grid
-		grid-template-columns 960px 1fr
+		display flex
 	ol
+		flex 0 0 640px
 		height 100vh
 		overflow auto
 		padding-bottom 80vh
+		display flex
+		flex-flow column nowrap
+		gap 8px

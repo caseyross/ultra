@@ -8,37 +8,19 @@ script.
 
 {#if post instanceof Post}
 	article(on:mousedown={select(post)} class:selected={selected} class:stickied={post.isStickied || post.isSuperStickied})
-		.meta
-		.body
-			h2 {post.title}
-			Content(content={post.content})
-			data
-				| posted by
-				a(href='u/{post.authorName}') u/{post.authorName}
-				time {post.createDate.ago().count}{post.createDate.ago().unit}
-				| ago 
+		header
+			h1 {post.title}
+		Content(content={post.content})
+		footer
 
 style.
 	article
-		margin 1em 0
-		display grid
-		grid-template-columns 192px 1fr
-		align-items flex-start
-		gap 1em
+		width 640px
+		padding 1em 0
+		border-radius 1em
+		background var(--white)
 		opacity 0.5
 		&.selected
 			opacity 1
-	.meta
-	.body
-		padding 1em 2em
-		background var(--white)
-		border-radius 1em
-	.meta
-		position sticky
-		top 0
-	.body
-		margin-top 1em
-	data
-		display block
-		text-align right
-		opacity 0.5
+	h1
+		padding 0 1em 8px 1em
