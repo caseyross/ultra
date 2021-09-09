@@ -1,10 +1,12 @@
 script.
-	import Placard from '../user/Placard.pug'
-	import PostFlair from '../post/PostFlair.pug'
+	import Flair from '../media/Flair.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	export post = {}
+	export showFlair = false
+	export selected = false
+	export select = () -> {}
 
-button
+button(class:stickied={post.isStickiedInThisChannel} class:selected={selected} on:mousedown={select(post)})
 	.title
 		.tag.type-icon
 			{#if post.content}
@@ -27,9 +29,9 @@ button
 				{:else if post.content.type === 'reddit'}
 					| ⊙
 		{#if showFlair}
-			PostFlair(flair={post.titleFlair} subredditName={post.subredditName})
+			Flair(flair={post.titleFlair} subredditName={post.subredditName})
 		{:else}
-			SubredditTag(name={post.subredditName})
+			SubredditTag(subreddit={post.subreddit})
 		{#if post.content.type === 'link'}
 			a(href={post.content.href}) {post.title}
 		{:else}
@@ -64,7 +66,7 @@ style.
 		right calc(100% - 2ch)
 	.tag
 		padding 0 1ch
-		border-radius 1rem
+		border-radius 4px
 	.age
 		background darkseagreen
 		color white

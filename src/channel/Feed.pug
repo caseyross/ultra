@@ -1,0 +1,21 @@
+script.
+	import FeedComment from '../comment/FeedComment.pug'
+	import FeedPost from '../post/FeedPost.pug'
+	export items = []
+	export showFlair = false
+	export selection = null
+	export select = () -> {}
+	totalComments = items.fold(0, (a, b) -> a + (b.commentCount or 0))
+	totalScore = items.fold(0, (a, b) -> a + (b.score or 0))
+
+ol
+	{#each items as item}
+		li
+			FeedPost(post={item} showFlair={showFlair} selected={item === selection} select={select})
+			FeedComment(comment={item} selected={item === selection} select={select})
+
+style.
+	ol
+		display flex
+		flex-flow column nowrap
+		gap 8px

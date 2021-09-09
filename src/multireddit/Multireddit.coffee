@@ -5,6 +5,7 @@ export getFrontpagePosts = ({ sort = 'best', quantity }) -> API.get
 	endpoint: '/' + sort.split('/')[0]
 	limit: quantity
 	t: sort.split('/')[1]
+	sr_detail: true
 	cache: ['r/frontpage', sort, quantity].join('/')
 	automodel: true # Array[Post]
 
@@ -16,6 +17,7 @@ export getMultiredditPosts = (multiredditNamespace, multiredditName, { sort = 'h
 			endpoint: '/api/multi/u' + multiredditNamespace + '/m/' + multiredditName + '/' + sort.split('/')[0]
 			limit: quantity
 			t: sort.split('/')[1]
+			sr_detail: true
 			cache: ['m', multiredditNamespace, multiredditName, sort, quantity].join('/')
 			automodel: true # Array[Post]
 		.then (x) -> console.log x

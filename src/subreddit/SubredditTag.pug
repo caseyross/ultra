@@ -1,19 +1,14 @@
 script.
-	export name=''
+	import Image from '../media/Image.pug'
+	import Tag from '../media/Tag.pug'
+	export subreddit = null
+	color = subreddit.color1 or subreddit.color2 or 'white'
 
-a(href='/r/{name}')
-	span.r r
-	span {name}
+a(href='/r/{subreddit.name}')
+	Image(image={subreddit.icon} maxH={32} maxW={32})
+	Tag(html={subreddit.name} color={color})
 
 style.
 	a
-		border 1px solid
-		padding 1px 8px
-		border-radius 4px
-		background white
-		background-image linear-gradient(120deg, rgba(0,0,0,0.5) 20px, transparent 20px)
-		.r
-			vertical-align top
-			font-size 10px
-			color white
-			margin-right 8px
+		display flex
+		align-items center

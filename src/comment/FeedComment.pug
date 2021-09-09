@@ -1,11 +1,13 @@
 script.
 	import SubredditTag from '../subreddit/SubredditTag.pug'
+	import Comment from './Comment.coffee'
 	export comment = {}
 	export selected = false
 	export select = -> {}
 
-button(on:mousedown={select(comment)} class:selected={selected} class:pinned={comment.isPinned})
-	{@html comment.content}
+{#if comment instanceof Comment}
+	button(on:mousedown={select(comment)} class:selected={selected} class:pinned={comment.isPinned})
+		{@html comment.content}
 
 style.
 	button

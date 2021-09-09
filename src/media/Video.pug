@@ -1,8 +1,9 @@
 script.
 	export data = null
+	export w = 640
 	video = null
 	audio = null
-	
+
 	import { onMount } from 'svelte'
 	onMount () =>
 		video.addEventListener 'play', (e) ->
@@ -17,7 +18,7 @@ script.
 		video.addEventListener 'playing', (e) ->
 			if audio.paused then audio.play()
 			
-video(bind:this={video} controls='true')
+video(bind:this={video} controls='true' style='width: {w}px; height: {Math.round(w / 16 * 9)}px')
 	{#each data.video as representation}
 		source(src={representation.href} type={representation.mime_type})
 audio(bind:this={audio})
@@ -25,8 +26,5 @@ audio(bind:this={audio})
 		source(src={representation.href} type={representation.mime_type})
 
 style.
-	video
-		width 640px
-		height 360px
 	audio
 		display none

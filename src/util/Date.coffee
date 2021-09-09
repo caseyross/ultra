@@ -23,13 +23,13 @@ Date::ago = ->
 	if wk < 4
 		return
 			count: Math.trunc(wk)
-			unit: 'wk'
+			unit: 'w'
 	mo = d / 28
 	if mo < 12
 		return
 			count: Math.trunc(mo)
-			unit: 'mo'
+			unit: 'o'
 	yr = mo / 12
 	return
 		count: Math.trunc(yr)
-		unit: 'yr'
+		unit: 'y'

@@ -1,13 +1,14 @@
 script.
 	import Image from '../media/Image.pug'
 	export content = {}
+	export w = 640
 	galleryExpanded = content.images?.length < 2
 
 {#if content.type === 'image'}
 	{#each content.images as image, i}
 		{#if i === 0 || galleryExpanded}
 			figure
-				Image(image={image} maxW={640})
+				Image(image={image} maxW={w})
 				{#if image.caption}
 					figcaption {image.caption.t}
 						{#if image.caption.u}

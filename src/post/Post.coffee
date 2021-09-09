@@ -2,14 +2,14 @@ import API from '../api/API.coffee'
 import Model from '../model/Model.coffee'
 import Content from '../content/Content.coffee'
 import Flair from '../media/Flair.coffee'
+import Subreddit from '../subreddit/Subreddit.coffee'
 
 export default class Post
 
 	constructor: (data) -> @[k] = v for k, v of {
 
 		id: data.id
-		subredditName: data.subreddit.toLowerCase()
-		subredditDisplayName: data.subreddit
+		subreddit: new Subreddit(data.sr_detail)
 		crosspostParent: data.crosspost_parent_list
 		href: '/r/' + data.subreddit + '/post/' + data.id
 
@@ -35,8 +35,8 @@ export default class Post
 		isArchived: data.archived
 		isLocked: data.locked
 		isQuarantined: data.quarantine
-		isStickied: data.stickied
-		isSuperStickied: data.pinned
+		isStickiedInHomeChannel: data.stickied
+		isStickiedInThisChannel: if data.subreddit_type is 'user' then data.pinned else data.stickied
 		wasEdited: data.edited
 		wasDeleted: data.selftext is '[removed]'
 

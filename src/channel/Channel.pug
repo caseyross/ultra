@@ -1,36 +1,61 @@
 script.
 	import AccountSwitcher from '../api/AccountSwitcher.pug'
-	import Feed from '../feed/Feed.pug'
+	import Comments from '../comment/Comments.pug'
+	import Content from '../content/Content.pug'
+	import Feed from './Feed.pug'
 	import SubredditFilters from '../subreddit/SubredditFilters.pug'
 	import SubredditHeroNameplate from '../subreddit/SubredditHeroNameplate.pug'
 	import UserHeroNameplate from '../user/UserHeroNameplate.pug'
 	import Channel from './Channel.coffee'
+	import Post from '../post/Post.coffee'
 	export channel = new Channel('')
+	viewportW = window.innerWidth
+	navW = 160
+	contentW = switch
+		when viewportW > 2560 then 1080
+		when viewportW > 1920 then 854
+		else 640
+	feedW = (viewportW / 2) - (contentW / 2) - navW
+	commentsW = (viewportW / 2) - (contentW / 2)
+	selection = null
+	select = (item) -> selection = item
 
 svelte:head
-	title [{channel.name}]
-.channel
-	nav
-		section
-			{#if channel.type === 'subreddit'}
-				{#await channel.source then subreddit}
-					SubredditHeroNameplate(subreddit={subreddit})
-					SubredditFilters(subredditName={channel.name} sort={channel.sort})
-			{:else if channel.type === 'user'}
-				{#await channel.source then user}
-					UserHeroNameplate(user={user})
-		section
-			AccountSwitcher
-	{#await channel.getItems(10) then items}
-		Feed(items={items} showFlair={channel.type === 'subreddit'})
+	title {channel.name}
+.channel(style='grid-template-columns: {navW}px {feedW}px {contentW}px {commentsW}px')
+	section#nav
+		nav
+			section
+				{#if channel.type === 'subreddit'}
+					{#await channel.source then subreddit}
+						SubredditHeroNameplate(subreddit={subreddit})
+						SubredditFilters(subredditName={channel.name} sort={channel.sort})
+				{:else if channel.type === 'user'}
+					{#await channel.source then user}
+						UserHeroNameplate(user={user})
+			section
+				AccountSwitcher
+	section.hide-scrollbar#feed
+		{#await channel.getItems(10) then items}
+			Feed(items={items} selection={selection} select={select} showFlair={channel.type === 'subreddit'})
+	section.hide-scrollbar#content
+		{#if selection}
+			Content(content={selection.content} w={contentW})
+	section.hide-scrollbar#comments
+		{#if selection}
+			Comments(promise={selection.comments})
 
 style.
 	.channel
 		height 100vh
 		width 100vw
 		display grid
-		grid-template-columns 638px 1fr
-		gap 8px
+	#nav
+	#feed
+	#content
+	#comments
+		height 100%
+		overflow auto
 		background gainsboro
 	nav
 		margin-top 1em

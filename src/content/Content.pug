@@ -6,11 +6,13 @@ script.
 	import SelfContent from './SelfContent.pug'
 	import VideoContent from './VideoContent.pug'
 	export content = null
+	export w = 640
 
 .content
-	EmbedContent(content={content})
-	ImageContent(content={content})
-	LinkContent(content={content})
-	RedditContent(content={content})
-	SelfContent(content={content})
-	VideoContent(content={content})
+	{#key content}
+		EmbedContent(content={content} w={w})
+		ImageContent(content={content} w={w})
+		LinkContent(content={content})
+		RedditContent(content={content})
+		SelfContent(content={content})
+		VideoContent(content={content} w={w})

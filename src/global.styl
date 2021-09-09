@@ -2,18 +2,11 @@
 	box-sizing border-box
 html
 	font-size 25% // 1rem = 4px
-@import url('https://rsms.me/inter/inter.css');
-html { font-family: 'Inter', sans-serif; }
-@supports (font-variation-settings: normal) {
-  html { font-family: 'Inter var', sans-serif; }
-}
 body
 	margin 0
 	height 100vh
 	// font
-	font 400 10pt/1.333 'Karla'
 	font 400 12px/1.2 'Iosevka Aile Web'
-	// word-spacing 0.25em
 	font-feature-settings 'kern'
 	-webkit-font-smoothing antialiased
 	-moz-osx-font-smoothing grayscale
@@ -34,7 +27,6 @@ body
 	background var(--white)
 	color var(--black)
 a
-	word-break break-all
 	color dodgerblue
 	text-decoration none
 	&:hover
@@ -63,11 +55,6 @@ iframe
 	border 0
 img
 	display block
-iframe
-img
-video
-	margin 0 auto
-	border-radius 0.5em
 .md
 	word-break break-word
 	.md-spoiler-text
@@ -121,7 +108,7 @@ video
 	ul
 		list-style circle
 		padding-left 2em
-.hide-scroll
+.hide-scrollbar
 	scrollbar-width none
 	&::-webkit-scrollbar
 		display none

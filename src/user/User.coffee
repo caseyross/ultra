@@ -33,5 +33,6 @@ export getUserItems = (userName, { filter = 'overview', sort = 'new', quantity }
 	limit: quantity
 	sort: sort.split('/')[0]
 	t: sort.split('/')[1]
+	sr_detail: true
 	cache: ['u', userName, filter, sort, quantity].join('/')
 	automodel: true # Array[Post/Comment]
