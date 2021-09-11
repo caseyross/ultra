@@ -3,12 +3,14 @@ script.
 	export subreddit = null
 
 figure
+	figcaption {subreddit.name}
 	Image(image={subreddit.icon} maxH={64} maxW={64})
-	figcaption {subreddit.displayName}
 
 style.
 	figure
 		padding 1em 2em
 		display flex
 		flex-flow column nowrap
-		align-items center 
+		align-items center
+	figcaption
+		font bold 24px Karla

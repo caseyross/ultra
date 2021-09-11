@@ -6,7 +6,8 @@ body
 	margin 0
 	height 100vh
 	// font
-	font 400 12px/1.2 'Iosevka Aile Web'
+	font 400 14px/1.6 'Arial'
+	letter-spacing 0.02em
 	font-feature-settings 'kern'
 	-webkit-font-smoothing antialiased
 	-moz-osx-font-smoothing grayscale
@@ -58,15 +59,15 @@ img
 .md
 	word-break break-word
 	.md-spoiler-text
-		background gray
-		color gray
+		background black
+		color black
 		&:focus, &:hover
 			background initial
 			color initial
 	& > * + *
-		margin 1em 0 0 0
-	blockquote
 		margin 0.5em 0 0 0
+	blockquote
+		margin 0
 		padding 1ch
 		border-left 3px solid gray
 		background gainsboro
@@ -74,7 +75,7 @@ img
 			margin-top 1em
 	code
 		font-weight bold
-		color red
+		background gainsboro
 	h1, h2, h3, h4, h5, h6
 		letter-spacing -0.1em
 	h1
@@ -92,9 +93,9 @@ img
 	pre
 		display inline-block
 		white-space pre-wrap
-		padding 1ch
-		border 1px dashed red
 		overflow auto
+		padding 0.5em 1em
+		background gainsboro
 	table
 		table-layout fixed
 		width 100%

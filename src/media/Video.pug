@@ -18,7 +18,7 @@ script.
 		video.addEventListener 'playing', (e) ->
 			if audio.paused then audio.play()
 			
-video(bind:this={video} controls='true' style='width: {w}px; height: {Math.round(w / 16 * 9)}px')
+video(bind:this={video} controls='true' style='width: {w}px; height: {w}px')
 	{#each data.video as representation}
 		source(src={representation.href} type={representation.mime_type})
 audio(bind:this={audio})

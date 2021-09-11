@@ -1,7 +1,6 @@
 script.
 	import AccountSwitcher from '../api/AccountSwitcher.pug'
 	import Comments from '../comment/Comments.pug'
-	import Content from '../content/Content.pug'
 	import Feed from './Feed.pug'
 	import SubredditFilters from '../subreddit/SubredditFilters.pug'
 	import SubredditHeroNameplate from '../subreddit/SubredditHeroNameplate.pug'
@@ -10,19 +9,19 @@ script.
 	import Post from '../post/Post.coffee'
 	export channel = new Channel('')
 	viewportW = window.innerWidth
-	navW = 160
+	navW = 320
+	feedW = (viewportW / 2) - navW - 16
+	postW = (viewportW / 2) + 16
 	contentW = switch
 		when viewportW > 2560 then 1080
 		when viewportW > 1920 then 854
 		else 640
-	feedW = (viewportW / 2) - (contentW / 2) - navW
-	commentsW = (viewportW / 2) - (contentW / 2)
 	selection = null
 	select = (item) -> selection = item
 
 svelte:head
 	title {channel.name}
-.channel(style='grid-template-columns: {navW}px {feedW}px {contentW}px {commentsW}px')
+.channel(style='grid-template-columns: {navW}px {feedW}px {postW}px')
 	section#nav
 		nav
 			section
@@ -38,12 +37,10 @@ svelte:head
 	section.hide-scrollbar#feed
 		{#await channel.getItems(10) then items}
 			Feed(items={items} selection={selection} select={select} showFlair={channel.type === 'subreddit'})
-	section.hide-scrollbar#content
+	section.hide-scrollbar#post
 		{#if selection}
-			Content(content={selection.content} w={contentW})
-	section.hide-scrollbar#comments
-		{#if selection}
-			Comments(promise={selection.comments})
+			{#await selection.comments then comments}
+				Comments(comments={comments} w={postW})
 
 style.
 	.channel
@@ -52,11 +49,10 @@ style.
 		display grid
 	#nav
 	#feed
-	#content
-	#comments
+	#post
 		height 100%
 		overflow auto
-		background gainsboro
+		background hsl(36 100 92)
 	nav
 		margin-top 1em
 		height calc(100% - 2em)

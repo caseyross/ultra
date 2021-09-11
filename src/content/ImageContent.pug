@@ -8,7 +8,7 @@ script.
 	{#each content.images as image, i}
 		{#if i === 0 || galleryExpanded}
 			figure
-				Image(image={image} maxW={w})
+				Image(image={image} maxW={w} maxH={Math.ceil(w / 3 * 4)})
 				{#if image.caption}
 					figcaption {image.caption.t}
 						{#if image.caption.u}

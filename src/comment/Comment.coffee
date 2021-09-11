@@ -4,8 +4,8 @@ import Flair from '../media/Flair.coffee'
 
 export default class Comment
 
-	constructor: (data) ->  @[k] = v for k, v of {
-		
+	constructor: (data) -> @[k] = v for k, v of {
+			
 		id: data.id
 		postId: data.link_id[3..]
 		postTitle: data.link_title
@@ -32,7 +32,7 @@ export default class Comment
 		isPinned: data.stickied
 		wasEdited: data.edited
 
-		score: if data.score_hidden then NaN else data.score
+		score: if data.score_hidden then NaN else data.score - 1
 		isControversial: Boolean(data.controversiality)
 		userUpvoted: data.likes is true
 		userDownvoted: data.likes is false

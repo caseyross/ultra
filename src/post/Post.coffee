@@ -40,7 +40,7 @@ export default class Post
 		wasEdited: data.edited
 		wasDeleted: data.selftext is '[removed]'
 
-		score: if data.hide_score then NaN else data.score
+		score: if data.hide_score then NaN else data.score - 1
 		userUpvoted: data.likes is true
 		userDownvoted: data.likes is false
 		userSaved: data.saved

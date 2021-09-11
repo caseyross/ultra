@@ -1,18 +1,44 @@
 script.
+	import Flair from '../media/Flair.pug'
 	import MoreComments from './MoreComments.pug'
+	import { RedBlueColorScale } from '../util/Color.coffee'
 	import Comment from './Comment.coffee'
 	export comment = {}
+	export statistics = null
+	scoreColor = RedBlueColorScale.get((comment.score or 0) / statistics.largestScore)
 
 {#if comment instanceof Comment}
 	.comment
-		{@html comment.content}
-		.replies
-			{#each comment.replies as reply}
-				svelte:self(comment={reply})
+		.left
+		.right
+			header
+				.score-light(style='background: {scoreColor}' title='{comment.score} / {statistics.largestScore}')
+				.author {comment.authorName}
+				Flair(flair={comment.authorFlair} subredditName={comment.subredditName})
+			.body
+				{@html comment.content}
+			{#if comment.replies.length}
+				.replies
+					{#each comment.replies as reply}
+						svelte:self(comment={reply} statistics={statistics})
 
 
 style.
 	.comment
-		padding 1em 2em
-	.replies
-		border-left 1px solid lightgray
+		margin-top 1.333em
+		display grid
+		grid-template-columns 2em 1fr
+	header
+		display grid
+		grid-auto-flow column
+		justify-content flex-start
+		align-items center
+		gap 1ch
+		font 12px 'Iosevka Aile Web'
+	.score-light
+		height 1em
+		width 1em
+		border-radius 50%
+	.body
+		padding 1em 0
+		width 54ch

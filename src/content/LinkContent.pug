@@ -2,7 +2,7 @@ script.
 	export content = {}
 
 {#if content.type === 'link'}
-	a(href={content.href}) {(new URL(content.href)).host}
+	a(href={content.href}) {content.href}
 
 style.
 	a

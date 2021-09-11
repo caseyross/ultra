@@ -1,12 +1,17 @@
 script.
+	import Content from '../content/Content.pug'
 	import Flair from '../media/Flair.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	export post = {}
 	export showFlair = false
 	export selected = false
 	export select = () -> {}
+	expanded = false
+	onMousedown = ->
+		expanded = true
+		select(post)
 
-button(class:stickied={post.isStickiedInThisChannel} class:selected={selected} on:mousedown={select(post)})
+button(class:stickied={post.isStickiedInThisChannel} class:selected={selected} on:mousedown={() => onMousedown()})
 	.title
 		.tag.type-icon
 			{#if post.content}
@@ -38,6 +43,8 @@ button(class:stickied={post.isStickiedInThisChannel} class:selected={selected} o
 			| {post.title}
 	.tags
 		time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
+	{#if expanded}
+		Content(content={post.content})
 
 style.
 	button
@@ -60,10 +67,16 @@ style.
 			color var(--black)
 	.title
 		display flex
+		align-items flex-start
+		gap 1ch
+		font bold 18px Karla
 	.tags
 		position absolute
 		top -0.5em
-		right calc(100% - 2ch)
+		left 0
+		width 100%
+		display flex
+		justify-content space-between
 	.tag
 		padding 0 1ch
 		border-radius 4px
@@ -76,7 +89,6 @@ style.
 		background salmon
 		color white
 	.type-icon
-		font-size 32px
-		display flex
+		display none
 		justify-content center
 		align-items center
