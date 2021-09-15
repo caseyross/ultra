@@ -23,12 +23,8 @@ export default class Subreddit
 		
 		color1: data.primary_color or ''
 		color2: data.key_color or ''
-		icon: new Image
-			p: []
-			s: [{ u: data.community_icon or data.icon_img or '' }]
-		bannerImage: new Image
-			p: []
-			s: [{ u: data.banner_background_image or data.mobile_banner_img or data.banner_img or '' }]
+		iconUrl: data.community_icon or data.icon_img or ''
+		bannerUrl: data.banner_background_image or data.mobile_banner_img or data.banner_img or ''
 
 		numberOfUsersBrowsing: data.accounts_active
 		numberOfSubscribers: data.subscribers

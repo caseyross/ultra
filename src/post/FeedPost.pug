@@ -2,81 +2,108 @@ script.
 	import Content from '../content/Content.pug'
 	import Flair from '../media/Flair.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
+	import Post from '../post/Post.coffee'
+	import { RedBlueColorScale } from '../util/Color.coffee'
 	export post = {}
+	export statistics = null
 	export showFlair = false
 	export selected = false
 	export select = () -> {}
+	scoreColor = RedBlueColorScale.get((post.score or 0) / statistics.largestScore)
 	expanded = false
+	postElement = null
 	onMousedown = ->
 		expanded = true
-		select(post)
+		select(post, postElement)
 
-button(class:stickied={post.isStickiedInThisChannel} class:selected={selected} on:mousedown={() => onMousedown()})
-	.title
-		.tag.type-icon
-			{#if post.content}
-				{#if post.content.type === 'link'}
-					| ⟀
-				{:else if post.content.type === 'self'}
-					{#if post.content.selftext}
-						| ⋅
-					{:else}
-						| ∴
-				{:else if post.content.type === 'image'}
-					{#if post.content.images.length > 1}
-						| ⊞
-					{:else}
-						| ▫
-				{:else if post.content.type === 'video'}
-					| ‣
-				{:else if post.content.type === 'embed'}
-					| ⋗
-				{:else if post.content.type === 'reddit'}
-					| ⊙
-		{#if showFlair}
-			Flair(flair={post.titleFlair} subredditName={post.subredditName})
-		{:else}
-			SubredditTag(subreddit={post.subreddit})
-		{#if post.content.type === 'link'}
-			a(href={post.content.href}) {post.title}
-		{:else}
+{#if post instanceof Post}
+	button(class:stickied={post.isStickiedInThisChannel} class:expanded={expanded} class:selected={selected} on:mousedown={onMousedown} bind:this={postElement})
+		header
+			.score-light(style='color: {scoreColor}' title='{post.score} / {statistics.largestScore}') ▲
+			a.author(href='/u/{post.authorName}') {post.authorName}
+			Flair(flair={post.authorFlair} subredditName={post.subreddit.name})
+		.title
+			.tag.type-icon
+				{#if post.content}
+					{#if post.content.type === 'link'}
+						| ⟀
+					{:else if post.content.type === 'self'}
+						{#if post.content.selftext}
+							| ⋅
+						{:else}
+							| ∴
+					{:else if post.content.type === 'image'}
+						{#if post.content.images.length > 1}
+							| ⊞
+						{:else}
+							| ▫
+					{:else if post.content.type === 'video'}
+						| ‣
+					{:else if post.content.type === 'embed'}
+						| ⋗
+					{:else if post.content.type === 'reddit'}
+						| ⊙
 			| {post.title}
-	.tags
-		time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
-	{#if expanded}
-		Content(content={post.content})
+		.content(class:expanded={expanded})
+			Content(content={post.content} w={480})
+		footer
+			.post-flair
+				{#if showFlair}
+					Flair(flair={post.titleFlair} subredditName={post.subreddit.name})
+				{:else}
+					SubredditTag(subreddit={post.subreddit})
+			.tags
+				time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
 
 style.
 	button
 		position relative
-		background var(--white)
 		margin-top 1em
-		margin-left 2em
+		width 100%
 		border-radius 1em
 		padding 1em 2em
+		display flex
+		flex-flow column nowrap
 		text-align left
+		gap 8px
+		background wheat
+		color black
+		border 1px solid wheat
 		&.stickied
-			background green
+			background lightseagreen
 			color white
 		&:hover
 		&:focus
-			background #333
-			color white
+			border-color black
 		&.selected
-			background wheat
-			color var(--black)
+			background white
+			color black
+			border 1px solid
+	header
+		display grid
+		grid-auto-flow column
+		justify-content flex-start
+		align-items center
+		gap 1ch
+		font 12px 'Iosevka Aile Web'
+	.score-light
+		height 1em
+		width 1em
+		border-radius 50%
 	.title
 		display flex
 		align-items flex-start
 		gap 1ch
 		font bold 18px Karla
+	.content
+		margin 20px 0
+		display none
+		&.expanded
+			display block
+	.post-flair
+		align-self flex-end
 	.tags
-		position absolute
-		top -0.5em
-		left 0
-		width 100%
-		display flex
-		justify-content space-between
+		display none
 	.tag
 		padding 0 1ch
 		border-radius 4px

@@ -9,32 +9,38 @@ script.
 	import Post from '../post/Post.coffee'
 	export channel = new Channel('')
 	viewportW = window.innerWidth
-	navW = 320
-	feedW = (viewportW / 2) - navW - 16
-	postW = (viewportW / 2) + 16
+	postW = (viewportW / 2)
+	feedW = 536
 	contentW = switch
 		when viewportW > 2560 then 1080
 		when viewportW > 1920 then 854
 		else 640
+	feedContainerElement = null
 	selection = null
-	select = (item) -> selection = item
+	select = (item, itemElement) ->
+		selection = item
+		###
+		feedContainerElement.scrollTo
+			left: 0
+			top: itemElement.offsetTop - 64
+			behavior: 'smooth'
+		###
 
 svelte:head
 	title {channel.name}
-.channel(style='grid-template-columns: {navW}px {feedW}px {postW}px')
+.channel(style='grid-template-columns: 1fr {feedW}px {postW}px')
+	header
+		h1 {channel.name}
+		{#if selection}
+			h2 >
+			h2 {selection.title}
 	section#nav
 		nav
 			section
-				{#if channel.type === 'subreddit'}
-					{#await channel.source then subreddit}
-						SubredditHeroNameplate(subreddit={subreddit})
-						SubredditFilters(subredditName={channel.name} sort={channel.sort})
-				{:else if channel.type === 'user'}
-					{#await channel.source then user}
-						UserHeroNameplate(user={user})
 			section
-				AccountSwitcher
-	section.hide-scrollbar#feed
+	section.hide-scrollbar#feed(bind:this={feedContainerElement})
+		{#if channel.type === 'subreddit'}
+			SubredditFilters(subredditName={channel.name} sort={channel.sort})
 		{#await channel.getItems(10) then items}
 			Feed(items={items} selection={selection} select={select} showFlair={channel.type === 'subreddit'})
 	section.hide-scrollbar#post
@@ -47,6 +53,22 @@ style.
 		height 100vh
 		width 100vw
 		display grid
+	header
+		position fixed
+		top 0
+		left 0
+		width 100%
+		z-index 1
+		display flex
+		gap 1em
+		background white
+		border-bottom-left-radius 1em
+		border-bottom-right-radius 1em
+		h1
+			font bold 21px Karla
+		h2
+			font bold 18px Karla
+		display none
 	#nav
 	#feed
 	#post
@@ -54,12 +76,13 @@ style.
 		overflow auto
 		background hsl(36 100 92)
 	nav
-		margin-top 1em
-		height calc(100% - 2em)
-		background var(--white)
-		border-top-right-radius 1em
-		border-bottom-right-radius 1em
-		padding 1em 2em
+		height 100%
 		display flex
 		flex-flow column nowrap
 		justify-content space-between
+		align-items flex-start
+	#feed
+		padding-bottom 90vh
+	#post
+		padding 64px 0
+		padding-left 3em

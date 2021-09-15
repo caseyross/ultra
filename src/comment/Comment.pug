@@ -8,26 +8,23 @@ script.
 	scoreColor = RedBlueColorScale.get((comment.score or 0) / statistics.largestScore)
 
 {#if comment instanceof Comment}
-	.comment
-		.left
-		.right
+	.comment-tree
+		.comment
 			header
-				.score-light(style='background: {scoreColor}' title='{comment.score} / {statistics.largestScore}')
-				.author {comment.authorName}
+				.score-light(style='color: {scoreColor}' title='{comment.score} / {statistics.largestScore}') ▲
+				a.author(href='/u/{comment.authorName}') {comment.authorName}
 				Flair(flair={comment.authorFlair} subredditName={comment.subredditName})
 			.body
 				{@html comment.content}
-			{#if comment.replies.length}
-				.replies
-					{#each comment.replies as reply}
-						svelte:self(comment={reply} statistics={statistics})
+		{#if comment.replies.length}
+			.replies
+				{#each comment.replies as reply}
+					svelte:self(comment={reply} statistics={statistics})
 
 
 style.
-	.comment
-		margin-top 1.333em
-		display grid
-		grid-template-columns 2em 1fr
+	.comment-tree
+		margin 2em 0
 	header
 		display grid
 		grid-auto-flow column
@@ -40,5 +37,9 @@ style.
 		width 1em
 		border-radius 50%
 	.body
-		padding 1em 0
+		margin-top 1em
 		width 54ch
+	.replies
+		margin-left 4px
+		border-left 2px solid rgba(0,0,0,0.1)
+		padding-left 3em

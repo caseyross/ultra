@@ -1,13 +1,20 @@
 script.
 	import FeedComment from '../comment/FeedComment.pug'
 	import FeedPost from '../post/FeedPost.pug'
+	import FeedStatistics from './FeedStatistics.coffee'
 	export items = []
 	export showFlair = false
 	export selection = null
 	export select = () -> {}
+	statistics = new FeedStatistics(items)
 
 ol
 	{#each items as item}
 		li
-			FeedPost(post={item} showFlair={showFlair} selected={item === selection} select={select})
-			FeedComment(comment={item} selected={item === selection} select={select})
+			FeedPost(post={item} statistics={statistics} showFlair={showFlair} selected={item === selection} select={select})
+			FeedComment(comment={item} statistics={statistics} selected={item === selection} select={select})
+
+style.
+	ol
+		display flex
+		flex-flow column nowrap

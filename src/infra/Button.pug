@@ -1,0 +1,13 @@
+script.
+	export action = () -> {}
+	export text = ''
+	export key = ''
+
+button(on:mousedown={action()})
+	{#if key}
+		kbd {key}
+	| {text}
+
+style.
+	button
+		appearance none

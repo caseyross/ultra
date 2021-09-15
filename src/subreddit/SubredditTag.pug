@@ -2,13 +2,18 @@ script.
 	import Image from '../media/Image.pug'
 	import Tag from '../media/Tag.pug'
 	export subreddit = null
-	color = subreddit.color1 or subreddit.color2 or 'white'
 
 a(href='/r/{subreddit.name}')
-	Image(image={subreddit.icon} maxH={32} maxW={32})
-	Tag(html={subreddit.name} color={color})
+	Tag(html={subreddit.name})
+	img(src={subreddit.iconUrl})
 
 style.
 	a
-		display flex
+		display inline-flex
 		align-items center
+	img
+		box-sizing content-box
+		max-height 32px
+		border-radius 16px
+		border 1px solid
+		background var(--white)

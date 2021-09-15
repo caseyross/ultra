@@ -28,11 +28,8 @@ body
 	background var(--white)
 	color var(--black)
 a
-	color dodgerblue
+	color inherit
 	text-decoration none
-	&:hover
-		background steelblue
-		color white
 address
 	font-style normal
 button
@@ -66,13 +63,19 @@ img
 			color initial
 	& > * + *
 		margin 0.5em 0 0 0
+	a
+		color dodgerblue
+		text-decoration none
+		&:hover
+			background steelblue
+			color white
 	blockquote
 		margin 0
-		padding 1ch
-		border-left 3px solid gray
-		background gainsboro
+		padding 0.5em 1em
+		background rgba(0,0,0,0.1)
+		color gray
 		& > * + *
-			margin-top 1em
+			margin 0.5em 0 0 0
 	code
 		font-weight bold
 		background gainsboro
@@ -86,11 +89,12 @@ img
 		font-size 1.1666em
 	hr
 		margin-top 1em
-		border 1px dashed
+		width 3ch
 	ol
 		list-style decimal
-		padding-left 2em
+		padding-left 16px
 	pre
+		margin 0
 		display inline-block
 		white-space pre-wrap
 		overflow auto
@@ -108,7 +112,7 @@ img
 		padding 0 1ch
 	ul
 		list-style circle
-		padding-left 2em
+		padding-left 16px
 .hide-scrollbar
 	scrollbar-width none
 	&::-webkit-scrollbar

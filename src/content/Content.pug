@@ -8,11 +8,10 @@ script.
 	export content = null
 	export w = 640
 
-.content
-	{#key content}
-		EmbedContent(content={content} w={w})
-		ImageContent(content={content} w={w})
-		LinkContent(content={content})
-		RedditContent(content={content})
-		SelfContent(content={content})
-		VideoContent(content={content} w={w})
+{#key content}
+	EmbedContent(content={content} w={w})
+	ImageContent(content={content} w={w})
+	LinkContent(content={content})
+	RedditContent(content={content})
+	SelfContent(content={content})
+	VideoContent(content={content} w={w})

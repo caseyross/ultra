@@ -12,7 +12,7 @@ script.
 	style = ''
 	if maxW < Infinity
 		style += 'max-width:' + maxW + 'px;'
-	if res.w > minW and maxH < Infinity
+	if maxH < Infinity
 		style += 'max-height:' + maxH + 'px;'
 
 img(src={res.u} style={style} alt={alt})
