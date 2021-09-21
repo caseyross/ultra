@@ -20,7 +20,7 @@ export default class Post
 		authorRole: data.distinguished
 		
 		createDate: new Date(1000 * data.created_utc)
-		editDate: new Date(1000 * (data.edited or data.created_utc))
+		editDate: if data.edited then new Date(1000 * data.edited) else null
 
 		title: data.title
 		titleFlair: new Flair
@@ -37,12 +37,13 @@ export default class Post
 		isQuarantined: data.quarantine
 		isStickiedInHomeChannel: data.stickied
 		isStickiedInThisChannel: if data.subreddit_type is 'user' then data.pinned else data.stickied
-		wasEdited: data.edited
 		wasDeleted: data.selftext is '[removed]'
 
 		score: if data.hide_score then NaN else data.score - 1
-		userUpvoted: data.likes is true
-		userDownvoted: data.likes is false
+		userVote: switch data.likes
+			when true then 1
+			when false then -1
+			else 0
 		userSaved: data.saved
 		userHid: data.hidden
 

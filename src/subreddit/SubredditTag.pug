@@ -1,10 +1,8 @@
 script.
-	import Image from '../media/Image.pug'
-	import Tag from '../media/Tag.pug'
 	export subreddit = null
 
 a(href='/r/{subreddit.name}')
-	Tag(html={subreddit.name})
+	span {subreddit.name}
 	img(src={subreddit.iconUrl})
 
 style.
@@ -13,7 +11,5 @@ style.
 		align-items center
 	img
 		box-sizing content-box
-		max-height 32px
-		border-radius 16px
-		border 1px solid
-		background var(--white)
+		height 32px
+		border-radius (@height / 2)

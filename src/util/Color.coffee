@@ -19,9 +19,7 @@ interpolateHLSA = ([zeroC, oneC], frac) ->
 red = new HLSA(8, 59, 100)
 grey = new HLSA(0, 87, 0)
 blue = new HLSA(216, 71, 100)
-export RedBlueColorScale =
-	get: (frac) ->
-		if frac > 0
-			interpolateHLSA([grey, red], frac).toString()
-		else
-			interpolateHLSA([grey, blue], frac).toString()
+export RedGrayColorScale =
+	color: (frac) -> interpolateHLSA([grey, red], frac).toString()
+export BlueGrayColorScale =
+	color: (frac) -> interpolateHLSA([grey, blue], frac).toString()

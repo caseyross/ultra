@@ -25,17 +25,18 @@ export default class Comment
 			else ''
 		
 		createDate: new Date(1000 * data.created_utc)
-		editDate: new Date(1000 * data.edited)
+		editDate: if data.edited then new Date(1000 * data.edited) else null
 
 		content: data.body_html ? ''
 		replies: new Model(data.replies) # Array[Comment/MoreComments]
 		isPinned: data.stickied
-		wasEdited: data.edited
 
 		score: if data.score_hidden then NaN else data.score - 1
 		isControversial: Boolean(data.controversiality)
-		userUpvoted: data.likes is true
-		userDownvoted: data.likes is false
+		userVote: switch data.likes
+			when true then 1
+			when false then -1
+			else 0
 		userSaved: data.saved
 		userHid: data.hidden
 

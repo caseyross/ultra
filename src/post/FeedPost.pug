@@ -1,25 +1,24 @@
 script.
 	import Content from '../content/Content.pug'
 	import Flair from '../media/Flair.pug'
+	import Score from '../media/Score.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import Post from '../post/Post.coffee'
-	import { RedBlueColorScale } from '../util/Color.coffee'
 	export post = {}
 	export statistics = null
 	export showFlair = false
 	export selected = false
 	export select = () -> {}
-	scoreColor = RedBlueColorScale.get((post.score or 0) / statistics.largestScore)
-	expanded = false
+	expanded = !post.isStickiedInThisChannel
 	postElement = null
 	onMousedown = ->
 		expanded = true
 		select(post, postElement)
 
 {#if post instanceof Post}
-	button(class:stickied={post.isStickiedInThisChannel} class:expanded={expanded} class:selected={selected} on:mousedown={onMousedown} bind:this={postElement})
+	button(class:stickied={post.isStickiedInThisChannel} class:expanded={expanded} class:selected={selected} on:mouseenter={onMousedown} bind:this={postElement})
 		header
-			.score-light(style='color: {scoreColor}' title='{post.score} / {statistics.largestScore}') ▲
+			Score(score={post.score} range={statistics.scoreRange})
 			a.author(href='/u/{post.authorName}') {post.authorName}
 			Flair(flair={post.authorFlair} subredditName={post.subreddit.name})
 		.title
@@ -49,7 +48,7 @@ script.
 		footer
 			.post-flair
 				{#if showFlair}
-					Flair(flair={post.titleFlair} subredditName={post.subreddit.name})
+					Flair(flair={post.titleFlair} subredditName={post.subreddit.name} color={true})
 				{:else}
 					SubredditTag(subreddit={post.subreddit})
 			.tags
@@ -66,19 +65,12 @@ style.
 		flex-flow column nowrap
 		text-align left
 		gap 8px
-		background wheat
+		background transparent
 		color black
-		border 1px solid wheat
+		margin-bottom 80vh
 		&.stickied
 			background lightseagreen
 			color white
-		&:hover
-		&:focus
-			border-color black
-		&.selected
-			background white
-			color black
-			border 1px solid
 	header
 		display grid
 		grid-auto-flow column
@@ -86,10 +78,6 @@ style.
 		align-items center
 		gap 1ch
 		font 12px 'Iosevka Aile Web'
-	.score-light
-		height 1em
-		width 1em
-		border-radius 50%
 	.title
 		display flex
 		align-items flex-start

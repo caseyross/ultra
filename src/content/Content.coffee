@@ -35,7 +35,7 @@ export default class Content
 						@src = "https://redgifs.com/ifr/#{u.pathname.split('/')[2]}"
 					when 'clips.twitch.tv'
 						@type = 'embed'
-						@src = "https://clips.twitch.tv/embed?clip=#{u.pathname.split('/')[1]}&parent=localhost"
+						@src = "https://clips.twitch.tv/embed?clip=#{u.pathname.split('/')[1]}&parent=localhost&pa"
 					when 'twitch.tv'
 						@type = 'embed'
 						@src = "https://clips.twitch.tv/embed?clip=#{u.pathname.split('/')[3]}&parent=localhost"

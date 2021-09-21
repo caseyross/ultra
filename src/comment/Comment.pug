@@ -1,17 +1,16 @@
 script.
 	import Flair from '../media/Flair.pug'
 	import MoreComments from './MoreComments.pug'
-	import { RedBlueColorScale } from '../util/Color.coffee'
+	import Score from '../media/Score.pug'
 	import Comment from './Comment.coffee'
 	export comment = {}
 	export statistics = null
-	scoreColor = RedBlueColorScale.get((comment.score or 0) / statistics.largestScore)
 
 {#if comment instanceof Comment}
 	.comment-tree
 		.comment
 			header
-				.score-light(style='color: {scoreColor}' title='{comment.score} / {statistics.largestScore}') ▲
+				Score(score={comment.score} range={statistics.scoreRange} editDate={comment.editDate})
 				a.author(href='/u/{comment.authorName}') {comment.authorName}
 				Flair(flair={comment.authorFlair} subredditName={comment.subredditName})
 			.body
@@ -32,10 +31,6 @@ style.
 		align-items center
 		gap 1ch
 		font 12px 'Iosevka Aile Web'
-	.score-light
-		height 1em
-		width 1em
-		border-radius 50%
 	.body
 		margin-top 1em
 		width 54ch

@@ -1,0 +1,60 @@
+.md
+	word-break break-word
+	.md-spoiler-text
+		background black
+		color black
+		&:focus, &:hover
+			background initial
+			color initial
+	& > * + *
+		margin 0.5em 0 0 0
+	a
+		color dodgerblue
+		text-decoration none
+		&:hover
+			background steelblue
+			color white
+	blockquote
+		margin 0
+		padding 0.5em 1em
+		background rgba(0,0,0,0.1)
+		color gray
+		& > * + *
+			margin 0.5em 0 0 0
+	code
+		background gainsboro
+		font 12px monospace
+	h1, h2, h3, h4, h5, h6
+		letter-spacing -0.1em
+	h1
+		font-size 1.5em
+	h2
+		font-size 1.3333em
+	h3, h4, h5, h6
+		font-size 1.1666em
+	hr
+		margin-top 1em
+		width 3ch
+	ol
+		list-style decimal
+		padding-left 16px
+	pre
+		margin 0
+		display inline-block
+		white-space pre-wrap
+		overflow auto
+		padding 0.5em 1em
+		background gainsboro
+	table
+		table-layout fixed
+		width 100%
+		white-space pre
+		border-collapse collapse
+	td, th
+		overflow hidden
+		text-align left
+		border 1px solid rgba(0,0,0,0.1)
+		padding 0 1ch
+	ul
+		list-style circle
+		padding-left 16px

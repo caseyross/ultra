@@ -10,7 +10,7 @@ script.
 	export channel = new Channel('')
 	viewportW = window.innerWidth
 	postW = (viewportW / 2)
-	feedW = 536
+	feedW = 736
 	contentW = switch
 		when viewportW > 2560 then 1080
 		when viewportW > 1920 then 854
@@ -18,13 +18,15 @@ script.
 	feedContainerElement = null
 	selection = null
 	select = (item, itemElement) ->
-		selection = item
+		if selection isnt item
+			selection = item
 		###
 		feedContainerElement.scrollTo
 			left: 0
 			top: itemElement.offsetTop - 64
 			behavior: 'smooth'
 		###
+		console.log selection
 
 svelte:head
 	title {channel.name}
@@ -38,15 +40,16 @@ svelte:head
 		nav
 			section
 			section
-	section.hide-scrollbar#feed(bind:this={feedContainerElement})
-		{#if channel.type === 'subreddit'}
-			SubredditFilters(subredditName={channel.name} sort={channel.sort})
-		{#await channel.getItems(10) then items}
+	{#await channel.getItems(10) then items}
+		section.hide-scrollbar#feed(bind:this={feedContainerElement})
+			{#if channel.type === 'subreddit'}
+				SubredditFilters(subredditName={channel.name} sort={channel.sort})
 			Feed(items={items} selection={selection} select={select} showFlair={channel.type === 'subreddit'})
-	section.hide-scrollbar#post
-		{#if selection}
-			{#await selection.comments then comments}
-				Comments(comments={comments} w={postW})
+		section.hide-scrollbar#post
+			{#each items as item}
+				{#await item.comments then comments}
+					.comments(class:opaque={selection === item})
+						Comments(comments={comments} w={postW})
 
 style.
 	.channel
@@ -74,6 +77,7 @@ style.
 	#post
 		height 100%
 		overflow auto
+		background hsl(42 36 91)
 		background hsl(36 100 92)
 	nav
 		height 100%
@@ -86,3 +90,13 @@ style.
 	#post
 		padding 64px 0
 		padding-left 3em
+		position relative
+	.comments
+		position absolute
+		top 0
+		left 0
+		width 100%
+		height 100%
+		visibility hidden
+	.opaque
+		visibility visible

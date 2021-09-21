@@ -1,4 +1,6 @@
-import './global.styl'
+import './base.styl'
+import './md.styl'
+import './util.styl'
 import Website from './Website.pug'
 
 new Website
