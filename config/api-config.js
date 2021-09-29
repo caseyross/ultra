@@ -1,0 +1,2 @@
+export const REDDIT_LOGIN_CALLBACK_URL = window.location.hostname
+export const REDDIT_LOGIN_URL = ({ redirect = '/' }) => "https://www.reddit.com/api/v1/authorize?response_type=code&duration=permanent&scope=edit,flair,history,identity,mysubreddits,privatemessages,read,report,save,submit,subscribe,vote,wikiread&client_id=#{REDDIT_APP_ID}&redirect_uri=#{REDDIT_LOGIN_CALLBACK_URL}&state=#{redirect}"

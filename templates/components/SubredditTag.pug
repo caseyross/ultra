@@ -1,0 +1,15 @@
+script.
+	export subreddit = null
+
+a(href='/r/{subreddit.name}')
+	span {subreddit.name}
+	img(src={subreddit.iconUrl} alt='')
+
+style.
+	a
+		display inline-flex
+		align-items center
+	img
+		box-sizing content-box
+		height 32px
+		border-radius (@height / 2)

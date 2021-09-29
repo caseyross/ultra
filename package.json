@@ -20,7 +20,7 @@
 		"webpack-dev-server": "^4.2.1"
 	},
 	"scripts": {
-		"dev": "webpack serve --port 8080 --config webpack.config.dev.js",
-		"prod": "webpack --config webpack.config.prod.js"
+		"dev": "webpack serve --port 8080 --config ./config/webpack-config-dev.js",
+		"build": "webpack --config ./config/webpack-config.js"
 	}
 }

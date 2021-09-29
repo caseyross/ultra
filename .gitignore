@@ -1,7 +1,5 @@
 .yarn
 .yarnrc
-design
+build
+config/api-config-obscured.js
 node_modules
-spec
-static/licensed
-public

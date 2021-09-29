@@ -1,0 +1,37 @@
+script.
+	import Flair from './Flair.pug'
+	import Score from './Score.pug'
+	export comment = {}
+	export statistics = null
+
+.comment-tree
+	.comment
+		header
+			Score(score={comment.score} range={statistics.scoreRange} editDate={comment.editDate})
+			a.author(href='/u/{comment.authorName}') {comment.authorName}
+			Flair(flair={comment.authorFlair} subredditName={comment.subredditName})
+		.body
+			{@html comment.content}
+	{#if comment.replies.length}
+		.replies
+			{#each comment.replies as reply}
+				svelte:self(comment={reply} statistics={statistics})
+
+
+style.
+	.comment-tree
+		margin 2em 0
+	header
+		display grid
+		grid-auto-flow column
+		justify-content flex-start
+		align-items center
+		gap 1ch
+		font 12px 'Iosevka Aile Web'
+	.body
+		margin-top 1em
+		width 54ch
+	.replies
+		margin-left 4px
+		border-left 2px solid rgba(0,0,0,0.1)
+		padding-left 3em

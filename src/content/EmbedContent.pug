@@ -1,6 +1,0 @@
-script.
-	export content = {}
-	export w = 640
-
-{#if content.type === 'embed'}
-	iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Embed from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
