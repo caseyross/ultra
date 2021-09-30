@@ -1,0 +1,30 @@
+script.
+	import Feed from '../layouts/Feed.pug'
+	import Goto from '../layouts/Goto.pug'
+	import registerEventHandlers from '../../../functions/events/registerEventHandlers.coffee'
+	import registerTimers from '../../../functions/events/registerTimers.coffee'
+	import events from './events/events.coffee'
+	import timers from './events/timers.coffee'
+
+	export state = defaultState
+	registerEventHandlers(state, events)
+	registerTimers(state, timers)
+
+svelte:head
+	title reddit ({urlState.channel.name})
+Events(events={events})
+	{#await urlState.channel.source then source}
+		main(background={source.color1 || source.color2 || '#ffffff'})
+			{#await urlState.channel.getItems(10) then items}
+				Feed(items={items} labelSubreddits={urlState.channel.type !== 'subreddit'})
+	{#if showDirectory}
+		Goto
+	#ratelimit {ratelimitCount}
+
+style.
+	#ratelimit
+		position fixed
+		top 0
+		right 0
+		color blue
+		font bold 16px monospace

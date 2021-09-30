@@ -1,4 +1,4 @@
-import Flair from './fragments/Flair.coffee'
+import Flair from './Flair.coffee'
 import Listing from './Listing.coffee'
 
 export default class Comment

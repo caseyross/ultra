@@ -1,6 +1,6 @@
-import Flair from './fragments/Flair.coffee'
+import Flair from './Flair.coffee'
 import Subreddit from './Subreddit.coffee'
-import embeds from '../integrations/embeds.js'
+import embeds from '../config/integrations/embeds.js'
 
 export default class Post
 
