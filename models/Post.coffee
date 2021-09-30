@@ -1,6 +1,7 @@
 import Flair from './Flair.coffee'
 import Subreddit from './Subreddit.coffee'
 import embeds from '../config/integrations/embeds.js'
+import { getPostComments } from '../functions/api/API.coffee'
 
 export default class Post
 

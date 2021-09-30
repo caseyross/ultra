@@ -4,6 +4,6 @@ export default {
 	channelId: '/'
 	postId: ''
 	ratelimitCount: 0
-	showDirectory: false
+	showMenu: false
 	votes: new Map()
 }

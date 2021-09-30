@@ -1,8 +1,9 @@
-import './libraries/environment/Array.coffee'
-import './libraries/environment/Date.coffee'
-import './libraries/environment/String.coffee'
-import './libraries/environment/window.coffee'
-import URLState from './models/URLState.coffee'
+import '../../../functions/Array.coffee'
+import '../../../functions/Date.coffee'
+import '../../../functions/String.coffee'
+import '../../../functions/window.coffee'
+import stateFromURL from '../../../functions/url/stateFromURL.coffee'
+import defaultState from './defaultState.coffee'
 
 window.state = {
 	...defaultState,

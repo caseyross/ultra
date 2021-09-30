@@ -1,11 +1,11 @@
 import {
 	getFrontpagePosts,
 	getMultiredditPosts,
-	getSubreddit,
+	getSubredditInfo,
 	getSubredditPosts,
-	getUser,
+	getUserInfo,
 	getUserSubmissions
-} from '../libraries/API.coffee'
+} from '../functions/api/API.coffee'
 
 # A channel represents the union of two related things that are, for practical reasons, separated in the Reddit API:
 # 1. A Reddit object (generally a subreddit or user account)
@@ -28,7 +28,7 @@ export default class Channel
 					else
 						@type = 'subreddit'
 						@name = b
-						@source = getSubreddit(b)
+						@source = getSubredditInfo(b)
 				if c
 					@sort = c
 					if d
@@ -38,7 +38,7 @@ export default class Channel
 			when 'u'
 				@type = 'user'
 				@name = 'u/' + b
-				@source = getUser(b)
+				@source = getUserInfo(b)
 				switch c
 					when 'new', 'hot', 'top', 'controversial'
 						@sort = c

@@ -1,27 +1,66 @@
 script.
-	import Feed from '../layouts/Feed.pug'
-	import Goto from '../layouts/Goto.pug'
 	import registerEventHandlers from '../../../functions/events/registerEventHandlers.coffee'
 	import registerTimers from '../../../functions/events/registerTimers.coffee'
 	import events from './events/events.coffee'
 	import timers from './events/timers.coffee'
 
-	export state = defaultState
+	export state = window.state
 	registerEventHandlers(state, events)
 	registerTimers(state, timers)
+	
+	import Comment from '../components/Comment.pug'
+	import Post from '../components/Post.pug'
+	import SubredditTag from '../components/SubredditTag.pug'
+	import Goto from '../layouts/Goto.pug'
 
 svelte:head
-	title reddit ({urlState.channel.name})
-Events(events={events})
-	{#await urlState.channel.source then source}
-		main(background={source.color1 || source.color2 || '#ffffff'})
-			{#await urlState.channel.getItems(10) then items}
-				Feed(items={items} labelSubreddits={urlState.channel.type !== 'subreddit'})
-	{#if showDirectory}
-		Goto
-	#ratelimit {ratelimitCount}
+	title reddit ({state.channel.name})
+{#await state.channel.source then source}
+	main(background={source.color1 || source.color2 || '#ffffff'})
+		{#await state.channel.getItems(10) then items}
+			section.scroll-tall.no-scrollbar#feed
+				ol
+					{#each items as item}
+						li
+							{#if state.channel.type !== 'subreddit'}
+								SubredditTag(subreddit={item.subreddit})
+							{#if item instanceof PostModel}
+								Post(post={item} statistics={} selected={item === state.selection})
+							{#if item instanceof CommentModel}
+								Comment(comment={item} statistics={feedStatistics} selected={item === state.selection})
+			section.scroll-tall.no-scrollbar
+				{#if selection}
+					{#await selection.comments then comments}
+						.comments
+							{#each comments as comment}
+								Comment(comment={comment} statistics={new CommentStatistics(comments)})
+						.minimap
+{#if state.showMenu}
+	Goto
+#ratelimit {state.ratelimitCount}
 
 style.
+	main
+		height 100vh
+		width 100vw
+		overflow auto
+		display grid
+		grid-template-columns 1fr 1fr
+		background inherit
+	ol
+		display flex
+		flex-flow column nowrap
+		padding-bottom 90vh
+	.comments
+		display flex
+		flex-flow column nowrap
+		padding-right 160px
+	.minimap
+		position fixed
+		top 0
+		right 0
+		height 100%
+		width 80px
 	#ratelimit
 		position fixed
 		top 0

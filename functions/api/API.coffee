@@ -14,15 +14,15 @@ export getPopularSubreddits = ->
 	.then (subreddits) -> subreddits.filter (s) -> s.name isnt 'home'
 
 
-export getAccount = ->
+export getAccountInfo = ->
 	API.get
 		endpoint: '/api/v1/me'
-export getUser = (name) ->
+export getUserInfo = (name) ->
 	API.get
 		endpoint: '/user/' + name + '/about'
 		cache: 'u/' + name + '/about'
 		automodel: true # User
-export getSubreddit = (name) ->
+export getSubredditInfo = (name) ->
 	API.get
 		endpoint: '/r/' + name + '/about'
 		cache: 'r/' + name + '/information'

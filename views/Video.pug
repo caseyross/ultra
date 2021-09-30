@@ -1,10 +1,9 @@
 script.
+	import { onMount } from 'svelte'
 	export data = null
 	export w = 640
 	video = null
 	audio = null
-
-	import { onMount } from 'svelte'
 	onMount () =>
 		video.addEventListener 'play', (e) ->
 			audio.play()

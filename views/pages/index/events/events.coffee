@@ -6,7 +6,7 @@ export default
 				stateFromURL()
 			}
 	scroll:
-		'.feed': TODO
+		'#feed': TODO
 		'.comments': TODO
 	click:
 		'a': (state, event) ->
@@ -50,7 +50,7 @@ export default
 				when 'Escape':
 					return {
 						...state
-						showDirectory: !state.showDirectory
+						showMenu: !state.showMenu
 					}
 				else
 					return state
