@@ -8,35 +8,37 @@ script.
 	registerEventHandlers(state, events)
 	registerTimers(state, timers)
 	
-	import Comment from '../components/Comment.pug'
-	import Post from '../components/Post.pug'
-	import SubredditTag from '../components/SubredditTag.pug'
-	import Goto from '../layouts/Goto.pug'
+	import Comment from '../../Comment.pug'
+	import GoTo from '../../GoTo.pug'
+	import Post from '../../Post.pug'
+	import SubredditTag from '../../SubredditTag.pug'
 
 svelte:head
 	title reddit ({state.channel.name})
 {#await state.channel.source then source}
 	main(background={source.color1 || source.color2 || '#ffffff'})
 		{#await state.channel.getItems(10) then items}
-			section.scroll-tall.no-scrollbar#feed
-				ol
-					{#each items as item}
-						li
-							{#if state.channel.type !== 'subreddit'}
-								SubredditTag(subreddit={item.subreddit})
-							{#if item instanceof PostModel}
-								Post(post={item} statistics={} selected={item === state.selection})
-							{#if item instanceof CommentModel}
-								Comment(comment={item} statistics={feedStatistics} selected={item === state.selection})
-			section.scroll-tall.no-scrollbar
-				{#if selection}
-					{#await selection.comments then comments}
-						.comments
-							{#each comments as comment}
-								Comment(comment={comment} statistics={new CommentStatistics(comments)})
-						.minimap
+			{#await computeStats(items) then feedStats}
+				section.scroll-tall.no-scrollbar#feed
+					ol
+						{#each items as item}
+							li
+								{#if state.channel.type !== 'subreddit'}
+									SubredditTag(subreddit={item.subreddit})
+								{#if item instanceof PostModel}
+									Post(post={item} stats={feedStats} selected={item === state.selection})
+								{#if item instanceof CommentModel}
+									Comment(comment={item} stats={feedStats} selected={item === state.selection})
+				section.scroll-tall.no-scrollbar
+					{#if selection}
+						{#await selection.comments then comments}
+							{#await computeStats(comments) then commentStats}
+								.comments
+									{#each comments as comment}
+										Comment(comment={comment} stats={commentStats})
+								.minimap
 {#if state.showMenu}
-	Goto
+	GoTo
 #ratelimit {state.ratelimitCount}
 
 style.

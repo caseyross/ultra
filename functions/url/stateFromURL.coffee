@@ -1,16 +1,7 @@
 export default stateFromURL = ->
 	state =
-		loginCode: ''
-		loginError: false
 		channelId: '/'
 		postId: ''
-	# Check for completed or errored login
-	p = new URLSearchParams(location.search)
-	if p.has('error')
-		switch p.get('error')
-			state.loginError = true
-	else if p.has('code')
-		state.loginCode = p.get('code')
 	# Parse channel and post status
 	[ _, a, b, c, d, e, f ] = location.pathname.split('/').map((x) -> x?.toLowerCase())
 	if a.length > 1

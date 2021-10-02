@@ -1,32 +1,34 @@
-
-
-
-
-export getSubscribedSubreddits = ->
+export getMySubscribedSubreddits = ->
 	API.get
 		endpoint: '/subreddits/mine/subscriber'
 		limit: 100
 		automodel: true # Array[Subreddit]
+
 export getPopularSubreddits = ->
 	API.get
 		endpoint: '/subreddits/popular'
 		automodel: true # Array[Subreddit]
-	.then (subreddits) -> subreddits.filter (s) -> s.name isnt 'home'
+	.then (subreddits) ->
+		subreddits.filter (s) ->
+			s.name isnt 'home'
 
 
-export getAccountInfo = ->
+export getMyInfo = ->
 	API.get
 		endpoint: '/api/v1/me'
+
 export getUserInfo = (name) ->
 	API.get
 		endpoint: '/user/' + name + '/about'
 		cache: 'u/' + name + '/about'
 		automodel: true # User
+
 export getSubredditInfo = (name) ->
 	API.get
 		endpoint: '/r/' + name + '/about'
 		cache: 'r/' + name + '/information'
 		automodel: true # Subreddit
+
 export getSubredditEmojis = (name) ->
 	API.get
 		endpoint: '/api/v1/' + name + '/emojis/all'
@@ -41,6 +43,7 @@ export getSubredditEmojis = (name) ->
 					emojis.push(name + ':' + id)
 		if emojis.length
 			LS['emojis@' + name] = emojis.join(',')
+
 export getSubredditWidgets = (name) ->
 	API.get
 		endpoint: '/r/' + name + '/api/widgets'
@@ -63,6 +66,7 @@ export getUserSubmissions = (name, { filter = 'overview', sort = 'new', quantity
 		sr_detail: true
 		cache: ['u', name, filter, sort, quantity].join('/')
 		automodel: true # Array[Post/Comment]
+
 export getSubredditPosts = (name, { sort = 'hot', quantity }) ->
 	API.get
 		endpoint: '/r/' + name + '/' + sort.split('/')[0]
@@ -71,6 +75,7 @@ export getSubredditPosts = (name, { sort = 'hot', quantity }) ->
 		sr_detail: true
 		cache: ['r', name, sort, quantity].join('/')
 		automodel: true # Array[Post]
+
 export getMultiredditPosts = (namespace, name, { sort = 'hot', quantity }) ->
 	if namespace is 'r'
 		getSubredditPosts(name, { sort, quantity })
@@ -83,6 +88,7 @@ export getMultiredditPosts = (namespace, name, { sort = 'hot', quantity }) ->
 			cache: ['m', namespace, name, sort, quantity].join('/')
 			automodel: true # Array[Post]
 		.then (x) -> console.log x
+
 export getFrontpagePosts = ({ sort = 'best', quantity }) ->
 	API.get
 		endpoint: '/' + sort.split('/')[0]
@@ -100,12 +106,14 @@ export getPost = (id) ->
 	.then ([x, y]) ->
 		# The post's comments are handled separately.
 		new Listing(x)[0] # Post
+
 export getPostComments = (id) ->
 	API.get
 		endpoint: '/comments/' + id
 		cache: 't3_' + id
 	.then ([x, y]) ->
 		new Listing(y) # Array[Comment/MoreComments]
+
 export getMoreComments = (postId, commentIds) ->
 	API.get
 		endpoint: '/api/morechildren'
@@ -118,29 +126,25 @@ export upvote = (fullname) ->
 		endpoint: '/api/vote'
 		id: fullname
 		dir: 1
-export upvote = (fullname) ->
+
+export unvote = (fullname) ->
 	API.post
 		endpoint: '/api/vote'
-		id: 't1_' + this.id
+		id: fullname
 		dir: 0
-export upvote = (fullname) ->
+
+export downvote = (fullname) ->
 	API.post
 		endpoint: '/api/vote'
-		id: 't1_' + this.id
+		id: fullname
 		dir: -1
-export upvote = (fullname) ->
+
+export save = (fullname) ->
 	API.post
 		endpoint: '/api/save'
-		id: 't1_' + this.id
-export upvote = (fullname) ->
+		id: fullname
+
+export unsave = (fullname) ->
 	API.post
 		endpoint: '/api/unsave'
-		id: 't1_' + this.id
-export upvote = (fullname) ->
-	API.post
-		endpoint: '/api/hide'
-		id: 't1_' + this.id
-export upvote = (fullname) ->
-	API.post
-		endpoint: '/api/unhide'
-		id: 't1_' + this.id
+		id: fullname

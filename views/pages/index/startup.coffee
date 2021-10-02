@@ -5,6 +5,9 @@ import '../../../functions/window.coffee'
 import stateFromURL from '../../../functions/url/stateFromURL.coffee'
 import defaultState from './defaultState.coffee'
 
+if foundCredentialsVoucher
+	invalidateCredentials()
+	
 window.state = {
 	...defaultState,
 	...stateFromUrl()
