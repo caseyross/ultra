@@ -10,7 +10,7 @@ export default
 		'.comments': TODO
 	click:
 		'a': (state, event) ->
-			if (event.target.origin is location.origin) and (e.buttons is 0) and not (e.altKey or e.ctrlKey or e.metaKey)
+			if (event.target.origin is window.location.origin) and (e.buttons is 0) and not (e.altKey or e.ctrlKey or e.metaKey)
 				event.preventDefault()
 				history.pushState({}, '', event.target.href)
 				return {
@@ -37,7 +37,7 @@ export default
 		'.comment': TODO
 	keydown:
 		'a': (state, event) ->
-			if (event.key is 'Enter') and (event.target.origin is location.origin)
+			if (event.key is 'Enter') and (event.target.origin is window.location.origin)
 				event.preventDefault()
 				history.pushState({}, '', event.target.href)
 				return {

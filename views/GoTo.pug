@@ -45,9 +45,9 @@ script.
 				matches = matchCharactersToStrings(query, destinations)
 		else if e.key is 'Enter'
 			if e.shiftKey
-				location.pathname = if query[0] is '/' then query.join('') else '/' + query.join('')
+				window.location.pathname = if query[0] is '/' then query.join('') else '/' + query.join('')
 			else if matches.length > 0
-				location.pathname = '/' + matches[selectedMatch].string
+				window.location.pathname = '/' + matches[selectedMatch].string
 		query = query
 		
 {#if query.length > 0}

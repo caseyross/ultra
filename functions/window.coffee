@@ -1,1 +1,1 @@
-window.LS = window.localStorage
+window.Storage = window.localStorage

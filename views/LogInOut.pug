@@ -1,7 +1,7 @@
 script.
-	import { invalidateCredentials, requestCredentialsVoucher } from '../functions/api/internals/authentication.coffee'
+	import { getCredentialsAuthority, requestLogin } from '../functions/api/authentication.coffee'
 
-{#if Storage.REFRESH_TOKEN}
-	button(on:click={() => invalidateCredentials()}) Log out
+{#if getCredentialsAuthority() === 'user'}
+	a(href='/?logout=true') Log out
 {:else}
-	button(on:click={() => requestCredentialsVoucher()}) Log in
+	button(on:click={() => requestLogin()}) Log in

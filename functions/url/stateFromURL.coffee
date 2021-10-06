@@ -3,7 +3,7 @@ export default stateFromURL = ->
 		channelId: '/'
 		postId: ''
 	# Parse channel and post status
-	[ _, a, b, c, d, e, f ] = location.pathname.split('/').map((x) -> x?.toLowerCase())
+	[ _, a, b, c, d, e, f ] = window.location.pathname.split('/').map((x) -> x?.toLowerCase())
 	if a.length > 1
 		[ a, b, c, d, e, f ] = [ 'r', a, b, c, d, e ] # impllcit "r/"
 	if c is 'comments' or c is 'post' and d

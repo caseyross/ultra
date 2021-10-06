@@ -1,18 +1,24 @@
-import { cacheFunctionAs } from '../../cache.coffee'
+import { cacheFunctionAs } from '../cache.coffee'
 import { credentialsValidAt, renewCredentials } from './authentication.coffee'
-import Listing from '../../../models/Listing.coffee'
+import Listing from '../../models/Listing.coffee'
 
 class RateLimitError extends Error
 	constructor: (message) ->
 		super(message)
 		@name = 'RateLimitError'
 
+updateRatelimitHistory = ->
+	if Storage.RATELIMIT_HIS
+markRateLimit = ->
+
+rateLimitWaitTime = (requestCount) ->
+	if not Storage.RATELIMIT_HISTORY
 export checkRatelimit = ->
-	current = if LS.calls then LS.calls.split(',') else []
+	current = if Storage.RATELIMIT_HISTORY then Storage.RATELIMIT_HISTORY.split(',') else []
 	revised = current.filter((x) -> Number(x) > Date.now())
 	if revised.length > 600 then return Number(revised[0]) - Date.now() # Prohibit having > 600 requests on quota at any time.
 	revised.push(Date.now() + Date.minutes(10)) # Requests occupy ratelimit quota space for 10 minutes after being sent.
-	LS.calls = revised.join()
+	Storage.RATELIMIT_HISTORY = revised.join()
 	return 0
 
 request = ({ method, path, body }) ->
