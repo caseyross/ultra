@@ -2,7 +2,7 @@ script.
 	import Flair from './Flair.pug'
 	import Score from './Score.pug'
 	export post = {}
-	export statistics = null
+	export scoreRange = [0, 0]
 	export selected = false
 	w = 480
 	galleryExpanded = content.images?.length < 2
@@ -11,7 +11,7 @@ article
 	{#if post.isStickiedInThisChannel}
 		span.sticky-tag STICKY
 	header
-		Score(score={post.score} range={statistics.scoreRange})
+		Score(score={post.score} range={scoreRange})
 		a.author(href='/u/{post.authorName}') {post.authorName}
 		Flair(flair={post.authorFlair} subredditName={post.subreddit.name})
 	.title

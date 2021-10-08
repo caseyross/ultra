@@ -1,9 +1,8 @@
 export default {
-	loginCode: ''
-	loginError: false
+	ratelimitUsed: 0
 	channelId: '/'
 	postId: ''
-	ratelimitCount: 0
+	selection: null
 	showMenu: false
 	votes: new Map()
 }

@@ -1,7 +1,7 @@
-const CONFIG = require('./webpack-config.js')
+const webpackConfig = require('./webpack-config.js')
 
 module.exports = {
-	...CONFIG,
+	...webpackConfig,
 	mode: 'development',
 	devServer: {
 		client: {
@@ -16,7 +16,7 @@ module.exports = {
 		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
 		https: true,
 		static: {
-			directory: path.join(__dirname, 'build'),
+			directory: '/build',
 		},
 	},
 }

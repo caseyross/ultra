@@ -1,6 +1,6 @@
-import '../styles/base.styl'
-import '../styles/md.styl'
-import '../styles/util.styl'
+import '../../styles/base.styl'
+import '../../styles/md.styl'
+import '../../styles/util.styl'
 import Index from './Index.pug'
 
 new Index

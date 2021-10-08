@@ -1,5 +1,5 @@
 script.
-	import { getCredentialsAuthority, requestLogin } from '../functions/api/authentication.coffee'
+	import { getCredentialsAuthority, requestLogin } from '../scripts/api/primitives/authentication.coffee'
 
 {#if getCredentialsAuthority() === 'user'}
 	a(href='/?logout=true') Log out

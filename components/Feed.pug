@@ -1,0 +1,27 @@
+script.
+	export channelType = 'frontpage'
+	export items = []
+	scoreRange = [0, 0]
+	computeStats = (items) =>
+		for items in items
+			if item.score < scoreRange[0]
+				scoreRange[0] = item.score
+			else if item.score > scoreRange[1]
+				scoreRange[1] = item.score
+	computeStats(items)
+
+ol
+	{#each items as item}
+		li
+			{#if channelType !== 'subreddit'}
+				SubredditTag(subreddit={item.subreddit})
+			{#if item instanceof PostModel}
+				Post(post={item} scoreRange={scoreRange} selected={item === state.selection})
+			{#if item instanceof CommentModel}
+				Comment(comment={item} scoreRange={scoreRange} selected={item === state.selection})
+
+style.
+	ol
+		display flex
+		flex-flow column nowrap
+		padding-bottom 90vh

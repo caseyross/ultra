@@ -1,3 +1,6 @@
+import stateFromURL from '../state/stateFromURL.coffee'
+import { upvote } from '../../../scripts/api/API.coffee'
+
 export default
 	popstate:
 		'*': (state, event) ->

@@ -1,8 +1,16 @@
-import { CLIENT_ID } from '../../config/api-config-obscured.js'
-import { REDIRECT_URI, SCOPES } from '../../config/api-config.js'
+import { REDDIT_CLIENT_ID } from '../../../config/api-config-obscured.js'
+import { OAUTH_REDIRECT_URI, OAUTH_TARGET_SCOPES } from '../../../config/api-config.js'
 
-export credentialsValidAt = (timestamp) ->
-	return Storage.ACCESS_TOKEN and Number(Storage.ACCESS_TOKEN_VALID_UNTIL) > timestamp
+export getCredentialsTimeLeft = ->
+	if not Storage.ACCESS_TOKEN
+		return 0
+	validityStartDate = Number(Storage.ACCESS_TOKEN_VALIDITY_PERIOD_START)
+	if not Number.isFinite(validityStartDate)
+		return 0
+	validityPeriod = Number(Storage.ACCESS_TOKEN_VALIDITY_PERIOD)
+	if not Number.isFinite(validityPeriod)
+		return 0
+	return validityStartDate + validityPeriod - Date.now()
 
 export renewCredentials = ->
 	# In the event that multiple instances of the application are instantiated simultaneously, we don't want them competing to acquire the credentials, which are shared.
@@ -28,7 +36,7 @@ export renewCredentials = ->
 					{
 						grant_type: 'authorization_code'
 						code: code
-						redirect_uri: REDIRECT_URI
+						redirect_uri: OAUTH_REDIRECT_URI
 					}
 				# Request for credentials for a user who's already "logged in" on our client.
 				when Storage.REFRESH_TOKEN
@@ -47,7 +55,8 @@ export renewCredentials = ->
 		response.json()
 	.then (response) ->
 		if isFinite(response.expires_in) and response.token_type and response.access_token
-			Storage.ACCESS_TOKEN_VALID_UNTIL = Date.now() + Date.seconds(response.expires_in)
+			Storage.ACCESS_TOKEN_VALIDITY_PERIOD_START = Date.now()
+			Storage.ACCESS_TOKEN_VALIDITY_PERIOD = Date.seconds(response.expires_in)
 			Storage.ACCESS_TOKEN = response.token_type + ' ' + response.access_token
 			if response.refresh_token
 				Storage.REFRESH_TOKEN = response.refresh_token
@@ -67,22 +76,23 @@ ensureCredentialsRenewal = (f) ->
 	else
 		return f()
 
-expireCredentials = ->
+export invalidateCredentials = ->
 	delete Storage.ACCESS_TOKEN
-	delete Storage.ACCESS_TOKEN_VALID_UNTIL
+	delete Storage.ACCESS_TOKEN_VALIDITY_PERIOD
+	delete Storage.ACCESS_TOKEN_VALIDITY_PERIOD_START
 	delete Storage.REFRESH_TOKEN
  
 export requestLogin = ->
-	Storage.LOGIN_ECHO = window.location.pathname + ',' + Math.trunc(Number.MAX_VALUE * Math.random())
-	p = new URLSearchParams(
+	Storage.LOGIN_ECHO = window.location.pathname + '*' + Math.trunc(Number.MAX_VALUE * Math.random())
+	authorizationParams = new URLSearchParams(
 		response_type: 'code',
 		duration: 'permanent',
-		scope: SCOPES.join(),
-		client_id: CLIENT_ID,
-		redirect_uri: REDIRECT_URI,
+		scope: OAUTH_TARGET_SCOPES.join(),
+		client_id: REDDIT_CLIENT_ID,
+		redirect_uri: OAUTH_REDIRECT_URI,
 		state: Storage.LOGIN_ECHO
 	)
-	window.location.href = 'https://www.reddit.com/api/v1/authorize?' + p.toString
+	window.location.href = 'https://www.reddit.com/api/v1/authorize?' + authorizationParams.toString
 
 # No specific logout function; simply use query parameter "logout" on any page load to logout.
 
@@ -91,12 +101,12 @@ export processLoginOrLogout = ->
 	switch
 		# Successful login
 		when p.has('code') and p.get('state') is Storage.LOGIN_ECHO
-			expireCredentials()
+			invalidateCredentials()
 			delete Storage.LOGIN_ECHO
 			Storage.LOGIN_VOUCHER = p.get('code')
 			cleanUrl = {
 				...window.location
-				pathname: p.get('state').split(',')[0]
+				pathname: p.get('state').split('*')[0]
 				search: ''
 			}
 			history.replaceState({}, '', cleanUrl.href)
@@ -105,7 +115,7 @@ export processLoginOrLogout = ->
 			console.log p.get('error')
 		# Logout
 		when p.has('logout')
-			expireCredentials()
+			invalidateCredentials()
 
 export getCredentialsAuthority = ->
 	switch

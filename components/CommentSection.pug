@@ -1,0 +1,30 @@
+script.
+	export comments = []
+	scoreRange = [0, 0]
+	computeStats = (comments) =>
+		if comments?.length
+			for comment in comments
+				if comment.score < scoreRange[0]
+					scoreRange[0] = comment.score
+				else if comment.score > scoreRange[1]
+					scoreRange[1] = comment.score
+				computeStats(comment.replies)
+	computeStats(comments)
+
+.comment-section
+	{#each comments as comment}
+		Comment(comment={comment} scoreRange={scoreRange})
+	.minimap
+
+style.
+	.comment-section
+		position relative
+		display flex
+		flex-flow column nowrap
+		padding-right 160px
+	.minimap
+		position absolute
+		top 0
+		right 0
+		height 100vh
+		width 80px

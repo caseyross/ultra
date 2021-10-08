@@ -1,11 +1,11 @@
 import {
-	getFrontpagePosts,
-	getMultiredditPosts,
-	getSubredditInfo,
-	getSubredditPosts,
-	getUserInfo,
-	getUserSubmissions
-} from '../functions/api/API.coffee'
+	fetchFrontpagePosts,
+	fetchMultiredditPosts,
+	fetchSubredditInfo,
+	fetchSubredditPosts,
+	fetchUserInfo,
+	fetchUserSubmissions
+} from '../scripts/api/API.coffee'
 
 # A channel represents the union of two related things that are, for practical reasons, separated in the Reddit API:
 # 1. A Reddit object (generally a subreddit or user account)
@@ -28,7 +28,7 @@ export default class Channel
 					else
 						@type = 'subreddit'
 						@name = b
-						@source = getSubredditInfo(b)
+						@source = fetchSubredditInfo(b)
 				if c
 					@sort = c
 					if d
@@ -38,7 +38,7 @@ export default class Channel
 			when 'u'
 				@type = 'user'
 				@name = 'u/' + b
-				@source = getUserInfo(b)
+				@source = fetchUserInfo(b)
 				switch c
 					when 'new', 'hot', 'top', 'controversial'
 						@sort = c
@@ -53,14 +53,15 @@ export default class Channel
 									@sort = d + '/' + e
 						else
 							@sort = 'new'
-
-	getItems: (quantity) =>
+		@items = @fetchItems(10)
+		
+	fetchItems: (quantity) =>
 		switch @type
 			when 'frontpage'
-				getFrontpagePosts({ @sort, quantity })
+				fetchFrontpagePosts({ @sort, quantity })
 			when 'subreddit'
-				getSubredditPosts(@name, { @sort, quantity })
+				fetchSubredditPosts(@name, { @sort, quantity })
 			when 'multireddit'
-				getMultiredditPosts(@namespace, @name, { @sort, quantity })
+				fetchMultiredditPosts(@namespace, @name, { @sort, quantity })
 			when 'user'
-				getUserSubmissions(@name, { @filter, @sort, quantity })
+				fetchUserSubmissions(@name, { @filter, @sort, quantity })
