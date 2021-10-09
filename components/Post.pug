@@ -35,7 +35,7 @@ article
 								figcaption {image.caption.t}
 									{#if image.caption.u}
 										a(href={image.caption.u}) {image.caption.u}
-				{#if !galleryExpanded}
+				{#if content.images.length > 1 && !galleryExpanded}
 					button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...
 			{#if content.type === 'video'}
 				Video(data={content.video} w={w})

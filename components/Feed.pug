@@ -1,9 +1,9 @@
 script.
 	import CommentModel from '../models/Comment.coffee'
 	import PostModel from '../models/Post.coffee'
-	import Comment from '../components/Comment.pug'
-	import Post from '../components/Post.pug'
-	import SubredditTag from '../components/SubredditTag.pug'
+	import Comment from './Comment.pug'
+	import Post from './Post.pug'
+	import SubredditTag from './SubredditTag.pug'
 	export channelType = 'frontpage'
 	export items = []
 	export selection = null
@@ -19,7 +19,7 @@ script.
 ol
 	{#each items as item}
 		li
-			{#if channelType !== 'subreddit'}
+			{#if channelType !== 'subreddit' && item.subreddit}
 				SubredditTag(subreddit={item.subreddit})
 			{#if item instanceof PostModel}
 				Post(post={item} scoreRange={scoreRange} selected={item === selection})

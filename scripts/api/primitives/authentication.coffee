@@ -14,13 +14,13 @@ export getCredentialsTimeLeft = ->
 
 export renewCredentials = ->
 	# In the event that multiple instances of the application are instantiated simultaneously, we don't want them competing to acquire the credentials, which are shared.
-	if Storage.RENEWING_CREDENTIALS
+	if Storage.RENEWING_CREDENTIALS is 'TRUE'
 		return Promise.race([
 			new Promise (f) -> waitForCredentialsRenewal(f)
 			new Promise (f) -> setTimeout(ensureCredentialsRenewal, Date.seconds(3 + 11 * Math.random()), f)
 		])
 	# The quickest instance takes out a lock on the renewal process. If it fails to complete it in a reasonable time, another instance force-resets the lock and takes its place.
-	Storage.RENEWING_CREDENTIALS = true
+	Storage.RENEWING_CREDENTIALS = 'TRUE'
 	# Reddit uses (mostly standard) OAuth 2 for authentication. (https://github.com/reddit-archive/reddit/wiki/OAuth2)
 	return fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
@@ -61,17 +61,17 @@ export renewCredentials = ->
 			if response.refresh_token
 				Storage.REFRESH_TOKEN = response.refresh_token
 	.finally ->
-		Storage.RENEWING_CREDENTIALS = false
+		Storage.RENEWING_CREDENTIALS = 'FALSE'
 
 waitForCredentialsRenewal = (f) ->
-	if Storage.CREDENTIAL_RENEWAL_IN_PROGRESS
+	if Storage.RENEWING_CREDENTIALS is 'TRUE'
 		return setTimeout(waitForCredentialsRenewal, 20, f)
 	else
 		return f()
 
 ensureCredentialsRenewal = (f) ->
-	if Storage.RENEWING_CREDENTIALS
-		Storage.RENEWING_CREDENTIALS = false
+	if Storage.RENEWING_CREDENTIALS is 'TRUE'
+		Storage.RENEWING_CREDENTIALS = 'FALSE'
 		return f(renewCredentials())
 	else
 		return f()
@@ -92,7 +92,7 @@ export requestLogin = ->
 		redirect_uri: OAUTH_REDIRECT_URI,
 		state: Storage.LOGIN_ECHO
 	)
-	window.location.href = 'https://www.reddit.com/api/v1/authorize?' + authorizationParams.toString
+	window.location.href = 'https://www.reddit.com/api/v1/authorize?' + authorizationParams.toString()
 
 # No specific logout function; simply use query parameter "logout" on any page load to logout.
 
@@ -104,18 +104,16 @@ export processLoginOrLogout = ->
 			invalidateCredentials()
 			delete Storage.LOGIN_ECHO
 			Storage.LOGIN_VOUCHER = p.get('code')
-			cleanUrl = {
-				...window.location
-				pathname: p.get('state').split('*')[0]
-				search: ''
-			}
-			history.replaceState({}, '', cleanUrl.href)
+			returnURL = window.location.origin + p.get('state').split('*')[0]
+			history.replaceState({}, '', returnURL)
 		# Failed login
 		when p.has('error')
 			console.log p.get('error')
 		# Logout
 		when p.has('logout')
 			invalidateCredentials()
+			returnURL = window.location.origin + window.location.pathname
+			history.replaceState({}, '', returnURL)
 
 export getCredentialsAuthority = ->
 	switch

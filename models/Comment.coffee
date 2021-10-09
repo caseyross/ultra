@@ -9,8 +9,8 @@ export default class Comment
 		postId: data.link_id[3..]
 		postTitle: data.link_title
 		postIsNSFW: data.over_18
-		subredditName: data.subreddit.toLowerCase()
-		subredditDisplayName: data.subreddit
+		subreddit:
+			name: data.subreddit.toLowerCase()
 		href: '/r/' + data.subreddit + '/post/' + data.link_id[3..] + '/comment/' + data.id
 		
 		authorName: data.author

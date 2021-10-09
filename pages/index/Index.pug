@@ -9,8 +9,19 @@ script.
 	import Feed from '../../components/Feed.pug'
 
 	export state = window.state
-	registerEventHandlers(state, events)
-	registerTimers(state, timers)
+	for eventName, handlers of events
+		window.addEventListener(
+			eventName,
+			(event) ->
+				for pattern, handler of handlers
+					if event.target.matches(pattern)
+						state = handler(state, event)
+		)
+	for interval, handler of timers
+		setInterval(
+			-> state = handler(state)
+			interval
+		)
 
 svelte:head
 	title reddit ({state.channel.name})

@@ -2,7 +2,7 @@ import { RATELIMIT_PERIOD, RATELIMIT_QUOTA } from '../../../config/api-config.js
 
 getTimeline = ->
 	if Storage.API_REQUEST_TIMELINE
-		timeline = Storage.API_REQUEST_TIMELINE.split(" ")
+		timeline = Storage.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
 	else
 		timeline = []
 	# Prune history for requests that no longer affect the ratelimit, and write updated timeline back.
@@ -35,4 +35,4 @@ export class RatelimitError extends Error
 		super()
 		@name = 'RatelimitError'
 		@waitTime = getRatelimitWaitTime(1)
-		@message = "Reddit limits how quickly we can send requests to its servers. We have to wait #{@waitTime // Date.seconds(1)}s before sending another request."
+		@message = "Reddit limits how quickly we can send requests to its servers. We have to wait #{@waitTime // Date.seconds(1)}s to request more data."

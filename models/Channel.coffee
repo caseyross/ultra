@@ -24,7 +24,7 @@ export default class Channel
 					when 'all', 'popular'
 						@type = 'multireddit'
 						@namespace = 'r'
-						@name = 'r/' + b
+						@name = b
 					else
 						@type = 'subreddit'
 						@name = b
@@ -37,7 +37,7 @@ export default class Channel
 					@sort = 'hot'
 			when 'u'
 				@type = 'user'
-				@name = 'u/' + b
+				@name = b
 				@source = fetchUserInfo(b)
 				switch c
 					when 'new', 'hot', 'top', 'controversial'
