@@ -9,7 +9,7 @@ request = ({ method, path, body }) ->
 		await renewCredentials()
 	# Check ratelimit status and fail if quota has been hit.
 	{ quota, used } = getRatelimitStatus()
-	if quota >= used
+	if used >= quota
 		return Promise.reject(new RatelimitError())
 	# OK to send.
 	countRatelimit(1)

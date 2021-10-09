@@ -26,7 +26,7 @@ export renewCredentials = ->
 		method: 'POST'
 		headers:
 			# HTTP Basic Auth
-			'Authorization': 'Basic ' + btoa(CLIENT_ID + ':')
+			'Authorization': 'Basic ' + btoa(REDDIT_CLIENT_ID + ':')
 		body: new URLSearchParams(
 			switch
 				# Request for credentials for a user who just authorized our client.

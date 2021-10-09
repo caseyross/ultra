@@ -3,16 +3,10 @@ script.
 	import events from './events/events.coffee'
 	import registerTimers from './events/registerTimers.coffee'
 	import timers from './events/timers.coffee'
-
-	import Comment as CommentModel from '../../models/Comment.coffee'
-	import Post as PostModel from '../../models/Post.coffee'
 	
-	import Comment from '../../components/Comment.pug'
 	import CommentSection from '../../components/CommentSection.pug'
 	import GoTo from '../../components/GoTo.pug'
 	import Feed from '../../components/Feed.pug'
-	import Post from '../../components/Post.pug'
-	import SubredditTag from '../../components/SubredditTag.pug'
 
 	export state = window.state
 	registerEventHandlers(state, events)
@@ -21,10 +15,10 @@ script.
 svelte:head
 	title reddit ({state.channel.name})
 {#await state.channel.source then source}
-	main(background={source.color1 || source.color2 || '#ffffff'})
+	main(style="background: {source.color1 || source.color2 || '#ffffff'}; color: {(source.color1 || source.color2 || '#ffffff').cColor()}")
 			section.scroll-tall.no-scrollbar
 				{#await state.channel.items then items}
-					Feed(channelType={state.channel.type} items={items})
+					Feed(channelType={state.channel.type} items={items} selection={state.selection})
 			section.scroll-tall.no-scrollbar
 				{#if state.selection}
 					{#await state.selection.comments then comments}

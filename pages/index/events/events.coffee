@@ -6,7 +6,7 @@ export default
 		'*': (state, event) ->
 			return {
 				...state
-				stateFromURL()
+				...stateFromURL()
 			}
 	scroll:
 		'#feed': TODO
@@ -18,7 +18,7 @@ export default
 				history.pushState({}, '', event.target.href)
 				return {
 					...state
-					stateFromURL()
+					...stateFromURL()
 				}
 			return state
 		'.post': (state, event) ->
@@ -45,19 +45,19 @@ export default
 				history.pushState({}, '', event.target.href)
 				return {
 					...state
-					stateFromURL()
+					...stateFromURL()
 				}
 			return state
 		'*': (state, event) ->
 			switch event.key
-				when 'Escape':
+				when 'Escape'
 					return {
 						...state
 						showMenu: !state.showMenu
 					}
 				else
 					return state
-
+					
 TODO = (state, event) ->
 	console.log event
 	return state

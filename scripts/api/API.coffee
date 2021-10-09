@@ -30,7 +30,7 @@ export fetchSubredditEmojis = (name) ->
 					[ _, _, _, id, name ] = x[category][emoji].url.split('/')
 					emojis.push(name + ':' + id)
 		if emojis.length
-			LS['emojis@' + name] = emojis.join(',')
+			Storage['emojis@' + name] = emojis.join(',')
 
 export fetchSubredditWidgets = (name) ->
 	get

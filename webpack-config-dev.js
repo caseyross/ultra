@@ -1,3 +1,4 @@
+const path = require('path')
 const webpackConfig = require('./webpack-config.js')
 
 module.exports = {
@@ -16,7 +17,7 @@ module.exports = {
 		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
 		https: true,
 		static: {
-			directory: '/build',
+			directory: path.join(__dirname, 'build'),
 		},
 	},
 }

@@ -1,11 +1,12 @@
 script.
 	import Flair from './Flair.pug'
+	import Image from './Image.pug'
 	import Score from './Score.pug'
+	import Video from './Video.pug'
 	export post = {}
 	export scoreRange = [0, 0]
-	export selected = false
 	w = 480
-	galleryExpanded = content.images?.length < 2
+	galleryExpanded = false
 
 article
 	{#if post.isStickiedInThisChannel}
@@ -57,7 +58,6 @@ style.
 		text-align left
 		gap 8px
 		background transparent
-		color black
 		margin-bottom 80vh
 	header
 		display grid

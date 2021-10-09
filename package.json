@@ -14,13 +14,12 @@
 		"stylus-loader": "^6.1.0",
 		"svelte": "^3.42.6",
 		"svelte-loader": "^3.1.2",
-		"svelte-preprocess": "^4.9.4",
 		"webpack": "^5.52.1",
 		"webpack-cli": "^4.8.0",
 		"webpack-dev-server": "^4.2.1"
 	},
 	"scripts": {
-		"dev": "webpack serve --port 8080 --config ./config/webpack-config-dev.js",
-		"build": "webpack --config ./config/webpack-config.js"
+		"dev": "webpack serve --port 8080 --config webpack-config-dev.js",
+		"build": "webpack --config webpack-config.js"
 	}
 }

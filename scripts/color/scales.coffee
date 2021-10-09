@@ -1,4 +1,4 @@
-import { HLSA, interpolateHLSA } from './HLSA.coffee'
+import HLSA, { interpolateHLSA } from './HLSA.coffee'
 
 # 
 red = new HLSA(8, 59, 100)

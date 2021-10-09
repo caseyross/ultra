@@ -1,6 +1,6 @@
 export default {
 	ratelimitUsed: 0
-	channelId: '/'
+	channel: null
 	postId: ''
 	selection: null
 	showMenu: false

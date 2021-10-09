@@ -54,7 +54,7 @@ export default class Channel
 						else
 							@sort = 'new'
 		@items = @fetchItems(10)
-		
+
 	fetchItems: (quantity) =>
 		switch @type
 			when 'frontpage'

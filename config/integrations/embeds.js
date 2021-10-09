@@ -9,11 +9,11 @@ export default {
 		}),
 	'clips.twitch.tv': url =>
 		({
-			src: `https://clips.twitch.tv/embed?clip=${url.pathname.split('/')[1]}&parent=${window.location.host}`
+			src: `https://clips.twitch.tv/embed?clip=${url.pathname.split('/')[1]}&parent=${window.location.hostname}`
 		}),
 	'twitch.tv': url =>
 		({
-			src: `https://clips.twitch.tv/embed?clip=${url.pathname.split('/')[3]}&parent=${window.location.host}`
+			src: `https://clips.twitch.tv/embed?clip=${url.pathname.split('/')[3]}&parent=${window.location.hostname}`
 		}),
 	'youtube.com': url =>
 		({

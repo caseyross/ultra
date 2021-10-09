@@ -35,9 +35,9 @@ Date::ago = ->
 		unit: 'y'
 
 # Syntactic sugar functions for millisecond-based date math.
-Date::seconds = (count) ->
+Date.seconds = (count) ->
 	1000 * count
-Date::minutes = (count) ->
+Date.minutes = (count) ->
 	1000 * 60 * count
-Date::hours = (count) ->
+Date.hours = (count) ->
 	1000 * 60 * 60 * count
