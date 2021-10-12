@@ -6,7 +6,6 @@ script.
 	import SubredditTag from './SubredditTag.pug'
 	export channelType = 'frontpage'
 	export items = []
-	export selection = null
 	scoreRange = [0, 0]
 	computeStats = (items) =>
 		for item in items
@@ -22,12 +21,12 @@ ol
 			{#if channelType !== 'subreddit' && item.subreddit}
 				SubredditTag(subreddit={item.subreddit})
 			{#if item instanceof PostModel}
-				Post(post={item} scoreRange={scoreRange} selected={item === selection})
+				Post(post={item} scoreRange={scoreRange})
 			{#if item instanceof CommentModel}
-				Comment(comment={item} scoreRange={scoreRange} selected={item === selection})
+				Comment(comment={item} scoreRange={scoreRange})
 
 style.
 	ol
 		display flex
 		flex-flow column nowrap
-		padding-bottom 90vh
+		align-items flex-end

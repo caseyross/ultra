@@ -1,8 +1,7 @@
 export default {
 	ratelimitUsed: 0
 	channel: null
-	postId: ''
-	selection: null
+	itemId: ''
 	showMenu: false
 	votes: new Map()
 }

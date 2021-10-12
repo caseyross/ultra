@@ -1,9 +1,14 @@
 import stateFromURL from '../state/stateFromURL.coffee'
 import { upvote } from '../../../scripts/api/API.coffee'
 
+TODO = (state, event) ->
+	Warn('Handler not implemented:', event)
+	return state
+
 export default
 	popstate:
 		'*': (state, event) ->
+			event.preventDefault()
 			return {
 				...state
 				...stateFromURL()
@@ -13,7 +18,7 @@ export default
 		'.comments': TODO
 	click:
 		'a': (state, event) ->
-			if (event.target.origin is window.location.origin) and (e.buttons is 0) and not (e.altKey or e.ctrlKey or e.metaKey)
+			if (event.target.origin is window.location.origin) and (event.buttons is 0) and not (event.altKey or event.ctrlKey or event.metaKey)
 				event.preventDefault()
 				history.pushState({}, '', event.target.href)
 				return {
@@ -35,6 +40,17 @@ export default
 				...state
 				votes: state.votes.set(fullname, 1)
 			}
+	mouseover:
+		'article': (state, event) ->
+			id = event.target.dataset.id
+			console.log id
+			if id and state.itemId isnt id
+				console.log 'select'
+				return {
+					...state
+					itemId: id
+				}
+			return state
 	contextmenu:
 		'.post': TODO
 		'.comment': TODO
@@ -57,7 +73,3 @@ export default
 					}
 				else
 					return state
-					
-TODO = (state, event) ->
-	console.log event
-	return state

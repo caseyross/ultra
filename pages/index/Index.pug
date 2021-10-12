@@ -1,25 +1,23 @@
 script.
-	import registerEventHandlers from './events/registerEventHandlers.coffee'
-	import events from './events/events.coffee'
-	import registerTimers from './events/registerTimers.coffee'
-	import timers from './events/timers.coffee'
-	
+	import events from './actions/events.coffee'
+	import timers from './actions/timers.coffee'
+
 	import CommentSection from '../../components/CommentSection.pug'
 	import GoTo from '../../components/GoTo.pug'
 	import Feed from '../../components/Feed.pug'
 
 	export state = window.state
-	for eventName, handlers of events
-		window.addEventListener(
-			eventName,
+	for name of events
+		`let handlers = events[name]`
+		window.addEventListener name,
 			(event) ->
-				for pattern, handler of handlers
-					if event.target.matches(pattern)
-						state = handler(state, event)
-		)
-	for interval, handler of timers
+				for pattern, action of handlers
+					if pattern is '*' or event.target.matches(pattern)
+						state = action(state, event)
+	for interval of timers
+		`let action = timers[interval]`
 		setInterval(
-			-> state = handler(state)
+			-> state = action(state)
 			interval
 		)
 
@@ -27,12 +25,12 @@ svelte:head
 	title reddit ({state.channel.name})
 {#await state.channel.source then source}
 	main(style="background: {source.color1 || source.color2 || '#ffffff'}; color: {(source.color1 || source.color2 || '#ffffff').cColor()}")
+		{#await state.channel.items then items}
+			section.scroll-tall.no-scrollbar#feed
+				Feed(channelType={state.channel.type} items={items})
 			section.scroll-tall.no-scrollbar
-				{#await state.channel.items then items}
-					Feed(channelType={state.channel.type} items={items} selection={state.selection})
-			section.scroll-tall.no-scrollbar
-				{#if state.selection}
-					{#await state.selection.comments then comments}
+				{#if items.some(x => x.id === state.itemId)}
+					{#await items.find(x => x.id === state.itemId).comments then comments}
 						CommentSection(comments={comments})
 {#if state.showMenu}
 	GoTo
@@ -42,9 +40,11 @@ style.
 	main
 		height 100vh
 		width 100vw
+		margin 0 auto
 		overflow auto
 		display grid
 		grid-template-columns 1fr 1fr
+	section
 		background inherit
 	#ratelimit
 		position fixed

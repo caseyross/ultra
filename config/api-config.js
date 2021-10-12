@@ -16,4 +16,4 @@ export const OAUTH_TARGET_SCOPES = [
 	'wikiread'
 ]
 export const RATELIMIT_PERIOD = Date.minutes(10)
-export const RATELIMIT_QUOTA = 100
+export const RATELIMIT_QUOTA = 600

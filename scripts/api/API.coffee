@@ -39,7 +39,7 @@ export fetchSubredditWidgets = (name) ->
 	.then (x) ->
 		widgets =
 			basicInfo: x.items[x.layout.idCardWidget]
-			moderators: x.items[x.layout.moderatorWidget]
+			moderators: x.items[x.layout.moderatorWidget] # list of mods, only available via API for other mods 
 			topbar: x.layout.topbar.order.map (id) -> x.items[id]
 			sidebar: x.layout.sidebar.order.map (id) -> x.items[id]
 		console.log widgets

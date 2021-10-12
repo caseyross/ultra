@@ -5,10 +5,10 @@ script.
 	import Video from './Video.pug'
 	export post = {}
 	export scoreRange = [0, 0]
-	w = 480
+	w = 427
 	galleryExpanded = false
 
-article
+article(data-id={post.id})
 	{#if post.isStickiedInThisChannel}
 		span.sticky-tag STICKY
 	header
@@ -49,8 +49,8 @@ article
 style.
 	article
 		position relative
+		width 480px
 		margin-top 1em
-		width 100%
 		border-radius 1em
 		padding 1em 2em
 		display flex
@@ -58,7 +58,7 @@ style.
 		text-align left
 		gap 8px
 		background transparent
-		margin-bottom 80vh
+		margin-bottom 50vh
 	header
 		display grid
 		grid-auto-flow column
@@ -74,11 +74,9 @@ style.
 	.content
 		margin 20px 0
 		a
-			display flex
-			justify-content center
+			display block
 			padding 0.5em
-			font-size 2em
-			background cornflowerblue
-			color white
+			color cornflowerblue
+			border 1px solid
 	.tags
 		display none
