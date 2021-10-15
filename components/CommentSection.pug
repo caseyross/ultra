@@ -1,6 +1,10 @@
 script.
+	import { bubbleEvent } from '../scripts/dom/events.coffee'
+	import { setScroll } from '../scripts/dom/useActions.coffee'
 	import Comment from './Comment.pug'
 	export comments = []
+	export restoredScroll = 0
+	export postId = ''
 	scoreRange = [0, 0]
 	computeStats = (comments) =>
 		if comments?.length
@@ -12,17 +16,18 @@ script.
 				computeStats(comment.replies)
 	computeStats(comments)
 
-.comment-section
+section.scroll-tall.no-scrollbar#comments(on:scroll={bubbleEvent} use:setScroll={restoredScroll} data-post-id={postId})
 	{#each comments as comment}
 		Comment(comment={comment} scoreRange={scoreRange})
 	.minimap
 
 style.
-	.comment-section
+	section
 		position relative
 		display flex
 		flex-flow column nowrap
 		padding-right 160px
+		background inherit
 	.minimap
 		position absolute
 		top 0

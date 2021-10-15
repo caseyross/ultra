@@ -13,12 +13,21 @@ export default
 				...state
 				...stateFromURL()
 			}
-	scroll:
+	bubblingscroll:
 		'#feed': TODO
-		'.comments': TODO
+		'#comments': (state, event) ->
+			if state.scrolls[event.target.dataset.postId] == event.target.scrollTop 
+				return state
+			return {
+				...state
+				scrolls: {
+					...state.scrolls
+					[event.target.dataset.postId]: event.target.scrollTop
+				}
+			}
 	click:
 		'a': (state, event) ->
-			if (event.target.origin is window.location.origin) and (event.buttons is 0) and not (event.altKey or event.ctrlKey or event.metaKey)
+			if (event.target.origin == window.location.origin) and (event.buttons == 0) and !(event.altKey or event.ctrlKey or event.metaKey)
 				event.preventDefault()
 				history.pushState({}, '', event.target.href)
 				return {
@@ -44,7 +53,7 @@ export default
 		'article': (state, event) ->
 			id = event.target.dataset.id
 			console.log id
-			if id and state.itemId isnt id
+			if id and state.itemId != id
 				console.log 'select'
 				return {
 					...state
@@ -56,7 +65,7 @@ export default
 		'.comment': TODO
 	keydown:
 		'a': (state, event) ->
-			if (event.key is 'Enter') and (event.target.origin is window.location.origin)
+			if (event.key == 'Enter') and (event.target.origin == window.location.origin)
 				event.preventDefault()
 				history.pushState({}, '', event.target.href)
 				return {

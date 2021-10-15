@@ -26,12 +26,10 @@ svelte:head
 {#await state.channel.source then source}
 	main(style="background: {source.color1 || source.color2 || '#ffffff'}; color: {(source.color1 || source.color2 || '#ffffff').cColor()}")
 		{#await state.channel.items then items}
-			section.scroll-tall.no-scrollbar#feed
-				Feed(channelType={state.channel.type} items={items})
-			section.scroll-tall.no-scrollbar
-				{#if items.some(x => x.id === state.itemId)}
-					{#await items.find(x => x.id === state.itemId).comments then comments}
-						CommentSection(comments={comments})
+			Feed(channelType={state.channel.type} items={items})
+			{#if items.some(x => x.id === state.itemId)}
+				{#await items.find(x => x.id === state.itemId).comments then comments}
+					CommentSection(comments={comments} restoredScroll={state.scrolls[state.itemId]} postId={state.itemId})
 {#if state.showMenu}
 	GoTo
 #ratelimit {state.ratelimitUsed}
@@ -44,8 +42,6 @@ style.
 		overflow auto
 		display grid
 		grid-template-columns 1fr 1fr
-	section
-		background inherit
 	#ratelimit
 		position fixed
 		top 0

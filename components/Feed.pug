@@ -15,7 +15,7 @@ script.
 				scoreRange[1] = item.score
 	computeStats(items)
 
-ol
+ol.scroll-tall.no-scrollbar#feed
 	{#each items as item}
 		li
 			{#if channelType !== 'subreddit' && item.subreddit}
@@ -30,3 +30,4 @@ style.
 		display flex
 		flex-flow column nowrap
 		align-items flex-end
+		background inherit

@@ -2,6 +2,7 @@ export default {
 	ratelimitUsed: 0
 	channel: null
 	itemId: ''
-	showMenu: false
+	scrolls: {}
 	votes: new Map()
+	showMenu: false
 }
