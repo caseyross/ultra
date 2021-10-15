@@ -121,30 +121,18 @@ export fetchMySubscribedSubreddits = ->
 		limit: 100
 		automodel: true # Array[Subreddit]
 
-export upvote = (fullname) ->
+export sendVote = (id, vote) ->
 	post
 		endpoint: '/api/vote'
-		id: fullname
-		dir: 1
+		id: id
+		dir: vote # 1/0/-1
 
-export unvote = (fullname) ->
-	post
-		endpoint: '/api/vote'
-		id: fullname
-		dir: 0
-
-export downvote = (fullname) ->
-	post
-		endpoint: '/api/vote'
-		id: fullname
-		dir: -1
-
-export save = (fullname) ->
+export sendSave = (id) ->
 	post
 		endpoint: '/api/save'
-		id: fullname
+		id: id
 
-export unsave = (fullname) ->
+export sendUnsave = (id) ->
 	post
 		endpoint: '/api/unsave'
-		id: fullname
+		id: id

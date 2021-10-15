@@ -1,5 +1,5 @@
 import stateFromURL from '../state/stateFromURL.coffee'
-import { upvote, downvote, unvote } from '../../../scripts/api/API.coffee'
+import { sendVote } from '../../../scripts/api/API.coffee'
 
 TODO = (state, event) ->
 	Warn('Handler not implemented:', event)
@@ -36,16 +36,10 @@ export default
 				}
 			return state
 		'.votable': (state, event) ->
-			Log event
-			return state
 			id = event.target.dataset.id
-			existingVote = state.votes[id]
-			if existingVote == 1
-				unvote(id)
-				vote = 0
-			else
-				upvote(id)
-				vote = 1
+			priorVote = state.votes[id]
+			vote = if priorVote == 1 then 0 else 1
+			sendVote(id, vote)
 			return {
 				...state
 				votes: {
@@ -66,16 +60,11 @@ export default
 			return state
 	contextmenu:
 		'.votable': (state, event) ->
-			Log event
-			return state
+			event.preventDefault()
 			id = event.target.dataset.id
-			existingVote = state.votes[id]
-			if existingVote == -1
-				unvote(id)
-				vote = 0
-			else
-				downvote(id)
-				vote = -1
+			priorVote = state.votes[id]
+			vote = if priorVote == -1 then 0 else -1
+			sendVote(id, vote)
 			return {
 				...state
 				votes: {
