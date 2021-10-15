@@ -4,7 +4,7 @@ export default class User
 	
 	constructor: (data) ->  @[k] = v for k, v of {
 
-		id: data.id
+		id: data.id.toUserId()
 		name: data.name.toLowerCase()
 		displayName: data.name
 		isRedditEmployee: data.is_employee

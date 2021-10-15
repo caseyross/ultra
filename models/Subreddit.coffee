@@ -2,7 +2,7 @@ export default class Subreddit
 
 	constructor: (data) -> @[k] = v for k, v of {
 
-		id: data.id
+		id: (data.id or data.name).toSubredditId()
 		name: data.display_name.toLowerCase()
 		isNSFW: data.over18 or data.over_18
 		isPrivate: data.subreddit_type is 'private'

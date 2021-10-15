@@ -44,7 +44,7 @@ export get = ({ endpoint, cache, automodel, ...options }) ->
 export post = ({ endpoint, ...content }) ->
 	for name, value of content
 		if not value and value isnt 0 then delete content[name] # Don't send keys with empty values.
-	call
+	request
 		method: 'POST'
 		path: endpoint
 		body: new URLSearchParams(content)

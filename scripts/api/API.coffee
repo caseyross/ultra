@@ -88,23 +88,23 @@ export fetchFrontpagePosts = ({ sort = 'best', quantity }) ->
 
 export fetchPost = (id) ->
 	get
-		endpoint: '/comments/' + id
-		cache: 't3_' + id
+		endpoint: '/comments/' + id.toShortId()
+		cache: id
 	.then ([x, y]) ->
 		# The post's comments are handled separately.
 		new Listing(x)[0] # Post
 
 export fetchPostComments = (id) ->
 	get
-		endpoint: '/comments/' + id
-		cache: 't3_' + id
+		endpoint: '/comments/' + id.toShortId()
+		cache: id
 	.then ([x, y]) ->
 		new Listing(y) # Array[Comment/MoreComments]
 
 export fetchMoreComments = (postId, commentIds) ->
 	get
 		endpoint: '/api/morechildren'
-		link_id: 't3_' + postId
+		link_id: postId
 		children: commentIds
 
 export fetchPopularSubreddits = ->

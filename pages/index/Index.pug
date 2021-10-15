@@ -12,7 +12,7 @@ script.
 		window.addEventListener name,
 			(event) ->
 				for pattern, action of handlers
-					if pattern is '*' or event.target.matches(pattern)
+					if pattern == '*' or event.target.matches(pattern)
 						state = action(state, event)
 	for interval of timers
 		`let action = timers[interval]`

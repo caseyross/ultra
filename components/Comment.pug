@@ -5,7 +5,7 @@ script.
 	export scoreRange = [0, 0]
 
 .comment-tree
-	.comment
+	article.comment.votable(data-id={comment.id})
 		header
 			Score(score={comment.score} range={scoreRange} editDate={comment.editDate})
 			a.author(href='/u/{comment.authorName}') {comment.authorName}

@@ -1,4 +1,5 @@
 script.
+	import { bubbleEvent } from '../scripts/dom/events.coffee'
 	import CommentModel from '../models/Comment.coffee'
 	import PostModel from '../models/Post.coffee'
 	import Comment from './Comment.pug'
@@ -15,7 +16,7 @@ script.
 				scoreRange[1] = item.score
 	computeStats(items)
 
-ol.scroll-tall.no-scrollbar#feed
+ol.scroll-tall.no-scrollbar#feed(on:scroll={bubbleEvent})
 	{#each items as item}
 		li
 			{#if channelType !== 'subreddit' && item.subreddit}

@@ -8,7 +8,7 @@ script.
 	w = 427
 	galleryExpanded = false
 
-article(data-id={post.id})
+article.post.votable(data-id={post.id})
 	{#if post.isStickiedInThisChannel}
 		span.sticky-tag STICKY
 	header

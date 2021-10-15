@@ -1,5 +1,5 @@
 import stateFromURL from '../state/stateFromURL.coffee'
-import { upvote } from '../../../scripts/api/API.coffee'
+import { upvote, downvote, unvote } from '../../../scripts/api/API.coffee'
 
 TODO = (state, event) ->
 	Warn('Handler not implemented:', event)
@@ -35,22 +35,26 @@ export default
 					...stateFromURL()
 				}
 			return state
-		'.post': (state, event) ->
-			fullname = event.target.dataset.fullname
-			upvote(fullname)
+		'.votable': (state, event) ->
+			Log event
+			return state
+			id = event.target.dataset.id
+			existingVote = state.votes[id]
+			if existingVote == 1
+				unvote(id)
+				vote = 0
+			else
+				upvote(id)
+				vote = 1
 			return {
 				...state
-				votes: state.votes.set(fullname, 1)
-			}
-		'.comment': (state, event) ->
-			fullname = event.target.dataset.fullname
-			upvote(fullname)
-			return {
-				...state
-				votes: state.votes.set(fullname, 1)
+				votes: {
+					...state.votes
+					[id]: vote
+				}
 			}
 	mouseover:
-		'article': (state, event) ->
+		'.post': (state, event) ->
 			id = event.target.dataset.id
 			console.log id
 			if id and state.itemId != id
@@ -61,8 +65,24 @@ export default
 				}
 			return state
 	contextmenu:
-		'.post': TODO
-		'.comment': TODO
+		'.votable': (state, event) ->
+			Log event
+			return state
+			id = event.target.dataset.id
+			existingVote = state.votes[id]
+			if existingVote == -1
+				unvote(id)
+				vote = 0
+			else
+				downvote(id)
+				vote = -1
+			return {
+				...state
+				votes: {
+					...state.votes
+					[id]: vote
+				}
+			}
 	keydown:
 		'a': (state, event) ->
 			if (event.key == 'Enter') and (event.target.origin == window.location.origin)

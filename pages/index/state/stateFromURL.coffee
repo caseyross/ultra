@@ -10,7 +10,7 @@ export default stateFromURL = ->
 	if a.length > 1
 		[ a, b, c, d, e, f ] = [ 'r', a, b, c, d, e ] # impllcit "r/"
 	if c is 'comments' or c is 'post' and d
-		state.itemId = d
+		state.itemId = d.toPostId()
 	else if a and b
 		channelId = [a, b, c, d, e, f, p.get('t')].filter((x) -> x).join('/')
 	state.channel = new Channel(channelId or '/')

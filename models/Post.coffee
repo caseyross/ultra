@@ -7,10 +7,10 @@ export default class Post
 
 	constructor: (data) -> @[k] = v for k, v of {
 
-		id: data.id
+		id: data.id.toPostId()
 		subreddit: new Subreddit(data.sr_detail)
 		crosspostParent: data.crosspost_parent_list
-		href: '/r/' + data.subreddit + '/post/' + data.id
+		href: '/r/' + data.subreddit + '/post/' + data.id.toShortId()
 
 		authorName: data.author
 		authorFlair: new Flair
@@ -47,7 +47,7 @@ export default class Post
 		userHid: data.hidden
 
 		commentCount: data.num_comments
-		comments: fetchPostComments(data.id)
+		comments: fetchPostComments(data.id.toPostId())
 
 	}
 
@@ -80,10 +80,10 @@ Content = (data) ->
 						@src = embeds[data.domain](url).src
 						@allow = embeds[data.domain](url).allow or ''
 				when data.domain.endsWith 'reddit.com'
-					[ _, _, _, _, post_id, _, comment_id ] = url.pathname.split('/')
+					[ _, _, _, _, postShortId, _, commentShortId ] = url.pathname.split('/')
 					@type = 'reddit'
-					@post_id = post_id
-					@comment_id = comment_id
+					@postId = postShortId.toPostId()
+					@commentId = commentShortId.toCommentId()
 	return Promise.resolve(@)
 
 # NOTE:

@@ -5,13 +5,13 @@ export default class Comment
 
 	constructor: (data) -> @[k] = v for k, v of {
 			
-		id: data.id
-		postId: data.link_id[3..]
+		id: data.id.toCommentId()
+		postId: data.link_id.toPostId()
 		postTitle: data.link_title
 		postIsNSFW: data.over_18
 		subreddit:
 			name: data.subreddit.toLowerCase()
-		href: '/r/' + data.subreddit + '/post/' + data.link_id[3..] + '/comment/' + data.id
+		href: '/r/' + data.subreddit + '/post/' + data.link_id.toShortId() + '/comment/' + data.id.toShortId()
 		
 		authorName: data.author
 		authorFlair: new Flair
