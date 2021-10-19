@@ -1,14 +1,16 @@
 script.
+	import { bubbleEvent } from '../scripts/dom/events.coffee'
 	import Flair from './Flair.pug'
 	import Image from './Image.pug'
 	import Score from './Score.pug'
 	import Video from './Video.pug'
 	export post = {}
 	export scoreRange = [0, 0]
-	w = 427
+	export votes = {}
+	w = 480
 	galleryExpanded = false
 
-article.post.votable(data-id={post.id})
+article.post.votable(data-id={post.id} class:upvoted={post.myVote === 1 || votes[post.id] === 1} class:downvoted={post.myVote === -1 || votes[post.id] === -1} on:mouseenter={bubbleEvent})
 	{#if post.isStickiedInThisChannel}
 		span.sticky-tag STICKY
 	header
@@ -49,8 +51,7 @@ article.post.votable(data-id={post.id})
 style.
 	article
 		position relative
-		width 480px
-		margin-top 1em
+		width 540px
 		border-radius 1em
 		padding 1em 2em
 		display flex
@@ -58,7 +59,6 @@ style.
 		text-align left
 		gap 8px
 		background transparent
-		margin-bottom 50vh
 	header
 		display grid
 		grid-auto-flow column

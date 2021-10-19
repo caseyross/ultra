@@ -16,6 +16,7 @@ export default
 	bubblingscroll:
 		'#feed': TODO
 		'#comments': (state, event) ->
+			console.log event
 			if state.scrolls[event.target.dataset.postId] == event.target.scrollTop 
 				return state
 			return {
@@ -47,7 +48,7 @@ export default
 					[id]: vote
 				}
 			}
-	mouseover:
+	bubblingmouseenter:
 		'.post': (state, event) ->
 			id = event.target.dataset.id
 			console.log id

@@ -32,11 +32,11 @@ export default class Comment
 
 		score: if data.score_hidden then NaN else data.score - 1
 		isControversial: Boolean(data.controversiality)
-		userVote: switch data.likes
+		myVote: switch data.likes
 			when true then 1
 			when false then -1
 			else 0
-		userSaved: data.saved
-		userHid: data.hidden
+		mySave: data.saved
+		myHide: data.hidden
 
 	}

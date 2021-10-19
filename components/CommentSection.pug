@@ -5,6 +5,7 @@ script.
 	export comments = []
 	export restoredScroll = 0
 	export postId = ''
+	export votes = {}
 	scoreRange = [0, 0]
 	computeStats = (comments) =>
 		if comments?.length
@@ -18,7 +19,7 @@ script.
 
 section.scroll-tall.no-scrollbar#comments(on:scroll={bubbleEvent} use:setScroll={restoredScroll} data-post-id={postId})
 	{#each comments as comment}
-		Comment(comment={comment} scoreRange={scoreRange})
+		Comment(comment={comment} scoreRange={scoreRange} votes={votes})
 	.minimap
 
 style.

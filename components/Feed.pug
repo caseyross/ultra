@@ -7,6 +7,7 @@ script.
 	import SubredditTag from './SubredditTag.pug'
 	export channelType = 'frontpage'
 	export items = []
+	export votes = {}
 	scoreRange = [0, 0]
 	computeStats = (items) =>
 		for item in items
@@ -22,12 +23,13 @@ ol.scroll-tall.no-scrollbar#feed(on:scroll={bubbleEvent})
 			{#if channelType !== 'subreddit' && item.subreddit}
 				SubredditTag(subreddit={item.subreddit})
 			{#if item instanceof PostModel}
-				Post(post={item} scoreRange={scoreRange})
+				Post(post={item} scoreRange={scoreRange} votes={votes})
 			{#if item instanceof CommentModel}
-				Comment(comment={item} scoreRange={scoreRange})
+				Comment(comment={item} scoreRange={scoreRange} votes={votes})
 
 style.
 	ol
+		padding-right 40px
 		display flex
 		flex-flow column nowrap
 		align-items flex-end

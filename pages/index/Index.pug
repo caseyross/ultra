@@ -26,10 +26,10 @@ svelte:head
 {#await state.channel.source then source}
 	main(style="background: {source.color1 || source.color2 || '#ffffff'}; color: {(source.color1 || source.color2 || '#ffffff').cColor()}")
 		{#await state.channel.items then items}
-			Feed(channelType={state.channel.type} items={items})
+			Feed(channelType={state.channel.type} items={items} votes={state.votes})
 			{#if items.some(x => x.id === state.itemId)}
 				{#await items.find(x => x.id === state.itemId).comments then comments}
-					CommentSection(comments={comments} restoredScroll={state.scrolls[state.itemId]} postId={state.itemId})
+					CommentSection(comments={comments} votes={state.votes} restoredScroll={state.scrolls[state.itemId]} postId={state.itemId})
 {#if state.showMenu}
 	GoTo
 #ratelimit {state.ratelimitUsed}

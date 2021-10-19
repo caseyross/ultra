@@ -39,12 +39,12 @@ export default class Post
 		wasDeleted: data.selftext is '[removed]'
 
 		score: if data.hide_score then NaN else data.score - 1
-		userVote: switch data.likes
+		myVote: switch data.likes
 			when true then 1
 			when false then -1
 			else 0
-		userSaved: data.saved
-		userHid: data.hidden
+		mySave: data.saved
+		myHide: data.hidden
 
 		commentCount: data.num_comments
 		comments: fetchPostComments(data.id.toPostId())
@@ -82,8 +82,8 @@ Content = (data) ->
 				when data.domain.endsWith 'reddit.com'
 					[ _, _, _, _, postShortId, _, commentShortId ] = url.pathname.split('/')
 					@type = 'reddit'
-					@postId = postShortId.toPostId()
-					@commentId = commentShortId.toCommentId()
+					@postId = postShortId?.toPostId()
+					@commentId = commentShortId?.toCommentId()
 	return Promise.resolve(@)
 
 # NOTE:

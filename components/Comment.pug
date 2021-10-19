@@ -3,9 +3,10 @@ script.
 	import Score from './Score.pug'
 	export comment = {}
 	export scoreRange = [0, 0]
+	export votes = {}
 
 .comment-tree
-	article.comment.votable(data-id={comment.id})
+	article.comment.votable(data-id={comment.id} class:upvoted={comment.myVote === 1 || votes[comment.id] === 1} class:downvoted={comment.myVote === -1 || votes[comment.id] === -1})
 		header
 			Score(score={comment.score} range={scoreRange} editDate={comment.editDate})
 			a.author(href='/u/{comment.authorName}') {comment.authorName}
@@ -15,7 +16,7 @@ script.
 	{#if comment.replies.length}
 		.replies
 			{#each comment.replies as reply}
-				svelte:self(comment={reply} scoreRange={scoreRange})
+				svelte:self(comment={reply} scoreRange={scoreRange} votes={votes})
 
 
 style.
