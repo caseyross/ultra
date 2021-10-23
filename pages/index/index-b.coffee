@@ -1,3 +1,5 @@
+import '../../styles/reset.styl'
+import '../../styles/vars.styl'
 import '../../styles/base.styl'
 import '../../styles/md.styl'
 import '../../styles/util.styl'

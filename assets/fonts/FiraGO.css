@@ -1,0 +1,28 @@
+@font-face {
+	font-family: 'FiraGO';
+	font-display: swap;
+	font-weight: 400;
+	font-style: normal;
+	src: url('woff2/FiraGO-Regular.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'FiraGO';
+	font-display: swap;
+	font-weight: 400;
+	font-style: italic;
+	src: url('woff2/FiraGO-Italic.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'FiraGO';
+	font-display: swap;
+	font-weight: 700;
+	font-style: normal;
+	src: url('woff2/FiraGO-Bold.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'FiraGO';
+	font-display: swap;
+	font-weight: 700;
+	font-style: italic;
+	src: url('woff2/FiraGO-BoldItalic.woff2') format('woff2');
+}

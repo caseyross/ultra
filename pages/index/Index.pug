@@ -32,7 +32,7 @@ svelte:head
 					CommentSection(comments={comments} votes={state.votes} restoredScroll={state.scrolls[state.itemId]} postId={state.itemId})
 {#if state.showMenu}
 	GoTo
-#ratelimit {state.ratelimitUsed}
+pre#ratelimit {state.ratelimitUsed}
 
 style.
 	main
@@ -44,7 +44,5 @@ style.
 		grid-template-columns 1fr 1fr
 	#ratelimit
 		position fixed
-		top 0
+		bottom 0
 		right 0
-		color blue
-		font bold 16px monospace

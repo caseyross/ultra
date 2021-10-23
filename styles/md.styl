@@ -5,15 +5,14 @@
 		margin 0.5em 0 0 0
 
 	// Headers
-	h1
-		font-size 1.5em
-	h2
-		font-size 1.3333em
-	h3, h4, h5, h6
-		font-size 1.1666em
+	h1, h2, h3, h4, h5, h6
+		font-size inherit
+		font-weight bold
+		text-transform uppercase
+		margin 1em 0
 	hr
 		margin-top 1em
-		width 3ch
+		width 2em
 
 	// Lists
 	ol
@@ -25,15 +24,22 @@
 
 	// Tables
 	table
-		table-layout fixed
-		width 100%
+		display inline-block
+		max-width 100%
+		padding-bottom 1em
+		overflow auto
 		white-space pre
-		border-collapse collapse
-	td, th
-		overflow hidden
-		text-align left
-		border 1px solid rgba(0,0,0,0.1)
-		padding 0 1ch
+		font 12px var(--font-face-mono)
+	thead
+		border-bottom 1px solid
+	td
+	th
+		padding 0.25em 0
+		border-right 2em solid transparent
+		&:last-child
+			border-right 0
+	tr:first-child td
+		padding-top 1.25em
 
 	// Verbatim text
 	blockquote
@@ -44,28 +50,23 @@
 		& > * + *
 			margin 0.5em 0 0 0
 	code
+		padding 0.25em 0.5em
+		white-space pre
 		background gainsboro
-		font 12px monospace
+		font-size 12px
 	pre
 		margin 0
 		display inline-block
-		white-space pre-wrap
+		white-space pre
 		overflow auto
 		padding 0.5em 1em
 		background gainsboro
 
 	// Spoilers
 	.md-spoiler-text
-		background black
-		color black
+		padding 0.25em 0
+		background gray
+		color gray
 		&:focus, &:hover
 			background initial
 			color initial
-
-	// Links
-	a
-		color dodgerblue
-		text-decoration none
-		&:hover
-			background steelblue
-			color white
