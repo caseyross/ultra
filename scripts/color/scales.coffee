@@ -1,7 +1,7 @@
 import HLSA, { interpolateHLSA } from './HLSA.coffee'
 
 # 
-red = new HLSA(8, 59, 100)
+red = new HLSA(0, 0, 0)
 grey = new HLSA(0, 87, 0)
 blue = new HLSA(216, 71, 100)
 export RedGrayColorScale =
