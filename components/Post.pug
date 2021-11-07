@@ -2,81 +2,71 @@ script.
 	import { bubbleEvent } from '../scripts/dom/events.coffee'
 	import Flair from './Flair.pug'
 	import Image from './Image.pug'
-	import Score from './Score.pug'
 	import Video from './Video.pug'
 	export post = {}
-	export scoreRange = [0, 0]
 	export votes = {}
 	w = 480
 	galleryExpanded = false
 
-article.post.votable(data-id={post.id} class:upvoted={post.myVote === 1 || votes[post.id] === 1} class:downvoted={post.myVote === -1 || votes[post.id] === -1} on:mouseenter={bubbleEvent})
-	{#if post.isStickiedInThisChannel}
-		span.sticky-tag STICKY
-	header
-		Score(score={post.score} range={scoreRange})
-		a.author(href='/u/{post.authorName}') {post.authorName}
-		Flair(flair={post.authorFlair} subredditName={post.subreddit.name})
-	.title
-		| {post.title}
-	.content
-		{#await post.content then content}
-			{#if content.type === 'link'}
-				a(href={content.href}) {content.href}
-			{#if content.type === 'self'}
-				{#if content.selftext}
-					| {@html content.selftext}
+article.post(data-id={post.id} class:upvoted={post.myVote === 1 || votes[post.id] === 1} class:downvoted={post.myVote === -1 || votes[post.id] === -1} on:mouseenter={bubbleEvent})
+	.row
+		.state
+			{#if post.isStickiedInThisChannel}
+				span Stickied
+		.flair
+			Flair(flair={post.titleFlair} subredditName={post.subreddit.name})
+	.row
+		time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
+		.title
+			| {post.title}
+	.row
+		.score.votable(data-id={post.id}) {post.score}
+		.content
+			{#await post.content then content}
+				{#if content.type === 'link'}
+					a(href={content.href}) {content.href}
+				{:else if content.type === 'self'}
+					{#if content.selftext}
+						| {@html content.selftext}
+					{:else}
+						span.no-submission-text (No submission text.)
+				{:else if content.type === 'image'}
+					{#each content.images as image, i}
+						{#if i === 0 || galleryExpanded}
+							figure
+								Image(image={image} maxW={w})
+								{#if image.caption}
+									figcaption {image.caption.t}
+										{#if image.caption.u}
+											a(href={image.caption.u}) {image.caption.u}
+					{#if content.images.length > 1 && !galleryExpanded}
+						button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...
+				{:else if content.type === 'video'}
+					Video(data={content.video} w={w})
+				{:else if content.type === 'embed'}
+					iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Embed from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
 				{:else}
-					| [No submission text.]
-			{#if content.type === 'image'}
-				{#each content.images as image, i}
-					{#if i === 0 || galleryExpanded}
-						figure
-							Image(image={image} maxW={w})
-							{#if image.caption}
-								figcaption {image.caption.t}
-									{#if image.caption.u}
-										a(href={image.caption.u}) {image.caption.u}
-				{#if content.images.length > 1 && !galleryExpanded}
-					button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...
-			{#if content.type === 'video'}
-				Video(data={content.video} w={w})
-			{#if content.type === 'embed'}
-				iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Embed from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
-	footer
-		Flair(flair={post.titleFlair} subredditName={post.subreddit.name})
-		.tags
-			time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
+					span.unidentified-content (Unidentified content.)
 
 style.
 	article
 		position relative
-		width 540px
-		border-radius 1em
-		padding 1em 2em
-		display flex
-		flex-flow column nowrap
-		text-align left
-		gap 8px
+		width 40em
 		background transparent
-	header
-		display grid
-		grid-auto-flow column
-		justify-content flex-start
-		align-items center
-		gap 1ch
-		font 12px 'Iosevka Aile Web'
+	.row
+		display flex
+	.state
+	time
+	.score
+		opacity 0.5
+		flex 0 0 4.8em
+		text-align right
+		padding-right 1.2em
+	.flair
+		display flex
+		gap 1em
 	.title
-		font bold 1.666em/1.333 var(--font-face)
-	.sticky-tag
-		background green
-		color white
-	.content
-		margin-top 1em
-		a
-			display block
-			padding 0.5em
-			color cornflowerblue
-			border 1px solid
-	.tags
-		display none
+		font-size 1.5em
+	.no-submission-text
+	.unidentified-content
+		opacity 0.5

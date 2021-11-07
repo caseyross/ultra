@@ -1,7 +1,6 @@
-export default class MoreComments
+export default class DeeperComments
 
 	constructor: (data, postId) -> @[k] = v for k, v of {
-		ids: data.children
+		referenceId: data.parent_id
 		postId: postId
-		replies: []
 	}

@@ -1,0 +1,53 @@
+script.
+	import CompressedCommentsModel from '../models/CompressedComments.coffee'
+	import DeeperCommentsModel from '../models/DeeperComments.coffee'
+	export comment = {}
+	export votes = {}
+	isDeeper = comment instanceof DeeperCommentsModel
+	isCompressed = comment instanceof CompressedCommentsModel
+	voteSyncDelta = if votes[comment.id]? then votes[comment.id] - comment.myVote else 0
+	scoreText = switch
+		when isDeeper then 'X'
+		when isCompressed then 'X'
+		when comment.isDeleted then 'X'
+		when isFinite(comment.score) then comment.score + voteSyncDelta
+		else 'n/a'
+
+.comment-tree
+	article.comment.votable(data-id={comment.id} class:upvoted={comment.myVote === 1 || votes[comment.id] === 1} class:downvoted={comment.myVote === -1 || votes[comment.id] === -1})
+		.score {scoreText}
+		.text
+			{#if isDeeper}
+				span.deeper-message Continue this thread...
+			{:else if isCompressed}
+				span.compressed-message {comment.count === 1 ? '1 reply...' : comment.count + ' replies...'}
+			{:else if comment.isDeleted}
+				span.deleted-message (deleted)
+			{:else}
+				{@html comment.content}
+	{#if !isDeeper && !isCompressed && comment.replies.length}
+		.replies
+			{#each comment.replies as reply}
+				svelte:self(comment={reply} votes={votes})
+
+
+style.
+	.comment-tree
+		margin 2em 0
+	.comment
+		display grid
+		grid-template-columns 4.8em 1fr
+	.score
+		opacity 0.5
+		text-align right
+		padding-right 1.2em
+	.text
+		width 30em
+	.deeper-message
+	.compressed-message
+	.deleted-message
+		opacity 0.5
+	.replies
+		margin-left 4px
+		border-left 2px solid rgba(0,0,0,0.1)
+		padding-left 3em

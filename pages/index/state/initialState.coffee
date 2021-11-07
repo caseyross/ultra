@@ -3,6 +3,6 @@ export default {
 	channel: null
 	itemId: ''
 	scrolls: {}
-	votes: new Map()
+	votes: {}
 	showMenu: false
 }

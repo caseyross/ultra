@@ -2,20 +2,12 @@ script.
 	import { bubbleEvent } from '../scripts/dom/events.coffee'
 	import CommentModel from '../models/Comment.coffee'
 	import PostModel from '../models/Post.coffee'
-	import Comment from './Comment.pug'
+	import CommentTree from './CommentTree.pug'
 	import Post from './Post.pug'
 	import SubredditTag from './SubredditTag.pug'
 	export channelType = 'frontpage'
 	export items = []
 	export votes = {}
-	scoreRange = [0, 0]
-	computeStats = (items) =>
-		for item in items
-			if item.score < scoreRange[0]
-				scoreRange[0] = item.score
-			else if item.score > scoreRange[1]
-				scoreRange[1] = item.score
-	computeStats(items)
 
 ol.scroll-tall.no-scrollbar#feed(on:scroll={bubbleEvent})
 	{#each items as item}
@@ -23,14 +15,15 @@ ol.scroll-tall.no-scrollbar#feed(on:scroll={bubbleEvent})
 			{#if channelType !== 'subreddit' && item.subreddit}
 				SubredditTag(subreddit={item.subreddit})
 			{#if item instanceof PostModel}
-				Post(post={item} scoreRange={scoreRange} votes={votes})
+				Post(post={item} votes={votes})
 			{#if item instanceof CommentModel}
-				Comment(comment={item} scoreRange={scoreRange} votes={votes})
+				CommentTree(comment={item} votes={votes})
 
 style.
 	ol
 		padding-right 40px
-		display flex
-		flex-flow column nowrap
-		align-items flex-end
 		background inherit
+		list-style none
+	li
+		float right
+		margin 2em

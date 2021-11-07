@@ -27,8 +27,9 @@ export default class Comment
 		editDate: if data.edited then new Date(1000 * data.edited) else null
 
 		content: data.body_html ? ''
-		replies: new Listing(data.replies) # Array[Comment/MoreComments]
+		replies: new Listing(data.replies) # Array[Comment/CompressedComments]
 		isPinned: data.stickied
+		isDeleted: data.author is '[deleted]'
 
 		score: if data.score_hidden then NaN else data.score - 1
 		isControversial: Boolean(data.controversiality)

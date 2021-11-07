@@ -94,14 +94,15 @@ export fetchPost = (id) ->
 		# The post's comments are handled separately.
 		new Listing(x)[0] # Post
 
-export fetchPostComments = (id) ->
+export fetchPostComments = (id, sort = 'top') ->
 	get
 		endpoint: '/comments/' + id.toShortId()
+		sort: sort
 		cache: id
 	.then ([x, y]) ->
-		new Listing(y) # Array[Comment/MoreComments]
+		new Listing(y) # Array[Comment/CompressedComments]
 
-export fetchMoreComments = (postId, commentIds) ->
+export fetchCompressedComments = (postId, commentIds) ->
 	get
 		endpoint: '/api/morechildren'
 		link_id: postId

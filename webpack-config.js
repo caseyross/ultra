@@ -34,7 +34,6 @@ module.exports = {
 		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /index_a/]), // inline priority chunks for speed
 		new CopyWebpackPlugin({
 			patterns: [
-				{ from: './assets/fonts', }, // copy directly to output directory
 				{ from: './assets/icons', }, // copy directly to output directory
 			],
 		}),
