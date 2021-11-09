@@ -100,7 +100,7 @@ export fetchPostComments = (id, sort = 'top') ->
 		sort: sort
 		cache: id
 	.then ([x, y]) ->
-		new Listing(y) # Array[Comment/CompressedComments]
+		new Listing(y) # Array[Comment/CompressedComments/DeeperComments]
 
 export fetchCompressedComments = (postId, commentIds) ->
 	get

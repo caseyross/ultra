@@ -1,11 +1,14 @@
 .md
 	word-break break-word
 
+	*:first-child
+		margin-top 0
+	*:last-child
+		margin-bottom 0
+
 	// Paragraphs
 	p
 		margin-top 1em
-	p:first-child
-		margin-top 0
 	blockquote + p
 		margin-top 0.5em
 	hr
@@ -34,8 +37,6 @@
 		max-width 100%
 		overflow auto
 		white-space pre
-	table:first-child
-		margin-top 0
 	thead
 		border-bottom 1px solid
 	td
@@ -52,8 +53,6 @@
 		padding 0.5em 1em
 		background rgba(0,0,0,0.1)
 		color rgba(0,0,0,0.5)
-	blockquote:first-child
-		margin-top 0
 	code
 		padding 0.25em 0.5em
 		white-space pre
@@ -65,8 +64,6 @@
 		white-space pre
 		overflow auto
 		padding 0.5em 0
-	pre:first-child
-		margin-top 0
 
 	// Spoilers
 	.md-spoiler-text
