@@ -1,8 +1,7 @@
 export default {
 	ratelimitUsed: 0
-	channel: null
-	itemId: ''
-	scrolls: {}
+	channel: {}
 	votes: {}
 	showMenu: false
+	postIndex: 0
 }

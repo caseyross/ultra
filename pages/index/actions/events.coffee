@@ -13,18 +13,6 @@ export default
 				...state
 				...stateFromURL()
 			}
-	bubblingscroll:
-		'#feed': TODO
-		'#comments': (state, event) ->
-			if state.scrolls[event.target.dataset.postId] == event.target.scrollTop 
-				return state
-			return {
-				...state
-				scrolls: {
-					...state.scrolls
-					[event.target.dataset.postId]: event.target.scrollTop
-				}
-			}
 	click:
 		'a': (state, event) ->
 			if (event.target.origin == window.location.origin) and (event.buttons == 0) and !(event.altKey or event.ctrlKey or event.metaKey)
@@ -47,17 +35,6 @@ export default
 					[id]: vote
 				}
 			}
-	bubblingmouseenter:
-		'.post': (state, event) ->
-			id = event.target.dataset.id
-			console.log id
-			if id and state.itemId != id
-				console.log 'select'
-				return {
-					...state
-					itemId: id
-				}
-			return state
 	contextmenu:
 		'.votable': (state, event) ->
 			event.preventDefault()
@@ -88,6 +65,16 @@ export default
 					return {
 						...state
 						showMenu: !state.showMenu
+					}
+				when 'a'
+					return {
+						...state
+						postIndex: state.postIndex - 1
+					}
+				when 'd'
+					return {
+						...state
+						postIndex: state.postIndex + 1
 					}
 				else
 					return state

@@ -17,6 +17,7 @@ export default class Channel
 		@id = id
 		@type = 'frontpage'
 		@name = 'frontpage'
+		@source = {}
 		[ a, b, c, d, e ] = id.split('/')
 		switch a
 			when 'r'

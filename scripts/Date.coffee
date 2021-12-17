@@ -28,11 +28,11 @@ Date::ago = ->
 	if mo < 12
 		return
 			count: Math.trunc(mo)
-			unit: 'o'
+			unit: 'mo'
 	yr = mo / 12
 	return
 		count: Math.trunc(yr)
-		unit: 'y'
+		unit: 'yr'
 
 # Syntactic sugar functions for millisecond-based date math.
 Date.seconds = (count) ->

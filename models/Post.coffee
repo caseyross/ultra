@@ -34,8 +34,7 @@ export default class Post
 		isArchived: data.archived
 		isLocked: data.locked
 		isQuarantined: data.quarantine
-		isStickiedInHomeChannel: data.stickied
-		isStickiedInThisChannel: if data.subreddit_type is 'user' then data.pinned else data.stickied
+		isStickied: data.stickied
 		wasDeleted: data.selftext is '[removed]'
 
 		score: if data.hide_score then NaN else data.score - 1
@@ -52,36 +51,36 @@ export default class Post
 	}
 
 Content = (data) ->
-	@type = 'link'
+	@type = 'LINK'
 	@href = data.url
 	switch
 		when data.media?.reddit_video
-			@type = 'video'
+			@type = 'VIDEO_NATIVE'
 			@video = new Video(data.media.reddit_video)
 		when data.is_gallery
-			@type = 'image'
+			@type = 'IMAGE_NATIVE'
 			@images = data.gallery_data.items.map (x) ->
 				new Image { ...data.media_metadata[x.media_id], caption: x.caption, link: x.outbound_url }
 		when data.post_hint is 'image'
-			@type = 'image'
+			@type = 'IMAGE_NATIVE'
 			@images = [ new Image(data.preview.images[0]) ]
 		when data.is_self
-			@type = 'self'
-			@selftext = data.selftext_html
+			@type = 'TEXT'
+			@text = data.selftext_html
 		else
 			url = new URL(if data.url.startsWith 'https' then data.url else 'https://www.reddit.com' + data.url)
 			switch
 				when data.domain is 'i.redd.it'
-					@type = 'image'
+					@type = 'IMAGE_NATIVE'
 					@images = [ new Image { p: [], s: [{ u: data.url }] } ]
 				when embeds[data.domain]
 					unless data.domain is 'youtube.com' and url.pathname.split('/')[1] is 'clip' # clip URLs don't contain the information necessary for embedding
-						@type = 'embed'
+						@type = 'VIDEO_EMBED'
 						@src = embeds[data.domain](url).src
 						@allow = embeds[data.domain](url).allow or ''
 				when data.domain.endsWith 'reddit.com'
 					[ _, _, _, _, postShortId, _, commentShortId ] = url.pathname.split('/')
-					@type = 'reddit'
+					@type = 'REDDIT'
 					@postId = postShortId?.toPostId()
 					@commentId = commentShortId?.toCommentId()
 	return Promise.resolve(@)

@@ -35,7 +35,7 @@ String::normalizedLength = ->
 
 String::cColor = ->
 	if not (@startsWith('#') and @length is 7)
-		return '#808080'
+		return '#000000'
 	red = Number.parseInt(@[1..2], 16) / 255
 	green = Number.parseInt(@[3..4], 16) / 255
 	blue = Number.parseInt(@[5..6], 16) / 255

@@ -1,11 +1,7 @@
 script.
 	import { afterUpdate } from 'svelte'
-	import { bubbleEvent } from '../scripts/dom/events.coffee'
-	import { setScroll } from '../scripts/dom/useActions.coffee'
 	import CommentTree from './CommentTree.pug'
 	export comments = []
-	export restoredScroll = 0
-	export postId = ''
 	export votes = {}
 	commentsContainer = null
 	minimapCanvas = null
@@ -24,7 +20,7 @@ script.
 		drawMinimap(commentsContainer)
 		bubbleEvent(e)
 
-section.scroll-tall.no-scrollbar#comments(bind:this={commentsContainer} on:scroll={onScroll} use:setScroll={restoredScroll} data-post-id={postId})
+section.scroll-tall.no-scrollbar#comments(bind:this={commentsContainer})
 	{#each comments as comment}
 		CommentTree(comment={comment} votes={votes})
 	canvas.minimap(bind:this={minimapCanvas} width={minimapW} height={minimapH})

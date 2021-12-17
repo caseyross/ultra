@@ -4,7 +4,7 @@ script.
 
 	import CommentSection from '../../components/CommentSection.pug'
 	import GoTo from '../../components/GoTo.pug'
-	import Feed from '../../components/Feed.pug'
+	import Post from '../../components/Post.pug'
 
 	export state = window.state
 	for name of events
@@ -24,12 +24,9 @@ script.
 svelte:head
 	title reddit ({state.channel.name})
 {#await state.channel.source then source}
-	main(style="background: {source.color1 || source.color2 || '#ffffff'}; color: {(source.color1 || source.color2 || '#ffffff').cColor()}")
+	main(style="background: {source.color}; color: {source.color.cColor()}")
 		{#await state.channel.items then items}
-			Feed(channelType={state.channel.type} items={items} votes={state.votes})
-			{#if items.some(x => x.id === state.itemId)}
-				{#await items.find(x => x.id === state.itemId).comments then comments}
-					CommentSection(comments={comments} votes={state.votes} restoredScroll={state.scrolls[state.itemId]} postId={state.itemId})
+			Post(post={items[state.postIndex]})
 {#if state.showMenu}
 	GoTo
 pre#ratelimit {state.ratelimitUsed}
@@ -38,10 +35,9 @@ style.
 	main
 		height 100vh
 		width 100vw
-		margin 0 auto
-		overflow auto
-		display grid
-		grid-template-columns 1fr 1fr
+		display flex
+		flex-flow column nowrap
+		align-items center
 	#ratelimit
 		position fixed
 		bottom 0

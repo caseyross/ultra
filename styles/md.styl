@@ -19,14 +19,17 @@
 
 	// Headers
 	h1, h2, h3, h4, h5, h6
+		margin-top 1em
 		font-weight normal
 		font-size 1.25em
 
 	// Lists
 	ol
+		margin-top 0.5em
 		list-style decimal
 		padding-left 16px
 	ul
+		margin-top 0.5em
 		list-style disc
 		padding-left 16px
 
@@ -52,18 +55,10 @@
 		margin-top 1em
 		padding 0.5em 1em
 		background rgba(0,0,0,0.1)
-		color rgba(0,0,0,0.5)
-	code
-		padding 0.25em 0.5em
-		white-space pre
-		background gainsboro
-		font-size 12px
 	pre
 		margin-top 1em
 		display inline-block
-		white-space pre
-		overflow auto
-		padding 0.5em 0
+		white-space pre-wrap
 
 	// Spoilers
 	.md-spoiler-text
@@ -73,3 +68,8 @@
 		&:focus, &:hover
 			background initial
 			color initial
+
+	// Media
+	img
+		max-width 100%
+		height auto

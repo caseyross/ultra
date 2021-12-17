@@ -1,72 +1,92 @@
 script.
-	import { bubbleEvent } from '../scripts/dom/events.coffee'
 	import Flair from './Flair.pug'
 	import Image from './Image.pug'
 	import Video from './Video.pug'
+	import CommentSection from './CommentSection.pug'
+	import CommentTree from './CommentTree.pug'
 	export post = {}
 	export votes = {}
-	w = 480
+	w = 640
 	galleryExpanded = false
+	scoreText = switch
+		when post.isStickied then 'Stickied'
+		when isFinite(post.score) then post.score
+		else '?'
 
-article.post(data-id={post.id} class:upvoted={post.myVote === 1 || votes[post.id] === 1} class:downvoted={post.myVote === -1 || votes[post.id] === -1} on:mouseenter={bubbleEvent})
-	.row
-		.state
-			{#if post.isStickiedInThisChannel}
-				span Stickied
-		.flair
-			Flair(flair={post.titleFlair} subredditName={post.subreddit.name})
-	.row
-		time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
-		.title
-			| {post.title}
-	.row
-		.score.votable(data-id={post.id}) {post.score}
-		.content
-			{#await post.content then content}
-				{#if content.type === 'link'}
-					a(href={content.href}) {content.href}
-				{:else if content.type === 'self'}
-					{#if content.selftext}
-						| {@html content.selftext}
+article.post-with-comments.hide-scrollbar
+	section.post
+		.row
+			.state
+			div
+				span.sr-name(style='color: {post.subreddit.color}') {post.subreddit.displayName}
+				Flair(flair={post.titleFlair} subredditName={post.subreddit.name})
+		.row
+			time(datetime={post.createDate.toString()}).tag.age {post.createDate.ago().count}{post.createDate.ago().unit}
+			h1.title {post.title}
+		.row
+			.score.votable(data-id={post.id} class:upvoted={post.myVote === 1 || votes[post.id] === 1} class:downvoted={post.myVote === -1 || votes[post.id] === -1}) {scoreText}
+			.content
+				{#await post.content then content}
+					{#if content.type === 'LINK'}
+						a(href={content.href}) {content.href}
+					{:else if content.type === 'TEXT'}
+						{#if content.text}
+							.text {@html content.text}
+						{:else}
+							span.no-submission-text (No post text.)
+					{:else if content.type === 'IMAGE_NATIVE'}
+						{#each content.images as image, i}
+							{#if i === 0 || galleryExpanded}
+								figure
+									Image(image={image} maxW={w})
+									{#if image.caption}
+										figcaption {image.caption.t}
+											{#if image.caption.u}
+												a(href={image.caption.u}) {image.caption.u}
+						{#if content.images.length > 1 && !galleryExpanded}
+							button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...
+					{:else if content.type === 'VIDEO_NATIVE'}
+						Video(data={content.video} w={w})
+					{:else if content.type === 'VIDEO_EMBED'}
+						iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Video from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
 					{:else}
-						span.no-submission-text (No submission text.)
-				{:else if content.type === 'image'}
-					{#each content.images as image, i}
-						{#if i === 0 || galleryExpanded}
-							figure
-								Image(image={image} maxW={w})
-								{#if image.caption}
-									figcaption {image.caption.t}
-										{#if image.caption.u}
-											a(href={image.caption.u}) {image.caption.u}
-					{#if content.images.length > 1 && !galleryExpanded}
-						button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...
-				{:else if content.type === 'video'}
-					Video(data={content.video} w={w})
-				{:else if content.type === 'embed'}
-					iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Embed from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
-				{:else}
-					span.unidentified-content (Unidentified content.)
+						span.unidentified-content (Unidentified content.)
+	section.comments
+		{#await post.comments then comments}
+			ol
+				{#each comments as comment}
+					.top-level-comment
+						CommentTree(comment={comment} votes={votes})
 
 style.
-	article
-		position relative
-		width 40em
+	.post-with-comments
 		background transparent
+		height 100vh
+		width 640px
+		overflow auto
 	.row
-		display flex
+		display grid
+		grid-template-columns 0 640px
 	.state
 	time
 	.score
 		opacity 0.5
-		flex 0 0 4.8em
 		text-align right
 		padding-right 1.2em
+	.sr-name
+		font-size 2rem
 	.flair
 		display flex
 		gap 1em
 	.title
 		font-size 1.5em
+		font-weight normal
 	.no-submission-text
 	.unidentified-content
 		opacity 0.5
+	figure
+		cursor zoom-in
+		& + figure
+			margin-top 4px
+	.top-level-comment
+		margin-top 2em

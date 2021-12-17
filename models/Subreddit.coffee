@@ -18,8 +18,7 @@ export default class Subreddit
 		tagline: data.title
 		blurb: data.public_description
 		
-		color1: data.primary_color or ''
-		color2: data.key_color or ''
+		color: data.primary_color or data.key_color or '#ff4500' # orangered
 		iconUrl: data.community_icon or data.icon_img or ''
 		bannerUrl: data.banner_background_image or data.mobile_banner_img or data.banner_img or ''
 
