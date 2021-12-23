@@ -46,7 +46,7 @@ article.post-with-comments.hide-scrollbar
 							button(on:click={() => galleryExpanded = true}) Expand {content.images.length - 1} more images...
 					{:else if content.type === 'VIDEO_NATIVE'}
 						Video(data={content.video} w={w})
-					{:else if content.type === 'VIDEO_EMBED'}
+					{:else if content.type === 'VIDEO_IFRAME'}
 						iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Video from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
 					{:else}
 						span.unidentified-content (Unidentified content.)

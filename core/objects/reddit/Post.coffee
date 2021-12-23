@@ -1,4 +1,4 @@
-import integrations from '../../../config/integrations.js'
+import { iframes } from '../../../config/integrations.js'
 import { fetchPostComments } from '../../logic/API.coffee'
 import Flair from './Flair.coffee'
 import Subreddit from './Subreddit.coffee'
@@ -73,11 +73,10 @@ Content = (data) ->
 				when data.domain is 'i.redd.it'
 					@type = 'IMAGE_NATIVE'
 					@images = [ new Image { p: [], s: [{ u: data.url }] } ]
-				when integrations[data.domain]
-					unless data.domain is 'youtube.com' and url.pathname.split('/')[1] is 'clip' # clip URLs don't contain the information necessary for embedding
-						@type = 'VIDEO_EMBED'
-						@src = integrations[data.domain](url).src
-						@allow = integrations[data.domain](url).allow or ''
+				when iframes[data.domain] and iframes[data.domain](url)
+					@type = 'VIDEO_IFRAME'
+					@src = iframes[data.domain](url).src
+					@allow = iframes[data.domain](url).allow or ''
 				when data.domain.endsWith 'reddit.com'
 					[ _, _, _, _, postShortId, _, commentShortId ] = url.pathname.split('/')
 					@type = 'REDDIT'
