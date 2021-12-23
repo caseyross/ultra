@@ -1,5 +1,4 @@
 {
-	"license": "CC-BY-NC-SA-4.0",
 	"devDependencies": {
 		"coffee-loader": "^3.0.0",
 		"coffeescript": "^2.6.1",
@@ -18,8 +17,9 @@
 		"webpack-cli": "^4.9.1",
 		"webpack-dev-server": "^4.6.0"
 	},
+	"license": "CC-BY-NC-SA-4.0",
 	"scripts": {
-		"dev": "webpack serve --port 8080 --config webpack-config-dev.js",
-		"build": "webpack --config webpack-config.js"
+		"start-test-server": "webpack serve --port 8080 --config webpack.test-server.config.js",
+		"generate-production-build": "webpack --config webpack.config.js"
 	}
 }

@@ -1,7 +1,0 @@
-script.
-	import { getCredentialsAuthority, requestLogin } from '../scripts/api/primitives/authentication.coffee'
-
-{#if getCredentialsAuthority() === 'user'}
-	a(href='/?logout=true') Log out
-{:else}
-	button(on:click={() => requestLogin()}) Log in

@@ -1,0 +1,37 @@
+script.
+	import events from './actions/events.coffee'
+	import timers from './actions/timers.coffee'
+
+	export state = {}
+
+	for name of events
+		`let handlers = events[name]`
+		window.addEventListener name,
+			(event) ->
+				for pattern, action of handlers
+					if pattern == '*' or event.target.matches(pattern)
+						state = action(state, event)
+						state = state
+	for interval of timers
+		`let action = timers[interval]`
+		setInterval(
+			->
+				state = action(state)
+				state = state
+			interval
+		)
+	state =
+	changeState = (newState) ->
+		state.edit(newState)
+	
+	state = state
+
+	import Posts from './views/posts.pug'
+
+	
+
+Posts(state={sessionState})
+
+{#if}
+	{#await}
+		Directory

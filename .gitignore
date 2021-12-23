@@ -1,5 +1,10 @@
+# Package manager files
 .yarn
 .yarnrc
-build
-config/api-config-obscured.js
-node_modules
+node_modules/
+
+# Semi-secret files
+config/obscured.js
+
+# Auto-generated files for production
+webpack_output/
