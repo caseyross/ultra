@@ -28,6 +28,10 @@ String::toShortId = ->
 		return @[3..]
 	return @
 
+String::toBoardName = ->
+	return @.toLowerCase()
+String::toUserName = ->
+	return @.toLowerCase()
 
 String::normalizedLength = ->
 	x = encodeURI(@replace(/<[^>]+>/g, ''))
