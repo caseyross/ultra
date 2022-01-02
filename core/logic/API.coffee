@@ -74,7 +74,7 @@ export fetchSubredditEmojis = (name) ->
 					[ _, _, _, id, name ] = x[category][emoji].url.split('/')
 					emojis.push(name + ':' + id)
 		if emojis.length
-			browserState['emojis@' + name] = emojis.join(',')
+			machineState['emojis@' + name] = emojis.join(',')
 
 export fetchSubredditWidgets = (name) ->
 	get

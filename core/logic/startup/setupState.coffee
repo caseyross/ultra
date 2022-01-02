@@ -6,9 +6,9 @@ import { processLoginOrLogout } from '../../logic/net/authentication.coffee'
 import initialState from './state/initialState.coffee'
 import stateFromURL from './state/stateFromURL.coffee'
 
-# Setup browserState.
-# We never assume the presence of any given key in browserState, so we also don't initialize it with any values.
-window.browserState = window.localStorage
+# Setup machineState.
+# We never assume the presence of any given key in machineState, so we also don't initialize it with any values.
+window.machineState = window.localStorage
 processLoginOrLogout()
 
 # Setup sessionState.

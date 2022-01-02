@@ -1,19 +1,19 @@
 import { RATELIMIT_PERIOD, RATELIMIT_QUOTA } from '../../../config/ratelimit.js'
 
 getTimeline = ->
-	if browserState.API_REQUEST_TIMELINE
-		timeline = browserState.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
+	if machineState.API_REQUEST_TIMELINE
+		timeline = machineState.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
 	else
 		timeline = []
 	# Prune history for requests that no longer affect the ratelimit, and write updated timeline back.
 	prunedTimeline = timeline.filter((d) -> d + RATELIMIT_PERIOD > Date.now())
-	browserState.API_REQUEST_TIMELINE = prunedTimeline.join(" ")
+	machineState.API_REQUEST_TIMELINE = prunedTimeline.join(" ")
 	return prunedTimeline
 
 export countRatelimit = (numRequests) ->
 	timeline = getTimeline()
 	timeline.unshift(Date.now()) for [1..numRequests]
-	browserState.API_REQUEST_TIMELINE = timeline.join(" ")
+	machineState.API_REQUEST_TIMELINE = timeline.join(" ")
 
 export getRatelimitStatus = ->
 	timeline = getTimeline()
