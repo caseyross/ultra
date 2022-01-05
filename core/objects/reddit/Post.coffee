@@ -82,7 +82,7 @@ Content = (data) ->
 					@type = 'REDDIT'
 					@postId = postShortId?.toPostId()
 					@commentId = commentShortId?.toCommentId()
-	return Promise.resolve(@)
+	return @
 
 # NOTE:
 # Reddit only reports a reliable image height for the source image of a series. The reported height for resized images is generally incorrect.

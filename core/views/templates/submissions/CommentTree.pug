@@ -1,0 +1,12 @@
+script.
+	export idTree = null
+	[rootCommentId, replyIdTreeList] = idTree.pop()
+
+.comment-tree
+	Comment(id={rootCommentId})
+	CommentTreeList(type='reply' idTreeList={replyIdTreeList})
+
+style.
+	.comment-tree
+		margin-top 1em
+		border-left 1px solid rgba(255,255,255,0.25)
