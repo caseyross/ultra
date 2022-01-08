@@ -16,7 +16,7 @@ request = ({ method, path, body }) ->
 	return fetch 'https://oauth.reddit.com' + path, {
 		method
 		headers:
-			'Authorization': machineState.ACCESS_TOKEN
+			'Authorization': MACHINE.OAUTH_ACCESS_TOKEN
 		body
 	}
 	.then (response) ->

@@ -2,7 +2,7 @@ import Award from './Award.coffee'
 import Comment from './Comment.coffee'
 import CompressedComments from './CompressedComments.coffee'
 import DeeperComments from './DeeperComments.coffee'
-import Message from './Message.coffee'
+import PrivateMessage from './PrivateMessage.coffee'
 import Post from './Post.coffee'
 import Subreddit from './Subreddit.coffee'
 import User from './User.coffee'
@@ -28,7 +28,7 @@ export default class RedditDataModel
 			when 't3'
 				return new Post(object.data)
 			when 't4'
-				return new Message(object.data)
+				return new PrivateMessage(object.data)
 			when 't5'
 				return new Subreddit(object.data)
 			when 't6'

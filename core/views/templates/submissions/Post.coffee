@@ -26,7 +26,7 @@ export default class Post
 			text: data.link_flair_text
 			color: data.link_flair_background_color
 		domain: data.domain
-		content: new Content(data)
+		content: new PostContent(data)
 		isContestMode: data.contest_mode
 		isNSFW: data.over_18
 		isOC: data.is_original_content
@@ -50,7 +50,7 @@ export default class Post
 
 	}
 
-Content = (data) ->
+PostContent = (data) ->
 	@type = 'LINK'
 	@href = data.url
 	switch
@@ -83,103 +83,3 @@ Content = (data) ->
 					@postId = postShortId?.toPostId()
 					@commentId = commentShortId?.toCommentId()
 	return @
-
-# NOTE:
-# Reddit only reports a reliable image height for the source image of a series. The reported height for resized images is generally incorrect.
-# Thus, we need to determine the resized image heights ourselves.
-class Image
-	constructor: (d) ->
-		switch
-			when d.status and not (d.status is 'valid')
-				@aspect = 1
-				@sizes = [{
-					w: 640
-					u: '' # TODO: Add error image for invalid images
-				}]
-			when d.s
-				@aspect = d.s.x / d.s.y
-				@sizes =
-					if d.s.gif
-						[{
-							w: d.s.x
-							u: d.s.gif
-						}]
-					else
-						d.p.concat(d.s).map (resolution) ->
-							w: resolution.x
-							u: resolution.u
-			when d.variants?.gif
-				@aspect = d.variants.gif.source.width / d.variants.gif.source.height
-				@sizes =
-					[{
-						w: d.variants.gif.source.width
-						u: d.variants.gif.source.url
-					}]
-			when d.source
-				@aspect = d.source.width / d.source.height
-				@sizes = d.resolutions.concat(d.source).map (resolution) ->
-					w: resolution.width
-					u: resolution.url
-			else
-				@aspect = 1
-				@sizes = []
-		@sizes.sort (a, b) -> a.w - b.w
-		for s in @sizes
-			s.h = s.w / @aspect
-		@caption =
-			if d.caption or d.link
-				t: d.caption ? ''
-				u: d.link ? ''
-			else
-				null
-	pick: ({ minH, minW, maxH, maxW, maxP }) =>
-		@sizes.fold(
-			@sizes[0],
-			(a, b) => switch
-				when a.w < minW then b
-				when a.h < minH then b
-				when a.w >= maxW then a
-				when a.h >= maxH then a
-				when a.w * a.h > maxP then a
-				else b
-		)
-
-Video = (d) ->
-	if not d.fallback_url
-		alert r
-	@width = d.width
-	@height = d.height
-	@tracks =
-		if d.fallback_url # native reddit video
-			audio:
-				if d.is_gif
-					[]
-				else
-					[
-						new MediaSource {
-							mime_type: 'audio/mp4'
-							codec: 'mp4a.40.2'
-							href: d.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio')
-						}
-					]
-			video: [
-				new MediaSource {
-					mime_type: 'video/mp4'
-					codec: 'avc1.4D401F' # 4D401E for 480p and below
-					href: d.fallback_url
-				}
-			]
-		else # converted GIF video
-			audio: []
-			video: [
-				new MediaSource {
-					mime_type: 'video/mp4'
-					codec: 'avc1.4D401E' # probably
-					href: d.url
-				}
-			]
-
-MediaSource = ({ mime_type, codec, href }) ->
-	@mime_type = mime_type
-	@codec = codec
-	@href = href

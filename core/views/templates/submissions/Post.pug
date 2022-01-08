@@ -10,6 +10,15 @@ script.
 	}
 	galleryExpanded = false
 	w = 640
+	upvote = () ->
+		post.myVote = 1
+		sendUpvote(id)
+	unvote = () ->
+		post.myVote = 0
+		sendUpvote(id)
+	downvote = () ->
+		post.myVote = -1
+		sendUpvote(id)
 
 {#if post}
 	article.post

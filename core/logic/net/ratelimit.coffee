@@ -1,34 +1,34 @@
-import { RATELIMIT_PERIOD, RATELIMIT_QUOTA } from '../../../config/ratelimit.js'
+import { API_RATELIMIT_PERIOD_LENGTH, API_RATELIMIT_REQUESTS_PER_PERIOD } from '../../../config/api.js'
 
 getTimeline = ->
-	if machineState.API_REQUEST_TIMELINE
-		timeline = machineState.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
+	if MACHINE.API_REQUEST_TIMELINE
+		timeline = MACHINE.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
 	else
 		timeline = []
 	# Prune history for requests that no longer affect the ratelimit, and write updated timeline back.
-	prunedTimeline = timeline.filter((d) -> d + RATELIMIT_PERIOD > Date.now())
-	machineState.API_REQUEST_TIMELINE = prunedTimeline.join(" ")
+	prunedTimeline = timeline.filter((d) -> d + API_RATELIMIT_PERIOD_LENGTH > Date.now())
+	MACHINE.API_REQUEST_TIMELINE = prunedTimeline.join(" ")
 	return prunedTimeline
 
 export countRatelimit = (numRequests) ->
 	timeline = getTimeline()
 	timeline.unshift(Date.now()) for [1..numRequests]
-	machineState.API_REQUEST_TIMELINE = timeline.join(" ")
+	MACHINE.API_REQUEST_TIMELINE = timeline.join(" ")
 
 export getRatelimitStatus = ->
 	timeline = getTimeline()
 	return
-		period: RATELIMIT_PERIOD
-		quota: RATELIMIT_QUOTA
+		period: API_RATELIMIT_PERIOD_LENGTH
+		quota: API_RATELIMIT_REQUESTS_PER_PERIOD
 		used: timeline.length
 
 export getRatelimitWaitTime = (numRequests) ->
 	timeline = getTimeline()
-	if timeline.length < RATELIMIT_QUOTA
+	if timeline.length < API_RATELIMIT_REQUESTS_PER_PERIOD
 		return 0
-	if numRequests > RATELIMIT_QUOTA
-		return RATELIMIT_PERIOD
-	return timeline.last() + RATELIMIT_PERIOD - Date.now()
+	if numRequests > API_RATELIMIT_REQUESTS_PER_PERIOD
+		return API_RATELIMIT_PERIOD_LENGTH
+	return timeline.last() + API_RATELIMIT_PERIOD_LENGTH - Date.now()
 
 export class RatelimitError extends Error
 	constructor: ->

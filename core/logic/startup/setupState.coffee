@@ -5,8 +5,8 @@ import '../../scripts/String.coffee'
 import '../../scripts/window.coffee'
 import { processLoginOrLogout } from '../../logic/net/authentication.coffee'
 
-# Setup machineState.
-window.machineState = window.localStorage 
+# Setup MACHINE.
+window.MACHINE = window.localStorage 
 processLoginOrLogout()
 
 # Setup sessionState.

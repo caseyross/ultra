@@ -7,6 +7,15 @@ script.
 			scoreDigitCount = Math.ceil(Math.log10(Math.abs(comment.score) + 1))
 			scoreDigitCountArray = new Array(scoreDigitCount)
 	}
+	upvote = () ->
+		comment.myVote = 1
+		sendUpvote(id)
+	unvote = () ->
+		comment.myVote = 0
+		sendUpvote(id)
+	downvote = () ->
+		comment.myVote = -1
+		sendUpvote(id)
 
 {#if comment}
 	article(role='comment')
