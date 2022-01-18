@@ -1,21 +1,16 @@
 script.
 	export subreddits = []
+	import { ui } from './stores'
 	import matchCharactersToStrings from ''
 	query = []
 	matches = []
-	shortcuts = {
-		'NAV_DIRECTORY_CHARACTER_INPUT': (key) ->
-		'NAV_DIRECTORY_GOTO_LINK': () ->
-	}
-	onMount =>
-		enableKeyboardShortcuts(hotkeys)
-		return => disableKeyboardShortcuts(hotkeys)
 
-form.hide-scroll
-	output
-	ol
-		{#each subreddits as subreddit}
-			a(href='/r/{subreddit.displayName}') {subreddit.displayName}
+{#if $ui.directoryOpen}
+	form.hide-scroll
+		output
+		ol
+			{#each subreddits as subreddit}
+				a(href='/r/{subreddit.displayName}') {subreddit.displayName}
 style.
 	form
 		position fixed

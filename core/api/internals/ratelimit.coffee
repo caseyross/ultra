@@ -1,19 +1,19 @@
 import { API_RATELIMIT_PERIOD_LENGTH, API_RATELIMIT_REQUESTS_PER_PERIOD } from '../../../config/api.js'
 
 getTimeline = ->
-	if MACHINE.API_REQUEST_TIMELINE
-		timeline = MACHINE.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
+	if browser.API_REQUEST_TIMELINE
+		timeline = browser.API_REQUEST_TIMELINE.split(" ").map((d) -> Number(d))
 	else
 		timeline = []
 	# Prune history for requests that no longer affect the ratelimit, and write updated timeline back.
 	prunedTimeline = timeline.filter((d) -> d + API_RATELIMIT_PERIOD_LENGTH > Date.now())
-	MACHINE.API_REQUEST_TIMELINE = prunedTimeline.join(" ")
+	browser.API_REQUEST_TIMELINE = prunedTimeline.join(" ")
 	return prunedTimeline
 
 export countRatelimit = (numRequests) ->
 	timeline = getTimeline()
 	timeline.unshift(Date.now()) for [1..numRequests]
-	MACHINE.API_REQUEST_TIMELINE = timeline.join(" ")
+	browser.API_REQUEST_TIMELINE = timeline.join(" ")
 
 export getRatelimitStatus = ->
 	timeline = getTimeline()

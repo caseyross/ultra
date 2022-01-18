@@ -1,7 +1,5 @@
 import { getCredentialsTimeLeft, renewCredentials } from './authentication.coffee'
 import { countRatelimit, getRatelimitStatus, RatelimitError } from './ratelimit.coffee'
-import { cacheFunctionAs } from '../../cache.coffee'
-import RedditDataModel from '../../../models/RedditDataModel.coffee'
 
 request = ({ method, path, body }) ->
 	# Check credentials validity. Force renewal if necessary.
@@ -16,7 +14,7 @@ request = ({ method, path, body }) ->
 	return fetch 'https://oauth.reddit.com' + path, {
 		method
 		headers:
-			'Authorization': MACHINE.OAUTH_ACCESS_TOKEN
+			'Authorization': browser.OAUTH_ACCESS_TOKEN
 		body
 	}
 	.then (response) ->
@@ -26,26 +24,19 @@ request = ({ method, path, body }) ->
 		if getCredentialsTimeLeft() < Date.minutes(30)
 			renewCredentials()
 
-export get = ({ endpoint, cache, automodel, ...options }) ->
+export get = ({ endpoint, ...options }) ->
 	for name, value of options
-		if not value and value isnt 0 then delete options[name] # Don't send keys with empty values.
+		if value == undefined or value == null
+			delete options[name]
 	options.raw_json = 1 # Opt out of legacy Reddit response encoding
-	r = ->
-		request
-			method: 'GET'
-			path: endpoint + '?' + (new URLSearchParams(options)).toString()
-	promise =
-		if cache
-			cacheFunctionAs cache, r
-		else
-			r()
-	promise.then (data) ->
-		console.log data
-		if automodel then new RedditDataModel(data) else data
+	request
+		method: 'GET'
+		path: endpoint + '?' + (new URLSearchParams(options)).toString()
 
 export post = ({ endpoint, ...content }) ->
-	for name, value of content
-		if not value and value isnt 0 then delete content[name] # Don't send keys with empty values.
+	for name, value of options
+		if value == undefined or value == null
+			delete options[name]
 	request
 		method: 'POST'
 		path: endpoint

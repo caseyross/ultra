@@ -1,5 +1,51 @@
-import RedditDataModel from '../objects/reddit/RedditDataModel.coffee'
-import { get, post } from './net/request.coffee'
+import RedditDataModel from './RedditDataModel.coffee'
+import { get, post } from './internals/request.coffee'
+import { invalidateCredentials } from './internals/authentication.coffee'
+import { API_ASSIGNED_APPLICATION_ID } from '../../../config/obscured.js'
+import { API_AFTERLOGIN_REDIRECT_URL, API_OAUTH_USER_SCOPES_REQUESTED } from '../../../config/api.js'
+
+export isLoggedIn = ->
+	if browser.OAUTH_REFRESH_TOKEN
+		true
+	else
+		false
+
+requestLogin = ->
+	browser.OAUTH_ECHO_VALUE = window.location.pathname + '*' + Math.trunc(Number.MAX_VALUE * Math.random())
+	authorizationParams = new URLSearchParams(
+		response_type: 'code',
+		duration: 'permanent',
+		scope: API_OAUTH_USER_SCOPES_REQUESTED.join(),
+		client_id: API_ASSIGNED_APPLICATION_ID,
+		redirect_uri: API_AFTERLOGIN_REDIRECT_URL,
+		state: browser.OAUTH_ECHO_VALUE
+	)
+	authorizationURL = 'https://www.reddit.com/api/v1/authorize?' + authorizationParams.toString()
+	window.location.href = authorizationURL
+
+# No specific logout function; simply use query parameter "logout" on any page load to logout.
+
+export processLoginOrLogout = ->
+	p = new URLSearchParams(window.location.search)
+	switch
+		# Login request
+		when p.has('login')
+			requestLogin()
+		# Successful login
+		when p.has('code') and p.get('state') is browser.OAUTH_ECHO_VALUE
+			invalidateCredentials()
+			delete browser.OAUTH_ECHO_VALUE
+			browser.OAUTH_AUTH_CODE = p.get('code')
+			returnURL = window.location.origin + p.get('state').split('*')[0]
+			history.replaceState({}, '', returnURL)
+		# Failed login
+		when p.has('error')
+			alert p.get('error')
+		# Logout
+		when p.has('logout')
+			invalidateCredentials()
+			returnURL = window.location.origin + window.location.pathname
+			history.replaceState({}, '', returnURL)
 
 export fetchPopularSubreddits = ->
 	get
@@ -9,7 +55,7 @@ export fetchPopularSubreddits = ->
 		subreddits.filter (s) ->
 			s.name isnt 'home'
 
-export fetchCurrentUserProfile = ->
+export fetchCurrentUserInformation = ->
 	get
 		endpoint: '/api/v1/me'
 
@@ -19,7 +65,7 @@ export fetchCurrentUserSubscriptions = ->
 		limit: 1000
 		automodel: true # Array[Subreddit]
 
-export fetchUserProfile = (name) ->
+export fetchUserInformation = (name) ->
 	get
 		endpoint: '/user/' + name + '/about'
 		cache: 'u/' + name + '/about'
@@ -55,7 +101,7 @@ export fetchUserPostsAndComments = (name, amount, { sort = 'new' }) ->
 		cache: ['u', name, filter, sort, amount].join('/')
 		automodel: true # Array[Post/Comment]
 
-export fetchSubredditProfile = (name) ->
+export fetchSubredditInformation = (name) ->
 	get
 		endpoint: '/r/' + name + '/about'
 		cache: 'r/' + name + '/information'
@@ -74,7 +120,7 @@ export fetchSubredditEmojis = (name) ->
 					[ _, _, _, id, name ] = x[category][emoji].url.split('/')
 					emojis.push(name + ':' + id)
 		if emojis.length
-			MACHINE['emojis@' + name] = emojis.join(',')
+			browser['emojis@' + name] = emojis.join(',')
 
 export fetchSubredditWidgets = (name) ->
 	get

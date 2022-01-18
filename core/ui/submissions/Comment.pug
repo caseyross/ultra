@@ -1,25 +1,16 @@
 script.
-	import CompressedCommentsModel from '../models/CompressedComments.coffee'
-	import DeeperCommentsModel from '../models/DeeperComments.coffee'
-	export comment = {}
-	isDeeper = comment instanceof DeeperCommentsModel
-	isCompressed = comment instanceof CompressedCommentsModel
-	if Number.isFinite(comment.score)
-		scoreSign = Math.sign(comment.score)
-		scoreDigitCount = Math.ceil(Math.log10(Math.abs(comment.score) + 1))
-		scoreDigitCountArray = new Array(scoreDigitCount)
+	export id = ''
+	$: comment = $objects[id]
+	$: {
+		if Number.isFinite(comment.score)
+			scoreSign = Math.sign(comment.score)
+			scoreDigitCount = Math.ceil(Math.log10(Math.abs(comment.score) + 1))
+			scoreDigitCountArray = new Array(scoreDigitCount)
+	}
 
-.comment-tree
+{#if comment}
 	article(role='comment')
-		.text
-			{#if isDeeper}
-				span.deeper-message Deeper
-			{:else if isCompressed}
-				span.compressed-message More comments
-			{:else if comment.isDeleted}
-				span.deleted-message Deleted
-			{:else}
-				{@html comment.content}
+		.text {@html comment.content}
 		.meta(style='height: 1em')
 			{#if Number.isFinite(comment.score)}
 				data(value={comment.score} title='score: {comment.score}')
@@ -36,22 +27,9 @@ script.
 							</svg>
 					{:else}
 						span -
-	{#if !isDeeper && !isCompressed && comment.replies.length}
-		.replies
-			{#each comment.replies as reply}
-				svelte:self(comment={reply})
 
 style.
-	.comment-tree
-		margin-top 1em
-		border-left 1px solid rgba(255,255,255,0.25)
 	[role=comment]
 		position relative
 		width 33rem
 		padding-left 2rem
-	.deeper-message
-	.compressed-message
-	.deleted-message
-		opacity 0.5
-	.replies
-		padding-left 1em
