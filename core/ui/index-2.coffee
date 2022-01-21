@@ -8,6 +8,6 @@ try
 	new Index
 		target: document.body
 		props:
-			sessionState: window.sessionState
+			state: window.state
 catch error
 	alert(error)

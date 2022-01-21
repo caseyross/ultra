@@ -19,14 +19,14 @@ parseThing = ({ kind, data }) ->
 					if more.depth < 10
 						data.moreReplies = more.data.children.map((replyId) -> replyId.toCommentId())
 					else
-						# At comment depth 10, "more" objects stop returning IDs of comment replies. On the official UI, you need to load a new page to see comments below this depth.
+						# At comment depth 10, "more" objects stop returning IDs of comment replies. In the official UI, you must load a new page to see comments below this depth.
 						data.repliesContinue = true
 					parseThing(reply)
 				for reply in data.replies
 				data.replies = data.replies.map((reply) -> reply.data.id.toCommentId())
 			objects[data.id.toCommentId()] = data
 		when 't2' # user
-			objects[data.subreddit.id.toSubredditId()] = data.subreddit # Each user has a personal subreddit (often referred to as posting "to your profile").
+			objects[data.subreddit.id.toSubredditId()] = data.subreddit # Each user has a personal subreddit (often referred to as "your profile").
 			data.subreddit = data.subreddit.id.toSubredditId()
 			objects[data.id.toUserId()] = data
 		when 't3' # post

@@ -1,8 +1,49 @@
-import RedditDataModel from './RedditDataModel.coffee'
-import { get, post } from './internals/request.coffee'
-import { invalidateCredentials } from './internals/authentication.coffee'
-import { API_ASSIGNED_APPLICATION_ID } from '../../../config/obscured.js'
-import { API_AFTERLOGIN_REDIRECT_URL, API_OAUTH_USER_SCOPES_REQUESTED } from '../../../config/api.js'
+import { getCredentialsTimeLeft, renewCredentials } from './internals/authentication.coffee'
+import {} from './internals/parsing.coffee'
+import { countRatelimit, getRatelimitStatus, RatelimitError } from './internals/ratelimit.coffee'
+
+request = ({ method, path, body }) ->
+	# Check credentials validity. Force renewal if necessary.
+	if getCredentialsTimeLeft() <= 0
+		await renewCredentials()
+	# Check ratelimit status and fail if quota has been hit.
+	{ quota, used } = getRatelimitStatus()
+	if used >= quota
+		return Promise.reject(new RatelimitError())
+	# OK to send.
+	countRatelimit(1)
+	return fetch 'https://oauth.reddit.com' + path, {
+		method
+		headers:
+			'Authorization': browser.OAUTH_ACCESS_TOKEN
+		body
+	}
+	.then (response) ->
+		response.json()
+	.finally ->
+		# Asynchronously renew credentials if they're going to expire within a certain time.
+		if getCredentialsTimeLeft() < Date.minutes(30)
+			renewCredentials()
+get = ({ endpoint, ...options }) ->
+	for name, value of options
+		if value == undefined or value == null
+			delete options[name]
+	options.raw_json = 1 # Opt out of legacy Reddit response encoding
+	$loading[key] = true
+	request
+		method: 'GET'
+		path: endpoint + '?' + (new URLSearchParams(options)).toString()
+	.then (json) ->
+		$vintage[key] = Date.now()
+		$loading[key] = false
+post = ({ endpoint, ...content }) ->
+	for name, value of options
+		if value == undefined or value == null
+			delete options[name]
+	request
+		method: 'POST'
+		path: endpoint
+		body: new URLSearchParams(content)
 
 export isLoggedIn = ->
 	if browser.OAUTH_REFRESH_TOKEN
@@ -10,45 +51,9 @@ export isLoggedIn = ->
 	else
 		false
 
-requestLogin = ->
-	browser.OAUTH_ECHO_VALUE = window.location.pathname + '*' + Math.trunc(Number.MAX_VALUE * Math.random())
-	authorizationParams = new URLSearchParams(
-		response_type: 'code',
-		duration: 'permanent',
-		scope: API_OAUTH_USER_SCOPES_REQUESTED.join(),
-		client_id: API_ASSIGNED_APPLICATION_ID,
-		redirect_uri: API_AFTERLOGIN_REDIRECT_URL,
-		state: browser.OAUTH_ECHO_VALUE
-	)
-	authorizationURL = 'https://www.reddit.com/api/v1/authorize?' + authorizationParams.toString()
-	window.location.href = authorizationURL
-
-# No specific logout function; simply use query parameter "logout" on any page load to logout.
-
-export processLoginOrLogout = ->
-	p = new URLSearchParams(window.location.search)
-	switch
-		# Login request
-		when p.has('login')
-			requestLogin()
-		# Successful login
-		when p.has('code') and p.get('state') is browser.OAUTH_ECHO_VALUE
-			invalidateCredentials()
-			delete browser.OAUTH_ECHO_VALUE
-			browser.OAUTH_AUTH_CODE = p.get('code')
-			returnURL = window.location.origin + p.get('state').split('*')[0]
-			history.replaceState({}, '', returnURL)
-		# Failed login
-		when p.has('error')
-			alert p.get('error')
-		# Logout
-		when p.has('logout')
-			invalidateCredentials()
-			returnURL = window.location.origin + window.location.pathname
-			history.replaceState({}, '', returnURL)
-
 export fetchPopularSubreddits = ->
-	get
+	getListing
+		key: 'popularsubreddits'
 		endpoint: '/subreddits/popular'
 		automodel: true # Array[Subreddit]
 	.then (subreddits) ->
@@ -56,17 +61,20 @@ export fetchPopularSubreddits = ->
 			s.name isnt 'home'
 
 export fetchCurrentUserInformation = ->
-	get
+	getSingleton
+		key: 'currentuserinfo'
 		endpoint: '/api/v1/me'
 
 export fetchCurrentUserSubscriptions = ->
 	get
+		key: 'currentusersubscriptions'
 		endpoint: '/subreddits/mine/subscriber'
 		limit: 1000
 		automodel: true # Array[Subreddit]
 
 export fetchUserInformation = (name) ->
 	get
+		key: 'userinfo_' + name
 		endpoint: '/user/' + name + '/about'
 		cache: 'u/' + name + '/about'
 		automodel: true # User
@@ -103,14 +111,14 @@ export fetchUserPostsAndComments = (name, amount, { sort = 'new' }) ->
 
 export fetchSubredditInformation = (name) ->
 	get
+		key: 'srinfo_' + name
 		endpoint: '/r/' + name + '/about'
-		cache: 'r/' + name + '/information'
 		automodel: true # Subreddit
 
 export fetchSubredditEmojis = (name) ->
 	get
+		key: 'sremojis_' + name
 		endpoint: '/api/v1/' + name + '/emojis/all'
-		cache: 'r/' + name + '/emojis'
 	.then (x) ->
 		emojis = []
 		for category of x
@@ -124,8 +132,8 @@ export fetchSubredditEmojis = (name) ->
 
 export fetchSubredditWidgets = (name) ->
 	get
+		key: 'srwidgets_' + name
 		endpoint: '/r/' + name + '/api/widgets'
-		cache: 'r/' + name + '/widgets'
 	.then (x) ->
 		widgets =
 			basics: x.items[x.layout.idCardWidget]
@@ -168,17 +176,17 @@ export fetchFrontpagePosts = (amount, { sort = 'best' }) ->
 
 export fetchPost = (id) ->
 	get
+		key: id
 		endpoint: '/comments/' + id.toShortId()
-		cache: id
 	.then ([x, y]) ->
 		# The post's comments are handled separately.
 		new RedditDataModel(x)[0] # Post
 
 export fetchPostComments = (id, sort = 'top') ->
 	get
+		key: 'postcomments_' + id
 		endpoint: '/comments/' + id.toShortId()
 		sort: sort
-		cache: id
 	.then ([x, y]) ->
 		new RedditDataModel(y) # Array[Comment/CompressedComments/DeeperComments]
 
