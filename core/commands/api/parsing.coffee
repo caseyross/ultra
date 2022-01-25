@@ -1,11 +1,5 @@
-parseListingOrThing = (data) ->
-	if data.kind = 'Listing'
-		parseListing(data)
-	else
-		parseThing(data)
-
-parseListing = ({ children }) ->
-	if children instanceof Array
+parseListing = ({ kind, children }) ->
+	if kind == 'Listing' and children instanceof Array
 		for child in children
 			parseThing(child)
 
@@ -35,8 +29,17 @@ parseThing = ({ kind, data }) ->
 			# Note that post data does NOT come with comments attached. These need to be linked up at a higher level.
 			objects[data.id.toPostId()] = data
 		when 't4' # private message
-			objects[data.id.toPrivateMessageId()] = data
+			data.longId = data.id.toPrivateMessageId()
+			data.shortId = data.id.toShortId()
+			delete data.id
+			objects[data.longId] = data
 		when 't5' # subreddit
-			objects[data.id.toSubredditId()] = data
+			data.longId = data.id.toSubredditId()
+			data.shortId = data.id.toShortId()
+			delete data.id
+			objects[data.longId] = data
 		when 't6' # award
-			objects[data.id.toAwardId()] = data
+			data.longId = data.id.toAwardId()
+			data.shortId = data.id.toShortId()
+			delete data.id
+			objects[data.longId] = data

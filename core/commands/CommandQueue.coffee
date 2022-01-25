@@ -1,9 +1,8 @@
 export default class CommandQueue extends EventTarget {
 
 	constructor: ->
-		super()
 
-	push: (command) ->
+	add: (command) ->
 		event = new Event('command')
 		event.data = command
 		@dispatchEvent(event)

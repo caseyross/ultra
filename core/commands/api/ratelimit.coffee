@@ -29,10 +29,3 @@ export getRatelimitWaitTime = (numRequests) ->
 	if numRequests > API_RATELIMIT_REQUESTS_PER_PERIOD
 		return API_RATELIMIT_PERIOD_LENGTH
 	return timeline.last() + API_RATELIMIT_PERIOD_LENGTH - Date.now()
-
-export class RatelimitError extends Error
-	constructor: ->
-		super()
-		@name = 'RatelimitError'
-		@waitTime = getRatelimitWaitTime(1)
-		@message = "Reddit limits how quickly we can send requests to its servers. We have to wait #{@waitTime // Date.seconds(1)}s to request more data."

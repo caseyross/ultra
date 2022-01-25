@@ -1,9 +1,8 @@
 # Add "URL change" as an event that can be reacted to.
 (new MutationObserver(() ->
-	{
-		type: 'system'
-		name: 'Load URL Internally'
-		data: window.location
+	command {
+		type: 'load url data'
+		url: window.location
 	}
 )).observe(
 	window.document,
@@ -33,10 +32,8 @@ window.onkeydown = (e) ->
 			switch e.key
 				when ''
 
-window.setInterval(->
-	{
-		type: 'system'
-		name: 'Update Metrics'
+window.setInterval () ->
+	command {
+		type: 'update metrics'
 	},
 	6000
-)

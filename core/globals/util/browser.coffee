@@ -1,0 +1,1 @@
+window.browser = window.localStorage

@@ -2,13 +2,13 @@ import { API_ASSIGNED_APPLICATION_ID } from '../../../config/obscured.js'
 import { API_AFTERLOGIN_REDIRECT_URL, API_OAUTH_USER_SCOPES_REQUESTED } from '../../../config/api.js'
 
 export getCredentialsTimeLeft = ->
-	if not browser.OAUTH_ACCESS_TOKEN
+	if !browser.OAUTH_ACCESS_TOKEN?
 		return 0
-	validityStart = Number(browser.OAUTH_ACCESS_TOKEN_VALIDITY_PERIOD_START)
-	if not Number.isFinite(validityStartDate)
+	validityStart = Number(browser.OAUTH_ACCESS_TOKEN_VALIDITY_START)
+	if !Number.isFinite(validityStart)
 		return 0
-	validityLength = Number(browser.OAUTH_ACCESS_TOKEN_VALIDITY_PERIOD_LENGTH)
-	if not Number.isFinite(validityPeriod)
+	validityLength = Number(browser.OAUTH_ACCESS_TOKEN_VALIDITY_LENGTH)
+	if !Number.isFinite(validityLength)
 		return 0
 	return validityStart + validityLength - Date.now()
 
@@ -25,9 +25,8 @@ export renewCredentials = ->
 	return fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
 		headers:
-			# HTTP Basic Auth
-			'Authorization': 'Basic ' + btoa(API_ASSIGNED_APPLICATION_ID + ':')
-		body: new URLSearchParams(
+			'Authorization': 'Basic ' + btoa(API_ASSIGNED_APPLICATION_ID + ':') # HTTP Basic Auth
+		body: JSON.stringify(
 			switch
 				# Request for credentials for a user who just authorized our client.
 				when browser.OAUTH_AUTH_CODE
@@ -53,15 +52,17 @@ export renewCredentials = ->
 		)
 	.then (response) ->
 		response.json()
-	.then (response) ->
-		if isFinite(response.expires_in) and response.token_type and response.access_token
+	.then (data) ->
+		if isFinite(data.expires_in) and data.token_type and data.access_token
 			browser.OAUTH_ACCESS_TOKEN_VALIDITY_START = Date.now()
-			browser.OAUTH_ACCESS_TOKEN_VALIDITY_LENGTH = Date.seconds(response.expires_in)
-			browser.OAUTH_ACCESS_TOKEN = response.token_type + ' ' + response.access_token
-			if response.refresh_token
-				browser.OAUTH_REFRESH_TOKEN = response.refresh_token
+			browser.OAUTH_ACCESS_TOKEN_VALIDITY_LENGTH = Date.seconds(data.expires_in)
+			browser.OAUTH_ACCESS_TOKEN = data.token_type + ' ' + data.access_token
+			if data.refresh_token
+				browser.OAUTH_REFRESH_TOKEN = data.refresh_token
 	.finally ->
 		browser.OAUTH_RENEWING = 'FALSE'
+		if getCredentialsTimeLeft() <= 0
+			throw new Error('Failed to acquire valid API credentials.')
 
 waitForCredentialsRenewal = (f) ->
 	if browser.OAUTH_RENEWING is 'TRUE'
@@ -82,7 +83,7 @@ invalidateCredentials = ->
 	delete browser.OAUTH_ACCESS_TOKEN_VALIDITY_LENGTH
 	delete browser.OAUTH_REFRESH_TOKEN
 
-requestLogin = ->
+requestLogIn = ->
 	browser.OAUTH_ECHO_VALUE = window.location.pathname + '*' + Math.trunc(Number.MAX_VALUE * Math.random())
 	authorizationParams = new URLSearchParams(
 		response_type: 'code',
@@ -97,12 +98,12 @@ requestLogin = ->
 
 # No specific logout function; simply use query parameter "logout" on any page load to logout.
 
-export processLoginOrLogout = ->
+export handleLogInOrLogOut = ->
 	p = new URLSearchParams(window.location.search)
 	switch
-		# Login request
+		# Log in request
 		when p.has('login')
-			requestLogin()
+			requestLogIn()
 		# Successful login
 		when p.has('code') and p.get('state') is browser.OAUTH_ECHO_VALUE
 			invalidateCredentials()
