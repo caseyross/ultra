@@ -29,7 +29,7 @@ parseThing = ({ kind, data }) ->
 			# Note that post data does NOT come with comments attached. These need to be linked up at a higher level.
 			objects[data.id.toPostId()] = data
 		when 't4' # private message
-			data.longId = data.id.toPrivateMessageId()
+			data.longId = data.id.toMessageId()
 			data.shortId = data.id.toShortId()
 			delete data.id
 			objects[data.longId] = data

@@ -10,7 +10,7 @@ String::toPostId = ->
 	if @startsWith('t3_')
 		return @
 	return 't3_' + @
-String::toPrivateMessageId = ->
+String::toMessageId = ->
 	if @startsWith('t4_')
 		return @
 	return 't4_' + @

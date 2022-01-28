@@ -1,6 +1,11 @@
 script.
 	export id = ''
-	$: post = $objects[id]
+	if !$objects[id] then GET_OBJECT(id)
+	$: {
+		post = $objects[id]
+		loading = $loading[id]
+		error = $error[id]
+	}
 	$: {
 		scoreText = switch
 			when post.isStickied then 'Stickied'
@@ -47,6 +52,8 @@ script.
 					iframe(src={content.src} allowfullscreen='true' allow={content.allow} title='Video from {(new URL(content.src)).host}' style='width: {w}px; height: {Math.ceil(w / 16 * 9)}px')
 				{:else}
 					span.unidentified-content (Unidentified content.)
+{:else if loading}
+{:else if error}
 
 style.
 	.row

@@ -15,8 +15,12 @@ export default class CommandProcessor extends EventTarget {
 				stateChange
 			}
 			@dispatchEvent(event)
+			if stateChange != null
+				event = new Event('statechange')
+				event.data = stateChange
+				@dispatchEvent(event)
 		catch error
-			event = new Event('commandprocessfail')
+			event = new Event('commanderror')
 			event.data = {
 				command
 				error

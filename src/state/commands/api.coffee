@@ -3,7 +3,7 @@ import { countRatelimit, getRatelimitWaitTime } from './internals/ratelimit.coff
 
 export default
 
-	'begin api request': ({
+	START_API_REQUEST: ({
 		method, # HTTP method
 		path, # Remote path
 		query = {} # Query parameters for GET/HEAD
@@ -12,43 +12,38 @@ export default
 		parse = null # Function used to derive objects from returned data (overriding "key" parameter if also present)
 	}) ->
 		#
+		# check parameters
+		#
+		if !method or !path
+			throw new Error('HTTP method and remote path must be specified for API requests.')
+		if !key and !parse
+			throw new Error('Object key or parse function must be specified for API requests.')
+		#
 		# check API credentials
 		#
 		if getCredentialsTimeLeft() <= 0
 			# if invalid, get new credentials and try the request again
-			command {
-				type: 'end api request',
-				status: 'credential-error'
-			}
+			END_API_REQUEST({ status: 'CREDENTIAL_ERROR' })
 			renewCredentials().then ->
-				command {
-					type: 'begin api request'
+				START_API_REQUEST({
 					method
 					path
 					query
 					body
 					key
 					parse
-				}
+				})
 			return null
 		#
 		# check ratelimit
 		#
 		wait = getRatelimitWaitTime(1)
 		if wait > 0
-			command(
-				type: 'end api request'
-				status: 'ratelimit-error'
-				wait
-			)
+			END_API_REQUEST({ status: 'RATELIMIT_ERROR', wait })
 			return null
 		#
 		# build request
 		#
-		if !method or !path
-			throw new Error('HTTP method and remote path must be specified for API requests.')
-		if !key and !parse
-			throw new Error('Object key or object parse function must be specified for API requests.')
 		for key, value of query
 			if !value? then delete query[key]
 		query.raw_json = 1 # tell the API not to HTML-encode chars in the response
@@ -67,47 +62,22 @@ export default
 				options.headers['Content-Type'] = 'application/json'
 				options.body = JSON.stringify(message)
 		#
-		# queue up request & aftereffects, and send
+		# queue up request
 		#
-		fetch(endpoint, options)
-		.catch (error) ->
-			command {
-				type: 'end api request'
-				status: 'network-error'
-				error
-				key
-			}
+		fetch(endpoint, options).catch((error) ->
+			END_API_REQUEST({ status: 'NETWORK_ERROR', error, key })
 			Promise.reject()
-		.then (response) ->
+		).then((response) ->
 			countRatelimit(1)
 			if !response.ok
-				command {
-					type: 'end api request'
-					status: 'request-error'
-					error: response.statusText
-					code: response.status
-					key
-				}
+				END_API_REQUEST({ status: 'REQUEST_ERROR', error: response.statusText, code: response.status, key })
 				Promise.reject()
 			else
-				response.json()
-				.catch (error) ->
-					command {
-						type: 'end api request'
-						status: 'parse-error'
-						error
-						body: response.body
-						key
-					}
+				response.json().catch((error) ->
+					END_API_REQUEST({ status: 'PARSE_ERROR', error, body: response.body, key })
 					Promise.reject()
-				.then (data) ->
-					command {
-						type: 'end api request'
-						status: 'complete'
-						key
-						parse
-						data
-					}
+				).then (data) ->
+					END_API_REQUEST({ status: 'SUCCESS', key, parse, data })
 		#
 		# return
 		#
@@ -119,13 +89,17 @@ export default
 		else
 			return null
 
-	'end api request': ({ status, wait, error, code, key, parse, data }) ->
+	END_API_REQUEST: ({ status, wait, error, code, key, parse, data }) ->
+		#
+		# TODO:
+		# if apiRequestError then set error[key] = apiRequestError
+		#
 		switch status
-			when 'credential-error'
+			when 'CREDENTIAL_ERROR'
 				return null
-			when 'ratelimit-error'
+			when 'RATELIMIT_ERROR'
 				return null
-			when 'network-error'
+			when 'NETWORK_ERROR'
 				if key
 					return {
 						loading:
@@ -133,7 +107,7 @@ export default
 					}
 				else
 					return null
-			when 'request-error'
+			when 'REQUEST_ERROR'
 				if key
 					return {
 						loading:
@@ -141,7 +115,7 @@ export default
 					}
 				else
 					return null
-			when 'parse-error'
+			when 'PARSE_ERROR'
 				if key
 					return {
 						loading:
@@ -149,7 +123,7 @@ export default
 					}
 				else
 					return null
-			when 'complete'
+			when 'SUCCESS'
 				objects = if parse then parse(data) else { [key]: data }
 				vintage = {}
 				for objectKey of objects

@@ -1,6 +1,11 @@
 script.
 	export id = ''
-	$: comment = $objects[id]
+	if !$objects[id] then GET_OBJECT(id)
+	$: {
+		comment = $objects[id]
+		loading = $loading[id]
+		error = $error[id]
+	}
 	$: {
 		if Number.isFinite(comment.score)
 			scoreSign = Math.sign(comment.score)
@@ -13,7 +18,7 @@ script.
 		.text {@html comment.content}
 		.meta(style='height: 1em')
 			{#if Number.isFinite(comment.score)}
-				data(value={comment.score} title='score: {comment.score}')
+				data(value={comment.score} title='score: {comment.score}' on:click={comment.upvote()})
 					{#each (new Array(scoreDigitCount)) as index}
 						{#if scoreSign > 0}
 							<svg width='100' height='120' viewBox='-50 -30 200 180' style='width: 1em; height: 1em'>
@@ -27,6 +32,8 @@ script.
 							</svg>
 					{:else}
 						span -
+{:else if loading}
+{:else if error}
 
 style.
 	[role=comment]

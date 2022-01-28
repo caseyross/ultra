@@ -2,6 +2,8 @@ script.
 	import Directory from './directory.pug'
 	import CommentSection from '../templates/CommentSection.pug'
 	import Post from '../templates/Post.pug'
+	if !$objects['slice'] then GET_OBJECT('slice')
+	$: slice = objects.slice
 
 svelte:head
 	title reddit ({state.channel.name})

@@ -25,7 +25,7 @@ module.exports = {
 	},
 	output: {
 		filename: '[name].[contenthash].js',
-		path: path.join(__dirname, 'webpack_output'),
+		path: path.join(__dirname, 'build'),
 		publicPath: '/', // location of output files relative to the web server root
 		clean: true // cleanup output directory before emitting assets
 	},

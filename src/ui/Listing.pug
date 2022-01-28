@@ -2,6 +2,8 @@ script.
 	export listing = {}
 	import Post from ''
 	index = 0
+	if !$objects['slice'] then GET_OBJECT('slice')
+	$: slice = objects['slice']
 
 ol
 	Post(post={listing.posts.page[0].post[0]})

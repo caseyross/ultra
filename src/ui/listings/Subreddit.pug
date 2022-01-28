@@ -1,0 +1,10 @@
+script.
+	export name = ''
+	export sort = ''
+	export count = ''
+	shortId = [name, sort, count].join(':')
+	$: {
+		slice = $objects['slice_' + shortId]
+		loading = $loading['slice_' + shortId]
+		error = $error['slice_' + shortId]
+	}
