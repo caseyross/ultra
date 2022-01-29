@@ -1,11 +1,5 @@
 script.
 	export id = ''
-	if !$objects[id] then GET_OBJECT(id)
-	$: {
-		comment = $objects[id]
-		loading = $loading[id]
-		error = $error[id]
-	}
 	$: {
 		if Number.isFinite(comment.score)
 			scoreSign = Math.sign(comment.score)
@@ -13,7 +7,7 @@ script.
 			scoreDigitCountArray = new Array(scoreDigitCount)
 	}
 
-{#if comment}
+WithAsyncData(id={id} let:data={comment})
 	article(role='comment')
 		.text {@html comment.content}
 		.meta(style='height: 1em')
@@ -32,8 +26,6 @@ script.
 							</svg>
 					{:else}
 						span -
-{:else if loading}
-{:else if error}
 
 style.
 	[role=comment]

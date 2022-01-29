@@ -1,12 +1,4 @@
 script.
 	export id = ''
-	if !$objects[id] then GET_OBJECT(id)
-	$: {
-		message = $objects[id]
-		loading = $loading[id]
-		error = $error[id]
-	}
 
-{#if message}
-{:else if loading}
-{:else if error}
+WithAsyncData(id={id} let:data={message})

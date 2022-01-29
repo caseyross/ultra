@@ -1,0 +1,29 @@
+script.
+	export id = ''
+	$: {
+		object = $objects[id]
+		loading = $loading[id]
+		error = $error[id]
+	}
+	if !object then GET_OBJECT(id)
+
+{#if object}
+	slot(object={object})
+{:else if loading}
+	.alert.loading loading...
+{:else if error}
+	.alert.error {error}
+
+style.
+	.alert
+		height 100%
+		width 100%
+		display flex
+		justify-content center
+		align-items center
+	.loading
+		background antiquewhite
+		color gray
+	.error
+		background salmon
+		color white
