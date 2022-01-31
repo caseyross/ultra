@@ -1,0 +1,14 @@
+script.
+	export data = null
+
+span {@html data.html}
+
+style.
+	span
+		display inline-flex
+		align-items center
+		white-space pre
+		opacity 0.5
+	:global(.flair-emoji)
+		height 16px
+		border-radius (@height / 2)

@@ -1,10 +1,10 @@
-# Package manager files
+# Package manager
 .yarn
 .yarnrc
-node_modules/
+node_modules
 
-# Semi-secret files
-config/obscured.js
+# Semi-secrets
+src/env/config/obscured.js
 
-# Auto-generated files for production
-webpack_output/
+# Production build
+build
