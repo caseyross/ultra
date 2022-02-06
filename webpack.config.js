@@ -12,12 +12,12 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 module.exports = {
 	mode: 'production',
 	entry: {
-		index_a: {
-			import: './pages/index/index-a.coffee', // scripts that should run ASAP to start API requests
+		init: {
+			import: './src/init.coffee', // bootstraps API requests prior to parsing UI code
 		},
-		index_b: {
-			import: './pages/index/index-b.coffee', // all other scripts
-			dependOn: 'index_a',
+		render: {
+			import: './src/ui/render.coffee', // constructs and renders the UI
+			dependOn: 'init',
 		}
 	},
 	optimization: {
@@ -31,13 +31,13 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './pages/index/index.html',
+			template: './src/index.html',
 			inject: false, // manual script placement in template
 		}),
-		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /index_a/]), // inline to avoid network roundtrip
+		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /init/]), // inline to avoid network roundtrip
 		new CopyWebpackPlugin({
 			patterns: [
-				{ from: './assets/icons', }, // copy directly to output directory
+				{ from: './src/ui/_graphics', }, // copy directly to output directory
 			],
 		}),
 	],

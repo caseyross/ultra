@@ -1,0 +1,1 @@
+export const API_POSTLOGIN_REDIRECT = process.env.NODE_ENV === 'production' ? 'https://localhost:8080' : 'https://localhost:8080'

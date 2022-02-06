@@ -1,7 +1,7 @@
-import { API_ASSIGNED_APPLICATION_ID } from '../../../config/obscured.js'
-import { API_AFTERLOGIN_REDIRECT_URL, API_OAUTH_USER_SCOPES_REQUESTED } from '../../../config/api.js'
+import { API_POSTLOGIN_REDIRECT } from '../../../config/config.js'
+import { API_APPLICATION_ID } from '../../../config/obscured.js'
 
-export getCredentialsTimeLeft = ->
+export checkCredentialsTimeRemaining = ->
 	if !browser.OAUTH_ACCESS_TOKEN?
 		return 0
 	validityStart = Number(browser.OAUTH_ACCESS_TOKEN_VALIDITY_START)
@@ -25,7 +25,7 @@ export renewCredentials = ->
 	return fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
 		headers:
-			'Authorization': 'Basic ' + btoa(API_ASSIGNED_APPLICATION_ID + ':') # HTTP Basic Auth
+			'Authorization': 'Basic ' + btoa(API_APPLICATION_ID + ':') # HTTP Basic Auth
 		body: JSON.stringify(
 			switch
 				# Request for credentials for a user who just authorized our client.
@@ -35,7 +35,7 @@ export renewCredentials = ->
 					{
 						grant_type: 'authorization_code'
 						code: code
-						redirect_uri: API_AFTERLOGIN_REDIRECT_URL
+						redirect_uri: API_POSTLOGIN_REDIRECT
 					}
 				# Request for credentials for a user who's already "logged in" on our client.
 				when browser.OAUTH_REFRESH_TOKEN
@@ -50,6 +50,13 @@ export renewCredentials = ->
 						device_id: 'DO_NOT_TRACK_THIS_DEVICE'
 					}
 		)
+	.catch (error) ->
+		if error instanceof TypeError
+			# NOTE: an error here means that either the network request failed OR the fetch params were structured badly.
+			# The fetch API does not distinguish between these errors, so we make the assumption here that our params are OK.
+			throw new ApiError 'Failed to connect to API server.', { cause: error, type: ApiError.TYPE_CONNECTION }
+		else
+			throw error
 	.then (response) ->
 		response.json()
 	.then (data) ->
@@ -61,8 +68,8 @@ export renewCredentials = ->
 				browser.OAUTH_REFRESH_TOKEN = data.refresh_token
 	.finally ->
 		browser.OAUTH_RENEWING = 'FALSE'
-		if getCredentialsTimeLeft() <= 0
-			throw new Error('Failed to acquire valid API credentials.')
+		if checkCredentialsTimeRemaining() <= 0
+			throw new ApiError 'Failed to acquire valid API credentials.', { type: ApiError.TYPE_CREDENTIALS }
 
 waitForCredentialsRenewal = (f) ->
 	if browser.OAUTH_RENEWING is 'TRUE'
@@ -77,45 +84,8 @@ ensureCredentialsRenewal = (f) ->
 	else
 		return f()
 
-invalidateCredentials = ->
+export invalidateCredentials = ->
 	delete browser.OAUTH_ACCESS_TOKEN
 	delete browser.OAUTH_ACCESS_TOKEN_VALIDITY_START
 	delete browser.OAUTH_ACCESS_TOKEN_VALIDITY_LENGTH
 	delete browser.OAUTH_REFRESH_TOKEN
-
-requestLogIn = ->
-	browser.OAUTH_ECHO_VALUE = window.location.pathname + '*' + Math.trunc(Number.MAX_VALUE * Math.random())
-	authorizationParams = new URLSearchParams(
-		response_type: 'code',
-		duration: 'permanent',
-		scope: API_OAUTH_USER_SCOPES_REQUESTED.join(),
-		client_id: API_ASSIGNED_APPLICATION_ID,
-		redirect_uri: API_AFTERLOGIN_REDIRECT_URL,
-		state: browser.OAUTH_ECHO_VALUE
-	)
-	authorizationURL = 'https://www.reddit.com/api/v1/authorize?' + authorizationParams.toString()
-	window.location.href = authorizationURL
-
-# No specific logout function; simply use query parameter "logout" on any page load to logout.
-
-export handleLogInOrLogOut = ->
-	p = new URLSearchParams(window.location.search)
-	switch
-		# Log in request
-		when p.has('login')
-			requestLogIn()
-		# Successful login
-		when p.has('code') and p.get('state') is browser.OAUTH_ECHO_VALUE
-			invalidateCredentials()
-			delete browser.OAUTH_ECHO_VALUE
-			browser.OAUTH_AUTH_CODE = p.get('code')
-			returnURL = window.location.origin + p.get('state').split('*')[0]
-			history.replaceState({}, '', returnURL)
-		# Failed login
-		when p.has('error')
-			alert p.get('error')
-		# Logout
-		when p.has('logout')
-			invalidateCredentials()
-			returnURL = window.location.origin + window.location.pathname
-			history.replaceState({}, '', returnURL)

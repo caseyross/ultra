@@ -1,10 +1,10 @@
 # Import our base global variables.
 import './globals/index.coffee'
+import './globals/browser.coffee'
 
 # Before anything else, check for a change in the user's login/logout status, and handle it if so.
-import './globals/browser.coffee'
-import { handleLogInOrLogOut } from './api/internals/authentication.coffee'
-handleLogInOrLogOut()
+import { handleLoginOrLogout } from './api/account.coffee'
+handleLoginOrLogout()
 
 # Set up the command -> state infrastructure.
 import CommandQueue from './commands/CommandQueue'

@@ -1,0 +1,20 @@
+ol
+	li.left
+		slot(name='left')
+	li.center.scroll-y-hidden
+		slot(name='center')
+	li.right
+		slot(name='right')
+
+style.
+	ol
+		display grid
+		grid-template-rows 100vh
+		grid-template-columns 10vw 80vw 10vw
+	.center
+		width 100%
+		height 100%
+		justify-items-center
+	.left
+	.right
+		overflow hidden

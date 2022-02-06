@@ -1,10 +1,5 @@
-# Package manager
-.yarn
+.yarn/
 .yarnrc
-node_modules
-
-# Semi-secrets
-src/env/config/obscured.js
-
-# Production build
-build
+build/
+node_modules/
+src/env/obscured.js

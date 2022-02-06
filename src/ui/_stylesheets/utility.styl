@@ -4,7 +4,13 @@
 .downvoted
 	color lightsteelblue
 
-.hide-scrollbar
+.scroll-x-hidden
+	overflow-x auto
+	scrollbar-width none
+	&::-webkit-scrollbar
+		display none
+.scroll-y-hidden
+	overflow-y auto
 	scrollbar-width none
 	&::-webkit-scrollbar
 		display none

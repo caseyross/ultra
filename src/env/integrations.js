@@ -1,6 +1,6 @@
 export const iframes = {
 
-	// Gfycat/RedGIFs
+	// Gfycat/RedGifs
 	'gfycat.com': link =>
 		({
 			src: `https://gfycat.com/ifr/${link.pathname.split('/')[1]}`
