@@ -1,7 +1,7 @@
-import GlobalNavigation from './GlobalNavigation.pug'
+import Index from './Index.pug'
 
 try
-	new GlobalNavigation
+	new Index
 		target: document.body
 catch error
 	alert(error)

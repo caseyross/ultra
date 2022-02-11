@@ -2,4 +2,4 @@
 .yarnrc
 build/
 node_modules/
-src/env/obscured.js
+*obscured*

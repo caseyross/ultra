@@ -13,10 +13,10 @@ module.exports = {
 	mode: 'production',
 	entry: {
 		init: {
-			import: './src/init.coffee', // bootstraps API requests prior to parsing UI code
+			import: './src/ui/init.coffee', // bootstrap API requests prior to mounting UI components
 		},
 		render: {
-			import: './src/ui/render.coffee', // constructs and renders the UI
+			import: './src/ui/render.coffee', // construct and render the UI
 			dependOn: 'init',
 		}
 	},
@@ -31,13 +31,16 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './src/index.html',
+			template: './src/ui/index.html',
 			inject: false, // manual script placement in template
 		}),
 		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /init/]), // inline to avoid network roundtrip
 		new CopyWebpackPlugin({
 			patterns: [
-				{ from: './src/ui/_graphics', }, // copy directly to output directory
+				{
+					from: './src/ui/assets', // copy directly to output directory
+					transform: (content, path) => stylus.render(content)
+				},
 			],
 		}),
 	],

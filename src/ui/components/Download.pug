@@ -1,0 +1,49 @@
+script.
+	import { apiDownloads } from '../../api/index.coffee'
+
+	export id = ''
+	export staleAfter = NaN
+	
+	$: {
+		object = $apiObjects[id]
+		if object
+			{ status, data } = object
+		else
+			status = 'none'
+	}
+	if status != 'complete' then download(id)
+
+{#if status === 'complete' || status === 'partial'}
+	slot(data={object})
+	{#if object.vintage > Date.minutes(staleAfter)}
+		.overlay.stale Data is {object.vintage} minutes out of date.
+			button Reload?
+{:else if status === 'loading'}
+	{#if $$slots.loading}
+		slot(name='loading')
+	{:else}
+		.alert.loading Loading data: {id}
+{:else if status === 'error'}
+	{#if $$slots.error}
+		slot(name='error')
+	{:else}
+		.alert.error {error}
+
+style.
+	.overlay
+		position absolute
+		top 1rem
+		right 1rem
+		background lightgray
+	.alert
+		height 100%
+		width 100%
+		display flex
+		justify-content center
+		align-items center
+	.loading
+		background antiquewhite
+		color gray
+	.error
+		background salmon
+		color white
