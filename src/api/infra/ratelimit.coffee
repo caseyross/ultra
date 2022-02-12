@@ -16,7 +16,7 @@ export checkRatelimitWait = ->
 	# Check internal predictions.
 	timeline = calcTimeline()
 	if timeline.length >= DEFAULT_QUOTA
-		return timeline.last() + DEFAULT_PERIOD - Date.now()
+		return timeline.last + DEFAULT_PERIOD - Date.now()
 	return 0
 
 # In some cases, the client's ratelimit can be less than the default 60/minute. We need to track and obey such restrictions.
