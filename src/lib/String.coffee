@@ -1,3 +1,10 @@
+Object.defineProperty(String, 'preHyphen', {
+	get: -> @.split('-')[0]
+})
+Object.defineProperty(String, 'postHyphen', {
+	get: -> @.split('-')[1]
+})
+
 String::toCommentId = ->
 	if @startsWith('t1_')
 		return @

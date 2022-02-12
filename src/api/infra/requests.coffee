@@ -40,7 +40,7 @@ attemptRequest = (method, endpoint, { query, content }) ->
 		# NOTE: for legacy compatibility, the API replaces special characters in responses with their corresponding HTML entities.
 		# Activating the raw_json parameter disables this behavior.
 		query.raw_json = 1
-		fetch 'https://oauth.reddit.com/' + endpoint  + '?' + (new URLSearchParams query).toString(), params
+		fetch 'https://oauth.reddit.com' + endpoint  + '?' + (new URLSearchParams query).toString(), params
 	.catch (error) ->
 		if error instanceof TypeError
 			# NOTE: an error here means that either the network request failed OR the fetch params were structured badly.
