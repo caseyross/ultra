@@ -42,7 +42,7 @@ export default {
 	t3dv:   (postShortId, limit, after) ->
 		get "/duplicates/#{postShortId}", { limit, after }
 	t3ldv:  (postShortId, limit, after) ->
-		get "live/#{postShortId}/discussions", { limit, after }
+		get "/live/#{postShortId}/discussions", { limit, after }
 	t3li:   (postShortId) ->
 		get "/live/#{postShortId}/about"
 	t3lic:  (postShortId) ->
