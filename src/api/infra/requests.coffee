@@ -1,4 +1,4 @@
-import ApiError from '../error/ApiError.coffee'
+import ApiError from '../errors/ApiError.coffee'
 import { checkCredentialsRemainingTime, renewCredentials } from './credentials.coffee'
 import { checkRatelimitWait, updateObservedRatelimit, updatePredictedRatelimit } from './ratelimit.coffee'
 
