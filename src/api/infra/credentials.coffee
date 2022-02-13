@@ -8,7 +8,7 @@ export checkCredentialsRemainingTime = ->
 	if !Number.isFinite expiration then return 0
 	return expiration - Date.now()
 
-export invalidateCredentials = ->
+export expireCurrentCredentials = ->
 	delete localStorage['api.credentials.exchange.token']
 	delete localStorage['api.credentials.key.expiration']
 	delete localStorage['api.credentials.key.token']
