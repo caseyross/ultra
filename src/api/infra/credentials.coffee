@@ -8,11 +8,6 @@ export checkCredentialsRemainingTime = ->
 	if !Number.isFinite expiration then return 0
 	return expiration - Date.now()
 
-export expireCurrentCredentials = ->
-	delete localStorage['api.credentials.exchange.token']
-	delete localStorage['api.credentials.key.expiration']
-	delete localStorage['api.credentials.key.token']
-
 export renewCredentials = ->
 	# In the event that multiple instances of the application are instantiated simultaneously, we don't want them competing to acquire the credentials, which are shared.
 	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
@@ -81,3 +76,8 @@ forceCredentialsRenewal = (f) ->
 		return f(renewCredentials())
 	else
 		return f()
+
+export deleteLocalCredentials = ->
+	delete localStorage['api.credentials.exchange.token']
+	delete localStorage['api.credentials.key.expiration']
+	delete localStorage['api.credentials.key.token']
