@@ -1,3 +1,5 @@
+import '../lib/index.coffee'
+
 import Index from './Index.pug'
 
 try

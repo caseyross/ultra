@@ -1,5 +1,25 @@
-export default downloads = {
-	mergeable()
+class MergeOnlyStore
+
+	constructor: ->
+		@subscribers = new Map()
+		@value = {}
+
+	subscribe: (subscriber) ->
+		subscriber(@value)
+		subscriberId = Symbol()
+		@subscribers.set(subscriberId, subscriber)
+		-> @subscribers.delete(subscriberId)
+
+	set: (additionalValue) ->
+		Object.assign(@value, additionalValue)
+		@subscribers.forEach (subscriber) -> subscriber(@value)
+
+
+export class DownloadStore extends MergeOnlyStore
+
+	constructor: ->
+		super()
+
 	add: (id) ->
 		if !loading[id]
 			loading[id] = true

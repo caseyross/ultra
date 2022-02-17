@@ -1,4 +1,4 @@
-import { deleteLocalCredentials } from '../infra/credentials.coffee'
+import { deleteLocalCredentials } from './credentials.coffee'
 import { API_REGISTERED_POSTAUTH_URL } from '../config.js'
 import { API_CLIENT_ID } from '../config-obscured.js'
 

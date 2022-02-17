@@ -5,7 +5,7 @@ export default {
 	
 	t1:     NOT_IMPLEMENTED
 	t1x:    (parentPostId, sort, ...desiredCommentIds) -> # NOTE: Max concurrency for this call is 1 per Reddit API rules.
-		get "/api/morechildren", { link_id: parentPostId, children: desiredCommentIds, sort}
+		get "/api/morechildren", { link_id: parentPostId, children: desiredCommentIds, sort }
 	t2fcv:  (limit, after) ->
 		get "/subreddits/mine/contributor", { limit, after }
 	t2fmv:  (limit, after) ->
@@ -114,7 +114,7 @@ export default {
 	t5xi:   (userName, multiredditName) ->
 		if userName is 'r'
 			return Promise.resolve({})
-		get "/api/multi/u/#{userName}/m/#{multiredditName}/description" }
+		get "/api/multi/u/#{userName}/m/#{multiredditName}/description"
 	t5xv:   (userName, multiredditName, sort, limit, after) ->
 		endpoint =
 			if userName is 'r'

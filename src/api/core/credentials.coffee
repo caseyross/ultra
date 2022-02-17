@@ -1,4 +1,4 @@
-import ApiError from '../errors/ApiError.coffee'
+import { ApiError } from './errors.coffee'
 import { API_REGISTERED_POSTAUTH_URL } from '../config.js'
 import { API_CLIENT_ID } from '../config-obscured.js'
 
