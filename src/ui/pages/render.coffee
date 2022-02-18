@@ -1,4 +1,4 @@
-import '../lib/index.coffee'
+import '../../lib/index.coffee'
 
 import Index from './Index.pug'
 

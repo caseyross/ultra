@@ -12,12 +12,12 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 module.exports = {
 	mode: 'production',
 	entry: {
-		init: {
-			import: './src/ui/init.coffee', // bootstrap API requests prior to mounting UI components
+		boot: {
+			import: './src/boot.coffee', // bootstrap API requests prior to constructing the UI
 		},
 		render: {
-			import: './src/ui/render.coffee', // construct and render the UI
-			dependOn: 'init',
+			import: './src/ui/pages/render.coffee', // render the page
+			dependOn: 'boot',
 		}
 	},
 	optimization: {
@@ -31,14 +31,14 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './src/ui/index.html',
+			template: './src/index.html',
 			inject: false, // manual script placement in template
 		}),
-		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /init/]), // inline to avoid network roundtrip
+		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /boot/]), // inline to avoid network roundtrip latency
 		new CopyWebpackPlugin({
 			patterns: [
 				{
-					from: './src/ui/assets', // copy directly to output directory
+					from: './src/ui/stylesheets', // copy directly to output directory
 					transform: (content, path) => stylus.render(content)
 				},
 			],
