@@ -1,5 +1,6 @@
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing"/"Thing" data structures, and to flatten comment trees for store ingestion.
+# See also the special extractor functions, for API routes that need data restructuring beyond what the general extractor can provide.
 # NOTE: Side effects - modifies the input data!
 export default generalExtractor = (rawData) ->
 	result = {
@@ -12,8 +13,10 @@ export default generalExtractor = (rawData) ->
 			if !Array.isArray(listing.children) then listing.children = [] # [mutator]
 			# Process and collect each item in the listing into "main", and all of their sub-items into "sub".
 			result = listing.children.fold({ main: [], sub: [] }, (collected, item) ->
-				extractedItem = generalExtractor(item)
-				return { main: collected.main.concat(extractedItem.main), sub: collected.sub.concat(extractedItem.sub) }
+				{ main, sub } = generalExtractor(item)
+				return
+					main: collected.main.concat(main)
+					sub: collected.sub.concat(sub)
 			)
 		when 't1'
 			# NOTE: Comments in raw API data are structured as trees of comments containing other comments. Our main processing objective is to "de-link" these tree structures and subsequently identify comments by "flat" ID reference only.
@@ -31,7 +34,9 @@ export default generalExtractor = (rawData) ->
 			# 1. Recursively list every reply in the tree "below" this comment.
 			result.sub = comment.replies.fold([], (repliesInTree, directReply) ->
 				{ main, sub } = generalExtractor(directReply)
-				return repliesInTree.concat({ id: id('t1', main.id), data: main }).concat(sub)
+				return repliesInTree
+					.concat({ id: id('t1', main.id), data: main })
+					.concat(sub)
 			)
 			# 2. Replace the replies in the original direct replies array with their IDs instead.
 			comment.replies = comment.replies.map((directReply) -> id('t1', directReply.data.id)) # [mutator]
