@@ -1,6 +1,5 @@
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing"/"Thing" data structures, and to flatten comment trees for store ingestion.
-# See also the special extractor functions, for API routes that need data restructuring beyond what the general extractor can provide.
 # NOTE: Side effects - modifies the input data!
 export default generalExtractor = (rawData) ->
 	result = {
