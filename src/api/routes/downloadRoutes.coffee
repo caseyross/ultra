@@ -6,11 +6,11 @@ export default {
 	t1:     NOT_IMPLEMENTED
 	t1x:    (parentPostId, sort, ...desiredCommentIds) -> # NOTE: Max concurrency for this call is 1 per Reddit API rules.
 		get "/api/morechildren", { link_id: parentPostId, children: desiredCommentIds, sort }
-	t2fcv:  (limit, after) ->
+	t2fcz:  (limit, after) ->
 		get "/subreddits/mine/contributor", { limit, after }
-	t2fmv:  (limit, after) ->
+	t2fmz:  (limit, after) ->
 		get "/subreddits/mine/moderator", { limit, after }
-	t2fv:   (limit, after) ->
+	t2fz:   (limit, after) ->
 		get "/subreddits/mine/subscriber", { limit, after }
 	t2i:    (userName) ->
 		get "/user/#{userName}/about"
@@ -22,51 +22,53 @@ export default {
 		get "/api/v1/me/prefs", { fields: fields.join(',') }
 	t2ix:   (userName) ->
 		get "/api/multi/user/#{userName}"
-	t2iuav: NOT_IMPLEMENTED
-	t2iubv: NOT_IMPLEMENTED
-	t2iucv: NOT_IMPLEMENTED
+	t2iuaz: NOT_IMPLEMENTED
+	t2iubz: NOT_IMPLEMENTED
+	t2iucz: NOT_IMPLEMENTED
 	t2iufi: NOT_IMPLEMENTED
-	t2iufv: NOT_IMPLEMENTED
-	t2sv:   (searchText, limit, after) ->
+	t2iufz: NOT_IMPLEMENTED
+	t2sz:   (searchText, limit, after) ->
 		get "/users/search", { q: searchText, sort: 'relevance', limit, after }
-	t2snv:  (limit, after) ->
+	t2snz:  (limit, after) ->
 		get "/users/new", { limit, after }
-	t2spv:  (limit, after) ->
+	t2spz:  (limit, after) ->
 		get "/users/popular", { limit, after }
-	t2v:    (userName, filter, sort, limit, after) ->
+	t2z:    (userName, filter, sort, limit, after) ->
 		get "/user/#{userName}/#{filter}", { sort: sort.preHyphen, t: sort.postHyphen, limit, after }
 	t3:     (postShortId, commentsSort, commentShortId, context) ->
 		get "/comments/#{postShortId}", { sort: commentsSort, comment: commentShortId, context }
 	t3c:    (collection_id) ->
 		get "/api/v1/collections/collection", { collection_id, include_links: true }
-	t3dv:   (postShortId, limit, after) ->
+	t3dz:   (postShortId, limit, after) ->
 		get "/duplicates/#{postShortId}", { limit, after }
-	t3ldv:  (postShortId, limit, after) ->
-		get "/live/#{postShortId}/discussions", { limit, after }
-	t3li:   (postShortId) ->
-		get "/live/#{postShortId}/about"
-	t3lic:  (postShortId) ->
-		get "/live/#{postShortId}/contributors"
-	t3liu:  (postShortId, updateId) ->
-		get "/live/#{postShortId}/updates/#{updateId}"
-	t3sv:   (searchText, subredditName, sort, limit, after) ->
+	t3ldz:  (threadId, limit, after) ->
+		get "/live/#{threadId}/discussions", { limit, after }
+	t3li:   (threadId) ->
+		get "/live/#{threadId}/about"
+	t3lic:  (threadId) ->
+		get "/live/#{threadId}/contributors"
+	t3lu:   (threadId, updateId) ->
+		get "/live/#{threadId}/updates/#{updateId}"
+	t3luz:  (threadId, limit, after) ->
+		get "/live/#{threadId}", { limit, after }
+	t3sz:   (searchText, subredditName, sort, limit, after) ->
 		endpoint = if subredditName? then "/r/#{subredditName}/search" else "/search"
 		get endpoint, { sort: sort.preHyphen, t: sort.postHyphen, limit, after, restrict_sr: true }
 	t3w:    (pageName, subredditName, versionId, diffFromVersionId) ->
 		get "/r/#{subredditName}/wiki/#{pageName}", { v: version, v2: diffFromVersionId }
-	t3wdv:  (pageName, subredditName, limit, after) ->
+	t3wdz:  (pageName, subredditName, limit, after) ->
 		get "/r/#{subredditName}/wiki/discussions/#{pageName}", { limit, after }
 	t3wp:   (pageName, subredditName) ->
 		get "/r/#{subredditName}/wiki/settings/#{pageName}"
-	t3wvv:  (pageName, subredditName, limit, after) ->
+	t3wvz:  (pageName, subredditName, limit, after) ->
 		get "/r/#{subredditName}/wiki/revisions/#{pageName}", { limit, after }
 	t4:     NOT_IMPLEMENTED
 	t4c:    NOT_IMPLEMENTED
-	t4cv:   NOT_IMPLEMENTED
+	t4cz:   NOT_IMPLEMENTED
 	t4m:    NOT_IMPLEMENTED
 	t4miu:  NOT_IMPLEMENTED
-	t4mv:   NOT_IMPLEMENTED
-	t4v:    NOT_IMPLEMENTED
+	t4mz:   NOT_IMPLEMENTED
+	t4z:    NOT_IMPLEMENTED
 	t5e:    (subredditName) ->
 		get "/api/v1/#{subredditName}/emojis/all"
 	t5fp:   (subredditName) ->
@@ -91,21 +93,21 @@ export default {
 	t5iucw: NOT_IMPLEMENTED
 	t5ium:  NOT_IMPLEMENTED
 	t5iuu:  NOT_IMPLEMENTED
-	t5mev:  NOT_IMPLEMENTED
-	t5mlv:  NOT_IMPLEMENTED
-	t5mqv:  NOT_IMPLEMENTED
-	t5mrv:  NOT_IMPLEMENTED
-	t5msv:  NOT_IMPLEMENTED
-	t5muv:  NOT_IMPLEMENTED
+	t5mez:  NOT_IMPLEMENTED
+	t5mlz:  NOT_IMPLEMENTED
+	t5mqz:  NOT_IMPLEMENTED
+	t5mrz:  NOT_IMPLEMENTED
+	t5msz:  NOT_IMPLEMENTED
+	t5muz:  NOT_IMPLEMENTED
 	t5sa:   (searchText, limit) ->
 		get "/api/subreddit_autocomplete_v2", { q: searchText, include_over_18: true, limit }
-	t5snv:  (limit, after) ->
+	t5snz:  (limit, after) ->
 		get "/subreddits/new", { limit, after }
-	t5spv:  (limit, after) ->
+	t5spz:  (limit, after) ->
 		get "/subreddits/popular", { limit, after }
-	t5sv:   (searchText, limit, after) ->
+	t5sz:   (searchText, limit, after) ->
 		get "/subreddits/search", { q: searchText, sort: 'relevance', limit, after }
-	t5v:    (subredditName, sort, limit, after) ->
+	t5z:    (subredditName, sort, limit, after) ->
 		get "/r/#{subredditName}/#{sort.preHyphen}", { t: sort.postHyphen, limit, after }
 	t5w:    (subredditName) ->
 		get "/r/#{subredditName}/wiki/pages"
@@ -115,7 +117,7 @@ export default {
 		if userName is 'r'
 			return Promise.resolve({})
 		get "/api/multi/u/#{userName}/m/#{multiredditName}/description"
-	t5xv:   (userName, multiredditName, sort, limit, after) ->
+	t5xz:   (userName, multiredditName, sort, limit, after) ->
 		endpoint =
 			if userName is 'r'
 				if multiredditName is 'home'
