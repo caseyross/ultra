@@ -46,12 +46,18 @@ iFrames = (url) -> switch (if url.hostname.startsWith('www') then url.hostname[4
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.
 # Our "t3" type refers to "complete" post objects, unifying posts and their comment replies.
 # Extracting our desired format out of the API response requires special handling.
-# NOTE: Unmarked side effects throughout (modification of the input data).
+# NOTE: Contains unmarked side effects throughout (namely, input data modification).
 export default (rawData) ->
+	result =
+		main: null
+		sub: []
 	# Process and organize the post data.
-	# 1. Extract the bare post from the listing.
-	extractedPosts = generalExtractor(rawData[0])
-	post = extractedPosts.main[0]
+	# 1. Extract the bare post from the posts listing.
+	#    Put aside the other datasets from the posts listing for the end result.
+	{ main: { data: ids }, sub: datasets } = generalExtractor(rawData[0])
+	[ barePostDataset, other ] = datasets.partition((dataset) -> dataset.id = ids[0])
+	result.sub.concat(other)
+	post = barePostDataset.data
 	# 2. Normalize the URL - sometimes it is only given as a relative path.
 	post.url = if post.url[0] == '/' then new URL("https://www.reddit.com#{post.url}") else new URL(post.url)
 	# 3. Detect the content format for the post.
@@ -118,15 +124,13 @@ export default (rawData) ->
 	if rawData[1].data.children?.last?.kind is 'more'
 		more = rawData[1].data.children.pop()
 		post.more_replies = more.data.children
-	# 2. Extract the comment trees from the listing.
-	{ main, sub } = generalExtractor(rawData[1])
-	# 3. Process non-special top-level comments.
-	directReplies = main.map((reply) -> { id: id('t1', reply.id), data: reply })
-	# 4. Record the top-level comments for the post.
-	post.replies = directReplies.map((reply) -> reply.id)
-	# Assemble and return the extracted post and comment objects.
-	allComments = directReplies.concat(sub)
-	return {
-		main: post
-		sub: extractedPosts.sub.concat(allComments)
-	}
+	# 2. Extract the comments from the listing.
+	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = generalExtractor(rawData[1])
+	# 3. Link the top-level comments via their IDs.
+	post.replies = topLevelCommentIds
+	# 4. Merge the extracted comment objects into the complete post data.
+	result.sub.concat(commentDatasets)
+	result.main =
+		id: barePostDataset.id
+		data: post
+	return result
