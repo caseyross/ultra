@@ -25,7 +25,7 @@ export default generalExtractor = (rawData) ->
 					data: listingDatasets.map(({ main }) -> main)
 				result.sub = listingDatasets.map(({ sub }) -> sub)
 		when 't1'
-			# NOTE: Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
+			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			comment = rawData.data
 			if !Array.isArray(comment.replies) then comment.replies = [] # [mutator]
 			# Detect and process a "continue this thread" link in the comment's replies.
@@ -63,6 +63,7 @@ export default generalExtractor = (rawData) ->
 			result.main =
 				id: id('t3', rawData.id)
 				data: barePost
+				partial: true
 		when 't4'
 			result.main =
 				id: id('t4', rawData.id)
