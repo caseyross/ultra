@@ -17,9 +17,9 @@ export default {
 	t2iucz: 'User contacted listing'
 	t2iufi: 'User friend notes'
 	t2iufz: 'User friended listing'
-	t2sz:   'Users search listing'
 	t2snz:  'Users ranked novelty listing'
 	t2spz:  'Users ranked popularity listing'
+	t2sz:   'Users search listing'
 	t2z:    'User content listing'
 	t3:     'Post'
 	t3c:    'Post collection'
@@ -66,11 +66,11 @@ export default {
 	t5snz:  'Subreddits ranked novelty listing'
 	t5spz:  'Subreddits ranked popularity listing'
 	t5sv:   'Subreddits search listing'
-	t5z:    'Subreddit content listing'
 	t5w:    'Subreddit wiki pages'
 	t5we:   'Subreddit recently edited wiki pages'
 	t5xi:   'Multireddit information'
 	t5xz:   'Multireddit content listing'
+	t5z:    'Subreddit content listing'
 	t6:     'Award'
 
 }

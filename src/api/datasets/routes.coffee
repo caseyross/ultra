@@ -28,12 +28,12 @@ export default {
 	t2iucz: NOT_IMPLEMENTED
 	t2iufi: NOT_IMPLEMENTED
 	t2iufz: NOT_IMPLEMENTED
-	t2sz:   (searchText, limit, after) ->
-		get "/users/search", { q: searchText, sort: 'relevance', limit, after }
 	t2snz:  (limit, after) ->
 		get "/users/new", { limit, after }
 	t2spz:  (limit, after) ->
 		get "/users/popular", { limit, after }
+	t2sz:   (searchText, limit, after) ->
+		get "/users/search", { q: searchText, sort: 'relevance', limit, after }
 	t2z:    (userName, filter, sort, limit, after) ->
 		get "/user/#{userName}/#{filter}", { sort: sort.preHyphen, t: sort.postHyphen, limit, after }
 	t3:     (postShortId, commentsSort, commentShortId, context) ->
@@ -108,8 +108,6 @@ export default {
 		get "/subreddits/popular", { limit, after }
 	t5sz:   (searchText, limit, after) ->
 		get "/subreddits/search", { q: searchText, sort: 'relevance', limit, after }
-	t5z:    (subredditName, sort, limit, after) ->
-		get "/r/#{subredditName}/#{sort.preHyphen}", { t: sort.postHyphen, limit, after }
 	t5w:    (subredditName) ->
 		get "/r/#{subredditName}/wiki/pages"
 	t5we:   (subredditName, limit, after) ->
@@ -128,6 +126,8 @@ export default {
 			else
 				"/api/multi/u/#{userName}/m/#{multiredditName}/#{sort.preHyphen}"
 		get endpoint, { t: sort.postHyphen, limit, after }
+	t5z:    (subredditName, sort, limit, after) ->
+		get "/r/#{subredditName}/#{sort.preHyphen}", { t: sort.postHyphen, limit, after }
 	t6:     NOT_IMPLEMENTED
 
 }
