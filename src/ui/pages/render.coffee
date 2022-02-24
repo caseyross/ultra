@@ -1,5 +1,4 @@
-import '../../lib/index.coffee'
-
+###
 import Index from './Index.pug'
 
 try
@@ -7,3 +6,4 @@ try
 		target: document.body
 catch error
 	alert(error)
+###

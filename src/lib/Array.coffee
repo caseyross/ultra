@@ -1,4 +1,4 @@
-Object.defineProperty(Array, 'last', {
+Object.defineProperty(Array::, 'last', {
 	get: -> @[@.length - 1]
 })
 

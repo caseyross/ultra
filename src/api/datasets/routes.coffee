@@ -1,5 +1,6 @@
 import { get } from '../infra/requests.coffee'
-MOT_IMPLEMENTED = Promise.reject('Route for specified ID is not implemented yet!')
+NOT_IMPLEMENTED = ->
+	Promise.reject('Route for specified ID is not implemented yet!')
 
 export default {
 	

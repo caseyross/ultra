@@ -1,4 +1,4 @@
-import { ApiError } from './errors.coffee'
+import { ApiConnectionError, ApiCredentialsError } from '../errors/index.coffee'
 import { API_REGISTERED_POSTAUTH_URL } from '../config.js'
 import { API_CLIENT_ID } from '../config-obscured.js'
 
@@ -25,7 +25,7 @@ export renewCredentials = ->
 		method: 'POST'
 		headers:
 			'Authorization': 'Basic ' + btoa(API_CLIENT_ID + ':') # HTTP Basic Auth
-		body: JSON.stringify(
+		body: new URLSearchParams(
 			switch
 				when auth_code # New account login
 					{
@@ -48,7 +48,7 @@ export renewCredentials = ->
 		if error instanceof TypeError
 			# NOTE: an error here means that either the network request failed OR the fetch params were structured badly.
 			# The fetch API does not distinguish between these errors, so we make the assumption here that our params are OK.
-			throw new ApiError 'Failed to connect to API server.', { cause: error, type: ApiError.TYPE_CONNECTION }
+			throw new ApiConnectionError({ cause: error })
 		else
 			throw error
 	.then (response) ->
@@ -62,7 +62,7 @@ export renewCredentials = ->
 	.finally ->
 		localStorage['api.credentials.renewal_in_progress'] = 'FALSE'
 		if checkCredentialsRemainingTime() <= 0
-			throw new ApiError 'Failed to acquire valid API credentials.', { type: ApiError.TYPE_CREDENTIALS }
+			throw new ApiCredentialsError({ message: 'failed to acquire valid credentials' })
 
 waitForCredentialsRenewal = (f) ->
 	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'

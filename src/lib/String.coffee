@@ -1,44 +1,21 @@
-Object.defineProperty(String, 'preHyphen', {
+Object.defineProperty(String::, 'idType', {
+	get: -> @.split(':')[0]
+})
+
+Object.defineProperty(String::, 'idSpecs', {
+	get: -> @.split(':')[1..]
+})
+
+Object.defineProperty(String::, 'preHyphen', {
 	get: -> @.split('-')[0]
 })
-Object.defineProperty(String, 'postHyphen', {
+
+Object.defineProperty(String::, 'postHyphen', {
 	get: -> @.split('-')[1]
 })
 
-String::toCommentId = ->
-	if @startsWith('t1_')
-		return @
-	return 't1_' + @
-String::toUserId = ->
-	if @startsWith('t2_')
-		return @
-	return 't2_' + @
-String::toPostId = ->
-	if @startsWith('t3_')
-		return @
-	return 't3_' + @
-String::toMessageId = ->
-	if @startsWith('t4_')
-		return @
-	return 't4_' + @
-String::toSubredditId = ->
-	if @startsWith('t5_')
-		return @
-	return 't5_' + @
-String::toAwardId = ->
-	if @startsWith('t6_')
-		return @
-	return 't6_' + @
-
-String::toShortId = ->
-	if @[2] == '_'
-		return @[3..]
-	return @
-
-String::toBoardName = ->
-	return @.toLowerCase()
-String::toUserName = ->
-	return @.toLowerCase()
+String::asId = (type) ->
+	"#{type}:#{if @[2] == '_' then @[3..] else @}"
 
 String::normalizedLength = ->
 	x = encodeURI(@replace(/<[^>]+>/g, ''))

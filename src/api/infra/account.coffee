@@ -73,7 +73,7 @@ export deauthorizeLocalAccount = ->
 		method: 'POST'
 		headers:
 			'Authorization': 'Basic ' + btoa(API_CLIENT_ID + ':') # HTTP Basic Auth
-		body: JSON.stringify({
+		body: new URLSearchParams({
 			token_type_hint: 'refresh_token'
 			token: localStorage['api.credentials.exchange.token']
 		})

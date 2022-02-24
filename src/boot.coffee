@@ -1,6 +1,2 @@
-import api from './api/index.coffee'
-
-api.init()
-api.downloads.add('t5xv_r:home:10')
-
-window.api = api
+import './lib/index.coffee'
+import datasets from './api/datasets/store.coffee'

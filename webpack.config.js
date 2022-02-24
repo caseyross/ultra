@@ -25,7 +25,7 @@ module.exports = {
 	},
 	output: {
 		filename: '[name].[contenthash].js',
-		path: path.join(__dirname, 'build'),
+		path: path.join(__dirname, 'dist'),
 		publicPath: '/', // location of output files relative to the web server root
 		clean: true // cleanup output directory before emitting assets
 	},
@@ -35,6 +35,7 @@ module.exports = {
 			inject: false, // manual script placement in template
 		}),
 		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /boot/]), // inline to avoid network roundtrip latency
+		/* TODO: fix copying
 		new CopyWebpackPlugin({
 			patterns: [
 				{
@@ -43,6 +44,7 @@ module.exports = {
 				},
 			],
 		}),
+		*/
 	],
 	resolve: {
 		extensions: ['.pug', '.coffee', '.js'],
