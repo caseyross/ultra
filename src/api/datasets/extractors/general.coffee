@@ -3,6 +3,7 @@
 # All extractors return the same data structure. It is described below as it is constructed.
 # NOTE: Contains side effects throughout (namely, input data modification).
 export default extract = (rawData) ->
+	console.log rawData
 	result =
 		main: null # The object specified by an API route.
 		sub: [] # Objects contained in the same API response as the main objects, but which "belong" to a different API route.
@@ -104,6 +105,7 @@ export default extract = (rawData) ->
 			else if post.url.hostname == 'i.redd.it'
 				post.media[0] = if post.url.pathname.endsWith('gif') then { video_url: post.url } else { image_url: post.url }
 			if hosted_video_data
+				video = hosted_video_data
 				post.media[0] =
 					video_url: video.fallback_url ? post.url
 					video_height: video.height
