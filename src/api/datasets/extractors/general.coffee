@@ -3,7 +3,6 @@
 # All extractors return the same data structure. It is described below as it is constructed.
 # NOTE: Contains side effects throughout (namely, input data modification).
 export default extract = (rawData) ->
-	console.log rawData
 	result =
 		main: null # The object specified by an API route.
 		sub: [] # Objects contained in the same API response as the main objects, but which "belong" to a different API route.
@@ -47,9 +46,17 @@ export default extract = (rawData) ->
 				data: comment
 			result.sub = repliesListingDatasets.sub
 		when 't2'
+			user = rawData.data
 			result.main =
-				id: rawData.data.name.toLowerCase().asId('t2i')
-				data: rawData.data
+				id: user.name.toLowerCase().asId('t2i')
+				data: user
+			if user.subreddit
+				result.sub.push({
+					id: user.subreddit.display_name.toLowerCase().asId('t5i')
+					data: user.subreddit
+					partial: true
+				})
+				delete user.subreddit
 		when 't3'
 			post = rawData.data
 			# Normalize the URL - sometimes it is only given as a relative path.
@@ -139,6 +146,10 @@ export default extract = (rawData) ->
 		when 't6'
 			result.main =
 				id: rawData.data.id.asId('t6')
+				data: rawData.data
+		when 'LiveUpdate'
+			result.main =
+				id: rawData.data.id.asId('t3lu')
 				data: rawData.data
 		else
 			result.main =
