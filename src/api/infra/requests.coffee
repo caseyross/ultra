@@ -30,7 +30,7 @@ export post =  (endpoint, content) ->
 export put = (endpoint, content) ->
 	attemptRequest 'PUT', endpoint, { content }
 
-attemptRequest = (method, endpoint, { query, content }) ->
+attemptRequest = (method, endpoint, { query = {}, content }) ->
 	new Promise (fulfill) ->
 		if checkCredentialsRemainingTime() <= 0
 			throw new ApiCredentialsError({ message: 'no valid credentials for request' })
