@@ -1,6 +1,6 @@
 import { ApiConnectionError, ApiCredentialsError } from '../errors/index.coffee'
-import { API_REGISTERED_POSTAUTH_URL } from '../config.js'
-import { API_CLIENT_ID } from '../config-obscured.js'
+import { AFTERLOGIN_URL } from '../config.js'
+import { APPLICATION_ID } from '../config-obscured.js'
 
 export checkCredentialsRemainingTime = ->
 	if !localStorage['api.credentials.key.token']? then return 0
@@ -24,14 +24,14 @@ export renewCredentials = ->
 	return fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
 		headers:
-			'Authorization': 'Basic ' + btoa(API_CLIENT_ID + ':') # HTTP Basic Auth
+			'Authorization': 'Basic ' + btoa(APPLICATION_ID + ':') # HTTP Basic Auth
 		body: new URLSearchParams(
 			switch
 				when auth_code # New account login
 					{
 						grant_type: 'authorization_code'
 						code: auth_code
-						redirect_uri: API_REGISTERED_POSTAUTH_URL
+						redirect_uri: AFTERLOGIN_URL
 					}
 				when refresh_token # Existing login, but credentials expired
 					{

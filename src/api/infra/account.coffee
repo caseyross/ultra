@@ -1,6 +1,6 @@
 import { deleteLocalCredentials } from './credentials.coffee'
-import { API_REGISTERED_POSTAUTH_URL } from '../config.js'
-import { API_CLIENT_ID } from '../config-obscured.js'
+import { AFTERLOGIN_URL } from '../config.js'
+import { APPLICATION_ID } from '../config-obscured.js'
 
 export goToAccountAuthorizationPage = ->
 	# NOTE: Echo value ("state") is returned verbatim by the login endpoint.
@@ -41,8 +41,8 @@ export goToAccountAuthorizationPage = ->
 			'wikiedit'
 			'wikiread'
 		].join()
-		client_id: API_CLIENT_ID
-		redirect_uri: API_REGISTERED_POSTAUTH_URL
+		client_id: APPLICATION_ID
+		redirect_uri: AFTERLOGIN_URL
 		state: state
 	}
 	location.assign(redditAuthURL)
@@ -72,7 +72,7 @@ export deauthorizeLocalAccount = ->
 	fetch 'https://www.reddit.com/api/v1/revoke_token',
 		method: 'POST'
 		headers:
-			'Authorization': 'Basic ' + btoa(API_CLIENT_ID + ':') # HTTP Basic Auth
+			'Authorization': 'Basic ' + btoa(APPLICATION_ID + ':') # HTTP Basic Auth
 		body: new URLSearchParams({
 			token_type_hint: 'refresh_token'
 			token: localStorage['api.credentials.exchange.token']
