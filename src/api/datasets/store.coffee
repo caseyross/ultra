@@ -1,6 +1,6 @@
 import routes from './routes.coffee'
-import extractGeneral from './extractors/general.coffee'
-import extractSpecial from './extractors/special/index.coffee'
+import extractGeneral from './extractors/general/extract.coffee'
+import extractSpecial from './extractors/special/extract.coffee'
 
 store = {}
 subscribers = new Map()
@@ -10,8 +10,7 @@ publishTo = (subscriber) ->
 
 publishToAll = ->
 	console.table store
-	for subscriber in subscribers
-		publishTo(subscriber)
+	subscribers.forEach(publishTo)
 
 setLoading = (id) ->
 	store[id] = {

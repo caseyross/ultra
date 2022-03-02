@@ -1,4 +1,4 @@
-import extract from '../general.coffee'
+import extract from '../general/extract.coffee'
 
 # Our "t3" API response type is slightly different from Reddit's "t3" kind.
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.

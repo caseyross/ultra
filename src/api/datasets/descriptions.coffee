@@ -1,4 +1,4 @@
-# schema version: 1.3
+# schema version: 1.4
 
 export default {
 	
@@ -24,11 +24,10 @@ export default {
 	t3:     'Post'
 	t3c:    'Post collection'
 	t3dz:   'Post duplicates listing'
-	t3ldz:  'Live post discussions listing'
-	t3li:   'Live post information'
-	t3lic:  'Live post contributors'
-	t3lu:   'Live post update'
-	t3luz:  'Live post updates listing'
+	t3ldz:  'Live thread discussions listing'
+	t3li:   'Live thread information'
+	t3lic:  'Live thread contributors' # + invites, if user has "manage" permission
+	t3luz:  'Live thread updates listing'
 	t3sz:   'Posts search listing'
 	t3w:    'Wiki page'
 	t3wdz:  'Wiki page discussions listing'
@@ -49,7 +48,7 @@ export default {
 	t5ir:   'Subreddit rules'
 	t5irp:  'Subreddit post requirements'
 	t5irpt: 'Subreddit post submission text'
-	t5it:   'Subreddit traffic information'
+	t5it:   'Subreddit traffic information' # requires login (+ mod?)
 	t5iub:  'Subreddit banned users'
 	t5iubw: 'Subreddit wikibanned users'
 	t5iuc:  'Subreddit contributors'
@@ -62,10 +61,10 @@ export default {
 	t5mrz:  'Subreddit reported content listing'
 	t5msz:  'Subreddit spam listing'
 	t5muz:  'Subreddit not-yet-moderated content listing'
-	t5sa:   'Subreddits name autocomplete matches'
+	t5sa:   'Subreddits name autocomplete matches' # doesn't return anything?
 	t5snz:  'Subreddits ranked novelty listing'
 	t5spz:  'Subreddits ranked popularity listing'
-	t5sv:   'Subreddits search listing'
+	t5sz:   'Subreddits search listing'
 	t5w:    'Subreddit wiki pages'
 	t5we:   'Subreddit recently edited wiki pages'
 	t5xi:   'Multireddit information'

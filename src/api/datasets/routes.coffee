@@ -48,8 +48,6 @@ export default {
 		get "/live/#{threadId}/about"
 	t3lic:  (threadId) ->
 		get "/live/#{threadId}/contributors"
-	t3lu:   (threadId, updateId) ->
-		get "/live/#{threadId}/updates/#{updateId}"
 	t3luz:  (threadId, limit, after) ->
 		get "/live/#{threadId}", { limit, after }
 	t3sz:   (searchText, subredditName, sort, limit, after) ->

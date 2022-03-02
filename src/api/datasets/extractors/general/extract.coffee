@@ -1,3 +1,5 @@
+import embeddable from './util/embeddable.coffee'
+
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.
 # All extractors return the same data structure. It is described below as it is constructed.
@@ -7,23 +9,6 @@ export default extract = (rawData) ->
 		main: null # The object specified by an API route.
 		sub: [] # Objects contained in the same API response as the main objects, but which "belong" to a different API route.
 	switch rawData.kind
-		when 'Listing'
-			listing = rawData.data.children
-			if !Array.isArray(listing) then listing = []
-			# If each top-level object in the listing is referenceable by ID, the primary data becomes simply an array of IDs.
-			# If not, the primary data contains the full child objects.
-			listingDatasets = listing.map((item) -> extract(item))
-			childIds = listingDatasets.map(({ main }) -> main.id)
-			if childIds.every((id) -> id?)
-				result.main =
-					id: null # At the top level of the API response, we don't need this, as we already know which ID the data was requested for... (continues in comment extraction)
-					data: childIds
-				result.sub = listingDatasets.flatMap(({ main, sub }) -> sub.concat(main))
-			else
-				result.main =
-					id: null
-					data: listingDatasets.map(({ main }) -> main)
-				result.sub = listingDatasets.flatMap(({ sub }) -> sub)
 		when 't1'
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			comment = rawData.data
@@ -42,7 +27,7 @@ export default extract = (rawData) ->
 			# Set the IDs of the direct replies in place of the original objects.
 			comment.replies = repliesListingDatasets.main.data
 			result.main =
-				id: rawData.data.id.asId('t1') # ...but when we recursively extract sub-objects, we need to identify them.
+				id: rawData.data.id.asId('t1') # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
 				data: comment
 			result.sub = repliesListingDatasets.sub
 		when 't2'
@@ -54,7 +39,7 @@ export default extract = (rawData) ->
 				result.sub.push({
 					id: user.subreddit.display_name.toLowerCase().asId('t5i')
 					data: user.subreddit
-					partial: true
+					partial: true # Marks objects known to be an incomplete version of data from another API route.
 				})
 				delete user.subreddit
 		when 't3'
@@ -65,17 +50,17 @@ export default extract = (rawData) ->
 			post.format = switch
 				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url.hostname == 'i.redd.it'
 					'media'
-				when iFrames(post.url)
-					'iframe'
 				when post.poll_data
 					'poll'
 				when post.is_self
 					'self'
+				when embeddable(post.url)
+					'embed'
 				else
 					'link'
 			# Organize all the media we might need for the post.
-			# For video or gif media, we also try to organize relevant static images.
-			# Note that self posts sometimes also have media, as inline images.
+			# Any type of post can have media, not just media-format posts. For example, self posts can have inline images.
+			# We try to maintain different representations of media where provided; for example, image previews of videos/GIFs.
 			hosted_video_data = post.media?.reddit_video
 			post.media = []
 			if post.media_metadata and post.gallery_data and Array.isArray(post.gallery_data.items)
@@ -118,16 +103,13 @@ export default extract = (rawData) ->
 					video_height: video.height
 					video_width: video.width
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
-			if iFrames(post.url)
-				{ src, allow } = iFrames(post.url)
-				post.media[0] =
-					iframe_url: src
-					iframe_allow: allow
+			if embeddable(post.url)
+				post.media[0] = embeddable(post.url)
 			# Collect the post and (possible) subreddit objects.
 			result.main =
 				id: rawData.data.id.asId('t3')
 				data: post
-				partial: true # Marks objects known to be an incomplete version of data from another API route.
+				partial: true
 			if post.sr_detail
 				result.sub.push({
 					id: post.subreddit.toLowerCase().asId('t5i')
@@ -147,60 +129,37 @@ export default extract = (rawData) ->
 			result.main =
 				id: rawData.data.id.asId('t6')
 				data: rawData.data
+		when 'Listing'
+			listing = rawData.data.children
+			if !Array.isArray(listing) then listing = []
+			# If each top-level object in the listing is referenceable by ID, the primary data becomes simply an array of IDs.
+			# If not, the primary data contains the full child objects.
+			listingDatasets = listing.map((item) -> extract(item))
+			childIds = listingDatasets.map(({ main }) -> main.id)
+			if childIds.every((id) -> id?)
+				result.main =
+					id: null
+					data: childIds
+				result.sub = listingDatasets.flatMap(({ main, sub }) -> sub.concat(main))
+			else
+				result.main =
+					id: null
+					data: listingDatasets.map(({ main }) -> main.data)
+				result.sub = listingDatasets.flatMap(({ sub }) -> sub)
 		when 'LiveUpdate'
 			result.main =
-				id: rawData.data.id.asId('t3lu')
+				id: null # NOTE: We'd like to assign these as "t3lu", since live updates appear to have globally unique IDs. Unfortunately, there's no public endpoint to get a live update solely by its ID (need thread ID as well), so assigning IDs here would break our data modeling assumptions.
 				data: rawData.data
+		when 'LiveUpdateEvent'
+			result.main =
+				id: rawData.data.id.asId('t3li')
+				data: rawData.data
+		when 'UserList'
+			result.main =
+				id: null
+				data: rawData.data.children
 		else
 			result.main =
 				id: null
 				data: rawData
 	return result
-
-iFrames = (url) -> switch (if url.hostname.startsWith('www') then url.hostname[4..] else url.hostname)
-	when 'clips.twitch.tv'
-		descriptor = url.pathname.split('/')[1]
-		if descriptor?.length
-			src: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
-		else
-			null
-	when 'gfycat.com'
-		descriptor = url.pathname.split('/')[1]
-		if descriptor?.length
-			src: "https://gfycat.com/ifr/#{descriptor}"
-		else
-			null
-	when 'm.twitch.tv'
-		descriptor = url.pathname.split('/')[2]
-		if descriptor?.length
-			src: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
-		else
-			null
-	when 'redgifs.com'
-		descriptor = url.pathname.split('/')[2]
-		if descriptor?.length
-			src: "https://redgifs.com/ifr/#{descriptor}"
-		else
-			null
-	when 'twitch.tv'
-		descriptor = url.pathname.split('/')[3]
-		if descriptor?.length
-			src: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
-		else
-			null
-	when 'youtu.be'
-		descriptor = url.pathname.split('/')[1]
-		if descriptor?.length
-			src: "https://www.youtube.com/embed/#{descriptor}"
-			allow: 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-		else
-			null
-	when 'youtube.com'
-		descriptor = url.searchParams.get('v')
-		if descriptor?.length and url.pathname.split('/')[1] != 'clip' # clip URLs don't contain the information necessary for embedding
-			src: "https://www.youtube.com/embed/#{descriptor}",
-			allow: 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-		else
-			null
-	else
-		null
