@@ -12,16 +12,20 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 module.exports = {
 	mode: 'production',
 	entry: {
-		boot: {
-			import: './src/boot.coffee', // bootstrap API requests prior to constructing the UI
+		loadBaseLibraries: {
+			import: './src/loadBaseLibraries.coffee',
 		},
-		render: {
-			import: './src/ui/pages/render.coffee', // render the page
-			dependOn: 'boot',
+		initializeState: {
+			import: './src/initializeState.coffee',
+			dependOn: 'loadBaseLibraries',
+		},
+		initializeUI: {
+			import: './src/initializeUI.coffee',
+			dependOn: 'initializeState',
 		}
 	},
 	optimization: {
-		runtimeChunk: 'single', // with multiple entries on one page, must have only one runtime chunk to avoid duplicate module instantiations
+		runtimeChunk: 'single', // with multiple entries on one page, need single runtime chunk to avoid duplicate module instantiations
 	},
 	output: {
 		filename: '[name].[contenthash].js',
@@ -34,7 +38,7 @@ module.exports = {
 			template: './src/index.html',
 			inject: false, // manual script placement in template
 		}),
-		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /boot/]), // inline to avoid network roundtrip latency
+		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /loadBaseLibraries/, /initializeState/]), // avoids network roundtrip
 		/* TODO: fix copying
 		new CopyWebpackPlugin({
 			patterns: [

@@ -1,0 +1,26 @@
+script.
+	export name = 'caseyross'
+	export distinguish = null
+	export isOP = false
+	export flairText = null
+
+address
+	{#if distinguish === 'admin'}
+		| Administrator
+	{:else if distinguish === 'special'}
+		| Ex-Administrator
+	{:else if distinguish === 'moderator'}
+		| Moderator
+	{:else}
+		| User
+	{#if isOP}
+		| (Original Poster)
+	{#if flairText?.length > 0}
+		| ({flairText})
+
+style.
+	address
+		padding 2px 5px
+		border-radius 5px
+		background rgb(175,206,200) // Aqua-C 8-2
+		margin 5px

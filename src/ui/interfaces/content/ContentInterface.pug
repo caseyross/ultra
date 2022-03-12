@@ -1,0 +1,9 @@
+script.
+	import ContentLayout from '../layout/ContentLayout.pug'
+	import ListingLayout from '../layout/ListingLayout.pug'
+	export datasetId = ''
+
+{#if datasetId.isListingType}
+	ListingLayout(datasetId={datasetId})
+{:else}
+	ContentLayout(datasetId={datasetId})

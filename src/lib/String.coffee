@@ -6,6 +6,14 @@ Object.defineProperty(String::, 'idSpecs', {
 	get: -> @.split(':')[1..]
 })
 
+Object.defineProperty(String::, 'isListingType', {
+	get: -> @.idType.last == 'z'
+})
+
+Object.defineProperty(String::, 'last', {
+	get: -> @.slice(-1)
+})
+
 Object.defineProperty(String::, 'preHyphen', {
 	get: -> @.split('-')[0]
 })

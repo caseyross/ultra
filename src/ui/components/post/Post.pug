@@ -1,40 +1,31 @@
 script.
-	export data = null
-	scoreText = switch
-		when data.isStickied then 'Stickied'
-		when isFinite(data.score) then data.score
-		else '?'
+	import AuthorBadge from './AuthorBadge.pug'
+	import ColoredTextButton from '../../materials/ColoredTextButton.pug'
+	import Comment from './Comment.pug'
+	import datasets from '../../../api/datasets/store.coffee'
+	export id = ''
+	post = null
+	datasets.load(id)
+	datasets.subscribeToKey(id, (value) -> { data: post } = value ? {})
 
-Download(id={postId} let:data={post} staleAfter={30})
-	Post(data={post})
-article(role='post')
-	.row
-		.state
-		div
-			span.sr-name(style='color: {data.subreddit.color}') {data.subreddit.displayName}
-			Flair(flair={data.titleFlair} subredditName={data.subreddit.name})
-			Sendable(id='vote')
-	.row
-		time(datetime={data.createDate.toString()}).tag.age {data.createDate.ago().count}{data.createDate.ago().unit}
-		h1.title {data.title}
-	.row
-		.score {scoreText}
-		PostContent(content={data.content} width={640})
-	.row
-		CommentTreeList(idTreeList={data.commentIdTreeList})
+{#if post}
+	article(role='post')
+		AuthorBadge(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
+		h1 {post.title}
+		{#if post.format === 'self'}
+		{:else if post.format === 'poll'}
+		{:else if post.format === 'media'}
+		{:else if post.format === 'embed'}
+		{:else if post.format === 'link'}
+		{:else}
+		ol
+			{#each post.replies as id}
+				Comment(id={id})
+			{#if post.more_replies}
+				ColoredTextButton(text='More replies...')
 
 style.
-	.row
-		display grid
-		grid-template-columns 0 640px
-	.state
-	time
-	.score
-		opacity 0.5
-		text-align right
-		padding-right 1.2em
-	.sr-name
-		font-size 2rem
-	.title
-		font-size 1.5em
-		font-weight normal
+	h1
+		margin 5px
+	ol
+		margin 5px
