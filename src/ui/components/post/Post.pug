@@ -10,8 +10,11 @@ script.
 
 {#if post}
 	article(role='post')
-		AuthorBadge(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
-		h1 {post.title}
+		header
+			h1 {post.title}
+		section
+			AuthorBadge(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
+			figure
 		{#if post.format === 'self'}
 		{:else if post.format === 'poll'}
 		{:else if post.format === 'media'}
@@ -25,7 +28,21 @@ script.
 				ColoredTextButton(text='More replies...')
 
 style.
+	[role=post]
+		margin 30px
+	header
+		margin 30px 0
 	h1
 		margin 5px
+		font-weight 100
+		font-size 29px
+	section
+		margin 20px
+	figure
+		width 960px
+		height 540px
+		border 1px solid
+		margin-inline 0
 	ol
-		margin 5px
+		padding-left 0
+		margin 15px 0

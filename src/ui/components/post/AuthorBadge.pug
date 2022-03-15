@@ -5,22 +5,34 @@ script.
 	export flairText = null
 
 address
-	{#if distinguish === 'admin'}
-		| Administrator
-	{:else if distinguish === 'special'}
-		| Ex-Administrator
-	{:else if distinguish === 'moderator'}
-		| Moderator
-	{:else}
-		| User
-	{#if isOP}
-		| (Original Poster)
+	span.name
+		{#if distinguish === 'moderator'}
+			| Moderator
+		{:else if distinguish === 'admin'}
+			| Admin
+		{:else if distinguish === 'special'}
+			| Ex-Admin
+		{:else}
+			| User
+		{#if isOP}
+			| (OP)
 	{#if flairText?.length > 0}
-		| ({flairText})
+		span.flair {flairText}
 
 style.
-	address
-		padding 2px 5px
+	.name
+	.flair
+		padding 2px 8px
 		border-radius 5px
-		background rgb(175,206,200) // Aqua-C 8-2
-		margin 5px
+		display inline-block
+		font-style normal
+		font-weight bold
+		font-size 12px
+		margin 2px 0
+	.name
+		margin-left 10px
+		background gray
+		color white
+		opacity 0.3
+	.flair
+		opacity 0.5
