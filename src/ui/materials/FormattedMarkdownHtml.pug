@@ -5,10 +5,10 @@ script.
 
 style.
 	:global(.md)
-		word-break break-word
 		font-size 15px
 		margin 15px 10px
 		margin-top 5px
+		word-break break-word
 	:global(.md *:first-child)
 		margin-block-start 0
 	:global(.md *:last-child)
@@ -19,8 +19,8 @@ style.
 		margin-inline-start 1ch
 	:global(.md blockquote::before)
 		content '>'
-		position absolute
 		left -1ch
+		position absolute
 
 		// Paragraphs
 		p

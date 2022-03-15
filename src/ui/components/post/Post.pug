@@ -1,6 +1,6 @@
 script.
-	import AuthorBadge from './AuthorBadge.pug'
-	import ColoredTextButton from '../../materials/ColoredTextButton.pug'
+	import ActionText from '../../materials/ActionText.pug'
+	import Byline from './Byline.pug'
 	import Comment from './Comment.pug'
 	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
@@ -13,36 +13,34 @@ script.
 		header
 			h1 {post.title}
 		section
-			AuthorBadge(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
+			Byline(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
 			figure
-		{#if post.format === 'self'}
-		{:else if post.format === 'poll'}
-		{:else if post.format === 'media'}
-		{:else if post.format === 'embed'}
-		{:else if post.format === 'link'}
-		{:else}
+				{#if post.format === 'self'}
+				{:else if post.format === 'poll'}
+				{:else if post.format === 'media'}
+				{:else if post.format === 'embed'}
+				{:else if post.format === 'link'}
+				{:else}
 		ol
 			{#each post.replies as id}
 				Comment(id={id})
 			{#if post.more_replies}
-				ColoredTextButton(text='More replies...')
+				ActionText(text='More replies...')
 
 style.
 	[role=post]
 		margin 30px
+	figure
+		border 1px solid
+		height 540px
+		margin 5px 10px
+		width 960px
 	header
 		margin 30px 0
 	h1
-		margin 5px
-		font-weight 100
 		font-size 29px
-	section
-		margin 20px
-	figure
-		width 960px
-		height 540px
-		border 1px solid
-		margin-inline 0
+		font-weight 100
+		margin 10px
 	ol
-		padding-left 0
 		margin 15px 0
+		padding-left 0
