@@ -1,4 +1,4 @@
-import errors from '../infra/errors.coffee'
+import errors from './errors.coffee'
 import { AFTERLOGIN_URL } from '../config.js'
 import { APPLICATION_ID } from '../config-obscured.js'
 
