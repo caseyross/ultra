@@ -1,13 +1,4 @@
-import {
-	ApiError,
-	ApiConnectionError,
-	ApiCredentialsError,
-	ApiOtherError,
-	ApiRatelimitError,
-	ApiRedirectError,
-	ApiRequestError,
-	ApiServerError
-} from '../errors/index.coffee'
+import errors from './errors.coffee'
 import {
 	checkCredentialsRemainingTime,
 	renewCredentials
@@ -33,14 +24,14 @@ export put = (endpoint, content) ->
 attemptRequest = (method, endpoint, { query = {}, content }) ->
 	new Promise (fulfill) ->
 		if checkCredentialsRemainingTime() <= 0
-			throw new ApiCredentialsError({ message: 'no valid credentials for request' })
+			throw new errors.CredentialsRequiredError({ message: 'no valid credentials for request' })
 		fulfill()
 	.catch ->
 		renewCredentials()
 	.then ->
 		wait = checkRatelimitWait()
 		if wait > 0
-			throw new ApiRatelimitError({ wait })
+			throw new errors.RatelimitExceededError({ wait })
 	.then ->
 		params =
 			headers:
@@ -62,7 +53,7 @@ attemptRequest = (method, endpoint, { query = {}, content }) ->
 		if error instanceof TypeError
 			# NOTE: an error here means that either the network request failed OR the fetch params were structured badly.
 			# The fetch API does not distinguish between these errors, so we make the assumption here that our params are OK.
-			throw new ApiConnectionError({ cause: error })
+			throw new errors.ConnectionFailedError({ cause: error })
 		else
 			throw error
 	.then (response) ->
@@ -76,14 +67,14 @@ attemptRequest = (method, endpoint, { query = {}, content }) ->
 			when 100 <= code <= 299
 				response.json()
 			when 300 <= code <= 399
-				throw new ApiRedirectError({ code })
+				throw new errors.ResourceMovedError({ code })
 			when 400 <= code <= 499
-				throw new ApiRequestError({ code })
+				throw new errors.InvalidRequestError({ code })
 			when 500 <= code <= 599
-				throw new ApiServerError({ code })
+				throw new errors.ServerNotAvailableError({ code })
 	.catch (error) ->
 		switch
-			when error instanceof ApiError
+			when error instanceof errors.AnyError
 				throw error
 			else
-				throw new ApiOtherError({ cause: error })
+				throw new errors.UnknownError({ cause: error })

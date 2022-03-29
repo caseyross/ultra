@@ -1,4 +1,4 @@
-import { ApiConnectionError, ApiCredentialsError } from '../errors/index.coffee'
+import errors from './errors.coffee'
 import { AFTERLOGIN_URL } from '../config.js'
 import { APPLICATION_ID } from '../config-obscured.js'
 
@@ -48,7 +48,7 @@ export renewCredentials = ->
 		if error instanceof TypeError
 			# NOTE: an error here means that either the network request failed OR the fetch params were structured badly.
 			# The fetch API does not distinguish between these errors, so we make the assumption here that our params are OK.
-			throw new ApiConnectionError({ cause: error })
+			throw new errors.ConnectionFailedError({ cause: error })
 		else
 			throw error
 	.then (response) ->
@@ -62,7 +62,7 @@ export renewCredentials = ->
 	.finally ->
 		localStorage['api.credentials.renewal_in_progress'] = 'FALSE'
 		if checkCredentialsRemainingTime() <= 0
-			throw new ApiCredentialsError({ message: 'failed to acquire valid credentials' })
+			throw new errors.CredentialsRequiredError({ message: 'failed to acquire valid credentials' })
 
 waitForCredentialsRenewal = (f) ->
 	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
