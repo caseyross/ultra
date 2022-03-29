@@ -1,35 +1,25 @@
 import errors from './errors.coffee'
-import {
-	checkCredentialsRemainingTime,
-	renewCredentials
-} from './credentials.coffee'
-import {
-	checkRatelimitWait,
-	updateObservedRatelimit,
-	updatePredictedRatelimit
-} from './ratelimit.coffee'
+import { getCredentialsValidTimeLeft, renewCredentials } from './credentials.coffee'
+import { getRatelimitWait, updateObservedRatelimit, updatePredictedRatelimit } from './ratelimit.coffee'
 
 export get = (endpoint, query) ->
 	attemptRequest 'GET', endpoint, { query }
-
 export patch = (endpoint, content) ->
 	attemptRequest 'PATCH', endpoint, { content }
-
 export post =  (endpoint, content) ->
 	attemptRequest 'POST', endpoint, { content }
-
 export put = (endpoint, content) ->
 	attemptRequest 'PUT', endpoint, { content }
 
 attemptRequest = (method, endpoint, { query = {}, content }) ->
 	new Promise (fulfill) ->
-		if checkCredentialsRemainingTime() <= 0
+		if getCredentialsValidTimeLeft() <= 0
 			throw new errors.CredentialsRequiredError({ message: 'no valid credentials for request' })
 		fulfill()
 	.catch ->
 		renewCredentials()
 	.then ->
-		wait = checkRatelimitWait()
+		wait = getRatelimitWait()
 		if wait > 0
 			throw new errors.RatelimitExceededError({ wait })
 	.then ->

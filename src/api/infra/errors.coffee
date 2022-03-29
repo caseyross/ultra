@@ -13,6 +13,10 @@ class InvalidRequestError extends AnyError
 	constructor: ({ code }) ->
 		super("code #{code}")
 		@.code = code
+class LoginFailedError extends AnyError
+	constructor: ({ reason }) ->
+		super("reason: #{reason}")
+		@.reason = reason
 class RatelimitExceededError extends AnyError
 	constructor: ({ wait }) ->
 		super("wait #{Date.asSeconds(wait)} sec")

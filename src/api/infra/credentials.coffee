@@ -2,11 +2,17 @@ import errors from './errors.coffee'
 import { AFTERLOGIN_URL } from '../config.js'
 import { APPLICATION_ID } from '../config-obscured.js'
 
-export checkCredentialsRemainingTime = ->
-	if !localStorage['api.credentials.key.token']? then return 0
-	expiration = Number localStorage['api.credentials.key.expiration']
-	if !Number.isFinite expiration then return 0
-	return expiration - Date.now()
+waitForCredentialsRenewal = (f) ->
+	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
+		return setTimeout(waitForCredentialsRenewal, 20, f)
+	else
+		return f()
+forceCredentialsRenewal = (f) ->
+	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
+		localStorage['api.credentials.renewal_in_progress'] = 'FALSE'
+		return f(renewCredentials())
+	else
+		return f()
 
 export renewCredentials = ->
 	# In the event that multiple instances of the application are instantiated simultaneously, we don't want them competing to acquire the credentials, which are shared.
@@ -61,23 +67,11 @@ export renewCredentials = ->
 				localStorage['api.credentials.exchange.token'] = data.refresh_token
 	.finally ->
 		localStorage['api.credentials.renewal_in_progress'] = 'FALSE'
-		if checkCredentialsRemainingTime() <= 0
+		if getCredentialsValidTimeLeft() <= 0
 			throw new errors.CredentialsRequiredError({ message: 'failed to acquire valid credentials' })
 
-waitForCredentialsRenewal = (f) ->
-	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
-		return setTimeout(waitForCredentialsRenewal, 20, f)
-	else
-		return f()
-
-forceCredentialsRenewal = (f) ->
-	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
-		localStorage['api.credentials.renewal_in_progress'] = 'FALSE'
-		return f(renewCredentials())
-	else
-		return f()
-
-export deleteLocalCredentials = ->
-	delete localStorage['api.credentials.exchange.token']
-	delete localStorage['api.credentials.key.expiration']
-	delete localStorage['api.credentials.key.token']
+export getCredentialsValidTimeLeft = ->
+	if !localStorage['api.credentials.key.token']? then return 0
+	expiration = Number localStorage['api.credentials.key.expiration']
+	if !Number.isFinite expiration then return 0
+	return expiration - Date.now()
