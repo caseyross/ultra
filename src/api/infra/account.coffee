@@ -32,7 +32,7 @@ ALL_SCOPES = [
 
 # To login, the user must confirm on Reddit's offical authentication page that they want to give access to our app.
 # We need to construct the appropriate query params for the authentication page URL, and then send the user there.
-export attemptLogin = ->
+export requestLogin = ->
 	echo = Math.trunc(Number.MAX_VALUE * Math.random()) + '///' + location
 	localStorage['api.credentials.exchange.echo'] = echo
 	loginUrl = new URL('https://www.reddit.com/api/v1/authorize') 
