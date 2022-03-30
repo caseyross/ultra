@@ -1,1 +1,0 @@
-export const AFTERLOGIN_URL = process.env.NODE_ENV === 'production' ? 'https://localhost:8080' : 'https://localhost:8080'

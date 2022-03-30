@@ -1,6 +1,4 @@
 import errors from './errors.coffee'
-import { AFTERLOGIN_URL } from '../config.js'
-import { APPLICATION_ID } from '../config-obscured.js'
 
 ALL_SCOPES = [
 	'account'
@@ -42,8 +40,8 @@ export attemptLogin = ->
 		response_type: 'code'
 		duration: 'permanent'
 		scope: ALL_SCOPES.join()
-		client_id: APPLICATION_ID
-		redirect_uri: AFTERLOGIN_URL
+		client_id: localStorage['api.config.client_id']
+		redirect_uri: localStorage['api.config.redirect_uri']
 		state: echo
 	}
 	location.assign(loginUrl)
@@ -86,7 +84,7 @@ export logout = ->
 	fetch 'https://www.reddit.com/api/v1/revoke_token',
 		method: 'POST'
 		headers:
-			'Authorization': 'Basic ' + btoa(APPLICATION_ID + ':') # HTTP Basic Auth
+			'Authorization': 'Basic ' + btoa(localStorage['api.config.client_id'] + ':') # HTTP Basic Auth
 		body: new URLSearchParams
 			token_type_hint: 'refresh_token'
 			token: localStorage['api.credentials.exchange.token']

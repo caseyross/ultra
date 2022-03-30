@@ -9,6 +9,7 @@
 		"coffeescript": "^2.6.1",
 		"copy-webpack-plugin": "^10.1.0",
 		"css-loader": "^6.7.1",
+		"dotenv-webpack": "^7.1.0",
 		"html-webpack-plugin": "^5.5.0",
 		"pug": "^3.0.2",
 		"pug-to-svelte": "^1.0.0",

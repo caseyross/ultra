@@ -1,11 +1,12 @@
 // filesystem
 const path = require('path')
 // compilers
-const pugToSvelte = require('pug-to-svelte')
 const coffeescript = require('coffeescript')
+const pugToSvelte = require('pug-to-svelte')
 const stylus = require('stylus')
 // plugins
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const EnvPlugin = require('dotenv-webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 
@@ -34,6 +35,7 @@ module.exports = {
 		clean: true // cleanup output directory before emitting assets
 	},
 	plugins: [
+		new EnvPlugin(),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			inject: false, // manual script placement in template

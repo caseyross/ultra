@@ -1,5 +1,5 @@
+.env
 .yarn/
 .yarnrc
 dist/
 node_modules/
-*obscured*

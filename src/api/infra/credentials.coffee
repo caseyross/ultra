@@ -1,6 +1,4 @@
 import errors from './errors.coffee'
-import { AFTERLOGIN_URL } from '../config.js'
-import { APPLICATION_ID } from '../config-obscured.js'
 
 waitForCredentialsRenewal = (f) ->
 	if localStorage['api.credentials.renewal_in_progress'] is 'TRUE'
@@ -30,14 +28,14 @@ export renewCredentials = ->
 	return fetch 'https://www.reddit.com/api/v1/access_token',
 		method: 'POST'
 		headers:
-			'Authorization': 'Basic ' + btoa(APPLICATION_ID + ':') # HTTP Basic Auth
+			'Authorization': 'Basic ' + btoa(localStorage['api.config.client_id'] + ':') # HTTP Basic Auth
 		body: new URLSearchParams(
 			switch
 				when auth_code # New account login
 					{
 						grant_type: 'authorization_code'
 						code: auth_code
-						redirect_uri: AFTERLOGIN_URL
+						redirect_uri: localStorage['api.config.redirect_uri']
 					}
 				when refresh_token # Existing login, but credentials expired
 					{
