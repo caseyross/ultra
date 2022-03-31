@@ -6,6 +6,7 @@ const pugToSvelte = require('pug-to-svelte')
 const stylus = require('stylus')
 // plugins
 const EnvPlugin = require('dotenv-webpack')
+const FaviconsPlugin = require('favicons-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 
@@ -35,6 +36,7 @@ module.exports = {
 	},
 	plugins: [
 		new EnvPlugin(),
+		new FaviconsPlugin('./src/ui/assets/favicons/16x16.png'),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			inject: false, // manual script placement in template
