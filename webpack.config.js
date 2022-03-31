@@ -5,7 +5,6 @@ const coffeescript = require('coffeescript')
 const pugToSvelte = require('pug-to-svelte')
 const stylus = require('stylus')
 // plugins
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 const EnvPlugin = require('dotenv-webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
@@ -41,16 +40,6 @@ module.exports = {
 			inject: false, // manual script placement in template
 		}),
 		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /loadBaseLibraries/, /initializeState/]), // avoids network roundtrip
-		/* TODO: fix copying
-		new CopyWebpackPlugin({
-			patterns: [
-				{
-					from: './src/ui/stylesheets', // copy directly to output directory
-					transform: (content, path) => stylus.render(content)
-				},
-			],
-		}),
-		*/
 	],
 	resolve: {
 		extensions: ['.pug', '.coffee', '.js'],
