@@ -10,18 +10,18 @@ script.
 
 {#if post}
 	article(role='post')
-		header
+		header.post-header
 			h1 {post.title}
-		section
 			Byline(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
-			figure
-				{#if post.format === 'self'}
-				{:else if post.format === 'poll'}
-				{:else if post.format === 'media'}
-				{:else if post.format === 'embed'}
-				{:else if post.format === 'link'}
-				{:else}
-		ol
+		section.post-body
+			{#if post.format === 'self'}
+				{@html post.selftext_html}
+			{:else if post.format === 'poll'}
+			{:else if post.format === 'media'}
+			{:else if post.format === 'embed'}
+			{:else if post.format === 'link'}
+			{:else}
+		ol.post-replies
 			{#each post.replies as id}
 				Comment(id={id})
 			{#if post.more_replies}
@@ -29,18 +29,24 @@ script.
 
 style.
 	[role=post]
-		margin 30px
-	figure
+		align-items center
+		display flex
+		flex-flow column nowrap
+		padding 30px 0
+		width 100%
+	.post-body
 		border 1px solid
 		height 540px
 		margin 5px 10px
-		width 960px
-	header
+		min-width 1080px
+	.post-header
 		margin 30px 0
-	h1
-		font-size 29px
-		font-weight 100
-		margin 10px
-	ol
+		width 1080px
+		h1
+			font-size 29px
+			font-weight 100
+			margin 10px
+	.post-replies
 		margin 15px 0
 		padding-left 0
+		width 1080px
