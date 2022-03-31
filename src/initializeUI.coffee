@@ -1,3 +1,4 @@
+import './ui/assets/global.styl'
 import Post from './ui/components/post/Post.pug'
 
 try

@@ -1,0 +1,83 @@
+// Single-direction margin
+*
+	margin-bottom 0
+*:first-child
+	margin-top 0
+
+// Paragraphs
+p
+	margin-top 1em
+	overflow-wrap break-word
+blockquote + p
+	margin-top 0.5em
+hr
+	margin-top 1em
+	border 0
+	height 1px
+	background rgba(0,0,0,0.5)
+
+// Verbatim text
+blockquote
+	color green
+	position relative
+	margin-inline-start 1ch
+blockquote::before
+	content '>'
+	left -1ch
+	position absolute
+pre
+	margin-top 1em
+	display inline-block
+	white-space pre-wrap
+
+// Spoilers
+.md-spoiler-text
+	padding 0.25em 0
+	background gray
+	color gray
+	&:focus, &:hover
+		background initial
+		color initial
+
+// Lists
+ol
+	margin-top 0.5em
+	list-style decimal
+	padding-left 16px
+ul
+	margin-top 0.5em
+	list-style disc
+	padding-left 16px
+
+// Headers
+h1
+h2
+h3
+h4
+h5
+h6
+	margin-top 1em
+	font-weight normal
+	font-size 1.25em
+
+// Tables
+table
+	margin-top 1em
+	display inline-block
+	max-width 100%
+	overflow auto
+	white-space pre
+thead
+	border-bottom 1px solid
+td
+th
+	border-right 2em solid transparent
+	&:last-child
+		border-right 0
+tr:first-child td
+	padding-top 0.5em
+
+// Media
+img
+	max-width 100%
+	height auto
