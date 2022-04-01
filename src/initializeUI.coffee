@@ -1,10 +1,10 @@
 import './ui/assets/global.styl'
-import Post from './ui/components/post/Post.pug'
+import Listing from './ui/components/listing/Listing.pug'
 
 try
-	new Post
+	new Listing
 		target: document.body
 		props:
-			id: 't3:tt4p8e'
+			id: 't5z:ukrainianconflict:hot:1'
 catch error
 	alert(error)

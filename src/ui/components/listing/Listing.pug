@@ -1,0 +1,12 @@
+script.
+	import Post from '../post/Post.pug'
+	import datasets from '../../../api/datasets/store.coffee'
+	export id = ''
+	itemIds = null
+	datasets.load(id)
+	datasets.subscribeToKey(id, (value) -> { data: itemIds } = value)
+
+{#if itemIds && itemIds.length}
+	{#each itemIds as itemId}
+		{#if itemId.idType === 't3'}
+			Post(id={itemId})

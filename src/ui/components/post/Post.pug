@@ -6,7 +6,7 @@ script.
 	export id = ''
 	post = null
 	datasets.load(id)
-	datasets.subscribeToKey(id, (value) -> { data: post } = value ? {})
+	datasets.subscribeToKey(id, (value) -> { data: post } = value)
 
 {#if post}
 	article(role='post')
@@ -15,7 +15,7 @@ script.
 			Byline(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
 		section.post-body
 			{#if post.format === 'self'}
-				{@html post.selftext_html}
+				{@html post.selftext_html.slice(31, -20)}
 			{:else if post.format === 'poll'}
 			{:else if post.format === 'media'}
 				{#each post.media as media}
