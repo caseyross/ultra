@@ -2,6 +2,7 @@ script.
 	import ActionText from '../generic/ActionText.pug'
 	import Byline from './Byline.pug'
 	import Comment from './Comment.pug'
+	import MediaPlayer from '../generic/MediaPlayer.pug'
 	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
 	post = null
@@ -20,7 +21,12 @@ script.
 			{:else if post.format === 'media'}
 				{#each post.media as media}
 					{#if media.video_url}
+						MediaPlayer(audio_url={media.video_audio_url} video_height={media.video_height} video_url={media.video_url} video_width={media.video_width})
 					{:else if media.gif_url}
+						figure
+							figcaption
+							picture
+								img(src={media.gif_url})
 					{:else if media.image_url}
 						figure
 							figcaption

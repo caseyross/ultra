@@ -1,0 +1,65 @@
+script.
+	import { onMount } from 'svelte'
+	export audio_url = null
+	export video_height = null
+	export video_width = null
+	export video_url = null
+	audio = null
+	duration = 0
+	time = 0
+	video = null
+	volume = 0.5
+	onMount ->
+		video.addEventListener('pause', (e) ->
+			audio.pause()
+		)
+		video.addEventListener('play', (e) ->
+			audio.play()
+		)
+		video.addEventListener('playing', (e) ->
+			if audio.paused then audio.play()
+		)
+		video.addEventListener('seeked', (e) ->
+			audio.currentTime = video.currentTime
+		)
+		video.addEventListener('waiting', (e) ->
+			audio.pause()
+			audio.currentTime = video.currentTime
+		)
+
+figure(style='height:{video_height};width:{video_width};')
+	video(bind:duration={duration} bind:currentTime={time} bind:this={video})
+		source(src={video_url} type='video/mp4')
+	audio(bind:this={audio} bind:volume={volume})
+		source(src={audio_url} type='audio/mp4')
+	nav.video-controls
+		button.play-pause-button(on:click={() => video.play()}) PP
+		progress.scrubber(max={duration} value={time})
+		meter.volume(max={1} min={0})
+		button.fullscreen-button(on:click={() => video.requestFullscreen()}) FS
+
+style.
+	.video-controls
+		height 100%
+		position relative
+	.video-fullscreen-button
+		bottom 0
+		position absolute
+		right 0
+	.video-play-pause-button
+		height 100%
+		width 100%
+	.video-scrubber
+		bottom 0
+		left 0
+		position absolute
+	.video-volume
+		position absolute
+		right 0
+		top 0
+	audio
+		display none
+	pre
+		min-width 0
+	video
+		border 1px solid
