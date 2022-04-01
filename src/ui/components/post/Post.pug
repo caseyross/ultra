@@ -18,6 +18,15 @@ script.
 				{@html post.selftext_html}
 			{:else if post.format === 'poll'}
 			{:else if post.format === 'media'}
+				{#each post.media as media}
+					{#if media.video_url}
+					{:else if media.gif_url}
+					{:else if media.image_url}
+						figure
+							figcaption
+							picture
+								source(srcset={media.image_url_1080} media='(min-width: 1200px)')
+								img(src={media.image_url})
 			{:else if post.format === 'embed'}
 			{:else if post.format === 'link'}
 			{:else}
@@ -32,21 +41,17 @@ style.
 		align-items center
 		display flex
 		flex-flow column nowrap
-		padding 30px 0
+		padding 60px 0
 		width 100%
 	.post-body
-		border 1px solid
-		height 540px
-		margin 5px 10px
+		margin-top 30px
 		min-width 1080px
 	.post-header
-		margin 30px 0
-		width 1080px
 		h1
 			font-size 29px
 			font-weight 100
-			margin 10px
+		width 1080px
 	.post-replies
-		margin 15px 0
-		padding-left 0
+		margin-top 15px
+		padding-inline-start 0
 		width 1080px

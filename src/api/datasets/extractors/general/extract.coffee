@@ -67,10 +67,14 @@ export default extract = (rawData) ->
 				post.media = post.gallery_data.items.map((item) ->
 					mediaObject = { caption_text: item.caption, caption_url: item.outbound_url }
 					data = post.media_metadata[item.media_id]
-					if data.s.gif
-						mediaObject.video_url = data.s.mp4 ? data.s.gif
+					if data.s.mp4
+						mediaObject.video_url = data.s.mp4
 						mediaObject.video_height = data.s.y
 						mediaObject.video_width = data.s.x
+					else if data.s.gif
+						mediaObject.gif_url = data.s.gif
+						mediaObject.gif_height = data.s.y
+						mediaObject.gif_width = data.s.x
 					else
 						mediaObject.image_url = data.s.u
 						mediaObject['image_url_' + data.s.x] = data.s.u
@@ -82,11 +86,16 @@ export default extract = (rawData) ->
 			else if post.preview? and Array.isArray(post.preview.images)
 				post.media = post.preview.images.map((item) ->
 					mediaObject = {}
-					if item.variants.gif 
-						data = item.variants.mp4 ? item.variants.gif
+					if item.variants.mp4
+						data = item.variants.mp4
 						mediaObject.video_url = data.source.url
 						mediaObject.video_height = data.source.height
 						mediaObject.video_width = data.source.width
+					if item.variants.gif 
+						data = item.variants.gif
+						mediaObject.gif_url = data.source.url
+						mediaObject.gif_height = data.source.height
+						mediaObject.gif_width = data.source.width
 					mediaObject.image_url = item.source.url
 					mediaObject['image_url_' + item.source.width] = item.source.url
 					item.resolutions.forEach((res) ->

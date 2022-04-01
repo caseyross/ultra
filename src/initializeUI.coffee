@@ -5,6 +5,6 @@ try
 	new Post
 		target: document.body
 		props:
-			id: 't3:92dd8'
+			id: 't3:tt4p8e'
 catch error
 	alert(error)
