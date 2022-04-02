@@ -36,11 +36,12 @@ script.
 			{:else if post.format === 'embed'}
 			{:else if post.format === 'link'}
 			{:else}
-		ol.post-replies
-			{#each post.replies as id}
-				Comment(id={id})
-			{#if post.more_replies}
-				ActionText(text='More replies...')
+		{#if false}
+			ol.post-replies
+				{#each post.replies as id}
+					Comment(id={id})
+				{#if post.more_replies}
+					ActionText(text='More replies...')
 
 style.
 	[role=post]

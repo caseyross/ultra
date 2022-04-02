@@ -27,39 +27,85 @@ script.
 			audio.currentTime = video.currentTime
 		)
 
-figure(style='height:{video_height};width:{video_width};')
-	video(bind:duration={duration} bind:currentTime={time} bind:this={video})
+figure
+	video(bind:duration={duration} bind:currentTime={time} bind:this={video} style='height:{video_height};width:{video_width};')
 		source(src={video_url} type='video/mp4')
-	audio(bind:this={audio} bind:volume={volume})
+	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	nav.video-controls
-		button.play-pause-button(on:click={() => video.play()}) PP
-		progress.scrubber(max={duration} value={time})
-		meter.volume(max={1} min={0})
-		button.fullscreen-button(on:click={() => video.requestFullscreen()}) FS
+		button.video-play-pause-button(on:click={() => video.paused ? video.play() : video.pause()}) PP
+		input.media-scrubber(bind:value={time} max={duration} min={0} step={0.01} on:click={() => video.play()} type='range')
+		input.media-scrubber-2(bind:value={time} max={duration} min={0} step={0.01} on:click={() => video.pause()} type='range')
+		pre.media-time-info
+			span.media-elapsed-duration {time.toFixed(2)}
+			span.media-total-duration {duration.toFixed(2)}
+		.media-volume-container
+			span.mute-region MUTE
+			span.sound-region SOUND
+			input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.01} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
+		button.video-fullscreen-button(on:click={() => video.requestFullscreen()}) FS
 
 style.
+	::-webkit-media-controls
+		display none
 	.video-controls
-		height 100%
 		position relative
+		height 5em
+		width 640px
 	.video-fullscreen-button
-		bottom 0
-		position absolute
-		right 0
-	.video-play-pause-button
-		height 100%
-		width 100%
-	.video-scrubber
-		bottom 0
-		left 0
-		position absolute
-	.video-volume
+		height 5em
 		position absolute
 		right 0
 		top 0
+		width 5em
+	.video-play-pause-button
+		height 5em
+		left 0
+		position absolute
+		top 0
+		width 5em
+	.media-time-info
+		bottom 0
+		min-width 0
+		position absolute
+		right 5em
+	.media-scrubber
+		height 2em
+		left 5em
+		position absolute
+		top 0
+	.media-scrubber-2
+		height 2em
+		left 5em
+		position absolute
+		top 2em
+	.media-volume-container
+		align-items center
+		appearance none
+		bottom 0
+		display flex
+		left 5em
+		height 2em
+		position absolute
+		width 160px
+	.mute-region
+		border-right 1px dotted lightgray
+		flex 1
+		font-size 10px
+		font-weight bold
+	.sound-region
+		flex 2
+		font-size 10px
+		font-weight bold
+	.video-volume
+		appearance none
+		background transparent
+		left 0
+		height 100%
+		position absolute
+		top 0
+		width 100%
 	audio
 		display none
-	pre
-		min-width 0
 	video
 		border 1px solid
