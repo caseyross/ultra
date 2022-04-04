@@ -35,6 +35,9 @@ script.
 								source(srcset={media.image_url_960})
 								img(src={media.image_url})
 			{:else if post.format === 'embed'}
+				{#each post.media as media}
+					{#if media.iframe_url}
+						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
 			{:else if post.format === 'link'}
 			{:else}
 		{#if false}
@@ -62,3 +65,6 @@ style.
 	.post-replies
 		margin-top 15px
 		padding-inline-start 0
+	iframe
+		height 640px
+		width 640px
