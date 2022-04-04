@@ -5,6 +5,6 @@ try
 	new Listing
 		target: document.body
 		props:
-			id: 't5z:combatfootage:hot:10'
+			id: 't5z:hololive:hot:10'
 catch error
 	alert(error)

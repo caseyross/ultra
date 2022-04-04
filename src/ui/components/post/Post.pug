@@ -16,7 +16,8 @@ script.
 			h1 {post.title}
 		section.post-body
 			{#if post.format === 'self'}
-				{@html post.selftext_html.slice(31, -20)}
+				.post-selftext
+					{@html post.selftext_html.slice(31, -20)}
 			{:else if post.format === 'poll'}
 			{:else if post.format === 'media'}
 				{#each post.media as media}
@@ -49,9 +50,12 @@ style.
 		flex-flow column nowrap
 		padding 60px 0
 		padding-left 33%
-		width 50%
+		width 51%
 	.post-body
+		display flex
 		margin-top 30px
+		overflow auto
+		width 100%
 	.post-header
 		h1
 			font-family monospace
