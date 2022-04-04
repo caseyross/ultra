@@ -69,11 +69,9 @@ export default extract = (rawData) ->
 					data = post.media_metadata[item.media_id]
 					if data.s.mp4
 						mediaObject.video_url = data.s.mp4
-						mediaObject.video_height = data.s.y
 						mediaObject.video_width = data.s.x
 					else if data.s.gif
 						mediaObject.gif_url = data.s.gif
-						mediaObject.gif_height = data.s.y
 						mediaObject.gif_width = data.s.x
 					else
 						mediaObject.image_url = data.s.u
@@ -81,6 +79,7 @@ export default extract = (rawData) ->
 					data.p.forEach((res) ->
 						mediaObject['image_url_' + res.x] = res.u
 					)
+					mediaObject.aspect_ratio = data.s.y / data.s.x
 					return mediaObject
 				)
 			else if post.preview? and Array.isArray(post.preview.images)
@@ -89,18 +88,17 @@ export default extract = (rawData) ->
 					if item.variants.mp4
 						data = item.variants.mp4
 						mediaObject.video_url = data.source.url
-						mediaObject.video_height = data.source.height
 						mediaObject.video_width = data.source.width
 					if item.variants.gif 
 						data = item.variants.gif
 						mediaObject.gif_url = data.source.url
-						mediaObject.gif_height = data.source.height
 						mediaObject.gif_width = data.source.width
 					mediaObject.image_url = item.source.url
 					mediaObject['image_url_' + item.source.width] = item.source.url
 					item.resolutions.forEach((res) ->
 						mediaObject['image_url_' + res.width] = res.url
 					)
+					mediaObject.aspect_ratio = item.source.height / item.source.width
 					return mediaObject
 				)
 			else if post.url.hostname == 'i.redd.it'
@@ -109,8 +107,8 @@ export default extract = (rawData) ->
 				video = hosted_video_data
 				post.media[0] =
 					video_url: video.fallback_url ? post.url
-					video_height: video.height
 					video_width: video.width
+					video_aspect_ratio: video.height / video.width
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 			if embeddable(post.url)
 				post.media[0] = embeddable(post.url)

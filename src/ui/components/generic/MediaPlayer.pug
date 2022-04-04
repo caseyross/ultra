@@ -1,15 +1,32 @@
 script.
 	import { onMount } from 'svelte'
 	export audio_url = null
-	export video_height = null
+	export video_aspect_ratio = null
 	export video_width = null
 	export video_url = null
+	stati = {
+		LOADING: 'LOADING...'
+		LOADED: 'CLICK TO PLAY'
+	}
 	audio = null
+	buffered = []
 	duration = 0
+	handleClick = (e) ->
+		if e.button is 0
+			if video.paused then video.play() else video.pause()
+		else if e.button is 2 and not e.altKey
+			if document.fullscreenElement
+				document.exitFullscreen()
+			else
+				video.requestFullscreen()
+	status = stati.LOADING
 	time = 0
 	video = null
 	volume = 0.5
 	onMount ->
+		video.addEventListener('canplaythrough', (e) ->
+			status = stati.LOADED
+		)
 		video.addEventListener('pause', (e) ->
 			audio.pause()
 		)
@@ -28,66 +45,86 @@ script.
 		)
 
 figure
-	video(bind:duration={duration} bind:currentTime={time} bind:this={video} style='height:{video_height};width:{video_width};')
+	video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick} style='height:{video_aspect_ratio<1?480:720}px;')
 		source(src={video_url} type='video/mp4')
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	nav.video-controls
-		button.video-play-pause-button(on:click={() => video.paused ? video.play() : video.pause()}) PP
-		input.media-scrubber(bind:value={time} max={duration} min={0} step={0.01} on:click={() => video.play()} type='range')
-		input.media-scrubber-2(bind:value={time} max={duration} min={0} step={0.01} on:click={() => video.pause()} type='range')
-		pre.media-time-info
-			span.media-elapsed-duration {time.toFixed(2)}
-			span.media-total-duration {duration.toFixed(2)}
-		.media-volume-container
-			span.mute-region MUTE
-			span.sound-region SOUND
-			input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.01} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
-		button.video-fullscreen-button(on:click={() => video.requestFullscreen()}) FS
+		.media-playback-container
+			span.media-status {status}
+			{#each buffered as region}
+				span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
+			input.media-scrubber(bind:value={time} max={duration} min={0} step={0.01} type='range')
+		.video-controls-second-row
+			.media-volume-container
+				span.mute-region MUTE
+				span.sound-region SOUND
+				input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.01} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
+			.media-time-info
+				time.media-elapsed-duration {time.toFixed(2)}
+				time.media-total-duration {duration.toFixed(2)}
+			button.video-fullscreen-button(on:mousedown={() => video.requestFullscreen()}) FS
 
 style.
 	::-webkit-media-controls
 		display none
-	.video-controls
-		position relative
-		height 5em
-		width 640px
-	.video-fullscreen-button
-		height 5em
+	::-webkit-slider-thumb
+		appearance none
+		background black
+		height 2em
+		width 3px
+	.buffer-region
+		background lightgray
+		height 10px
 		position absolute
-		right 0
-		top 0
-		width 5em
-	.video-play-pause-button
-		height 5em
+	.video-controls
+		border 1px solid
+		border-radius 5px
+		padding 0 10px
+		width 320px
+	.video-controls-second-row
+		display flex
+		justify-content space-between
+	.video-fullscreen-button
+		background transparent
+		border 1px dashed
+		font-size 10px
+		font-weight bold
+		height 36px
+		width 64px
+	.media-playback-container
+		align-items center
+		display flex
+		height 2em
+		position relative
+		width 100%
+	.media-time-info
+		align-items flex-end
+		display flex
+		flex-flow column nowrap
+		font-family monospace
+		justify-content center
+		white-space pre
+	.media-scrubber
+		appearance none
+		background transparent
+		height 100%
 		left 0
 		position absolute
 		top 0
-		width 5em
-	.media-time-info
-		bottom 0
-		min-width 0
-		position absolute
-		right 5em
-	.media-scrubber
-		height 2em
-		left 5em
-		position absolute
-		top 0
-	.media-scrubber-2
-		height 2em
-		left 5em
-		position absolute
-		top 2em
+		width 100%
+	.media-status
+		font-size 10px
+		font-weight bold
 	.media-volume-container
 		align-items center
-		appearance none
-		bottom 0
 		display flex
-		left 5em
 		height 2em
-		position absolute
+		position relative
 		width 160px
+		::-webkit-slider-thumb
+			height 1em
+			width 2px
 	.mute-region
 		border-right 1px dotted lightgray
 		flex 1
@@ -109,3 +146,4 @@ style.
 		display none
 	video
 		border 1px solid
+		display block
