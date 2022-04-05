@@ -22,7 +22,7 @@ script.
 			{:else if post.format === 'media'}
 				{#each post.media as media}
 					{#if media.video_url}
-						MediaPlayer(audio_url={media.video_audio_url} video_aspect_ratio={media.video_aspect_ratio} video_url={media.video_url} video_width={media.video_width})
+						MediaPlayer(aspect_ratio={media.aspect_ratio} audio_url={media.video_audio_url} video_url={media.video_url} video_width={media.video_width})
 					{:else if media.gif_url}
 						figure
 							figcaption
@@ -32,8 +32,13 @@ script.
 						figure
 							figcaption
 							picture
-								source(srcset={media.image_url_960})
-								img(src={media.image_url})
+								{#if media.aspect_ratio <= 0.5}
+									source(srcset={media.image_url_960})
+								{:else if media.aspect_ratio <= 1.6}
+									source(srcset={media.image_url_640})
+								{:else}
+									source(srcset={media.image_url_320})
+								img(src={media.image_url} style='max-width:{media.aspect_ratio>1.1?480:null}px;')
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -52,7 +57,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		padding 60px 0
-		padding-left 33%
+		padding-left 37.5%
 		width 51%
 	.post-body
 		display flex

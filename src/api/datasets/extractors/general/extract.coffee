@@ -106,9 +106,9 @@ export default extract = (rawData) ->
 			if hosted_video_data
 				video = hosted_video_data
 				post.media[0] =
+					aspect_ratio: video.height / video.width
 					video_url: video.fallback_url ? post.url
 					video_width: video.width
-					video_aspect_ratio: video.height / video.width
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 			if embeddable(post.url)
 				post.media[0] = embeddable(post.url)

@@ -1,7 +1,7 @@
 script.
 	import { onMount } from 'svelte'
+	export aspect_ratio = null
 	export audio_url = null
-	export video_aspect_ratio = null
 	export video_width = null
 	export video_url = null
 	stati = {
@@ -45,7 +45,7 @@ script.
 		)
 
 figure
-	video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick} style='height:{video_aspect_ratio<1?480:720}px;')
+	video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick} style='height:{aspect_ratio<1?480:720}px;')
 		source(src={video_url} type='video/mp4')
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
