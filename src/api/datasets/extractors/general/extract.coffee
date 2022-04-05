@@ -112,11 +112,18 @@ export default extract = (rawData) ->
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 			if embeddable(post.url)
 				post.media[0] = embeddable(post.url)
-			# Collect the post and (possible) subreddit objects.
-			result.main =
-				id: rawData.data.id.asId('t3')
-				data: post
-				partial: true
+			# Collect the (possible) subreddit & crosspost-source objects, and the end post.
+			if post.crosspost_parent_list?.length
+				result.sub.push({
+					id: post.crosspost_parent_list[0].id.asId('t3')
+					data: extract({
+						kind: 't3'
+						data: post.crosspost_parent_list[0]
+					})
+					partial: true
+				})
+				post.crosspost_parent = post.crosspost_parent_list[0].id.asId('t3')
+				delete post.crosspost_parent_list
 			if post.sr_detail
 				result.sub.push({
 					id: post.subreddit.toLowerCase().asId('t5i')
@@ -124,6 +131,10 @@ export default extract = (rawData) ->
 					partial: true
 				})
 				delete post.sr_detail
+			result.main =
+				id: rawData.data.id.asId('t3')
+				data: post
+				partial: true
 		when 't4'
 			result.main =
 				id: rawData.data.id.asId('t4')
