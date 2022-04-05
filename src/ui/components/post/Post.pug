@@ -44,6 +44,7 @@ script.
 					{#if media.iframe_url}
 						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
 			{:else if post.format === 'link'}
+				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else}
 		{#if false}
 			ol.post-replies
