@@ -20,6 +20,15 @@ script.
 					{@html post.selftext_html.slice(31, -20)}
 			{:else if post.format === 'poll'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
+			{:else if post.format === 'prediction'}
+				{#each post.tournament_data.predictions as prediction}
+					h2.prediction-title {prediction.title}
+					dl.prediction-options
+						{#each prediction.options as option}
+							li
+								dt
+									meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+								dd {option.text}
 			{:else if post.format === 'media'}
 				{#each post.media as media}
 					{#if media.video_url}
@@ -62,9 +71,7 @@ style.
 		padding-left 37.5%
 		width 51%
 	.post-body
-		display flex
 		margin-top 30px
-		overflow auto
 		width 100%
 	.post-header
 		h1
@@ -72,6 +79,8 @@ style.
 	.post-replies
 		margin-top 15px
 		padding-inline-start 0
+	.prediction-options > li
+		display flex
 	iframe
 		height 640px
 		width 640px

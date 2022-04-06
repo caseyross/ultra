@@ -50,6 +50,8 @@ export default extract = (rawData) ->
 			post.format = switch
 				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url.hostname == 'i.redd.it'
 					'media'
+				when post.tournament_data
+					'prediction'
 				when post.poll_data
 					'poll'
 				when post.is_self
