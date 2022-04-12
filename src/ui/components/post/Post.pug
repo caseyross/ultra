@@ -16,8 +16,7 @@ script.
 			h1 {post.title}
 		section.post-body
 			{#if post.format === 'self'}
-				.post-selftext
-					{@html post.selftext_html.slice(31, -20)}
+				{@html post.selftext_html.slice(31, -20)}
 			{:else if post.format === 'poll'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'prediction'}
@@ -31,24 +30,20 @@ script.
 								dd {option.text}
 			{:else if post.format === 'media'}
 				{#each post.media as media}
-					{#if media.video_url}
-						MediaPlayer(aspect_ratio={media.aspect_ratio} audio_url={media.video_audio_url} video_url={media.video_url} video_width={media.video_width})
-					{:else if media.gif_url}
-						figure
-							figcaption
+					figure
+						figcaption
+						{#if media.video_url}
+							MediaPlayer(aspect_ratio={media.aspect_ratio} audio_url={media.video_audio_url} video_url={media.video_url} video_width={media.video_width})
+						{:else if media.gif_url}
 							picture
 								img(src={media.gif_url})
-					{:else if media.image_url}
-						figure
-							figcaption
+						{:else if media.image_url}
 							picture
-								{#if media.aspect_ratio <= 0.5}
+								{#if media.aspect_ratio <= 0.6}
 									source(srcset={media.image_url_960})
-								{:else if media.aspect_ratio <= 1.6}
-									source(srcset={media.image_url_640})
 								{:else}
-									source(srcset={media.image_url_320})
-								img(src={media.image_url} style='max-width:{media.aspect_ratio>1.1?480:null}px;')
+									source(srcset={media.image_url_640})
+								img(src={media.image_url} style='max-width:{media.aspect_ratio>1.2?480:null}px;')
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -56,23 +51,19 @@ script.
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else}
-		{#if false}
-			ol.post-replies
-				{#each post.replies as id}
-					Comment(id={id})
-				{#if post.more_replies}
-					ActionText(text='More replies...')
+		ol.post-replies
+			{#each post.replies as id}
+				Comment(id={id})
+			{#if post.more_replies}
+				ActionText(text='More replies...')
 
 style.
 	[role=post]
-		display flex
-		flex-flow column nowrap
 		padding 60px 0
-		padding-left 37.5%
-		width 51%
+		padding-left 400px 
+		width 880px
 	.post-body
 		margin-top 30px
-		width 100%
 	.post-header
 		h1
 			font-family monospace
@@ -81,6 +72,8 @@ style.
 		padding-inline-start 0
 	.prediction-options > li
 		display flex
+	figure
+		margin-top 30px
 	iframe
-		height 640px
+		height 360px
 		width 640px

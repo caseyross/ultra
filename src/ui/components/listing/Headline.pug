@@ -1,0 +1,28 @@
+script.
+	import datasets from '../../../api/datasets/store.coffee'
+	export id = ''
+	export onSelect = null
+	post = null
+	datasets.load(id)
+	datasets.subscribeToKey(id, (value) -> { data: post } = value)
+
+{#if post}
+	.headline(on:mousedown={onSelect})
+		img.thumbnail(src={post.thumbnail})
+		.title {post.title}
+
+style.
+	.headline
+		display flex
+		gap 15px
+		height 30px
+		margin-top 0.5em
+		overflow hidden
+		width 420px
+	.thumbnail
+		flex 0 0 70px
+		height 100%
+		object-fit cover
+	.title
+		font-family monospace
+		font-size 1.25em

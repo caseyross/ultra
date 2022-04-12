@@ -1,12 +1,35 @@
 script.
+	import Headline from './Headline.pug'
 	import Post from '../post/Post.pug'
 	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
 	itemIds = null
+	selectedId = null
 	datasets.load(id)
 	datasets.subscribeToKey(id, (value) -> { data: itemIds } = value)
 
-{#if itemIds && itemIds.length}
-	{#each itemIds as itemId}
-		{#if itemId.idType === 't3'}
-			Post(id={itemId})
+.listing
+	section.headlines
+		{#if itemIds && itemIds.length}
+			{#each itemIds as itemId}
+				{#if itemId.idType === 't3'}
+					Headline(id={itemId} onSelect={() => selectedId = itemId})
+	section.selected
+		{#if itemIds && itemIds.length}
+			{#each itemIds as itemId}
+				{#if itemId.idType === 't3'}
+					{#if itemId === selectedId}
+						Post(id={itemId})
+
+style.
+	.headlines
+		border 1px solid
+		left 160px
+		padding 30px
+		position fixed
+		top 160px
+	.selected
+		align-items center
+		display flex
+		flex-flow column nowrap
+		width 100%
