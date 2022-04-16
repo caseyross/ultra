@@ -10,28 +10,28 @@ const HtmlOutputWebpackPlugin = require('html-webpack-plugin')
 const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-plugin')
 
 module.exports = {
-	mode: 'production',
 	entry: {
 		loadBaseLibraries: {
 			import: './src/loadBaseLibraries.coffee',
 		},
 		initializeState: {
-			import: './src/initializeState.coffee',
 			dependOn: 'loadBaseLibraries',
+			import: './src/initializeState.coffee',
 		},
 		initializeUI: {
-			import: './src/initializeUI.coffee',
 			dependOn: 'initializeState',
+			import: './src/initializeUI.coffee',
 		}
 	},
+	mode: 'production',
 	optimization: {
 		runtimeChunk: 'single', // with multiple entries on one page, need single runtime chunk to avoid duplicate module instantiations
 	},
 	output: {
+		clean: true, // cleanup output directory before emitting assets
 		filename: '[name].[contenthash].js',
 		path: path.join(__dirname, 'dist'),
 		publicPath: '/', // location of output files relative to the web server root
-		clean: true // cleanup output directory before emitting assets
 	},
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
@@ -46,12 +46,6 @@ module.exports = {
 	],
 	resolve: {
 		extensions: ['.pug', '.coffee', '.js'],
-		// values below recommended by svelte-loader for optimum compatibility
-		alias: {
-			svelte: path.join(__dirname, 'node_modules', 'svelte')
-		},
-		mainFields: ['svelte', 'browser', 'module', 'main']
-		// end
 	},
 	module: {
 		rules: [
