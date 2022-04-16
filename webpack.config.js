@@ -5,10 +5,9 @@ const coffeescript = require('coffeescript')
 const pugToSvelte = require('pug-to-svelte')
 const stylus = require('stylus')
 // plugins
-const EnvPlugin = require('dotenv-webpack')
-const FaviconsPlugin = require('favicons-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
+const DotEnvFileWebpackPlugin = require('dotenv-webpack')
+const HtmlOutputWebpackPlugin = require('html-webpack-plugin')
+const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-plugin')
 
 module.exports = {
 	mode: 'production',
@@ -35,13 +34,15 @@ module.exports = {
 		clean: true // cleanup output directory before emitting assets
 	},
 	plugins: [
-		new EnvPlugin(),
-		new FaviconsPlugin('./src/ui/assets/favicons/16x16.png'),
-		new HtmlWebpackPlugin({
-			template: './src/index.html',
+		new DotEnvFileWebpackPlugin(),
+		new HtmlOutputWebpackPlugin({
+			favicon: './src/ui/assets/favicons/favicon_16.png',
 			inject: false, // manual script placement in template
+			template: './src/index.html',
 		}),
-		new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/, /loadBaseLibraries/, /initializeState/]), // avoids network roundtrip
+		new HtmlOutputInlineScriptWebpackPlugin({
+			scriptMatchPattern: [/^runtime/, /^loadBaseLibraries/, /^initializeState/] // avoid add'l network roundtrip on critical path
+		}),
 	],
 	resolve: {
 		extensions: ['.pug', '.coffee', '.js'],
