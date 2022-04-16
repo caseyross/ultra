@@ -105,9 +105,16 @@ module.exports = {
 						loader: 'css-loader'
 					},
 					{
-						loader: 'stylus-loader'
+						loader: 'stylus-loader',
+						options: {
+							webpackImporter: false // Don't resolve imports at this stage
+						}
 					},
 				],
+			},
+			{
+				test: /\.(woff2|ttf|otf)$/,
+				type: 'asset/resource',
 			},
 		],
 	},
