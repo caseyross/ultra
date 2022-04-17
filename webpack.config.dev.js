@@ -3,7 +3,6 @@ const webpackConfig = require('./webpack.config.js')
 
 module.exports = {
 	...webpackConfig,
-	mode: 'development',
 	devServer: {
 		client: {
 			overlay: {
@@ -21,4 +20,5 @@ module.exports = {
 			directory: path.join(__dirname, 'dist'),
 		},
 	},
+	mode: 'development',
 }
