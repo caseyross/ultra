@@ -44,7 +44,7 @@ script.
 			audio.currentTime = video.currentTime
 		)
 
-video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick} style='height:{aspect_ratio<1?480:720}px;')
+video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick})
 	source(src={video_url} type='video/mp4')
 audio(bind:this={audio})
 	source(src={audio_url} type='audio/mp4')
@@ -80,7 +80,7 @@ style.
 		border 1px solid
 		border-radius 5px
 		padding 0 10px
-		width 480px
+		width 620px
 	.video-controls-second-row
 		display flex
 		justify-content space-between
@@ -146,3 +146,5 @@ style.
 	video
 		border 1px solid
 		display block
+		max-height 640px
+		width 640px

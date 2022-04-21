@@ -1,0 +1,20 @@
+script.
+	import Post from '../content/Post.pug'
+	import datasets from '../../../api/datasets/store.coffee'
+	export id = null
+	export listingId = null
+	nextId = null
+	prevId = null
+	datasets.load(listingId + ':1:' + id.replace(':', '_')).then((data) -> nextId = data)
+
+main
+	{#if id.idType === 't3'}
+		Post(id={id})
+{#if prevId || nextId}
+	nav
+		{#if prevId}
+			a.prev-listing-item(href={prevId}) Previous
+		{#if nextId}
+			a.next-listing-item(href={nextId}) Next
+
+style.

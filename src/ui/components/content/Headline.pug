@@ -3,7 +3,6 @@ script.
 	export id = ''
 	export onSelect = null
 	post = null
-	datasets.load(id)
 	datasets.subscribeToKey(id, (value) -> { data: post } = value)
 
 {#if post}

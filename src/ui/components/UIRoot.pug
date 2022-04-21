@@ -1,0 +1,11 @@
+script.
+	import Listing from './layouts/Listing.pug'
+	import ListingItem from './layouts/ListingItem.pug'
+	import datasets from '../../api/datasets/store.coffee'
+	export id = null
+	export listingId = null
+
+{#if id.isListingType}
+	Listing(id={id})
+{:else}
+	ListingItem(id={id} listingId={listingId})

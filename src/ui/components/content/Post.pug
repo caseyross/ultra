@@ -1,10 +1,11 @@
 script.
-	import ActionText from '../generic/ActionText.pug'
+	import ActionText from '../system/ActionText.pug'
 	import Byline from './Byline.pug'
 	import Comment from './Comment.pug'
-	import MediaPlayer from '../generic/MediaPlayer.pug'
+	import MediaPlayer from '../system/MediaPlayer.pug'
 	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
+	commentsExpanded = false
 	post = null
 	datasets.load(id)
 	datasets.subscribeToKey(id, (value) -> { data: post } = value)
@@ -39,11 +40,8 @@ script.
 								img(src={media.gif_url})
 						{:else if media.image_url}
 							picture
-								{#if media.aspect_ratio <= 0.6}
-									source(srcset={media.image_url_960})
-								{:else}
-									source(srcset={media.image_url_640})
-								img(src={media.image_url} style='max-width:{media.aspect_ratio>1.2?480:null}px;')
+								source(srcset={media.image_url_640})
+								img(src={media.image_url} style='max-width:640px;')
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -51,22 +49,24 @@ script.
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else}
-		ol.post-replies
-			{#each post.replies as id}
-				Comment(id={id})
-			{#if post.more_replies}
-				ActionText(text='More replies...')
+		{#if commentsExpanded}
+			ol.post-replies
+				{#each post.replies as id}
+					Comment(id={id})
+				{#if post.more_replies}
+					ActionText(text='More replies...')
+		{:else if post.replies?.length}
+			ol.post-replies
+				Comment(id={post.replies[0]})
+			button(on:click={() => commentsExpanded = true}) Show {post.num_comments} comments
 
 style.
 	[role=post]
+		margin 0 auto
 		padding 60px 0
-		padding-left 400px 
-		width 880px
+		width 642px
 	.post-body
 		margin-top 30px
-	.post-header
-		h1
-			font-family monospace
 	.post-replies
 		margin-top 15px
 		padding-inline-start 0

@@ -1,10 +1,11 @@
 import './ui/assets/global.styl'
-import Listing from './ui/components/listing/Listing.pug'
+import UIRoot from './ui/components/UIRoot.pug'
 
 try
-	new Listing
+	new UIRoot
 		target: document.body
 		props:
-			id: 't5z:hololive:hot:10'
+			id: 't5z:combatfootage:hot:10'
+			listingId: 't5z:combatfootage:new'
 catch error
 	alert(error)

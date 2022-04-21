@@ -1,18 +1,21 @@
 script.
-	import Headline from './Headline.pug'
-	import Post from '../post/Post.pug'
+	import Headline from '../content/Headline.pug'
+	import Post from '../content/Post.pug'
 	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
 	itemIds = null
+	loading = false
 	selectedId = null
 	datasets.load(id)
-	datasets.subscribeToKey(id, (value) -> { data: itemIds } = value)
+	datasets.subscribeToKey(id, (value) -> { data: itemIds, loading: loading } = value)
 
 .listing
-	{#if itemIds && itemIds.length}
+	{#if loading}
+		p LOADING...
+	{:else if itemIds && itemIds.length}
 		{#each itemIds as itemId}
 			{#if itemId.idType === 't3'}
-				Headline(id={itemId} onSelect={() => selectedId = itemId})
+				Headline(id={itemId} onSelect={() => selectedId = selectedId === itemId ? null : itemId})
 			{#if itemId === selectedId}
 				Post(id={itemId})
 style.
