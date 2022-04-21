@@ -14,7 +14,7 @@ publishToAll = ->
 	subscribers.forEach(publishTo)
 
 publishKeyTo = (subscriber, key) ->
-	subscriber(store[key])
+	subscriber(store[key] ? {})
 
 publishKeyToAll = (key) ->
 	if keyedSubscribers.has(key)
@@ -22,25 +22,25 @@ publishKeyToAll = (key) ->
 			publishKeyTo(subscriber, key)
 		)
 
+setInitial = (id) ->
+	store[id] = {}
+
 setLoading = (id) ->
-	store[id] = {
-		loading: true
-	}
+	if !store[id] then setInitial(id)
+	store[id].loading = true
 
 setError = (id, error) ->
-	store[id] = {
-		loading: false
-		error: error
-	}
+	if !store[id] then setInitial(id)
+	store[id].error = error
+	store[id].loading = false
 
 setData = (id, data, partial) ->
-	store[id] = {
-		loading: false
-		error: false
-		partial: partial ? false
-		data: data
-		asOf: Date.now()
-	}
+	if !store[id] then setInitial(id)
+	store[id].asOf = Date.now()
+	store[id].data = data
+	store[id].error = false
+	store[id].loading = false
+	store[id].partial = partial ? false
 
 export default {
 
