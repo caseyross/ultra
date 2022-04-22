@@ -1,4 +1,4 @@
-import './ui/assets/global.styl'
+import './ui/stylesheets/global.styl'
 import UIRoot from './ui/components/UIRoot.pug'
 
 try

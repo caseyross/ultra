@@ -1,5 +1,5 @@
 // filesystem
-const path = require('path')
+const path = require('path') // node.js built-in API, not part of package.json dependencies
 // compilers
 const coffeescript = require('coffeescript')
 const pugToSvelte = require('pug-to-svelte')
@@ -11,16 +11,16 @@ const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-
 
 module.exports = {
 	entry: {
-		loadBaseLibraries: {
-			import: './src/loadBaseLibraries.coffee',
+		initEnv: {
+			import: './src/initEnv.coffee',
 		},
-		initializeState: {
-			dependOn: 'loadBaseLibraries',
-			import: './src/initializeState.coffee',
+		initState: {
+			import: './src/initState.coffee',
+			dependOn: 'initEnv',
 		},
-		initializeUI: {
-			dependOn: 'initializeState',
-			import: './src/initializeUI.coffee',
+		initUI: {
+			import: './src/initUI.coffee',
+			dependOn: 'initState',
 		}
 	},
 	mode: 'production',
@@ -88,7 +88,7 @@ module.exports = {
 			template: './src/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
-			scriptMatchPattern: [/^runtime/, /^loadBaseLibraries/, /^initializeState/] // avoid add'l network roundtrip on critical path
+			scriptMatchPattern: [/^runtime/, /^initEnv/, /^initState/] // avoid add'l network roundtrip on critical path
 		}),
 	],
 }
