@@ -1,11 +1,11 @@
 script.
+	import api from '../../../api/index.js'
 	import ActionText from '../system/ActionText.pug'
 	import Byline from './Byline.pug'
-	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
 	export showReplies = true
 	comment = null
-	datasets.subscribeToKey(id, (value) -> { data: comment } = value ? {})
+	api.watch(id, (x) -> { data: comment } = x)
 
 {#if comment}
 	article(role='comment')

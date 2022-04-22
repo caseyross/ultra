@@ -1,9 +1,9 @@
 script.
-	import datasets from '../../../api/datasets/store.coffee'
+	import api from '../../../api/index.js'
 	export id = ''
 	export onSelect = null
 	post = null
-	datasets.subscribeToKey(id, (value) -> { data: post } = value)
+	api.watch(id, (x) -> { data: post } = x)
 
 {#if post}
 	.headline(on:mousedown={onSelect})

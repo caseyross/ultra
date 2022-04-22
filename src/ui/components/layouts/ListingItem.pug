@@ -1,11 +1,10 @@
 script.
+	import api from '../../../api/index.js'
 	import Post from '../content/Post.pug'
-	import datasets from '../../../api/datasets/store.coffee'
 	export id = null
 	export listingId = null
 	nextId = null
 	prevId = null
-	datasets.load(listingId + ':1:' + id.replace(':', '_')).then((data) -> nextId = data)
 
 main
 	{#if id.idType === 't3'}

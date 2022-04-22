@@ -1,14 +1,13 @@
 script.
+	import api from '../../../api/index.js'
 	import ActionText from '../system/ActionText.pug'
 	import Byline from './Byline.pug'
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
-	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
 	commentsExpanded = false
 	post = null
-	datasets.load(id)
-	datasets.subscribeToKey(id, (value) -> { data: post } = value)
+	api.watch(id, (x) -> { data: post } = x)
 
 {#if post}
 	article(role='post')

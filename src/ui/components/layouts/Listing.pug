@@ -1,13 +1,12 @@
 script.
+	import api from '../../../api/index.js'
 	import Headline from '../content/Headline.pug'
 	import Post from '../content/Post.pug'
-	import datasets from '../../../api/datasets/store.coffee'
 	export id = ''
 	itemIds = null
 	loading = false
 	selectedId = null
-	datasets.load(id)
-	datasets.subscribeToKey(id, (value) -> { data: itemIds, loading: loading } = value)
+	api.watch(id, (x) -> { data: itemIds, loading: loading } = x)
 
 .listing
 	{#if loading}
