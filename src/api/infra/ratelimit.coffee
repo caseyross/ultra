@@ -1,30 +1,43 @@
-DEFAULT_PERIOD = Date.minutes(1)
-DEFAULT_QUOTA = 60
+ratelimit = {
 
-getRatelimitTimeline = ->
-	# We keep a timeline of when API requests were issued, in order to predict the current ratelimit usage.
-	timeline = if localStorage['api.ratelimit.timeline'] then localStorage['api.ratelimit.timeline'].split(" ").map((d) -> Number d) else []
-	# Prune history for requests that no longer affect the ratelimit, and write updated timeline back.
-	prunedTimeline = timeline.filter((d) -> d + DEFAULT_PERIOD > Date.now())
-	localStorage['api.ratelimit.timeline'] = prunedTimeline.join(" ")
-	return prunedTimeline
+	# Upon startup, or in the case that the server fails to provide ratelimit feedback, we need to assume ratelimit parameters.
+	sanitize: ->
+		remaining = Number localStorage['api.ratelimit.remaining']
+		reset = Number localStorage['api.ratelimit.reset']
+		if not Number.isFinite(reset) or reset < Date.now()
+			localStorage['api.ratelimit.reset'] = Date.now() + Date.seconds(60)
+			localStorage['api.ratelimit.remaining'] = 60
+		else if not Number.isFinite(remaining)
+			localStorage['api.ratelimit.remaining'] = 60
 
-export getRatelimitWait = ->
-	# Check external values from API response headers.
-	if Number(localStorage['api.ratelimit.remaining.quota']) < 1
-		return Number(localStorage['api.ratelimit.remaining.period'])
-	# Check internal predictions.
-	timeline = getRatelimitTimeline()
-	if timeline.length >= DEFAULT_QUOTA
-		return timeline.last + DEFAULT_PERIOD - Date.now()
-	return 0
+	# Update the known ratelimit parameters with authoritative server feedback, or, failing that, with a simple count of requests sent.
+	update: ({ count, remaining, timeUntilReset }) ->
+		if remaining?
+			localStorage['api.ratelimit.remaining'] = remaining
+		else
+			localStorage['api.ratelimit.remaining'] = localStorage['api.ratelimit.remaining'] - count
+		if timeUntilReset?
+			localStorage['api.ratelimit.reset'] = Date.now() + timeUntilReset
 
-# In some cases, the client's ratelimit can be less than the default 60/minute. We need to track and obey such restrictions.
-export updateObservedRatelimit = ({ remainingPeriod, remainingQuota }) ->
-	localStorage['api.ratelimit.remaining.quota'] = remainingQuota
-	localStorage['api.ratelimit.remaining.period'] = remainingPeriod
+}
 
-export updatePredictedRatelimit = (numRequests) ->
-	timeline = getRatelimitTimeline()
-	timeline.unshift(Date.now()) for [1..numRequests]
-	localStorage['api.ratelimit.timeline'] = timeline.join(" ")
+# The maximum average requests per second we can currently make before hitting the ratelimit.
+Object.defineProperty(ratelimit, 'availableRPS', {
+	get: ->
+		ratelimit.sanitize()
+		requests = Number localStorage['api.ratelimit.remaining']
+		seconds = Date.asSeconds(Number(localStorage['api.ratelimit.reset']) - Date.now())
+		if requests > 0 and seconds > 0
+			return requests / seconds
+		return 0
+})
+
+# The number of milliseconds until the current ratelimit period resets.
+Object.defineProperty(ratelimit, 'timeUntilReset', {
+	get: ->
+		ratelimit.sanitize()
+		reset = Number localStorage['api.ratelimit.reset']
+		return reset - Date.now()
+})
+
+export default ratelimit

@@ -1,70 +1,51 @@
+import credentials from './credentials.coffee'
 import errors from './errors.coffee'
-import { getCredentialsValidTimeLeft, renewCredentials } from './credentials.coffee'
-import { getRatelimitWait, updateObservedRatelimit, updatePredictedRatelimit } from './ratelimit.coffee'
+import ratelimit from './ratelimit.coffee'
 
-export get = (endpoint, query) ->
-	attemptRequest 'GET', endpoint, { query }
-export patch = (endpoint, content) ->
-	attemptRequest 'PATCH', endpoint, { content }
-export post =  (endpoint, content) ->
-	attemptRequest 'POST', endpoint, { content }
-export put = (endpoint, content) ->
-	attemptRequest 'PUT', endpoint, { content }
+export get = (endpoint, query) -> call('GET', endpoint, { query })
+export patch = (endpoint, content) -> call('PATCH', endpoint, { content })
+export post = (endpoint, content) -> call('POST', endpoint, { content })
+export put = (endpoint, content) -> call('PUT', endpoint, { content })
 
-attemptRequest = (method, endpoint, { query = {}, content }) ->
+call = (method, endpoint, { query = {}, content }) ->
 	new Promise (fulfill) ->
-		if getCredentialsValidTimeLeft() <= 0
-			throw new errors.CredentialsRequiredError({ message: 'no valid credentials for request' })
+		if not credentials.valid then throw new errors.CredentialsRequiredError({ message: 'no valid credentials for request' })
 		fulfill()
 	.catch ->
-		renewCredentials()
+		credentials.renew()
 	.then ->
-		wait = getRatelimitWait()
-		if wait > 0
-			throw new errors.RatelimitExceededError({ wait })
+		if not ratelimit.availableRPS > 0 then throw new errors.RatelimitExceededError({ wait: ratelimit.timeUntilReset })
 	.then ->
-		params =
-			headers:
-				'Accept': 'application/json, */*;q=0.5'
-				'Authorization': localStorage['api.credentials.key.token']
-			cache: 'no-cache'
-			method: method
-		switch method
-			when 'PATCH', 'POST', 'PUT'
-				params.headers['Content-Type'] = 'application/json'
-				params.body = JSON.stringify content
-		for key, value of query
-			if !value? then delete query[key]
-		# NOTE: for legacy compatibility, the API replaces special characters in responses with their corresponding HTML entities.
-		# Activating the raw_json parameter disables this behavior.
+		for key, value of query then if not value? then delete query[key]
+		# NOTE: for legacy compatibility, the API replaces special characters in responses with their corresponding HTML entities. Activating the raw_json parameter disables this behavior.
 		query.raw_json = 1
-		fetch 'https://oauth.reddit.com' + endpoint  + '?' + (new URLSearchParams query).toString(), params
+		queryString = (new URLSearchParams(query)).toString()
+		config =
+			cache: 'no-cache' # browser is only allowed to return cached data if the server also says it's "fresh"
+			headers:
+				Accept: 'application/json'
+				Authorization: localStorage['api.credentials.key']
+			method: method
+		if method is 'PATCH' or method is 'POST' or method is 'PUT'
+			config.body = JSON.stringify content
+			config.headers['Content-Type'] = 'application/json'
+		fetch("https://oauth.reddit.com#{endpoint}?#{queryString}", config)
 	.catch (error) ->
-		if error instanceof TypeError
-			# NOTE: an error here means that either the network request failed OR the fetch params were structured badly.
-			# The fetch API does not distinguish between these errors, so we make the assumption here that our params are OK.
-			throw new errors.ConnectionFailedError({ cause: error })
-		else
-			throw error
+		# NOTE: a TypeError here means that either the network request failed OR the fetch config was structured badly. `fetch` does not distinguish between these errors, so we make the assumption that the config was OK.
+		if error instanceof TypeError then throw new errors.ConnectionFailedError({ cause: error })
+		throw error
 	.then (response) ->
-		updateObservedRatelimit({
-			remainingPeriod: Date.seconds(response.headers.get 'X-Ratelimit-Reset')
-			remainingQuota: response.headers.get 'X-Ratelimit-Remaining'
+		ratelimit.update({
+			count: 1
+			remaining: response.headers.get 'X-Ratelimit-Remaining'
+			timeUntilReset: Date.seconds(response.headers.get 'X-Ratelimit-Reset')
 		})
-		updatePredictedRatelimit(1)
 		code = response.status
 		switch
-			when 100 <= code <= 299
-				response.json()
-			when 300 <= code <= 399
-				throw new errors.ResourceMovedError({ code })
-			when 400 <= code <= 499
-				throw new errors.InvalidRequestError({ code })
-			when 500 <= code <= 599
-				throw new errors.ServerNotAvailableError({ code })
+			when 100 <= code <= 299 then response.json()
+			when 300 <= code <= 399 then throw new errors.ResourceMovedError({ code })
+			when 400 <= code <= 499 then throw new errors.InvalidRequestError({ code })
+			when 500 <= code <= 599 then throw new errors.ServerNotAvailableError({ code })
 	.catch (error) ->
-		switch
-			when error instanceof errors.AnyError
-				throw error
-			else
-				throw new errors.UnknownError({ cause: error })
+		if error instanceof errors.AnyError then throw error
+		throw new errors.UnknownError({ cause: error })
