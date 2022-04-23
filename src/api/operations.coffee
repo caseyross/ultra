@@ -1,3 +1,4 @@
+import ratelimit from './infra/ratelimit.coffee'
 import actionRoutes from './actions/routes.coffee'
 import datasetRoutes from './datasets/routes.coffee'
 import datasetGeneralExtractor from './datasets/extractors/general/extract.coffee'
@@ -52,9 +53,10 @@ export load = (id) ->
 	return reload(id)
 
 export preload = (id) ->
-	if true # TODO
-		return load(id)
-	return Promise.resolve(false)
+	if ratelimit.availableRPS > 0.5
+		load(id)
+		return true
+	return false
 
 export reload = (id) ->
 	setLoading(id)
