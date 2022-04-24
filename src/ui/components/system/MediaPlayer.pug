@@ -30,18 +30,12 @@ script.
 		video.addEventListener('pause', (e) ->
 			audio.pause()
 		)
-		video.addEventListener('play', (e) ->
-			audio.play()
-		)
 		video.addEventListener('playing', (e) ->
-			if audio.paused then audio.play()
-		)
-		video.addEventListener('seeked', (e) ->
 			audio.currentTime = video.currentTime
+			audio.play().catch(() -> null) # ignore useless errors from bad API design
 		)
 		video.addEventListener('waiting', (e) ->
 			audio.pause()
-			audio.currentTime = video.currentTime
 		)
 
 video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick})
