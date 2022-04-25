@@ -16,7 +16,8 @@ script.
 			h1 {post.title}
 		section.post-body
 			{#if post.format === 'self'}
-				{@html post.selftext_html.slice(31, -20)}
+				{#if post.selftext_html}
+					{@html post.selftext_html.slice(31, -20)}
 			{:else if post.format === 'poll'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'prediction'}
