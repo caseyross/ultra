@@ -32,7 +32,7 @@ setError = (id, error) ->
 
 setLoading = (id) ->
 	if !cache[id] then cache[id] = {}
-	cache[id].loading = false
+	cache[id].loading = true
 	notify(id)
 
 setSending = (id) ->
