@@ -1,4 +1,10 @@
 import { get } from '../infra/requests.coffee'
+
+afterHyphen = (string) ->
+	string.split('-')[1]
+beforeHyphen = (string) ->
+	string.split('-')[0]
+
 NOT_IMPLEMENTED = ->
 	Promise.reject('Route for specified ID is not implemented yet!')
 
@@ -35,7 +41,7 @@ export default {
 	t2sz:   (searchText, limit, after) ->
 		get "/users/search", { q: searchText, sort: 'relevance', limit, after }
 	t2z:    (userName, filter, sort, limit, after) ->
-		get "/user/#{userName}/#{filter}", { sort: sort.preHyphen, t: sort.postHyphen, limit, after }
+		get "/user/#{userName}/#{filter}", { sort: beforeHyphen(sort), t: afterHyphen(sort), limit, after }
 	t3:     (postShortId, commentsSort, commentShortId, context) ->
 		get "/comments/#{postShortId}", { sort: commentsSort, comment: commentShortId, context }
 	t3c:    (collection_id) ->
@@ -52,7 +58,7 @@ export default {
 		get "/live/#{threadId}", { limit, after }
 	t3sz:   (searchText, subredditName, sort, limit, after) ->
 		endpoint = if subredditName? then "/r/#{subredditName}/search" else "/search"
-		get endpoint, { sort: sort.preHyphen, t: sort.postHyphen, limit, after, restrict_sr: true }
+		get endpoint, { sort: beforeHyphen(sort), t: afterHyphen(sort), limit, after, restrict_sr: true }
 	t3w:    (pageName, subredditName, versionId, diffFromVersionId) ->
 		get "/r/#{subredditName}/wiki/#{pageName}", { v: version, v2: diffFromVersionId }
 	t3wdz:  (pageName, subredditName, limit, after) ->
@@ -118,14 +124,14 @@ export default {
 		endpoint =
 			if userName is 'r'
 				if multiredditName is 'home'
-					"/#{sort.preHyphen}"
+					"/#{beforeHyphen(sort)}"
 				else
-					"/r/#{multiredditName}/#{sort.preHyphen}"
+					"/r/#{multiredditName}/#{beforeHyphen(sort)}"
 			else
-				"/api/multi/u/#{userName}/m/#{multiredditName}/#{sort.preHyphen}"
-		get endpoint, { t: sort.postHyphen, limit, after }
+				"/api/multi/u/#{userName}/m/#{multiredditName}/#{beforeHyphen(sort)}"
+		get endpoint, { t: afterHyphen(sort), limit, after }
 	t5z:    (subredditName, sort, limit, after) ->
-		get "/r/#{subredditName}/#{sort.preHyphen}", { t: sort.postHyphen, limit, after }
+		get "/r/#{subredditName}/#{beforeHyphen(sort)}", { t: afterHyphen(sort), limit, after }
 	t6:     NOT_IMPLEMENTED
 
 }
