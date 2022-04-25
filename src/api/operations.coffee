@@ -60,9 +60,9 @@ export preload = (id) ->
 
 export reload = (id) ->
 	setLoading(id)
-	return datasetRoutes[id.idType](...id.idSpecs)
+	return datasetRoutes[id.type](...id.components)
 	.then (rawData) ->
-		extractor = datasetSpecialExtractor[id.idType] ? datasetGeneralExtractor
+		extractor = datasetSpecialExtractor[id.type] ? datasetGeneralExtractor
 		extractor(rawData)
 	.then (datasets) ->
 		setData(id, datasets.main.data, datasets.main.partial)

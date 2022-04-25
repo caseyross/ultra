@@ -1,4 +1,5 @@
 import extract from '../general/extract.coffee'
+import { DatasetID } from '../../../infra/ids.coffee'
 
 # Our "t3" API response type is slightly different from Reddit's "t3" kind.
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.
@@ -17,7 +18,7 @@ export default (rawData) ->
 	# 1. Detect and process a "more comments" object.
 	if rawData[1].data.children?.last?.kind is 'more'
 		more = rawData[1].data.children.pop()
-		post.more_replies = more.data.children.map((child) -> child.asId('t1'))
+		post.more_replies = more.data.children.map((child) -> new DatasetID('t1', child))
 	# 2. Extract the comments from the listing.
 	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1])
 	# 3. Link the top-level comments via their IDs.

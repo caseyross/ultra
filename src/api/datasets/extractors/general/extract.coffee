@@ -1,4 +1,5 @@
 import embeddable from './util/embeddable.coffee'
+import { DatasetID } from '../../../infra/ids.coffee'
 
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.
@@ -27,17 +28,17 @@ export default extract = (rawData) ->
 			# Set the IDs of the direct replies in place of the original objects.
 			comment.replies = repliesListingDatasets.main.data
 			result.main =
-				id: rawData.data.id.asId('t1') # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
+				id: new DatasetID('t1', rawData.data.id) # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
 				data: comment
 			result.sub = repliesListingDatasets.sub
 		when 't2'
 			user = rawData.data
 			result.main =
-				id: user.name.toLowerCase().asId('t2i')
+				id: new DatasetID('t2i', user.name)
 				data: user
 			if user.subreddit
 				result.sub.push({
-					id: user.subreddit.display_name.toLowerCase().asId('t5i')
+					id: new DatasetID('t5i', user.subreddit.display_name)
 					data: user.subreddit
 					partial: true # Marks objects known to be an incomplete version of data from another API route.
 				})
@@ -116,38 +117,39 @@ export default extract = (rawData) ->
 				post.media[0] = embeddable(post.url)
 			# Collect the (possible) subreddit & crosspost-source objects, and the end post.
 			if post.crosspost_parent_list?.length
+				crosspost_parent_id = new DatasetID('t3', post.crosspost_parent_list[0].id)
 				result.sub.push({
-					id: post.crosspost_parent_list[0].id.asId('t3')
+					id: crosspost_parent_id
 					data: extract({
 						kind: 't3'
 						data: post.crosspost_parent_list[0]
 					})
 					partial: true
 				})
-				post.crosspost_parent = post.crosspost_parent_list[0].id.asId('t3')
+				post.crosspost_parent = crosspost_parent_id
 				delete post.crosspost_parent_list
 			if post.sr_detail
 				result.sub.push({
-					id: post.subreddit.toLowerCase().asId('t5i')
+					id: new DatasetID('t5i', post.subreddit)
 					data: post.sr_detail
 					partial: true
 				})
 				delete post.sr_detail
 			result.main =
-				id: rawData.data.id.asId('t3')
+				id: new DatasetID('t3', rawData.data.id)
 				data: post
 				partial: true
 		when 't4'
 			result.main =
-				id: rawData.data.id.asId('t4')
+				id: new DatasetID('t4', rawData.data.id)
 				data: rawData.data
 		when 't5'
 			result.main =
-				id: rawData.data.display_name.toLowerCase().asId('t5i')
+				id: new DatasetID('t5i', rawData.data.display_name)
 				data: rawData.data
 		when 't6'
 			result.main =
-				id: rawData.data.id.asId('t6')
+				id: new DatasetID('t6', rawData.data.id)
 				data: rawData.data
 		when 'Listing'
 			listing = rawData.data.children
@@ -172,7 +174,7 @@ export default extract = (rawData) ->
 				data: rawData.data
 		when 'LiveUpdateEvent'
 			result.main =
-				id: rawData.data.id.asId('t3li')
+				id: new DatasetID('t3li', rawData.data.id)
 				data: rawData.data
 		when 'UserList'
 			result.main =

@@ -2,7 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import ActionText from '../system/ActionText.pug'
 	import Byline from './Byline.pug'
-	export id = ''
+	export id = null
 	export showReplies = true
 	comment = null
 	api.watch(id, (x) -> { data: comment } = x)
@@ -14,8 +14,8 @@ script.
 			{@html comment.body_html.slice(16, -6)}
 		{#if showReplies && comment.replies.length > 0}
 			ol.comment-replies
-				{#each comment.replies as id}
-					svelte:self(id={id})
+				{#each comment.replies as replyId}
+					svelte:self(id={replyId})
 				{#if comment.more_replies}
 					ActionText(text='More replies...')
 				{#if comment.deeper_replies}

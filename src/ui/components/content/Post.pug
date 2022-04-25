@@ -4,7 +4,7 @@ script.
 	import Byline from './Byline.pug'
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
-	export id = ''
+	export id = null
 	commentsExpanded = false
 	post = null
 	api.watch(id, (x) -> { data: post } = x)
@@ -50,8 +50,8 @@ script.
 			{:else}
 		{#if commentsExpanded}
 			ol.post-replies
-				{#each post.replies as id}
-					Comment(id={id})
+				{#each post.replies as replyId}
+					Comment(id={replyId})
 				{#if post.more_replies}
 					ActionText(text='More replies...')
 		{:else if post.replies?.length}

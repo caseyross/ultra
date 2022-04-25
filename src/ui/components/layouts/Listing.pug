@@ -2,7 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import Headline from '../content/Headline.pug'
 	import Post from '../content/Post.pug'
-	export id = ''
+	export id = null
 	itemIds = null
 	loading = false
 	selectedId = null
@@ -13,9 +13,9 @@ script.
 		p LOADING...
 	{:else if itemIds && itemIds.length}
 		{#each itemIds as itemId}
-			{#if itemId.idType === 't3'}
-				Headline(id={itemId} onSelect={() => selectedId = selectedId === itemId ? null : itemId})
-			{#if itemId === selectedId}
+			{#if itemId.type === 't3'}
+				Headline(id={itemId} onSelect={() => selectedId = itemId.isSameAs(selectedId) ? null : itemId})
+			{#if itemId.isSameAs(selectedId)}
 				Post(id={itemId})
 style.
 	.listing
