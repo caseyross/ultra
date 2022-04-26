@@ -4,9 +4,14 @@
 *:first-child
 	margin-top 0
 
+// General
+html
+	font 400 10pt/1.25 'arimo', 'arial', 'helvetica', sans-serif
+	letter-spacing 0.5px
+	word-spacing 2px
+
 // Body
 body
-	font-family system-ui
 	margin 0
 
 // Paragraphs
@@ -87,3 +92,17 @@ iframe
 img
 	border 1px solid
 	display block
+
+// Fonts
+@font-face
+	font-display swap
+	font-family 'arimo'
+	font-style normal
+	font-weight 400 700
+	src url('../assets/fonts/font_arimo_var.ttf') format('truetype')
+@font-face
+	font-display swap
+	font-family 'arimo'
+	font-style italic
+	font-weight 400 700
+	src url('../assets/fonts/font_arimo_var_italic.ttf') format('truetype')
