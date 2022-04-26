@@ -11,7 +11,7 @@ script.
 	article(role='comment')
 		Byline(name={comment.author} distinguish={comment.distinguished} isOP={comment.is_submitter} flairText={comment.author_flair_text})
 		section.comment-body
-			{@html comment.body_html.slice(16, -6)}
+			{@html comment.body_html.slice(16, -6).replace(/<p>&#x200B;<\/p>/g, '')}
 		{#if showReplies && comment.replies.length > 0}
 			ol.comment-replies
 				{#each comment.replies as replyId}
@@ -23,9 +23,7 @@ script.
 
 style.
 	[role=comment]
-		width 640px
-	.comment-body
-		font-size 15px
+		max-width 100%
 	.comment-replies
 		border-left 1px solid rgb(96,96,96) // Neutral 4-0
 		margin 20px

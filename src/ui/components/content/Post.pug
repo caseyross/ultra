@@ -17,7 +17,7 @@ script.
 		section.post-body
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
-					{@html post.selftext_html.slice(31, -20)}
+					{@html post.selftext_html.slice(31, -20).replace(/<p>&#x200B;<\/p>/g, '')}
 			{:else if post.format === 'poll'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'prediction'}
