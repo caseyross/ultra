@@ -5,11 +5,12 @@ export class DatasetID
 		@type = type.toLowerCase()
 		@components = components.map((c) -> c.toLowerCase().replace(/^t[1-6]_/, ''))
 
-	isListingType: ->
-		@type.slice(-1) == 'z'
-
 	isSameAs: (id) ->
 		id instanceof DatasetID and id.toString() == @toString() 
 
 	toString: ->
 		@type + ':' + @components.join(':')
+
+Object.defineProperty(DatasetID::, 'isListingType', {
+	get: -> @type.slice(-1) == 'z'
+})
