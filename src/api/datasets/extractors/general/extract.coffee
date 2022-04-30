@@ -70,19 +70,23 @@ export default extract = (rawData) ->
 				post.media = post.gallery_data.items.map((item) ->
 					mediaObject = { caption_text: item.caption, caption_url: item.outbound_url }
 					data = post.media_metadata[item.media_id]
-					if data.s.mp4
-						mediaObject.video_url = data.s.mp4
-						mediaObject.video_width = data.s.x
-					else if data.s.gif
-						mediaObject.gif_url = data.s.gif
-						mediaObject.gif_width = data.s.x
-					else
-						mediaObject.image_url = data.s.u
-						mediaObject['image_url_' + data.s.x] = data.s.u
-					data.p.forEach((res) ->
-						mediaObject['image_url_' + res.x] = res.u
-					)
-					mediaObject.aspect_ratio = data.s.y / data.s.x
+					if data.status isnt 'valid'
+						mediaObject.image_url = null
+					if data.s
+						mediaObject.aspect_ratio = data.s.y / data.s.x
+						if data.s.mp4
+							mediaObject.video_url = data.s.mp4
+							mediaObject.video_width = data.s.x
+						else if data.s.gif
+							mediaObject.gif_url = data.s.gif
+							mediaObject.gif_width = data.s.x
+						else
+							mediaObject.image_url = data.s.u
+							mediaObject['image_url_' + data.s.x] = data.s.u
+					if data.p
+						data.p.forEach((res) ->
+							mediaObject['image_url_' + res.x] = res.u
+						)
 					return mediaObject
 				)
 			else if post.preview? and Array.isArray(post.preview.images)
