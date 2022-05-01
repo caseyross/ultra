@@ -1,7 +1,6 @@
 script.
 	import api from '../../../api/index.js'
 	import ActionText from '../system/ActionText.pug'
-	import Byline from './Byline.pug'
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
 	export id = null
@@ -12,7 +11,6 @@ script.
 {#if post}
 	article(role='post')
 		header.post-header
-			Byline(name={post.author} distinguish={post.distinguish} isOP={true} flairText={post.author_flair_text})
 			h1 {post.title}
 		section.post-body
 			{#if post.format === 'self'}
@@ -64,7 +62,7 @@ style.
 	[role=post]
 		margin 0 auto
 		padding 60px 0
-		width 642px
+		width 1260px
 	.post-body
 		margin-top 30px
 	.post-replies

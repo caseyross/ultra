@@ -6,9 +6,8 @@
 
 // General
 html
-	font 400 10pt/1.25 'arimo', 'arial', 'helvetica', sans-serif
+	font 400 14px/18px 'arimo', 'arial', 'helvetica', sans-serif
 	letter-spacing 0.5px
-	word-spacing 2px
 
 // Body
 body
@@ -16,28 +15,29 @@ body
 
 // Paragraphs
 p
-	margin-top 0.5em
+	margin-top 1em
 	overflow-wrap break-word
 hr
 	background rgba(0,0,0,0.5)
 	border 0
 	height 1px
 	margin-inline 0
-	margin-top 0.5em
+	margin-top 1em
 
 // Verbatim text
+a
+	color mediumslateblue
+	font-weight 500
+	text-decoration none
 blockquote
-	color green
-	margin-inline-start 1ch
-	margin-top 0.5em
-	position relative
-blockquote::before
-	content '>'
-	left -1ch
-	position absolute
-pre
-	margin-top 0.5em
+	background rgba(0,0,0,0.05)
 	display inline-block
+	margin 0
+	margin-top 1em
+	padding 0.5ch 1ch
+pre
+	display inline-block
+	margin-top 1em
 	white-space pre-wrap
 
 // Spoilers
@@ -52,12 +52,12 @@ pre
 // Lists
 ol
 	list-style decimal
-	margin-top 0.5em
-	padding-inline-start 2ch
+	margin-top 1em
+	padding-inline-start 4ch
 ul
 	list-style disc
-	margin-top 0.5em
-	padding-inline-start 2ch
+	margin-top 1em
+	padding-inline-start 4ch
 
 // Headers
 h1
@@ -72,7 +72,6 @@ h6
 
 // Tables
 table
-	font-size 13px
 	margin-top 1em
 	white-space nowrap
 td
@@ -92,6 +91,21 @@ iframe
 img
 	border 1px solid
 	display block
+
+// Interactive
+button
+	cursor pointer
+	font inherit
+	letter-spacing inherit
+	line-height inherit
+	padding 0
+	word-spacing inherit
+input
+	font inherit
+	letter-spacing inherit
+	line-height inherit
+	padding 0
+	word-spacing inherit
 
 // Fonts
 @font-face
