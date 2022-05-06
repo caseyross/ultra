@@ -67,9 +67,9 @@ export reload = (id) ->
 	.then (datasets) ->
 		setData(id, datasets.main.data, datasets.main.partial)
 		for dataset in datasets.sub then setData(dataset.id, dataset.data, dataset.partial)
+		return get(id)
 	.catch (error) ->
 		setError(id, error)
-	.finally ->
 		return get(id)
 
 export send = (id) ->
