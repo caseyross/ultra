@@ -6,6 +6,6 @@ try
 	new UIRoot
 		target: document.body
 		props:
-			id: new api.DatasetID('t5z:combatfootage:hot:20')
+			id: new api.DatasetID('subreddit_posts:combatfootage:hot:10')
 catch error
 	alert(error)

@@ -5,133 +5,176 @@ afterHyphen = (string) ->
 beforeHyphen = (string) ->
 	string.split('-')[0]
 
-NOT_IMPLEMENTED = ->
-	Promise.reject('Route for specified ID is not implemented yet!')
+CURRENT_USER_NAME = 'caseyross'
 
 export default {
-	
-	t1:     NOT_IMPLEMENTED
-	t1x:    (parentPostId, sort, ...desiredCommentIds) -> # NOTE: Max concurrency for this call is 1 per Reddit API rules.
-		get "/api/morechildren", { link_id: parentPostId, children: desiredCommentIds, sort }
-	t2fcz:  (limit, after) ->
-		get "/subreddits/mine/contributor", { limit, after }
-	t2fmz:  (limit, after) ->
-		get "/subreddits/mine/moderator", { limit, after }
-	t2fz:   (limit, after) ->
-		get "/subreddits/mine/subscriber", { limit, after }
-	t2i:    (userName) ->
-		get "/user/#{userName}/about"
-	t2ii:   ->
-		get "/api/v1/me"
-	t2iix:  ->
-		get "/api/multi/mine"
-	t2ip:   (...fields) -> # RESEARCH: Check if you get all prefs when no fields specified
-		get "/api/v1/me/prefs", { fields: fields.join(',') }
-	t2ix:   (userName) ->
-		get "/api/multi/user/#{userName}"
-	t2iuaz: NOT_IMPLEMENTED
-	t2iubz: NOT_IMPLEMENTED
-	t2iucz: NOT_IMPLEMENTED
-	t2iufi: NOT_IMPLEMENTED
-	t2iufz: NOT_IMPLEMENTED
-	t2snz:  (limit, after) ->
-		get "/users/new", { limit, after }
-	t2spz:  (limit, after) ->
-		get "/users/popular", { limit, after }
-	t2sz:   (searchText, limit, after) ->
-		get "/users/search", { q: searchText, sort: 'relevance', limit, after }
-	t2z:    (userName, filter, sort, limit, after) ->
-		get "/user/#{userName}/#{filter}", { sort: beforeHyphen(sort), t: afterHyphen(sort), limit, after }
-	t3:     (postShortId, commentsSort, commentShortId, context) ->
-		get "/comments/#{postShortId}", { sort: commentsSort, comment: commentShortId, context }
-	t3c:    (collection_id) ->
-		get "/api/v1/collections/collection", { collection_id, include_links: true }
-	t3dz:   (postShortId, limit, after) ->
-		get "/duplicates/#{postShortId}", { limit, after }
-	t3ldz:  (threadId, limit, after) ->
-		get "/live/#{threadId}/discussions", { limit, after }
-	t3li:   (threadId) ->
-		get "/live/#{threadId}/about"
-	t3lic:  (threadId) ->
-		get "/live/#{threadId}/contributors"
-	t3luz:  (threadId, limit, after) ->
-		get "/live/#{threadId}", { limit, after }
-	t3sz:   (searchText, subredditName, sort, limit, after) ->
-		endpoint = if subredditName? then "/r/#{subredditName}/search" else "/search"
-		get endpoint, { sort: beforeHyphen(sort), t: afterHyphen(sort), limit, after, restrict_sr: true }
-	t3w:    (pageName, subredditName, versionId, diffFromVersionId) ->
-		get "/r/#{subredditName}/wiki/#{pageName}", { v: version, v2: diffFromVersionId }
-	t3wdz:  (pageName, subredditName, limit, after) ->
-		get "/r/#{subredditName}/wiki/discussions/#{pageName}", { limit, after }
-	t3wp:   (pageName, subredditName) ->
-		get "/r/#{subredditName}/wiki/settings/#{pageName}"
-	t3wvz:  (pageName, subredditName, limit, after) ->
-		get "/r/#{subredditName}/wiki/revisions/#{pageName}", { limit, after }
-	t4:     NOT_IMPLEMENTED
-	t4c:    NOT_IMPLEMENTED
-	t4cz:   NOT_IMPLEMENTED
-	t4m:    NOT_IMPLEMENTED
-	t4miu:  NOT_IMPLEMENTED
-	t4mz:   NOT_IMPLEMENTED
-	t4z:    NOT_IMPLEMENTED
-	t5e:    (subredditName) ->
-		get "/api/v1/#{subredditName}/emojis/all"
-	t5fp:   (subredditName) ->
-		get "/r/#{subredditName}/api/link_flair_v2"
-	t5fu:   (subredditName) ->
-		get "/r/#{subredditName}/api/user_flair_v2"
-	t5g:    (subredditName) ->
-		get "/r/#{subredditName}/api/widgets"
-	t5i:    (subredditName) ->
-		get "/r/#{subredditName}/about"
-	t5ir:   (subredditName) ->
-		get "/r/#{subredditName}/about/rules"
-	t5irp:  (subredditName) ->
-		get "/api/v1/#{subredditName}/post_requirements"
-	t5irpt: (subredditName) ->
-		get "/r/#{subredditName}/api/submit_text"
-	t5it:   (subredditName) ->
-		get "/r/#{subredditName}/about/traffic"
-	t5iub:  NOT_IMPLEMENTED
-	t5iubw: NOT_IMPLEMENTED
-	t5iuc:  NOT_IMPLEMENTED
-	t5iucw: NOT_IMPLEMENTED
-	t5ium:  NOT_IMPLEMENTED
-	t5iuu:  NOT_IMPLEMENTED
-	t5mez:  NOT_IMPLEMENTED
-	t5mlz:  NOT_IMPLEMENTED
-	t5mqz:  NOT_IMPLEMENTED
-	t5mrz:  NOT_IMPLEMENTED
-	t5msz:  NOT_IMPLEMENTED
-	t5muz:  NOT_IMPLEMENTED
-	t5sa:   (searchText, limit) ->
-		get "/api/subreddit_autocomplete_v2", { q: searchText, include_over_18: true, limit }
-	t5snz:  (limit, after) ->
-		get "/subreddits/new", { limit, after }
-	t5spz:  (limit, after) ->
-		get "/subreddits/popular", { limit, after }
-	t5sz:   (searchText, limit, after) ->
-		get "/subreddits/search", { q: searchText, sort: 'relevance', limit, after }
-	t5w:    (subredditName) ->
-		get "/r/#{subredditName}/wiki/pages"
-	t5we:   (subredditName, limit, after) ->
-		get "/r/#{subredditName}/wiki/revisions", { limit, after }
-	t5xi:   (userName, multiredditName) ->
-		if userName is 'r'
-			return Promise.resolve({})
-		get "/api/multi/u/#{userName}/m/#{multiredditName}/description"
-	t5xz:   (userName, multiredditName, sort, limit, after) ->
-		endpoint =
-			if userName is 'r'
-				if multiredditName is 'home'
-					"/#{beforeHyphen(sort)}"
-				else
-					"/r/#{multiredditName}/#{beforeHyphen(sort)}"
-			else
-				"/api/multi/u/#{userName}/m/#{multiredditName}/#{beforeHyphen(sort)}"
-		get endpoint, { t: afterHyphen(sort), limit, after }
-	t5z:    (subredditName, sort, limit, after) ->
-		get "/r/#{subredditName}/#{beforeHyphen(sort)}", { t: afterHyphen(sort), limit, after }
-	t6:     NOT_IMPLEMENTED
+	current_user_info: ->
+		get("/api/v1/me")
+	current_user_multireddits: ->
+		get("/api/multi/mine")
+	current_user_saved_comments: (comments_sort, max_comments, after_comment_short_id) ->
+		get("/user/#{CURRENT_USER_NAME}/saved", {
+			after: after_comment_short_id and "t1_#{after_comment_short_id}"
+			limit: max_comments
+			sort: beforeHyphen(comments_sort)
+			t: afterHyphen(comments_sort)
+			type: 'comments'
+		})
+	current_user_saved_posts: (posts_sort, max_posts, after_post_short_id) ->
+		get("/user/#{CURRENT_USER_NAME}/saved", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			sort: beforeHyphen(posts_sort)
+			t: afterHyphen(posts_sort)
+			type: 'links'
+		})
+	current_user_settings: ->
+		get("/api/v1/me/prefs")
+	current_user_subscriptions: ->
+		get("/subreddits/mine/subscriber", {
+			limit: 100
+			show: 'all'
+			sr_detail: true
+		})
+	comment: (comment_short_id) ->
+		get("/api/info", {
+			id: "t1_#{comment_short_id}"
+		})
+	global_ranking_popular_subreddits: ->
+		get("/subreddits/popular", {
+			limit: 100
+		})
+	multireddit_info: (user_name, multireddit_name) ->
+		if user_name is 'r' then Promise.resolve(null)
+		else get("/api/multi/user/#{user_name}/m/#{multireddit_name}")
+	multireddit_posts: (user_name, multireddit_name, posts_sort, max_posts, after_post_short_id) ->
+		get(
+			switch
+				when user_name is 'r' and multireddit_name is 'home' then "/#{beforeHyphen(posts_sort)}"
+				when user_name is 'r' then "/r/#{multireddit_name}/#{beforeHyphen(posts_sort)}"
+				else "/user/#{user_name}/m/#{multireddit_name}/#{beforeHyphen(posts_sort)}"
+			{
+				after: after_post_short_id and "t3_#{after_post_short_id}"
+				limit: max_posts
+				show: 'all'
+				t: afterHyphen(posts_sort)
+			}
+		)
+	post: (post_short_id, comments_sort, max_comments, spotlight_comment_short_id, spotlight_comment_context) ->
+		get("/comments/#{post_short_id}", {
+			comment: spotlight_comment_short_id && "t1_#{spotlight_comment_short_id}"
+			context: spotlight_comment_context
+			limit: max_comments
+			showedits: true
+			showmedia: true
+			showmore: true
+			showtitle: true
+			sort: comments_sort
+		})
+	post_duplicates: (post_short_id, max_posts, after_post_short_id) ->
+		get("/duplicates/#{post_short_id}", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+		})
+	post_more_comments: (post_short_id, comments_sort, ...comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
+		get("/api/morechildren", {
+			api_type: 'json'
+			children: comment_short_ids.map((short_id) -> "t1_#{short_id}")
+			link_id: "t3_#{post_short_id}"
+			sort: comments_sort
+		})
+	search_posts: (search_text, time_range, max_posts, after_post_short_id) ->
+		get("/search", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			q: search_text
+			restrict_sr: false
+			show: 'all'
+			sort: 'relevance'
+			t: time_range
+		})
+	search_posts_in_subreddit: (subreddit_name, search_text, time_range, max_posts, after_post_short_id) ->
+		get("/r/#{subreddit_name}/search", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			q: search_text
+			restrict_sr: true
+			show: 'all'
+			sort: 'relevance'
+			t: time_range
+		})
+	search_subreddits: (search_text) ->
+		get("/api/subreddit_autocomplete_v2", {
+			include_over_18: true
+			include_profiles: false
+			limit: 10
+			query: search_text # 1-25 chars
+			typeahead_active: false
+		})
+	search_users: (search_text) ->
+		get("/users/search", {
+			limit: 10
+			show: 'all'
+			sort: 'relevance'
+			q: search_text
+			typeahead_active: false
+		})
+	subreddit_emotes: (subreddit_name) ->
+		get("/api/v1/#{subreddit_name}/emojis/all")
+	subreddit_info: (subreddit_name) ->
+		get("/r/#{subreddit_name}/about")
+	subreddit_moderators: (subreddit_name, after_user_short_id) ->
+		get("/r/#{subreddit_name}/about/moderators", {
+			after: after_user_short_id and "t2_#{after_user_short_id}"
+			limit: 100
+			show: 'all'
+		})
+	subreddit_post_flairs: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/link_flair_v2")
+	subreddit_post_guidelines: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/submit_text")
+	subreddit_post_requirements: (subreddit_name) ->
+		get("/api/v1/#{subreddit_name}/post_requirements")
+	subreddit_posts: (subreddit_name, posts_sort, max_posts, after_post_short_id) ->
+		get("/r/#{subreddit_name}/#{beforeHyphen(posts_sort)}", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			show: 'all'
+			t: afterHyphen(posts_sort)
+		})
+	subreddit_rules: (subreddit_name) ->
+		get("/r/#{subreddit_name}/about/rules")
+	subreddit_widgets: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/widgets")
+	subreddit_user_flairs: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/user_flair_v2")
+	user_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
+		get("/user/#{user_name}/comments", {
+			after: after_comment_short_id and "t1_#{after_comment_short_id}"
+			limit: max_comments
+			sort: beforeHyphen(comments_sort)
+			t: afterHyphen(comments_sort)
+		})
+	user_info: (user_name) ->
+		get("/user/#{user_name}/about")
+	user_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
+		get("/user/#{user_name}/submitted", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			sort: beforeHyphen(posts_sort)
+			t: afterHyphen(posts_sort)
+		})
+	user_public_multireddits: (user_name) ->
+		get("/api/multi/user/#{user_name}")
+	wiki: (subreddit_name, page_name, version_short_id) ->
+		get("/r/#{subreddit_name}/wiki/#{page_name}", {
+			v: version_short_id
+		})
+	wiki_versions: (subreddit_name, page_name, max_versions, after_version_short_id) ->
+		get("/r/#{subreddit_name}/wiki/revisions/#{page_name}", {
+			after: after_wikipage_version_short_id and "WikiRevision_#{after_wikipage_version_short_id}"
+			limit: max_versions
+			show: 'all'
+		})
 
 }

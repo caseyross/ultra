@@ -13,7 +13,7 @@ script.
 		p LOADING...
 	{:else if itemIds && itemIds.length}
 		{#each itemIds as itemId}
-			{#if itemId.type === 't3'}
+			{#if itemId.type === 'post'}
 				Headline(id={itemId} onSelect={() => selectedId = itemId.isSameAs(selectedId) ? null : itemId})
 			{#if itemId.isSameAs(selectedId)}
 				Post(id={itemId})

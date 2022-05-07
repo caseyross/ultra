@@ -1,10 +1,5 @@
 script.
 	import Listing from './layouts/Listing.pug'
-	import ListingItem from './layouts/ListingItem.pug'
 	export id = null
-	export listingId = null
 
-{#if id.isListingType}
-	Listing(id={id})
-{:else}
-	ListingItem(id={id} listingId={listingId})
+Listing(id={id})

@@ -1,4 +1,4 @@
-export class DatasetID
+export default class DatasetID
 
 	constructor: (type, ...components) ->
 		if components.length == 0 then [type, ...components] = type.split(':')
@@ -10,7 +10,3 @@ export class DatasetID
 
 	toString: ->
 		@type + ':' + @components.join(':')
-
-Object.defineProperty(DatasetID::, 'isListingType', {
-	get: -> @type.slice(-1) == 'z'
-})

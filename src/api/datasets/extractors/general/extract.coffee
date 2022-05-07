@@ -1,5 +1,5 @@
 import embeddable from './util/embeddable.coffee'
-import { DatasetID } from '../../../infra/ids.coffee'
+import DatasetID from '../../DatasetID.coffee'
 
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.
@@ -28,17 +28,17 @@ export default extract = (rawData) ->
 			# Set the IDs of the direct replies in place of the original objects.
 			comment.replies = repliesListingDatasets.main.data
 			result.main =
-				id: new DatasetID('t1', rawData.data.id) # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
+				id: new DatasetID('comment', rawData.data.id) # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
 				data: comment
 			result.sub = repliesListingDatasets.sub
 		when 't2'
 			user = rawData.data
 			result.main =
-				id: new DatasetID('t2i', user.name)
+				id: new DatasetID('user_info', user.name)
 				data: user
 			if user.subreddit
 				result.sub.push({
-					id: new DatasetID('t5i', user.subreddit.display_name)
+					id: new DatasetID('subreddit_info', user.subreddit.display_name)
 					data: user.subreddit
 					partial: true # Marks objects known to be an incomplete version of data from another API route.
 				})
@@ -121,7 +121,7 @@ export default extract = (rawData) ->
 				post.media[0] = embeddable(post.url)
 			# Collect the (possible) subreddit & crosspost-source objects, and the end post.
 			if post.crosspost_parent_list?.length
-				crosspost_parent_id = new DatasetID('t3', post.crosspost_parent_list[0].id)
+				crosspost_parent_id = new DatasetID('post', post.crosspost_parent_list[0].id)
 				result.sub.push({
 					id: crosspost_parent_id
 					data: extract({
@@ -134,26 +134,37 @@ export default extract = (rawData) ->
 				delete post.crosspost_parent_list
 			if post.sr_detail
 				result.sub.push({
-					id: new DatasetID('t5i', post.subreddit)
+					id: new DatasetID('subreddit_info', post.subreddit)
 					data: post.sr_detail
 					partial: true
 				})
 				delete post.sr_detail
 			result.main =
-				id: new DatasetID('t3', rawData.data.id)
+				id: new DatasetID('post', rawData.data.id)
 				data: post
 				partial: true
 		when 't4'
 			result.main =
-				id: new DatasetID('t4', rawData.data.id)
+				id: new DatasetID('private_message', rawData.data.id)
 				data: rawData.data
 		when 't5'
 			result.main =
-				id: new DatasetID('t5i', rawData.data.display_name)
+				id: new DatasetID('subreddit_info', rawData.data.display_name)
 				data: rawData.data
-		when 't6'
+		when 'wikipage'
+			wikipage = rawData.data
+			revised_by_user_id = new DatasetID('user_info', wikipage.revision_by.data.name)
+			result.sub.push({
+				id: revised_by_user_id
+				data: wikipage.revision_by.data
+			})
+			wikipage.revision_by = revised_by_user_id
 			result.main =
-				id: new DatasetID('t6', rawData.data.id)
+				id: null
+				data: wikipage
+		when 'LabeledMulti'
+			result.main =
+				id: new DatasetID('multireddit_info', rawData.data.owner, rawData.data.name)
 				data: rawData.data
 		when 'Listing'
 			listing = rawData.data.children
@@ -174,18 +185,33 @@ export default extract = (rawData) ->
 				result.sub = listingDatasets.flatMap(({ sub }) -> sub)
 		when 'LiveUpdate'
 			result.main =
-				id: null # NOTE: We'd like to assign these as "t3lu", since live updates appear to have globally unique IDs. Unfortunately, there's no public endpoint to get a live update solely by its ID (need thread ID as well), so assigning IDs here would break our data modeling assumptions.
+				id: null # NOTE: We'd like to assign these as "livethread_update", since live updates appear to have globally unique IDs. Unfortunately, there's no endpoint available to get an update solely by its ID (need thread ID as well), so assigning IDs here would break our data modeling assumptions.
 				data: rawData.data
 		when 'LiveUpdateEvent'
 			result.main =
-				id: new DatasetID('t3li', rawData.data.id)
+				id: new DatasetID('livethread_info', rawData.data.id)
 				data: rawData.data
 		when 'UserList'
 			result.main =
 				id: null
 				data: rawData.data.children
 		else
-			result.main =
-				id: null
-				data: rawData
+			if Array.isArray(rawData)
+				# Essentially the same logic as for listings.
+				arrayDatasets = rawData.map((child) -> extract(child))
+				childIds = arrayDatasets.map(({ main }) -> main.id)
+				if childIds.every((id) -> id?)
+					result.main =
+						id: null
+						data: childIds
+					result.sub = arrayDatasets.flatMap(({ main, sub }) -> sub.concat(main))
+				else
+					result.main =
+						id: null
+						data: arrayDatasets.map(({ main }) -> main.data)
+					result.sub = arrayDatasets.flatMap(({ sub }) -> sub)
+			else
+				result.main =
+					id: null
+					data: rawData
 	return result
