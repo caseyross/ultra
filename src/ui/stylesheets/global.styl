@@ -15,14 +15,14 @@ body
 
 // Paragraphs
 p
-	margin-top 1em
+	margin-top 0.66em
 	overflow-wrap break-word
 hr
 	background rgba(0,0,0,0.5)
 	border 0
 	height 1px
 	margin-inline 0
-	margin-top 1em
+	margin-top 0.66em
 
 // Verbatim text
 a
@@ -33,11 +33,11 @@ blockquote
 	background rgba(0,0,0,0.05)
 	display inline-block
 	margin 0
-	margin-top 1em
+	margin-top 0.66em
 	padding 0.5ch 1ch
 pre
 	display inline-block
-	margin-top 1em
+	margin-top 0.66em
 	white-space pre-wrap
 
 // Spoilers
@@ -50,35 +50,40 @@ pre
 		color initial
 
 // Lists
+li
+	margin-top 0.66em
 ol
 	list-style decimal
-	margin-top 1em
-	padding-inline-start 4ch
+	margin-top 0.66em
+	padding-inline-start 2ch
 ul
 	list-style disc
-	margin-top 1em
-	padding-inline-start 4ch
+	margin-top 0.66em
+	padding-inline-start 2ch
 
 // Headers
 h1
+	font-size 1.25em
+	font-weight normal
+	margin-top 1em
 h2
 h3
 h4
 h5
 h6
-	margin-top 1em
+	font-size 1.16em
 	font-weight normal
-	font-size 1.25em
+	margin-top 1em
 
 // Tables
 table
-	margin-top 1em
-	white-space nowrap
+	border-collapse collapse
+	margin-top 0.66em
 td
 th
-	border-right 2em solid transparent
-	&:last-child
-		border-right 0
+	border 1px solid
+	padding 0.5ch
+	padding-left 0.75ch
 th
 	font-weight normal
 	text-align left
@@ -86,10 +91,7 @@ th
 // Media
 figure
 	margin 0
-iframe
-	border 1px solid
 img
-	border 1px solid
 	display block
 
 // Interactive

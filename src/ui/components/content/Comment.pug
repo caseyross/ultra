@@ -9,18 +9,17 @@ script.
 
 {#if comment}
 	article(role='comment')
-		.comment-gutter
-			button.comment-vote-button ^
-			button.comment-collapse-button
-		.comment-main
-			address
-				data.comment-score(value={comment.score}) {StringFormat.score(comment.score_hidden || comment.score)}
-				time(datetime={Date.seconds(comment.created_utc)}) {StringFormat.date(Date.seconds(comment.created_utc))}
-				span {StringFormat.distinguish(comment.distinguish)}
-			section.comment-body
-				{@html comment.body_html.slice(16, -6).replace(/<p>&#x200B;<\/p>/g, '')}
-			{#if showReplies && comment.replies.length > 0}
-				ol.comment-replies
+		address
+			button.comment-score-button {StringFormat.score(comment.score_hidden || comment.score)}
+			time(datetime={Date.seconds(comment.created_utc)}) {StringFormat.date(Date.seconds(comment.created_utc))}
+			span {StringFormat.distinguish(comment.distinguish)}
+		section.comment-body
+			{@html comment.body_html.slice(16, -6).replace(/<p>&#x200B;<\/p>/g, '')}
+		{#if showReplies && comment.replies.length > 0}
+			.comment-replies
+				.comment-replies-indent
+					button.comment-replies-collapse-button
+				ol
 					{#each comment.replies as replyId}
 						svelte:self(id={replyId})
 					{#if comment.more_replies}
@@ -30,38 +29,26 @@ script.
 
 style.
 	[role=comment]
-		display flex
-		gap 1ch
-		margin-top 2ch
+		margin-top 1ch
 	.comment-body
 		font-size 14px
-		line-height 20px
-		width 1220px
-		padding 0.75ch 1.5ch 1.5ch 0
-	.comment-collapse-button
-		background transparent
+		line-height 18px
+		padding 0.5ch 0 1ch 0
+	.comment-replies
+		display flex
+		padding-left 0
+	.comment-replies-collapse-button
+		background gainsboro
 		border 0
 		flex 1
 		margin 0 auto
-	.comment-gutter
+		width 1px
+	.comment-replies-indent
 		display flex
+		flex 0 0 3ch
 		flex-flow column nowrap
-		padding-top 3ch
-	.comment-replies
-		margin-left -1ch
-		padding-left 0
-	.comment-score
+	.comment-score-button
 		font-size 13px
-	.comment-vote-button
-		background transparent
-		border 0
-		border-radius 99px
-		font-size 14pt
-		font-weight bold
-		height 1em
-		opacity 0.3
-		padding-top 2px
-		width 1em
 		&:active
 			background rgba(0,0,0,0.3)
 	address
@@ -70,3 +57,6 @@ style.
 		font-weight bold
 		opacity 0.3
 		text-transform uppercase
+	ol
+		flex 1
+		padding-inline-start 1ch
