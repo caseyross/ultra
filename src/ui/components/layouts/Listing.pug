@@ -1,5 +1,6 @@
 script.
 	import api from '../../../api/index.js'
+	import Comment from '../content/Comment.pug'
 	import Headline from '../content/Headline.pug'
 	import Post from '../content/Post.pug'
 	export id = null
@@ -12,14 +13,18 @@ script.
 	{#if loading}
 		p LOADING...
 	{:else if itemIds && itemIds.length}
-		{#each itemIds as itemId}
-			{#if itemId.type === 'post'}
-				Headline(id={itemId} onSelect={() => selectedId = itemId.isSameAs(selectedId) ? null : itemId})
-			{#if itemId.isSameAs(selectedId)}
-				Post(id={itemId})
+		ol
+			{#each itemIds as itemId}
+				{#if itemId.type === 'comment'}
+					Comment(id={itemId})
+				{:else if itemId.type === 'post'}
+					Headline(id={itemId} selected={selectedId == itemId} onSelect={() => selectedId = itemId})
+	{#if selectedId}
+		{#key selectedId}
+			Post(id={selectedId})
 style.
-	.listing
-		align-items center
-		display flex
-		flex-flow column nowrap
-		padding 30px
+	ol
+		left 0
+		padding 60px
+		position fixed
+		top 0

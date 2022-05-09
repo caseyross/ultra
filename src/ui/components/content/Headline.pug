@@ -1,27 +1,35 @@
 script.
 	import api from '../../../api/index.js'
+	import StringFormat from '../../../lib/StringFormat.coffee'
 	export id = null
+	export selected = false
 	export onSelect = null
 	post = null
 	api.watch(id, (x) -> { data: post } = x)
 
 {#if post}
-	.headline(on:mousedown={onSelect})
-		img.thumbnail(src={post.thumbnail})
+	.headline(class:selected={selected} on:mousedown={onSelect})
+		address
+			button.score-button {StringFormat.score(post.hide_score || post.score)}
+			time(datetime={Date.seconds(post.created_utc)}) {StringFormat.date(Date.seconds(post.created_utc))}
+			span {StringFormat.distinguish(post.distinguish)}
 		.title {post.title}
 
 style.
 	.headline
-		display flex
-		gap 15px
-		height 30px
-		margin-top 0.5em
-		overflow hidden
-		width 420px
-	.thumbnail
-		flex 0 0 70px
-		height 100%
-		object-fit cover
-	.title
-		font-family monospace
-		font-size 1.25em
+		border-radius 1ch
+		padding 0.5ch 1ch
+		width 340px
+		&.selected
+			background orangered
+			color white
+	.score-button
+		font-size 13px
+		&:active
+			background rgba(0,0,0,0.3)
+	address
+		font-size 10px
+		font-style normal
+		font-weight bold
+		opacity 0.3
+		text-transform uppercase

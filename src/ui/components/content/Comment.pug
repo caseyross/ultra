@@ -10,11 +10,11 @@ script.
 {#if comment}
 	article(role='comment')
 		address
-			button.comment-score-button {StringFormat.score(comment.score_hidden || comment.score)}
+			button.score-button {StringFormat.score(comment.score_hidden || comment.score)}
 			time(datetime={Date.seconds(comment.created_utc)}) {StringFormat.date(Date.seconds(comment.created_utc))}
 			span {StringFormat.distinguish(comment.distinguish)}
 		section.comment-body
-			{@html comment.body_html.slice(16, -6).replace(/<p>&#x200B;<\/p>/g, '')}
+			{@html comment.body_html.slice(16, -6).replace(/<p>&(#x200B|nbsp);<\/p>/g, '')}
 		{#if showReplies && comment.replies.length > 0}
 			.comment-replies
 				.comment-replies-indent
@@ -34,6 +34,10 @@ style.
 		font-size 14px
 		line-height 18px
 		padding 0.5ch 0 1ch 0
+	:global(.comment-body img)
+		display inline
+		height auto
+		max-width 160px
 	.comment-replies
 		display flex
 		padding-left 0
@@ -47,7 +51,7 @@ style.
 		display flex
 		flex 0 0 3ch
 		flex-flow column nowrap
-	.comment-score-button
+	.score-button
 		font-size 13px
 		&:active
 			background rgba(0,0,0,0.3)

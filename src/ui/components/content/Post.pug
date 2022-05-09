@@ -4,7 +4,6 @@ script.
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
 	export id = null
-	commentsExpanded = false
 	post = null
 	api.watch(id, (x) -> { data: post } = x)
 
@@ -15,7 +14,7 @@ script.
 		section.post-body
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
-					{@html post.selftext_html.slice(31, -20).replace(/<p>&#x200B;<\/p>/g, '')}
+					{@html post.selftext_html.slice(31, -20).replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='selftext-media'><a href='https://$1.redd.it/$2' target='_blank'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>").replace(/<p>&(#x200B|nbsp);<\/p>/g, '')}
 			{:else if post.format === 'poll'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'prediction'}
@@ -39,7 +38,7 @@ script.
 						{:else if media.image_url}
 							picture
 								source(srcset={media.image_url_640})
-								img(src={media.image_url} style='max-width:640px;')
+								img(src={media.image_url})
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -47,31 +46,33 @@ script.
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else}
-		{#if commentsExpanded}
+		{#if post.replies?.length}
 			ol.post-replies
 				{#each post.replies as replyId}
 					Comment(id={replyId})
 				{#if post.more_replies}
 					ActionText(text='More replies...')
-		{:else if post.replies?.length}
-			ol.post-replies
-				Comment(id={post.replies[0]})
-			button(on:click={() => commentsExpanded = true}) Show {post.num_comments} comments
 
 style.
 	[role=post]
-		margin 0 auto
 		padding 60px 0
-		width 90ch
+		width 580px
 	.post-body
 		margin-top 2em
+	:global(.selftext-media)
+		background gainsboro
+		border-radius 1ch
+		display flex
+		justify-content center
+		padding 3em
+	:global(.selftext-media img)
+		border 1px solid black
+		max-width 480px
 	.post-replies
 		margin-top 2em
 		padding-inline-start 0
 	.prediction-options > li
 		display flex
-	figure
-		margin-top 1em
 	iframe
 		height 360px
 		width 640px
