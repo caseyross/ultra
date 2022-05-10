@@ -7,7 +7,10 @@ script.
 	itemIds = null
 	loading = false
 	selectedId = null
-	api.watch(id, (x) -> { data: itemIds, loading: loading } = x)
+	api.watch(id, (x) ->
+		{ data: itemIds, loading: loading } = x
+		if itemIds and not selectedId then selectedId = itemIds[0]
+	)
 
 .listing
 	{#if loading}
