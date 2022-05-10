@@ -14,7 +14,7 @@ script.
 			time(datetime={Date.seconds(comment.created_utc)}) {StringFormat.date(Date.seconds(comment.created_utc))}
 			span {StringFormat.distinguish(comment.distinguish)}
 		section.comment-body
-			{@html comment.body_html.slice(16, -6).replace(/<p>&(#x200B|nbsp);<\/p>/g, '')}
+			{@html StringFormat.commentBody(comment.body_html)}
 		{#if showReplies && comment.replies.length > 0}
 			.comment-replies
 				.comment-replies-indent

@@ -3,6 +3,7 @@ script.
 	import ActionText from '../system/ActionText.pug'
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
+	import StringFormat from '../../../lib/StringFormat.coffee'
 	export id = null
 	post = null
 	api.watch(id, (x) -> { data: post } = x)
@@ -14,7 +15,7 @@ script.
 		section.post-body
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
-					{@html post.selftext_html.slice(31, -20).replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='selftext-media'><a href='https://$1.redd.it/$2' target='_blank'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>").replace(/<p>&(#x200B|nbsp);<\/p>/g, '')}
+					{@html StringFormat.postBody(post.selftext_html)}
 			{:else if post.format === 'poll'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'prediction'}
