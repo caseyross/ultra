@@ -37,9 +37,10 @@ script.
 							picture
 								img(src={media.gif_url})
 						{:else if media.image_url}
-							picture
-								source(srcset={media.image_url_640})
-								img(src={media.image_url})
+							a(href={media.image_url} target='_blank')
+								picture
+									source(srcset={media.image_url_640})
+									img(src={media.image_url})
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}

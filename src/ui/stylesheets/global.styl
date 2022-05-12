@@ -32,8 +32,12 @@ a
 	color mediumslateblue
 	font-weight 500
 	text-decoration none
-	& > img
-			cursor zoom-in
+	word-break break-all
+	& img
+		border 1px solid transparent
+		cursor zoom-in
+		&:hover
+			border-color inherit
 blockquote
 	background rgba(0,0,0,0.05)
 	display inline-block
@@ -96,7 +100,6 @@ th
 // Media
 figure
 	margin 0
-	margin-top 0.66em
 iframe
 	background rgba(0,0,0,0.1)
 	border 0
