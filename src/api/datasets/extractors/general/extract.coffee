@@ -1,4 +1,5 @@
-import embeddable from './util/embeddable.coffee'
+import html_embeddable from './util/html_embeddable.coffee'
+import iframe_embeddable from './util/iframe_embeddable.coffee'
 import DatasetID from '../../DatasetID.coffee'
 
 # Separate and extract independent Reddit entities from raw API data.
@@ -57,7 +58,7 @@ export default extract = (rawData) ->
 					'poll'
 				when post.is_self
 					'self'
-				when embeddable(post.url)
+				when html_embeddable(post) or iframe_embeddable(post.url)
 					'embed'
 				else
 					'link'
@@ -117,8 +118,10 @@ export default extract = (rawData) ->
 					video_url: video.fallback_url ? post.url
 					video_width: video.width
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
-			if embeddable(post.url)
-				post.media[0] = embeddable(post.url)
+			else if iframe_embeddable(post.url)
+				post.media[0] = iframe_embeddable(post.url)
+			else if html_embeddable(post)
+				post.media[0] = html_embeddable(post)
 			# Collect the (possible) subreddit & crosspost-source objects, and the end post.
 			if post.crosspost_parent_list?.length
 				crosspost_parent_id = new DatasetID('post', post.crosspost_parent_list[0].id)

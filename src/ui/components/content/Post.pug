@@ -45,6 +45,8 @@ script.
 				{#each post.media as media}
 					{#if media.iframe_url}
 						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
+					{:else if media.html}
+						{@html media.html}
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else}
