@@ -23,6 +23,12 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 			iframe_url: "https://redgifs.com/ifr/#{descriptor}"
 		else
 			null
+	when 'streamable.com'
+		descriptor = url.pathname.split('/')[1]
+		if descriptor?.length
+			iframe_url: "https://streamable.com/o/#{descriptor}"
+		else
+			null
 	when 'twitch.tv'
 		descriptor = url.pathname.split('/')[3]
 		if descriptor?.length
