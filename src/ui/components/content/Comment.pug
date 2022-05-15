@@ -9,58 +9,58 @@ script.
 
 {#if comment}
 	article(role='comment')
-		address
-			button.score-button {StringFormat.score(comment.score_hidden || comment.score)}
-			time(datetime={Date.seconds(comment.created_utc)}) {StringFormat.date(Date.seconds(comment.created_utc))}
-			span {StringFormat.distinguish(comment.distinguish)}
-		section.comment-body
-			{@html StringFormat.commentBody(comment.body_html)}
-		{#if showReplies && comment.replies.length > 0}
-			.comment-replies
-				.comment-replies-indent
-					button.comment-replies-collapse-button
-				ol
-					{#each comment.replies as replyId}
-						svelte:self(id={replyId})
-					{#if comment.more_replies}
-						ActionText(text='More replies...')
-					{#if comment.deeper_replies}
-						ActionText(text='Continue this thread...')
+		div.comment-left
+			data.comment-score {comment.score}
+			button.comment-replies-collapse-button
+		div.comment-right
+			.comment-body-container
+				.comment-body
+					{@html StringFormat.commentBody(comment.body_html)}
+			{#if showReplies && comment.replies.length > 0}
+				.comment-replies
+					ol
+						{#each comment.replies as replyId}
+							svelte:self(id={replyId})
+						{#if comment.more_replies}
+							ActionText(text='More replies...')
+						{#if comment.deeper_replies}
+							ActionText(text='Continue this thread...')
 
 style.
 	[role=comment]
+		display flex
+		gap 4px
 		margin-top 1ch
 	.comment-body
-		font-size 14px
-		line-height 18px
-		padding 0.5ch 0 1ch 0
+		background rgba(0,0,0,0.05)
+		padding 0.5ch 1ch
+		width 56ch
+	.comment-body-container
+		align-items flex-end
+		display flex
+		gap 1ch
 	:global(.comment-body img)
 		display inline
 		height auto
 		max-width 160px
+	.comment-left
+		display flex
+		flex-flow column nowrap
+		padding-top 1em
+		position relative
 	.comment-replies
 		display flex
 		padding-left 0
 	.comment-replies-collapse-button
-		background gainsboro
-		border 0
+		border-left 1px solid
 		flex 1
-		margin 0 auto
-		width 1px
-	.comment-replies-indent
-		display flex
-		flex 0 0 3ch
-		flex-flow column nowrap
-	.score-button
-		font-size 13px
-		&:active
-			background rgba(0,0,0,0.3)
-	address
-		font-size 10px
-		font-style normal
-		font-weight bold
-		opacity 0.3
-		text-transform uppercase
+		margin 1ch 0
+		width 16px
+	.comment-score
+		font 14px consolas
+		position absolute
+		right 0
+		top 0
 	ol
-		flex 1
-		padding-inline-start 1ch
+		margin 0
+		padding 0

@@ -1,6 +1,23 @@
+
+count = (number, string) ->
+	if number == 1 then "#{number} #{string}" else "#{number} #{string}s"
 daysOfTheWeek = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ]
 
 export default {
+
+	age: (input) ->
+		millis = Date.now() - input
+		seconds = millis // 1000
+		minutes = seconds // 60
+		if minutes < 1 then return count(seconds, 'second')
+		hours = minutes // 60
+		if hours < 1 then return count(minutes, 'minute')
+		days = hours // 24
+		if days < 1 then return count(hours, 'hour')
+		months = days // 31
+		if months < 1 then return count(days, 'day')
+		years = months // 12
+		if years < 1 then return count(months, 'month') else return count(years, 'year')
 
 	commentBody: (input) ->
 		input
@@ -20,9 +37,9 @@ export default {
 		return "#{month}/#{day}/#{year} (#{dayOfTheWeek}) #{hour}:#{minute}"
 
 	distinguish: (input) -> switch input
-		when 'admin' then 'Admin'
-		when 'moderator' then 'Moderator'
-		when 'special' then 'Ex-Admin'
+		when 'admin' then '(reddit employee)'
+		when 'moderator' then '(moderator)'
+		when 'special' then '(reddit alumnus)'
 		else ''
 
 	postBody: (input) ->
