@@ -1,3 +1,4 @@
+import Time from './Time.coffee'
 
 count = (number, string) ->
 	if number == 1 then "#{number} #{string}" else "#{number} #{string}s"
@@ -6,7 +7,7 @@ daysOfTheWeek = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ]
 export default {
 
 	age: (input) ->
-		millis = Date.now() - input
+		millis = Time.epochMs() - input
 		seconds = millis // 1000
 		minutes = seconds // 60
 		if minutes < 1 then return count(seconds, 'second')

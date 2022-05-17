@@ -1,6 +1,7 @@
 import credentials from './credentials.coffee'
 import errors from './errors.coffee'
 import ratelimit from './ratelimit.coffee'
+import Time from '../../lib/Time.coffee'
 
 export get = (endpoint, query) -> call('GET', endpoint, { query })
 export patch = (endpoint, content) -> call('PATCH', endpoint, { content })
@@ -38,7 +39,7 @@ call = (method, endpoint, { query = {}, content }) ->
 		ratelimit.update({
 			count: 1
 			remaining: response.headers.get 'X-Ratelimit-Remaining'
-			timeUntilReset: Date.seconds(response.headers.get 'X-Ratelimit-Reset')
+			timeUntilReset: Time.sToMs(response.headers.get 'X-Ratelimit-Reset')
 		})
 		code = response.status
 		switch

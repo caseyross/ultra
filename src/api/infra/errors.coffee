@@ -1,3 +1,5 @@
+import Time from '../../lib/Time.coffee'
+
 class AnyError extends Error
 	constructor: (message) ->
 		super(message)
@@ -19,7 +21,7 @@ class LoginFailedError extends AnyError
 		@.reason = reason
 class RatelimitExceededError extends AnyError
 	constructor: ({ wait }) ->
-		super("wait #{Date.asSeconds(wait)} sec")
+		super("wait #{Time.msToS(wait, { trunc: true })} sec")
 		@.wait = wait
 class ResourceMovedError extends AnyError
 	constructor: ({ code }) ->

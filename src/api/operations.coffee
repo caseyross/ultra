@@ -4,6 +4,7 @@ import datasetRoutes from './datasets/routes.coffee'
 import datasetGeneralExtractor from './datasets/extractors/general/extract.coffee'
 import datasetSpecialExtractor from './datasets/extractors/special/extract.coffee'
 import StringFormat from '../lib/StringFormat.coffee'
+import Time from '../lib/Time.coffee'
 
 cache = {}
 
@@ -13,7 +14,7 @@ get = (id) ->
 
 setData = (id, data, isPartial) ->
 	if !cache[id] then cache[id] = {}
-	cache[id].asOf = Date.now()
+	cache[id].asOf = Time.epochMs()
 	cache[id].data = data
 	cache[id].error = false
 	cache[id].loading = false
@@ -23,7 +24,7 @@ setData = (id, data, isPartial) ->
 
 setError = (id, error) ->
 	if !cache[id] then cache[id] = {}
-	cache[id].asOf = Date.now()
+	cache[id].asOf = Time.epochMs()
 	cache[id].data = null
 	cache[id].error = error
 	cache[id].loading = false

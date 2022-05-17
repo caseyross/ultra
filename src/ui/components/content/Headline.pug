@@ -1,6 +1,7 @@
 script.
 	import api from '../../../api/index.js'
 	import StringFormat from '../../../lib/StringFormat.coffee'
+	import Time from '../../../lib/Time.coffee'
 	export id = null
 	export selected = false
 	export onSelect = null
@@ -11,7 +12,7 @@ script.
 	.headline(class:selected={selected} on:mousedown={onSelect})
 		address
 			button.score-button {StringFormat.score(post.hide_score || post.score)}
-			time(datetime={Date.seconds(post.created_utc)}) {StringFormat.date(Date.seconds(post.created_utc))}
+			time(datetime={Time.sToMs(post.created_utc)}) {StringFormat.date(Time.sToMs(post.created_utc))}
 			span {StringFormat.distinguish(post.distinguish)}
 		.title {post.title}
 

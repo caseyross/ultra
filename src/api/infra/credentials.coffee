@@ -1,4 +1,5 @@
 import errors from './errors.coffee'
+import Time from '../../lib/Time.coffee'
 
 waitForRenew = (f) ->
 	if localStorage['api.credentials.renewing'] is 'TRUE'
@@ -22,7 +23,7 @@ credentials = {
 		if localStorage['api.credentials.renewing'] is 'TRUE'
 			return Promise.race([
 				new Promise (f) -> waitForRenew(f)
-				new Promise (f) -> setTimeout(forceRenew, Date.seconds(3 + 11 * Math.random()), f)
+				new Promise (f) -> setTimeout(forceRenew, Time.sToMs(3 + 11 * Math.random()), f)
 			])
 		# The quickest instance takes out a lock on the renewal process. If it fails to complete it in a reasonable time, another instance force-resets the lock and takes its place.
 		localStorage['api.credentials.renewing'] = 'TRUE'
@@ -63,7 +64,7 @@ credentials = {
 		.then (data) ->
 			if data.token_type? and data.access_token? and Number.isFinite(Number data.expires_in)
 				localStorage['api.credentials.key'] = "#{data.token_type} #{data.access_token}"
-				localStorage['api.credentials.key_expiry'] = Date.now() + Date.seconds(data.expires_in)
+				localStorage['api.credentials.key_expiry'] = Time.epochMs() + Time.sToMs(data.expires_in)
 				if data.refresh_token? then localStorage['api.credentials.exchange_token'] = data.refresh_token
 		.finally ->
 			localStorage['api.credentials.renewing'] = 'FALSE'
@@ -75,7 +76,7 @@ Object.defineProperty(credentials, 'valid', {
 	get: ->
 		key = localStorage['api.credentials.key']
 		expiry = Number localStorage['api.credentials.key_expiry']
-		if key? and Number.isFinite(expiry) then return expiry - Date.now() > 0
+		if key? and Number.isFinite(expiry) then return expiry - Time.epochMs() > 0
 		return false
 })
 
