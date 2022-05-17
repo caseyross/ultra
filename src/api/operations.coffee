@@ -3,6 +3,7 @@ import actionRoutes from './actions/routes.coffee'
 import datasetRoutes from './datasets/routes.coffee'
 import datasetGeneralExtractor from './datasets/extractors/general/extract.coffee'
 import datasetSpecialExtractor from './datasets/extractors/special/extract.coffee'
+import StringFormat from '../lib/StringFormat.coffee'
 
 cache = {}
 
@@ -60,9 +61,9 @@ export preload = (id) ->
 
 export reload = (id) ->
 	setLoading(id)
-	return datasetRoutes[id.type](...id.components)
+	return datasetRoutes[StringFormat.datasetType(id)](...StringFormat.datasetFilters(id))
 	.then (rawData) ->
-		extractor = datasetSpecialExtractor[id.type] ? datasetGeneralExtractor
+		extractor = datasetSpecialExtractor[StringFormat.datasetType(id)] ? datasetGeneralExtractor
 		extractor(rawData)
 	.then (datasets) ->
 		setData(id, datasets.main.data, datasets.main.partial)

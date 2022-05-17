@@ -25,6 +25,18 @@ export default {
 			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
 
+	datasetId: (type, ...filters) ->
+		if filters.length == 0 then [type, ...filters] = type.split(':')
+		type = type.toLowerCase()
+		filters = filters.map((c) -> c.toLowerCase().replace(/^t[1-6]_/, ''))
+		return [type, ...filters].join(':')
+
+	datasetFilters: (datasetId) ->
+		datasetId.split(':')[1..]
+
+	datasetType: (datasetId) ->
+		datasetId.split(':')[0]
+
 	date: (input) ->
 		input = new Date(input)
 		year = String(input.getFullYear())[2..].padStart(2, '0')

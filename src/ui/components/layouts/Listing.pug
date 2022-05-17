@@ -3,6 +3,7 @@ script.
 	import Comment from '../content/Comment.pug'
 	import Headline from '../content/Headline.pug'
 	import Post from '../content/Post.pug'
+	import StringFormat from '../../../lib/StringFormat.coffee'
 	export id = null
 	itemIds = null
 	loading = false
@@ -18,9 +19,9 @@ script.
 	{:else if itemIds && itemIds.length}
 		ol
 			{#each itemIds as itemId}
-				{#if itemId.type === 'comment'}
+				{#if StringFormat.datasetType(itemId) === 'comment'}
 					Comment(id={itemId})
-				{:else if itemId.type === 'post'}
+				{:else if StringFormat.datasetType(itemId) === 'post'}
 					Headline(id={itemId} selected={selectedId == itemId} onSelect={() => selectedId = itemId})
 	{#if selectedId}
 		{#key selectedId}
