@@ -156,7 +156,13 @@ export default {
 			t: afterHyphen(comments_sort)
 		})
 	user_info: (user_name) ->
-		get("/user/#{user_name}/about")
+		get("/user/#{user_name}/about", {
+			sr_detail: true
+		})
+	user_info_bulk: (...user_short_ids) ->
+		get("/api/user_data_by_account_ids", {
+			ids: user_short_ids.map((short_id) -> "t2_#{short_id}")
+		})
 	user_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/submitted", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"

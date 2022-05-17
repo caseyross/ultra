@@ -12,8 +12,11 @@ export default extract = (rawData) ->
 		sub: [] # Objects contained in the same API response as the main objects, but which "belong" to a different API route.
 	switch rawData.kind
 		when 't1'
-			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			comment = rawData.data
+			# Process post information
+			comment.link_id = new DatasetID('post', comment.link_id[3..])
+			# Process replies.
+			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			repliesListing = comment.replies?.data?.children
 			if !Array.isArray(repliesListing) then repliesListing = []
 			# Detect and process a "continue this thread" link in the comment's replies.
@@ -34,16 +37,19 @@ export default extract = (rawData) ->
 			result.sub = repliesListingDatasets.sub
 		when 't2'
 			user = rawData.data
+			user.profile_color = user.subreddit.icon_color
+			user.profile_img = user.icon_img
+			delete user.icon_img
+			user.profile_over_18 = user.subreddit.over_18
 			result.main =
 				id: new DatasetID('user_info', user.name)
 				data: user
-			if user.subreddit
-				result.sub.push({
-					id: new DatasetID('subreddit_info', user.subreddit.display_name)
-					data: user.subreddit
-					partial: true # Marks objects known to be an incomplete version of data from another API route.
-				})
-				delete user.subreddit
+			result.sub.push({
+				id: new DatasetID('subreddit_info', user.subreddit.display_name)
+				data: user.subreddit
+				partial: true # Marks objects known to be an incomplete version of data from another API route.
+			})
+			delete user.subreddit
 		when 't3'
 			post = rawData.data
 			# Normalize the URL - sometimes it is only given as a relative path.
@@ -122,7 +128,7 @@ export default extract = (rawData) ->
 				post.media[0] = iframe_embeddable(post.url)
 			else if html_embeddable(post)
 				post.media[0] = html_embeddable(post)
-			# Collect the (possible) subreddit & crosspost-source objects, and the end post.
+			# Process crosspost source, if present.
 			if post.crosspost_parent_list?.length
 				crosspost_parent_id = new DatasetID('post', post.crosspost_parent_list[0].id)
 				result.sub.push({
@@ -135,6 +141,7 @@ export default extract = (rawData) ->
 				})
 				post.crosspost_parent = crosspost_parent_id
 				delete post.crosspost_parent_list
+			# Process subreddit information, if present.
 			if post.sr_detail
 				result.sub.push({
 					id: new DatasetID('subreddit_info', post.subreddit)
@@ -142,6 +149,7 @@ export default extract = (rawData) ->
 					partial: true
 				})
 				delete post.sr_detail
+			# Done.
 			result.main =
 				id: new DatasetID('post', rawData.data.id)
 				data: post

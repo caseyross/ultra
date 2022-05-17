@@ -66,7 +66,9 @@ export reload = (id) ->
 		extractor(rawData)
 	.then (datasets) ->
 		setData(id, datasets.main.data, datasets.main.partial)
-		for dataset in datasets.sub then setData(dataset.id, dataset.data, dataset.partial)
+		for dataset in datasets.sub
+			if not get(dataset.id) or get(dataset.id).partial == true or not dataset.partial
+				setData(dataset.id, dataset.data, dataset.partial)
 		return get(id)
 	.catch (error) ->
 		setError(id, error)
