@@ -23,7 +23,17 @@ export default (rawData) ->
 	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1])
 	# 3. Link the top-level comments via their IDs.
 	post.replies = topLevelCommentIds
-	# 4. Merge the extracted comment objects into the complete post data.
+	# 4. Setup bulk comment author information leads.
+	post.reply_author_info_tranches = []
+	reply_author_short_ids_tranch = new Set()
+	for commentDataset in commentDatasets
+		if commentDataset.data.author_fullname? then reply_author_short_ids_tranch.add(commentDataset.data.author_fullname[3..])
+		if reply_author_short_ids_tranch.size == 500
+			post.reply_author_info_tranches.push(new DatasetID('user_info_bulk', ...reply_author_short_ids_tranch))
+			reply_author_short_ids_tranch.clear()
+	if reply_author_short_ids_tranch.size > 0
+		post.reply_author_info_tranches.push(new DatasetID('user_info_bulk', ...reply_author_short_ids_tranch))
+	# 5. Merge the extracted comment objects into the complete post data.
 	result.main =
 		id: posts[0].id
 		data: post
