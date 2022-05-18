@@ -1,14 +1,13 @@
 script.
 	import api from '../../../api/index.js'
 	import Post from '../content/Post.pug'
-	import StringFormat from '../../../lib/StringFormat.coffee'
 	export id = null
 	export listingId = null
 	nextId = null
 	prevId = null
 
 main
-	{#if StringFormat.datasetType(id) === 'post'}
+	{#if api.parse.datasetType(id) === 'post'}
 		Post(id={id})
 {#if prevId || nextId}
 	nav

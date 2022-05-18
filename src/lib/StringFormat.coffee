@@ -6,18 +6,6 @@ daysOfTheWeek = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ]
 
 export default {
 
-	actionId: (type, ...filters) ->
-		if filters.length == 0 then [type, ...filters] = type.split(':')
-		type = type.toLowerCase()
-		filters = filters.map((c) -> c.toLowerCase().replace(/^t[1-6]_/, ''))
-		return [type, ...filters].join(':')
-
-	actionParameters: (actionId) ->
-		actionId.split(':')[1..]
-
-	actionType: (actionId) ->
-		actionId.split(':')[0]
-
 	age: (input) ->
 		millis = Time.epochMs() - input
 		seconds = millis // 1000
@@ -37,18 +25,6 @@ export default {
 			.slice(16, -6)
 			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
-
-	datasetId: (type, ...filters) ->
-		if filters.length == 0 then [type, ...filters] = type.split(':')
-		type = type.toLowerCase()
-		filters = filters.map((c) -> c.toLowerCase().replace(/^t[1-6]_/, ''))
-		return [type, ...filters].join(':')
-
-	datasetFilters: (datasetId) ->
-		datasetId.split(':')[1..]
-
-	datasetType: (datasetId) ->
-		datasetId.split(':')[0]
 
 	date: (input) ->
 		input = new Date(input)

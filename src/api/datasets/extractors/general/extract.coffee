@@ -1,6 +1,6 @@
+import format from '../../../infra/format.coffee'
 import html_embeddable from './util/html_embeddable.coffee'
 import iframe_embeddable from './util/iframe_embeddable.coffee'
-import StringFormat from '../../../../lib/StringFormat.coffee'
 
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.
@@ -14,7 +14,7 @@ export default extract = (rawData) ->
 		when 't1'
 			comment = rawData.data
 			# Process parent post information.
-			comment.parent_post = StringFormat.datasetId('post', comment.link_id)
+			comment.parent_post = format.datasetId('post', comment.link_id)
 			delete comment.link_id
 			# Process replies.
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
@@ -33,7 +33,7 @@ export default extract = (rawData) ->
 			# Set the IDs of the direct replies in place of the original objects.
 			comment.replies = repliesListingDatasets.main.data
 			result.main =
-				id: StringFormat.datasetId('comment', rawData.data.id) # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
+				id: format.datasetId('comment', rawData.data.id) # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
 				data: comment
 			result.sub = repliesListingDatasets.sub
 		when 't2'
@@ -43,10 +43,11 @@ export default extract = (rawData) ->
 			delete user.icon_img
 			user.profile_over_18 = user.subreddit.over_18
 			result.main =
-				id: StringFormat.datasetId('user_info', user.name)
+				id: format.datasetId('user_info', user.name)
+				id: format.datasetId('user_info', user.name)
 				data: user
 			result.sub.push({
-				id: StringFormat.datasetId('subreddit_info', user.subreddit.display_name)
+				id: format.datasetId('subreddit_info', user.subreddit.display_name)
 				data: user.subreddit
 				partial: true # Marks objects known to be an incomplete version of data from another API route.
 			})
@@ -131,7 +132,7 @@ export default extract = (rawData) ->
 				post.media[0] = html_embeddable(post)
 			# Process crosspost source, if present.
 			if post.crosspost_parent_list?.length
-				crosspost_parent_id = StringFormat.datasetId('post', post.crosspost_parent_list[0].id)
+				crosspost_parent_id = format.datasetId('post', post.crosspost_parent_list[0].id)
 				result.sub.push({
 					id: crosspost_parent_id
 					data: extract({
@@ -145,27 +146,27 @@ export default extract = (rawData) ->
 			# Process subreddit information, if present.
 			if post.sr_detail
 				result.sub.push({
-					id: StringFormat.datasetId('subreddit_info', post.subreddit)
+					id: format.datasetId('subreddit_info', post.subreddit)
 					data: post.sr_detail
 					partial: true
 				})
 				delete post.sr_detail
 			# Done.
 			result.main =
-				id: StringFormat.datasetId('post', rawData.data.id)
+				id: format.datasetId('post', rawData.data.id)
 				data: post
 				partial: true
 		when 't4'
 			result.main =
-				id: StringFormat.datasetId('private_message', rawData.data.id)
+				id: format.datasetId('private_message', rawData.data.id)
 				data: rawData.data
 		when 't5'
 			result.main =
-				id: StringFormat.datasetId('subreddit_info', rawData.data.display_name)
+				id: format.datasetId('subreddit_info', rawData.data.display_name)
 				data: rawData.data
 		when 'wikipage'
 			wikipage = rawData.data
-			revised_by_user_id = StringFormat.datasetId('user_info', wikipage.revision_by.data.name)
+			revised_by_user_id = format.datasetId('user_info', wikipage.revision_by.data.name)
 			result.sub.push({
 				id: revised_by_user_id
 				data: wikipage.revision_by.data
@@ -176,7 +177,7 @@ export default extract = (rawData) ->
 				data: wikipage
 		when 'LabeledMulti'
 			result.main =
-				id: StringFormat.datasetId('multireddit_info', rawData.data.owner, rawData.data.name)
+				id: format.datasetId('multireddit_info', rawData.data.owner, rawData.data.name)
 				data: rawData.data
 		when 'Listing'
 			listing = rawData.data.children
@@ -201,7 +202,7 @@ export default extract = (rawData) ->
 				data: rawData.data
 		when 'LiveUpdateEvent'
 			result.main =
-				id: StringFormat.datasetId('livethread_info', rawData.data.id)
+				id: format.datasetId('livethread_info', rawData.data.id)
 				data: rawData.data
 		when 'UserList'
 			result.main =

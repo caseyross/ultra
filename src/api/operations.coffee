@@ -1,10 +1,10 @@
+import Time from '../lib/Time.coffee'
 import ratelimit from './infra/ratelimit.coffee'
+import parse from './infra/parse.coffee'
 import actionRoutes from './actions/routes.coffee'
 import datasetRoutes from './datasets/routes.coffee'
 import datasetGeneralExtractor from './datasets/extractors/general/extract.coffee'
 import datasetSpecialExtractor from './datasets/extractors/special/extract.coffee'
-import StringFormat from '../lib/StringFormat.coffee'
-import Time from '../lib/Time.coffee'
 
 cache = {}
 
@@ -70,9 +70,9 @@ export preload = (id) ->
 
 export reload = (id) ->
 	setLoading(id)
-	return datasetRoutes[StringFormat.datasetType(id)](...StringFormat.datasetFilters(id))
+	return datasetRoutes[parse.datasetType(id)](...parse.datasetFilters(id))
 	.then (rawData) ->
-		extractor = datasetSpecialExtractor[StringFormat.datasetType(id)] ? datasetGeneralExtractor
+		extractor = datasetSpecialExtractor[parse.datasetType(id)] ? datasetGeneralExtractor
 		extractor(rawData)
 	.then (datasets) ->
 		setData(id, datasets.main.data, datasets.main.partial)
@@ -87,7 +87,7 @@ export reload = (id) ->
 export send = (id) ->
 	if get(id) and get(id).sending then return Promise.resolve(get(id))
 	setSending(id)
-	return actionRoutes[StringFormat.actionType(id)](...StringFormat.actionParameters(id))
+	return actionRoutes[parse.actionType(id)](...parse.actionParameters(id))
 	.then (rawFeedback) ->
 		setFeedback(id, rawFeedback)
 		return get(id)
