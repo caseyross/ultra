@@ -13,8 +13,9 @@ export default extract = (rawData) ->
 	switch rawData.kind
 		when 't1'
 			comment = rawData.data
-			# Process post information
-			comment.link_id = StringFormat.datasetId('post', comment.link_id[3..])
+			# Process parent post information.
+			comment.parent_post = StringFormat.datasetId('post', comment.link_id)
+			delete comment.link_id
 			# Process replies.
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			repliesListing = comment.replies?.data?.children
