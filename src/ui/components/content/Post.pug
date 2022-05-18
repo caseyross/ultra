@@ -1,9 +1,9 @@
 script.
 	import api from '../../../api/index.js'
+	import StringFormat from '../../tools/StringFormat.coffee'
 	import ActionText from '../system/ActionText.pug'
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
-	import StringFormat from '../../../lib/StringFormat.coffee'
 	export id = null
 	post = null
 	api.watch(id, (x) -> { data: post } = x)
