@@ -19,7 +19,6 @@ setData = (id, data, isPartial) ->
 	cache[id].error = false
 	cache[id].loading = false
 	cache[id].partial = isPartial ? false
-	cache[id].sending = false
 	notify(id)
 
 setError = (id, error) ->
@@ -27,8 +26,17 @@ setError = (id, error) ->
 	cache[id].asOf = Time.epochMs()
 	cache[id].data = null
 	cache[id].error = error
+	cache[id].feedback = null
 	cache[id].loading = false
 	cache[id].partial = false
+	cache[id].sending = false
+	notify(id)
+
+setFeedback = (id, feedback) ->
+	if !cache[id] then cache[id] = {}
+	cache[id].asOf = Time.epochMs()
+	cache[id].error = false
+	cache[id].feedback = feedback
 	cache[id].sending = false
 	notify(id)
 
@@ -77,8 +85,15 @@ export reload = (id) ->
 		return get(id)
 
 export send = (id) ->
+	if get(id) and get(id).sending then return Promise.resolve(get(id))
 	setSending(id)
-	# TODO
+	return actionRoutes[StringFormat.actionType(id)](...StringFormat.actionParameters(id))
+	.then (rawFeedback) ->
+		setFeedback(id, rawFeedback)
+		return get(id)
+	.catch (error) ->
+		setError(id, error)
+		return get(id)
 
 export watch = (id, callback) ->
 	if !watchers[id] then watchers[id] = []

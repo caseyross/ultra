@@ -1,22 +1,22 @@
 import { post } from '../infra/requests.coffee'
 
 export default {
-
-	delete:      (targetId) ->
-		post "/api/del", { id: targetId }
-	edit:        (targetId, newText) ->
-		post "/api/editusertext", { api_type: 'json', thing_id: targetId, text: newText }
-	reply:       (targetId, text) ->
-		post "/api/comment", { api_type: 'json', thing_id: targetId, text }
-	save:        (targetId, categoryName) ->
-		post "/api/save", { id: submissionId, category: categoryName }
-	subscribe:   (...subredditNames) ->
-		post "/api/subscribe", { action: 'sub', sr_name: subredditNames.join(',') }
-	unsave:      (targetId) ->
-		post "/api/unsave", { id: submissionId }
-	unsubscribe: (...subredditNames) ->
-		post "/api/subscribe", { action: 'unsub', sr_name: subredditNames.join(',') }
-	vote:        (targetId, dir) ->
-		post "/api/vote", { id: submissionId, dir }
-
+	save_comment: (comment_short_id) ->
+		post("/api/vote", {
+			id: "t1_#{comment_short_id}"
+		})
+	save_post: (post_short_id) ->
+		post("/api/vote", {
+			id: "t3_#{post_short_id}"
+		})
+	vote_comment: (comment_short_id, numerical_vote) ->
+		post("/api/vote", {
+			dir: numerical_vote
+			id: "t1_#{comment_short_id}"
+		})
+	vote_post: (post_short_id, numerical_vote) ->
+		post("/api/vote", {
+			dir: numerical_vote
+			id: "t3_#{post_short_id}"
+		})
 }
