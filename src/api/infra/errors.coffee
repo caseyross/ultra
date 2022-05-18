@@ -20,9 +20,9 @@ class LoginFailedError extends AnyError
 		super("reason: #{reason}")
 		@.reason = reason
 class RatelimitExceededError extends AnyError
-	constructor: ({ wait }) ->
-		super("wait #{Time.msToS(wait, { trunc: true })} sec")
-		@.wait = wait
+	constructor: ({ waitMs }) ->
+		super("wait #{Time.msToS(waitMs, { trunc: true })} seconds")
+		@.waitMs = waitMs
 class ResourceMovedError extends AnyError
 	constructor: ({ code }) ->
 		super("code #{code}")

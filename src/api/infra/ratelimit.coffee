@@ -13,13 +13,13 @@ ratelimit = {
 			localStorage['api.ratelimit.remaining'] = 60
 
 	# Update the known ratelimit parameters with authoritative server feedback, or, failing that, with a simple count of requests sent.
-	update: ({ count, remaining, timeUntilReset }) ->
+	update: ({ count, remaining, secondsUntilReset }) ->
 		if remaining?
 			localStorage['api.ratelimit.remaining'] = remaining
 		else
 			localStorage['api.ratelimit.remaining'] = localStorage['api.ratelimit.remaining'] - count
-		if timeUntilReset?
-			localStorage['api.ratelimit.reset'] = Time.epochMs() + timeUntilReset
+		if secondsUntilReset?
+			localStorage['api.ratelimit.reset'] = Time.epochMs() + Time.sToMs(secondsUntilReset)
 
 }
 
@@ -35,7 +35,7 @@ Object.defineProperty(ratelimit, 'availableRPS', {
 })
 
 # The number of milliseconds until the current ratelimit period resets.
-Object.defineProperty(ratelimit, 'timeUntilReset', {
+Object.defineProperty(ratelimit, 'msUntilReset', {
 	get: ->
 		ratelimit.sanitize()
 		reset = Number localStorage['api.ratelimit.reset']

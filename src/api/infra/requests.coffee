@@ -15,7 +15,7 @@ call = (method, endpoint, { query = {}, content }) ->
 	.catch ->
 		credentials.renew()
 	.then ->
-		if not ratelimit.availableRPS > 0 then throw new errors.RatelimitExceededError({ wait: ratelimit.timeUntilReset })
+		if not ratelimit.availableRPS > 0 then throw new errors.RatelimitExceededError({ waitMs: ratelimit.msUntilReset })
 	.then ->
 		for key, value of query then if not value? then delete query[key]
 		# NOTE: for legacy compatibility, the API replaces special characters in responses with their corresponding HTML entities. Activating the raw_json parameter disables this behavior.
@@ -39,7 +39,7 @@ call = (method, endpoint, { query = {}, content }) ->
 		ratelimit.update({
 			count: 1
 			remaining: response.headers.get 'X-Ratelimit-Remaining'
-			timeUntilReset: Time.sToMs(response.headers.get 'X-Ratelimit-Reset')
+			secondsUntilReset: response.headers.get 'X-Ratelimit-Reset'
 		})
 		code = response.status
 		switch
