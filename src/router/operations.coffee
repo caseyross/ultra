@@ -7,7 +7,13 @@ route = (url, options = { replace: false }) ->
 export listen = ->
 	document.addEventListener('click',
 		(event) ->
-			if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey) and event.target.tagName is 'A' and event.target.origin is origin
+			if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A' and event.target.origin is origin
+				route(new URL(event.target.href))
+				event.preventDefault()
+	)
+	document.addEventListener('keydown',
+		(event) ->
+			if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A' and event.target.origin is origin
 				route(new URL(event.target.href))
 				event.preventDefault()
 	)
