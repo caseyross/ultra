@@ -6,8 +6,9 @@
 
 // General
 html
-	font 400 10pt/18px 'arimo', 'arial', 'helvetica', sans-serif
-	letter-spacing 0.33px
+	font 400 14px/1.4 'test', sans-serif
+*:focus
+	outline-color gold
 
 // Body
 body
@@ -19,7 +20,7 @@ body
 // Paragraphs
 p
 	margin-top 0.66em
-	overflow-wrap break-word
+	word-break break-word
 hr
 	background rgba(0,0,0,0.5)
 	border 0
@@ -34,10 +35,7 @@ a
 	text-decoration none
 	word-break break-word
 	& img
-		border 1px solid transparent
 		cursor zoom-in
-		&:hover
-			border-color inherit
 blockquote
 	border-left 1px solid gainsboro
 	margin 0
@@ -101,7 +99,7 @@ th
 figure
 	margin 0
 iframe
-	background rgba(0,0,0,0.1)
+	background black
 	border 0
 img
 	display block
@@ -123,14 +121,7 @@ input
 
 // Fonts
 @font-face
-	font-display swap
-	font-family 'arimo'
+	font-family 'test'
 	font-style normal
-	font-weight 400 700
-	src url('../assets/fonts/font_arimo_var.ttf') format('truetype')
-@font-face
-	font-display swap
-	font-family 'arimo'
-	font-style italic
-	font-weight 400 700
-	src url('../assets/fonts/font_arimo_var_italic.ttf') format('truetype')
+	font-weight 400
+	src url('../assets/fonts/test.woff2') format('woff2')

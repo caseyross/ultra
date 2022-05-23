@@ -9,47 +9,57 @@ script.
 	api.watch(id, (x) -> { data: post } = x)
 
 {#if post}
-	article(role='post')
-		header.post-header
-			h1 {post.title}
-		section.post-body
-			{#if post.format === 'self'}
-				{#if post.selftext_html}
-					{@html StringFormat.postBody(post.selftext_html)}
-			{:else if post.format === 'poll'}
-				a(href={post.url} rel='external noopener preconnect') {post.url}
-			{:else if post.format === 'prediction'}
-				{#each post.tournament_data.predictions as prediction}
-					h2.prediction-title {prediction.title}
-					dl.prediction-options
-						{#each prediction.options as option}
-							li
-								dt
-									meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
-								dd {option.text}
-			{:else if post.format === 'media'}
-				{#each post.media as media}
-					figure
-						figcaption
-						{#if media.video_url}
-							MediaPlayer(aspect_ratio={media.aspect_ratio} audio_url={media.video_audio_url} video_url={media.video_url} video_width={media.video_width})
-						{:else if media.gif_url}
-							picture
-								img(src={media.gif_url})
-						{:else if media.image_url}
-							a(href={media.image_url} target='_blank')
+	.post-container
+		article(role='post')
+			section.post-content
+				{#if post.format === 'self'}
+					{#if post.selftext_html}
+						.post-selftext
+							{@html StringFormat.postBody(post.selftext_html)}
+				{:else if post.format === 'poll'}
+					a(href={post.url} rel='external noopener preconnect') {post.url}
+				{:else if post.format === 'prediction'}
+					.post-predictions
+						{#each post.tournament_data.predictions as prediction}
+							h2.prediction-title {prediction.title}
+							dl.prediction-options
+								{#each prediction.options as option}
+									li
+										dt
+											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+										dd {option.text}
+				{:else if post.format === 'media'}
+					{#each post.media as media}
+						figure
+							figcaption
+							{#if media.video_url}
+								MediaPlayer(aspect_ratio={media.aspect_ratio} audio_url={media.video_audio_url} video_url={media.video_url} video_width={media.video_width})
+							{:else if media.gif_url}
 								picture
-									source(srcset={media.image_url_640})
-									img(src={media.image_url})
-			{:else if post.format === 'embed'}
-				{#each post.media as media}
-					{#if media.iframe_url}
-						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
-					{:else if media.html}
-						{@html media.html}
-			{:else if post.format === 'link'}
-				a(href={post.url} rel='external noopener preconnect') {post.url}
-			{:else}
+									img(src={media.gif_url})
+							{:else if media.image_url}
+								a(href={media.image_url})
+									picture
+										{#if media.aspect_ratio < 1.334}
+											source(srcset={media.image_url_640})
+										{:else}
+											source(srcset={media.image_url_960})
+										img(src={media.image_url} style="max-height: {media.aspect_ratio < 1 ? 'auto' : '480px'}; max-width: {media.aspect_ratio > 1 ? 'auto' : '480px'}")
+					{#if post.media.length > 1}
+						aside.post-additional-media
+							{#each post.media.slice(1) as media}
+								picture
+									source(srcset={media.image_url_108})
+									img.thumbnail(src={media.image_url} style="max-height: {media.aspect_ratio < 1 ? 'auto' : '36px'};max-width: {media.aspect_ratio > 1 ? 'auto' : '36px'}")
+				{:else if post.format === 'embed'}
+					{#each post.media as media}
+						{#if media.iframe_url}
+							iframe(allowfullscreen='true' allow={media.iframe_allow} height={media.iframe_height} src={media.iframe_url} width={media.iframe_width})
+						{:else if media.html}
+							{@html media.html}
+				{:else if post.format === 'link'}
+					a(href={post.url} rel='external noopener preconnect') {post.url}
+				{:else}
 		{#if post.replies?.length}
 			ol.post-replies
 				{#each post.replies as replyId}
@@ -58,25 +68,29 @@ script.
 					ActionText(text='More replies...')
 
 style.
-	[role=post]
-		padding 60px 0
-		width 580px
-	.post-body
-		margin-top 2em
-	:global(.selftext-media)
-		background gainsboro
-		border-radius 1ch
+	.post-additional-media
 		display flex
-		justify-content center
-		padding 3em
-	:global(.selftext-media img)
-		border 1px solid black
-		max-width 480px
+		flex-flow column wrap
+		gap 1px
+	.post-container
+		padding 4vh 0
+		width 50vw
+	.post-content
+		display flex
+		gap 1px
+	:global(.post-content img)
+		max-width 50vw
+	:global(.post-content img.thumbnail)
+		max-height 4em
+		max-width 4em
+	:global(.post-selftext-media)
+		margin 1.33em 0
+		max-width 50vw
 	.post-replies
 		margin-top 2em
 		padding-inline-start 0
+	.post-selftext
+		border 1px solid
+		padding 4ch
 	.prediction-options > li
 		display flex
-	iframe
-		height 360px
-		width 640px

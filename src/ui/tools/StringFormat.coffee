@@ -47,7 +47,7 @@ export default {
 			.slice(31, -20)
 			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
-			.replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='selftext-media'><a href='https://$1.redd.it/$2' target='_blank'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>")
+			.replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='post-selftext-media'><a href='https://$1.redd.it/$2'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>")
 
 	score: (input) -> switch
 		when not Number.isFinite(input) then 'New'

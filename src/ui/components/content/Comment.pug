@@ -13,6 +13,8 @@ script.
 			data.comment-score {comment.score}
 			button.comment-replies-collapse-button
 		div.comment-right
+			.comment-meta
+				span {comment.author}
 			.comment-body-container
 				.comment-body
 					{@html StringFormat.commentBody(comment.body_html)}
@@ -29,30 +31,37 @@ script.
 style.
 	[role=comment]
 		display flex
-		gap 4px
+		gap 4ch
 		margin-top 1ch
 	.comment-body
-		background rgba(0,0,0,0.05)
-		padding 0.5ch 1ch
-		width 56ch
+		border-radius 1ch
+		padding 1ch 1.5ch
 	.comment-body-container
 		align-items flex-end
 		display flex
 		gap 1ch
 	:global(.comment-body img)
 		display inline
-		height auto
-		max-width 160px
+		filter grayscale(1)
+		max-height 4em
+		width auto
 	.comment-left
 		display flex
 		flex-flow column nowrap
 		padding-top 1em
 		position relative
+	.comment-meta
+		color cornflowerblue
+		font 14px consolas
+		height 2em
+		padding 0 1ch
 	.comment-replies
 		display flex
 		padding-left 0
 	.comment-replies-collapse-button
-		border-left 1px solid
+		background 0
+		border 0
+		border-right 1px solid
 		flex 1
 		margin 1ch 0
 		width 16px
