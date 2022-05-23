@@ -5,7 +5,9 @@ api.configure({
 	client_id: process.env.API_CLIENT_ID
 	redirect_uri: process.env.API_REDIRECT_URI
 })
-api.preload('subreddit_posts:combatfootage:hot:10')
 
-router.routeCurrentUrl()
-router.listen()
+router.init({}, {})
+page = router.routeCurrentUrl()
+if page.preload
+	for id in page.preload
+		api.preload(id)

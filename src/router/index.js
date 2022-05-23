@@ -1,8 +1,9 @@
-import { listen, routeCurrentUrl } from './operations.coffee'
+import { init, routeCurrentUrl, watch } from './operations.coffee'
 
 export default {
 	
-	listen,
+	init,
 	routeCurrentUrl,
+	watch,
 
 }
