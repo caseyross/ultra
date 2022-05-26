@@ -10,62 +10,64 @@ script.
 	galleryIndex = 0
 
 {#if post}
-	.post-container
-		article(role='post')
-			section.post-content
-				{#if post.format === 'self'}
-					{#if post.selftext_html}
-						.post-selftext
-							{@html StringFormat.postBody(post.selftext_html)}
-				{:else if post.format === 'prediction'}
-					.post-predictions
-						{#each post.tournament_data.predictions as prediction}
-							h2.prediction-title {prediction.title}
-							dl.prediction-options
-								{#each prediction.options as option}
-									li
-										dt
-											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
-										dd {option.text}
-				{:else if post.format === 'media'}
-					{@const media = post.media[galleryIndex]}
-						{#key media}
-							figure
-								{#if media.video_url}
-									MediaPlayer(audio_url={media.video_audio_url} video_url={media.video_url})
-								{:else if media.gif_url}
+	article.post
+		header.post-header
+			h1 {post.title}
+		section.post-content
+			{#if post.format === 'self'}
+				{#if post.selftext_html}
+					.post-selftext
+						{@html StringFormat.postBody(post.selftext_html)}
+			{:else if post.format === 'prediction'}
+				.post-predictions
+					{#each post.tournament_data.predictions as prediction}
+						h2.post-prediction-title {prediction.title}
+						dl.post-prediction-options
+							{#each prediction.options as option}
+								li
+									dt
+										meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+									dd {option.text}
+			{:else if post.format === 'media'}
+				{@const media = post.media[galleryIndex]}
+					{#key media}
+						figure
+							{#if media.video_url}
+								MediaPlayer(audio_url={media.video_audio_url} video_url={media.video_url})
+							{:else if media.gif_url}
+								picture
+									img(src={media.gif_url})
+							{:else if media.image_url}
+								a(href={media.image_url})
 									picture
-										img(src={media.gif_url})
-								{:else if media.image_url}
-									a(href={media.image_url})
-										picture
-											{#if media.aspect_ratio < 2}
-												source(srcset={media.image_url_640})
-											{:else}
-												source(srcset={media.image_url_960})
-											img(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-width: calc(100vw - 480px); width: {media.aspect_ratio >= 2 ? 960 : media.aspect_ratio >= 1 ? 640 : 480}px")
-								{#if media.caption_text || media.caption_url}
-									figcaption.post-media-caption
-										{#if media.caption_text}
-											p {media.caption_text}
-										{#if media.caption_url}
-											a(href={media.caption_url}) {media.caption_url}
-					{#if post.media.length > 1}
-						aside.post-additional-media
-							{#each post.media as media, index}
-								button(on:click={() => galleryIndex = index})
-									picture
-										source(srcset={media.image_url_108})
-										img.thumbnail(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-height: {media.aspect_ratio < 1 ? 'auto' : '36px'}; max-width: {media.aspect_ratio > 1 ? 'auto' : '36px'}")
-				{:else if post.format === 'embed'}
-					{#each post.media as media}
-						{#if media.iframe_url}
-							iframe(allowfullscreen='true' allow={media.iframe_allow} height={media.iframe_height} src={media.iframe_url} width={media.iframe_width})
-						{:else if media.html}
-							{@html media.html}
-				{:else if post.format === 'link'}
-					a(href={post.url} rel='external noopener preconnect') {post.url}
-				{:else}
+										{#if media.aspect_ratio < 2}
+											source(srcset={media.image_url_640})
+										{:else}
+											source(srcset={media.image_url_960})
+										img(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-width: calc(100vw - 480px); width: {media.aspect_ratio >= 2 ? 960 : media.aspect_ratio >= 1 ? 640 : 480}px")
+							{#if media.caption_text || media.caption_url}
+								figcaption.post-media-caption
+									{#if media.caption_text}
+										p {media.caption_text}
+									{#if media.caption_url}
+										a(href={media.caption_url}) {media.caption_url}
+				{#if post.media.length > 1}
+					aside.post-additional-media
+						{#each post.media as media, index}
+							button(on:click={() => galleryIndex = index})
+								picture
+									source(srcset={media.image_url_108})
+									img(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-height: {media.aspect_ratio < 1 ? 'auto' : '36px'}; max-width: {media.aspect_ratio > 1 ? 'auto' : '36px'}")
+			{:else if post.format === 'embed'}
+				{#each post.media as media}
+					{#if media.iframe_url}
+						iframe(allowfullscreen='true' allow={media.iframe_allow} height={media.iframe_height} src={media.iframe_url} width={media.iframe_width})
+					{:else if media.html}
+						{@html media.html}
+			{:else if post.format === 'link'}
+				a(href={post.url} rel='external noopener preconnect') {post.url}
+			{:else}
+				p [Error displaying post.]
 		{#if post.replies?.length}
 			ol.post-replies
 				{#each post.replies as replyId}
@@ -74,6 +76,11 @@ script.
 					ActionText(text='More replies...')
 
 style.
+	.post
+		align-items center
+		display flex
+		flex-flow column nowrap
+		padding 40px 0
 	.post-additional-media
 		align-items flex-start
 		display flex
@@ -86,28 +93,24 @@ style.
 		top 0
 		& button
 			background black
-	.post-container
-		align-items center
-		display flex
-		flex-flow column nowrap
-		padding 40px 0
 	.post-content
+		margin-top 20px
 		position relative
+	.post-header
+		width 480px
 	.post-media-caption
 		font 12px consolas
 		margin-top 0.66em
-	:global(.post-selftext-media img)
-		margin 1.33em 0
-		max-width 100%
 	.post-replies
 		margin-top 40px
 		padding-inline-start 0
 		width 480px
 	.post-predictions
-		width 640px
-	.post-selftext
-		border 1px solid
-		padding 4ch
-		width 640px
-	.prediction-options > li
+		width 480px
+	.post-prediction-options > li
 		display flex
+	.post-selftext
+		width 480px
+	:global(.post-selftext-media img)
+		margin 1.33em 0
+		max-width 100%
