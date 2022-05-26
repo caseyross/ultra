@@ -1,8 +1,6 @@
 script.
 	import { onMount } from 'svelte'
-	export aspect_ratio = null
 	export audio_url = null
-	export video_width = null
 	export video_url = null
 	stati = {
 		LOADING: 'LOADING...'
@@ -141,6 +139,5 @@ style.
 	video
 		background black
 		display block
-		max-height 480px
-		max-width 50vw
-		width 854px
+		height 360px
+		width 640px

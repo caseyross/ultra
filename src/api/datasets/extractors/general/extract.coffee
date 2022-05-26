@@ -62,8 +62,6 @@ export default extract = (rawData) ->
 					'media'
 				when post.tournament_data
 					'prediction'
-				when post.poll_data
-					'poll'
 				when post.is_self
 					'self'
 				when html_embeddable(post) or iframe_embeddable(post.url)

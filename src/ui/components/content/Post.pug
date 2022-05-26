@@ -7,6 +7,7 @@ script.
 	export id = null
 	post = null
 	api.watch(id, (x) -> { data: post } = x)
+	galleryIndex = 0
 
 {#if post}
 	.post-container
@@ -16,8 +17,6 @@ script.
 					{#if post.selftext_html}
 						.post-selftext
 							{@html StringFormat.postBody(post.selftext_html)}
-				{:else if post.format === 'poll'}
-					a(href={post.url} rel='external noopener preconnect') {post.url}
 				{:else if post.format === 'prediction'}
 					.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -29,28 +28,35 @@ script.
 											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
 										dd {option.text}
 				{:else if post.format === 'media'}
-					{#each post.media as media}
-						figure
-							figcaption
-							{#if media.video_url}
-								MediaPlayer(aspect_ratio={media.aspect_ratio} audio_url={media.video_audio_url} video_url={media.video_url} video_width={media.video_width})
-							{:else if media.gif_url}
-								picture
-									img(src={media.gif_url})
-							{:else if media.image_url}
-								a(href={media.image_url})
+					{@const media = post.media[galleryIndex]}
+						{#key media}
+							figure
+								{#if media.video_url}
+									MediaPlayer(audio_url={media.video_audio_url} video_url={media.video_url})
+								{:else if media.gif_url}
 									picture
-										{#if media.aspect_ratio < 1.334}
-											source(srcset={media.image_url_640})
-										{:else}
-											source(srcset={media.image_url_960})
-										img(src={media.image_url} style="max-height: {media.aspect_ratio < 1 ? 'auto' : '480px'}; max-width: {media.aspect_ratio > 1 ? 'auto' : '480px'}")
+										img(src={media.gif_url})
+								{:else if media.image_url}
+									a(href={media.image_url})
+										picture
+											{#if media.aspect_ratio < 2}
+												source(srcset={media.image_url_640})
+											{:else}
+												source(srcset={media.image_url_960})
+											img(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-width: calc(100vw - 480px); width: {media.aspect_ratio >= 2 ? 960 : media.aspect_ratio >= 1 ? 640 : 480}px")
+								{#if media.caption_text || media.caption_url}
+									figcaption.post-media-caption
+										{#if media.caption_text}
+											p {media.caption_text}
+										{#if media.caption_url}
+											a(href={media.caption_url}) {media.caption_url}
 					{#if post.media.length > 1}
 						aside.post-additional-media
-							{#each post.media.slice(1) as media}
-								picture
-									source(srcset={media.image_url_108})
-									img.thumbnail(src={media.image_url} style="max-height: {media.aspect_ratio < 1 ? 'auto' : '36px'};max-width: {media.aspect_ratio > 1 ? 'auto' : '36px'}")
+							{#each post.media as media, index}
+								button(on:click={() => galleryIndex = index})
+									picture
+										source(srcset={media.image_url_108})
+										img.thumbnail(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-height: {media.aspect_ratio < 1 ? 'auto' : '36px'}; max-width: {media.aspect_ratio > 1 ? 'auto' : '36px'}")
 				{:else if post.format === 'embed'}
 					{#each post.media as media}
 						{#if media.iframe_url}
@@ -69,28 +75,39 @@ script.
 
 style.
 	.post-additional-media
+		align-items flex-start
 		display flex
 		flex-flow column wrap
-		gap 1px
+		gap 4px
+		left 100%
+		height 100%
+		position absolute
+		padding 0 4px
+		top 0
+		& button
+			background black
 	.post-container
-		padding 4vh 0
-		width 50vw
-	.post-content
+		align-items center
 		display flex
-		gap 1px
-	:global(.post-content img)
-		max-width 50vw
-	:global(.post-content img.thumbnail)
-		max-height 4em
-		max-width 4em
-	:global(.post-selftext-media)
+		flex-flow column nowrap
+		padding 40px 0
+	.post-content
+		position relative
+	.post-media-caption
+		font 12px consolas
+		margin-top 0.66em
+	:global(.post-selftext-media img)
 		margin 1.33em 0
-		max-width 50vw
+		max-width 100%
 	.post-replies
-		margin-top 2em
+		margin-top 40px
 		padding-inline-start 0
+		width 480px
+	.post-predictions
+		width 640px
 	.post-selftext
 		border 1px solid
 		padding 4ch
+		width 640px
 	.prediction-options > li
 		display flex
