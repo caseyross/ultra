@@ -2,73 +2,68 @@ script.
 	import api from '../../../api/index.js'
 	import StringFormat from '../../tools/StringFormat.coffee'
 	import ActionText from '../system/ActionText.pug'
+	import Avatar from './Avatar.pug'
 	export id = null
-	export showReplies = true
 	comment = null
 	api.watch(id, (x) -> { data: comment } = x)
 
 {#if comment}
-	article(role='comment')
-		div.comment-left
-			data.comment-score {comment.score}
-			button.comment-replies-collapse-button
-		div.comment-right
-			.comment-meta
-				span {comment.author}
-			.comment-body-container
-				.comment-body
-					{@html StringFormat.commentBody(comment.body_html)}
-			{#if showReplies && comment.replies.length > 0}
-				.comment-replies
-					ol
-						{#each comment.replies as replyId}
-							svelte:self(id={replyId})
-						{#if comment.more_replies}
-							ActionText(text='More replies...')
-						{#if comment.deeper_replies}
-							ActionText(text='Continue this thread...')
+	.comment-tree
+		article.comment(role='comment')
+			.comment-author
+				Avatar(username={comment.author})
+			.comment-body
+				{@html StringFormat.commentBody(comment.body_html)}
+			.comment-score
+				button.score-button {StringFormat.score(comment.score_hidden || comment.score)}
+		{#if comment.replies.length > 0}
+			ol.comment-replies
+				{#each comment.replies as replyId}
+					svelte:self(id={replyId})
+				{#if comment.more_replies}
+					.comment-expand-replies
+						ActionText(text='More replies...')
+				{#if comment.deeper_replies}
+					.comment-expand-replies
+						ActionText(text='Continue this thread...')
 
 style.
-	[role=comment]
-		display flex
-		gap 4ch
-		margin-top 1ch
-	.comment-body
-		border-radius 1ch
-		padding 1ch 1.5ch
-	.comment-body-container
-		align-items flex-end
+	.comment
 		display flex
 		gap 1ch
+		position relative
+		width 400px
+	.comment-body
+		background rgba(0,0,0,0.025)
+		border-radius 1ch
+		flex 1
+		font 10pt arial
+		letter-spacing 0
+		padding 1ch
 	:global(.comment-body img)
+		border-radius 4px
 		display inline
 		filter grayscale(1)
+		margin-inline-start 1px
 		max-height 4em
 		width auto
-	.comment-left
-		display flex
-		flex-flow column nowrap
-		padding-top 1em
-		position relative
-	.comment-meta
-		color cornflowerblue
-		font 14px consolas
-		height 2em
-		padding 0 1ch
+	.comment-expand-replies
+		margin-top 1em
 	.comment-replies
-		display flex
-		padding-left 0
-	.comment-replies-collapse-button
-		background 0
-		border-right 1px solid
-		flex 1
-		margin 1ch 0
-		width 16px
+		border-left 1px solid gainsboro
+		margin-inline-start 1em
+		padding-inline-start 3ch
 	.comment-score
-		font 14px consolas
+		font-size 13px
+		font-weight bold
+		left 100%
+		opacity 0.3
+		padding 1ch
 		position absolute
-		right 0
+		text-transform uppercase
 		top 0
-	ol
-		margin 0
-		padding 0
+	.comment-tree
+		margin-top 2em
+	.score-button
+		&:active
+			background rgba(0,0,0,0.3)

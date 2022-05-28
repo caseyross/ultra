@@ -1,0 +1,20 @@
+script.
+	import api from '../../../api/index.js'
+	export username = null
+	userInfo = null
+	if username != '[deleted]'
+		api.watch("user_info:#{username}", (x) -> { data: userInfo } = x)
+
+address.avatar
+	{#if username !== '[deleted]'}
+		a(href="/u/{username}")
+			img.avatar-profile-picture(src={userInfo ? userInfo.profile_img : null})
+
+style.
+	.avatar
+		cursor pointer
+	.avatar-profile-picture
+		aspect-ratio 1
+		background transparent
+		border-radius 50%
+		height 32px

@@ -71,9 +71,11 @@ script.
 		{#if post.replies?.length}
 			ol.post-replies
 				{#each post.replies as replyId}
-					Comment(id={replyId})
+					.post-reply-tree
+						Comment(id={replyId})
 				{#if post.more_replies}
-					ActionText(text='More replies...')
+					.post-reply-tree
+						ActionText(text='More replies...')
 
 style.
 	.post
@@ -96,6 +98,8 @@ style.
 	.post-content
 		margin-top 20px
 		position relative
+		& img
+			cursor zoom-in
 	.post-header
 		width 480px
 	.post-media-caption
@@ -105,6 +109,8 @@ style.
 		margin-top 40px
 		padding-inline-start 0
 		width 480px
+	.post-reply-tree
+		margin-top 4em
 	.post-predictions
 		width 480px
 	.post-prediction-options > li

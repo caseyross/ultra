@@ -6,7 +6,8 @@
 
 // General
 html
-	font 400 14px/1.4 'test', sans-serif
+	font 400 14px/1.333 'tex gyre heros', 'helvetica', 'helvetica neue', 'arial', sans-serif
+	letter-spacing 0.666px
 *:focus
 	outline-color gold
 
@@ -34,14 +35,13 @@ a
 	font-weight 500
 	text-decoration none
 	word-break break-word
-	& img
-		cursor zoom-in
 blockquote
-	border-left 1px solid gainsboro
+	border-left 2px solid gainsboro
 	margin 0
+	margin-inline-start 1ch
 	margin-top 0.66em
 	opacity 0.66
-	padding-inline-start 2ch
+	padding-inline-start 1ch
 pre
 	display inline-block
 	margin-top 0.66em
@@ -123,7 +123,22 @@ input
 
 // Fonts
 @font-face
-	font-family 'test'
+	font-family 'tex gyre heros'
 	font-style normal
 	font-weight 400
-	src url('../assets/fonts/test.woff2') format('woff2')
+	src url('../assets/fonts/font_tex_gyre_heros_400.otf') format('opentype')
+@font-face
+	font-family 'tex gyre heros'
+	font-style italic
+	font-weight 400
+	src url('../assets/fonts/font_tex_gyre_heros_400_ital.otf') format('opentype')
+@font-face
+	font-family 'tex gyre heros'
+	font-style normal
+	font-weight 700
+	src url('../assets/fonts/font_tex_gyre_heros_700.otf') format('opentype')
+@font-face
+	font-family 'tex gyre heros'
+	font-style italic
+	font-weight 700
+	src url('../assets/fonts/font_tex_gyre_heros_700_ital.otf') format('opentype')
