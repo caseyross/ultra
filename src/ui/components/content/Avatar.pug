@@ -3,7 +3,11 @@ script.
 	export username = null
 	userInfo = null
 	if username != '[deleted]'
-		api.watch("user_info:#{username}", (x) -> { data: userInfo } = x)
+		api.watch(
+			"user_info:#{username.toLowerCase()}"
+			(x) -> { data: userInfo } = x
+			{ autoload: false }
+		)
 
 address.avatar
 	{#if username !== '[deleted]'}

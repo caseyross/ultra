@@ -95,12 +95,11 @@ export send = (id) ->
 		setError(id, error)
 		return get(id)
 
-export watch = (id, callback) ->
+export watch = (id, callback, options = { autoload: true }) ->
 	if !watchers[id] then watchers[id] = []
 	watchers[id].push(callback)
 	if get(id)
-		if get(id).partial then load(id)
 		callback(get(id))
-	else
+	if options.autoload and (!get(id) or get(id).partial)
 		load(id)
 	return watchers[id].length

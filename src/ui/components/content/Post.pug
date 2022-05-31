@@ -6,7 +6,12 @@ script.
 	import MediaPlayer from '../system/MediaPlayer.pug'
 	export id = null
 	post = null
-	api.watch(id, (x) -> { data: post } = x)
+	api.watch(
+		id
+		(x) ->
+			{ data: post } = x
+			if post.reply_author_info_tranches then for tranch in post.reply_author_info_tranches then api.load(tranch)
+	)
 	galleryIndex = 0
 
 {#if post}
