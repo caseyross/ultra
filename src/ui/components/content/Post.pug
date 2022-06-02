@@ -2,6 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import StringFormat from '../../tools/StringFormat.coffee'
 	import ActionText from '../system/ActionText.pug'
+	import Avatar from './Avatar.pug'
 	import Comment from './Comment.pug'
 	import MediaPlayer from '../system/MediaPlayer.pug'
 	export id = null
@@ -10,14 +11,18 @@ script.
 		id
 		(x) ->
 			{ data: post } = x
-			if post.reply_author_info_tranches then for tranch in post.reply_author_info_tranches then api.load(tranch)
+			if post.user_info_tranches then for tranch in post.user_info_tranches then api.load(tranch)
 	)
 	galleryIndex = 0
 
 {#if post}
 	article.post
 		header.post-header
-			h1 {post.title}
+			.post-info
+				.post-time
+				.post-author
+					Avatar(username={post.author})
+			h1.post-title {post.title}
 		section.post-content
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
@@ -103,10 +108,14 @@ style.
 	.post-content
 		margin-top 20px
 		position relative
+		overflow-wrap anywhere
 		& img
 			cursor zoom-in
 	.post-header
 		width 480px
+	.post-info
+		display flex
+		justify-content space-between
 	.post-media-caption
 		font 12px consolas
 		margin-top 0.66em
@@ -125,3 +134,6 @@ style.
 	:global(.post-selftext-media img)
 		margin 1.33em 0
 		max-width 100%
+	.post-title
+		margin 0
+		overflow-wrap anywhere

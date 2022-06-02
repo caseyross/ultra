@@ -23,16 +23,17 @@ export default (rawData) ->
 	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1])
 	# 3. Link the top-level comments via their IDs.
 	post.replies = topLevelCommentIds
-	# 4. Setup bulk comment author information leads.
-	post.reply_author_info_tranches = []
-	reply_author_short_ids_tranch = new Set()
+	# 4. Setup bulk user information leads.
+	post.user_info_tranches = []
+	user_short_ids_tranch = new Set()
+	user_short_ids_tranch.add(post.author_fullname[3..])
 	for commentDataset in commentDatasets
-		if commentDataset.data.author_fullname? then reply_author_short_ids_tranch.add(commentDataset.data.author_fullname[3..])
-		if reply_author_short_ids_tranch.size == 500
-			post.reply_author_info_tranches.push(format.datasetId('user_info_bulk', ...reply_author_short_ids_tranch))
-			reply_author_short_ids_tranch.clear()
-	if reply_author_short_ids_tranch.size > 0
-		post.reply_author_info_tranches.push(format.datasetId('user_info_bulk', ...reply_author_short_ids_tranch))
+		if commentDataset.data.author_fullname? then user_short_ids_tranch.add(commentDataset.data.author_fullname[3..])
+		if user_short_ids_tranch.size == 500
+			post.user_info_tranches.push(format.datasetId('user_info_bulk', ...user_short_ids_tranch))
+			user_short_ids_tranch.clear()
+	if user_short_ids_tranch.size > 0
+		post.user_info_tranches.push(format.datasetId('user_info_bulk', ...user_short_ids_tranch))
 	# 5. Merge the extracted comment objects into the complete post data.
 	result.main =
 		id: posts[0].id
