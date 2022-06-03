@@ -9,14 +9,8 @@ script.
 	audio = null
 	buffered = []
 	duration = 0
-	handleClick = (e) ->
-		if e.button is 0
-			if video.paused then video.play() else video.pause()
-		else if e.button is 2 and not e.altKey
-			if document.fullscreenElement
-				document.exitFullscreen()
-			else
-				video.requestFullscreen()
+	mouseIdle = false
+	mouseIdleTimerId = null
 	status = stati.LOADING
 	time = 0
 	video = null
@@ -35,8 +29,24 @@ script.
 		video.addEventListener('waiting', (e) ->
 			audio.pause()
 		)
+	onMousedown = (e) ->
+		if e.button is 0
+			if video.paused then video.play() else video.pause()
+		else if e.button is 2 and not e.altKey
+			if document.fullscreenElement
+				document.exitFullscreen()
+			else
+				video.requestFullscreen()
+		wakeMouse()
+	wakeMouse = ->
+		mouseIdle = false
+		clearTimeout(mouseIdleTimerId)
+		mouseIdleTimerId = setTimeout(
+			-> mouseIdle = true
+			200
+		)
 
-video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleClick})
+video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={onMousedown} on:mousemove={() => wakeMouse()} style="cursor:{document.fullscreenElement && document.fullscreenElement === video && mouseIdle ? 'none' : 'auto'}")
 	source(src={video_url} type='video/mp4')
 audio(bind:this={audio})
 	source(src={audio_url} type='audio/mp4')
