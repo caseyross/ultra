@@ -47,12 +47,17 @@ pre
 
 // Spoilers
 .md-spoiler-text
-	padding 0.25em 0
-	background gray
-	color gray
-	&:focus, &:hover
-		background initial
-		color initial
+	background rgba(0,0,0,1)
+	cursor text
+	padding 0.05em 0
+	opacity 0.5
+	& a
+		opacity 0
+	&:hover
+		background rgba(0,0,0,0)
+		opacity 1
+		& a
+			opacity 1
 
 // Lists
 li
