@@ -1,7 +1,10 @@
 script.
 	import api from '../../../api/index.js'
+	import Time from '../../../lib/Time.coffee'
+	import StringFormat from '../../tools/StringFormat.coffee'
 	export username = null
 	userInfo = null
+	userInfoPopupVisible = false
 	if username != '[deleted]'
 		api.watch(
 			"user_info:#{username.toLowerCase()}"
@@ -9,7 +12,7 @@ script.
 			{ autoload: false }
 		)
 
-address.avatar
+address.avatar(on:mouseenter={() => userInfoPopupVisible = true} on:mouseleave={() => userInfoPopupVisible = false})
 	{#if username !== '[deleted]'}
 		a(href="/u/{username}")
 			{#if userInfo?.profile_img}
@@ -18,17 +21,39 @@ address.avatar
 				.avatar-profile-picture-not-available
 	{:else}
 		.avatar-profile-picture-not-available
+	{#if userInfoPopupVisible}
+		.avatar-user-info-popup
+			.avatar-user-info-popup-username u/{username}
+			{#if userInfo?.created_utc}
+				.avatar-user-info-popup-cakeday {StringFormat.date(Time.sToMs(userInfo.created_utc))}
+			{#if userInfo?.comment_karma && userInfo?.link_karma}
+				.avatar-user-info-popup-karma {userInfo.link_karma + userInfo.comment_karma} karma ({StringFormat.percentage(userInfo.comment_karma / (userInfo.link_karma + userInfo.comment_karma))}% comment)
 
 style.
 	.avatar
 		cursor pointer
+		position relative
 	.avatar-profile-picture
 		aspect-ratio 1
 		background transparent
 		border-radius 50%
-		height 32px
+		height 24px
 	.avatar-profile-picture-not-available
 		aspect-ratio 1
 		background rgba(0,0,0,0.025)
 		border-radius 50%
-		height 32px
+		height 24px
+	.avatar-user-info-popup
+		background white
+		border 1px solid
+		border-radius 1ch
+		bottom 0
+		padding 1em
+		position absolute
+		left calc(100% + 1ch)
+		z-index 1
+	.avatar-user-info-popup-cakeday
+	.avatar-user-info-popup-karma
+		font 12px 'roboto mono'
+	.avatar-user-info-popup-username
+		font-weight bold

@@ -6,8 +6,8 @@
 
 // General
 html
-	font 400 14px/1.333 'tex gyre heros', 'helvetica', 'helvetica neue', 'arial', sans-serif
-	letter-spacing 0.666px
+	font 15px/20px inter
+	font-feature-settings 'case', 'cv04', 'cv05', 'cv07', 'cv11', 'ss03', 'tnum'
 *:focus
 	outline-color gold
 
@@ -20,28 +20,32 @@ body
 
 // Paragraphs
 p
-	margin-top 0.66em
+	margin-top 0.5em
 hr
-	background rgba(0,0,0,0.5)
+	background currentColor
 	border 0
 	height 1px
-	margin-inline 0
-	margin-top 0.66em
+	margin 1.5em 0
+	width 20ch
+
+// Formatted text
+a
+	color inherit
+address
+	font-style normal
 
 // Verbatim text
-a
-	color mediumslateblue
-	font-weight 500
-	text-decoration none
 blockquote
 	border-left 2px solid gainsboro
 	margin 0
-	margin-inline-start 1ch
-	margin-top 0.66em
-	opacity 0.66
+	margin-top 0.5em
+	opacity 0.75
 	padding-inline-start 1ch
+code
+	font inherit
 pre
 	display inline-block
+	font 12px consolas
 	margin-top 0.66em
 	white-space pre-wrap
 
@@ -54,49 +58,45 @@ pre
 	& a
 		opacity 0
 	&:hover
-		background rgba(0,0,0,0)
+		background rgba(0,0,0,0.1)
 		opacity 1
 		& a
 			opacity 1
 
 // Lists
-li
-	margin-top 0.66em
 ol
 	list-style decimal
-	margin-top 0.66em
-	padding-inline-start 2ch
+	margin-top 0.5em
+	padding-inline-start 3ch
 ul
 	list-style disc
-	margin-top 0.66em
-	padding-inline-start 2ch
+	margin-top 0.5em
+	padding-inline-start 3ch
 
 // Headers
 h1
-	font-size 1.25em
-	font-weight normal
-	margin-top 1em
 h2
 h3
 h4
 h5
 h6
 	font-size 1.16em
-	font-weight normal
-	margin-top 1em
+	font-weight bold
+	margin-top 1.75em
+h1
+	font-size 1.33em
 
 // Tables
 table
 	border-collapse collapse
-	margin-top 0.66em
+	font 12px consolas
+	margin-top 0.5em
+	white-space pre-wrap
+	width 100%
 td
 th
-	border 1px solid
-	padding 0.5ch
-	padding-left 0.75ch
-th
-	font-weight normal
-	text-align left
+	padding 0
+	padding-right 2ch
 
 // Media
 figure
@@ -104,8 +104,9 @@ figure
 iframe
 	background black
 	border 0
+	border-radius 6px
 img
-	background black
+	border-radius 6px
 	display block
 
 // Interactive
@@ -118,6 +119,7 @@ button
 	padding 0
 	word-spacing inherit
 input
+	border 0
 	font inherit
 	letter-spacing inherit
 	line-height inherit
@@ -126,22 +128,7 @@ input
 
 // Fonts
 @font-face
-	font-family 'tex gyre heros'
-	font-style normal
-	font-weight 400
-	src url('../assets/fonts/font_tex_gyre_heros_400.otf') format('opentype')
-@font-face
-	font-family 'tex gyre heros'
-	font-style italic
-	font-weight 400
-	src url('../assets/fonts/font_tex_gyre_heros_400_ital.otf') format('opentype')
-@font-face
-	font-family 'tex gyre heros'
-	font-style normal
-	font-weight 700
-	src url('../assets/fonts/font_tex_gyre_heros_700.otf') format('opentype')
-@font-face
-	font-family 'tex gyre heros'
-	font-style italic
-	font-weight 700
-	src url('../assets/fonts/font_tex_gyre_heros_700_ital.otf') format('opentype')
+	font-family 'inter'
+	font-style normal italic
+	font-weight 100 900
+	src url('../assets/fonts/font_inter_var.woff2') format('woff2')

@@ -13,21 +13,60 @@ script.
 	)
 
 .listing
-	{#if loading}
-		p LOADING...
-	{:else if itemIds && itemIds.length}
-		ol
-			{#each itemIds as itemId}
-				{#if api.parse.datasetType(itemId) === 'comment'}
-					Comment(id={itemId})
-				{:else if api.parse.datasetType(itemId) === 'post'}
-					Headline(id={itemId} selected={selectedId == itemId} onSelect={() => selectedId = itemId})
-	{#if selectedId}
-		{#key selectedId}
-			Post(id={selectedId})
+	.listing-information
+		input.listing-name-input(placeholder='r/subreddit' type='text')
+	.listing-items
+		{#if loading}
+			p LOADING...
+		{:else if itemIds && itemIds.length}
+			ol
+				{#each itemIds as itemId}
+					{#if api.parse.datasetType(itemId) === 'comment'}
+						Comment(id={itemId})
+					{:else if api.parse.datasetType(itemId) === 'post'}
+						Headline(id={itemId} selected={selectedId == itemId} onSelect={() => selectedId = itemId})
+	.listing-selected-item
+		{#if selectedId}
+			{#key selectedId}
+				Post(id={selectedId})
 style.
+	.global-navigation
+		background rgba(0,0,0,0.1)
+	.listing
+		display grid
+		grid-template-rows 100%
+		height 100vh
+		width 100vw
+		@media (min-width: 900px)
+			grid-template-columns 0 220px 740px
+		@media (min-width: 1366px)
+			grid-template-columns 1fr 220px 780px
+		@media (min-width: 1920px)
+			grid-template-columns 1fr 300px 1300px
+	.listing-information
+		box-sizing border-box
+		height 100%
+		overflow hidden
+		padding 2em
+	.listing-items
+		align-items flex-end
+		display flex
+		flex-flow column nowrap
+		height 100%
+		overflow hidden
+	.listing-name-input
+		background rgba(0,0,0,0.05)
+		border-radius 1ch
+		display none
+		font-size 2em
+		font-weight bold
+		padding 1ch 2ch
+		width 360px
+	.listing-selected-item
+		height 100%
+		overflow auto
+		padding-left 50px
+		padding-right 70px
 	ol
-		left 0
-		padding 5px
-		position fixed
-		top 0
+		border 1px solid
+		padding 0

@@ -1,0 +1,26 @@
+script.
+	import KeyLabel from './KeyLabel.pug'
+	import hotkey from '../../mixins/hotkey.coffee'
+	export action = null
+	export key = null
+	export text = ''
+
+{#if key}
+	<!-- -->
+	button(on:mousedown={action} on:click={action} use:hotkey={key})
+		KeyLabel(key={key})
+		span.button-text {text}
+{:else}
+	button
+		span.button-text {text}
+
+style.
+	button
+		background rgba(0,0,0,0.05)
+		display flex
+		border-radius 6px
+		gap 5px
+		line-height 18px
+		padding 4px 6px
+		&:hover
+			background rgba(0,0,0,0.10)

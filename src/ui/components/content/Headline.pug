@@ -2,6 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import Time from '../../../lib/Time.coffee'
 	import StringFormat from '../../tools/StringFormat.coffee'
+	import Score from './Score.pug'
 	export id = null
 	export selected = false
 	export onSelect = null
@@ -11,27 +12,17 @@ script.
 {#if post}
 	.headline(class:selected={selected} on:mousedown={onSelect})
 		address
-			button.score-button {StringFormat.score(post.hide_score || post.score)}
+			Score(value={post.hide_score || post.score})
 			time(datetime={Time.sToMs(post.created_utc)}) {StringFormat.date(Time.sToMs(post.created_utc))}
 			span {StringFormat.distinguish(post.distinguish)}
 		.title {post.title}
 
 style.
 	.headline
-		border-radius 5px
 		box-sizing border-box
 		padding 2ch
-		width 12vw
 		&.selected
-			background cornflowerblue
-			color white
-	.score-button
-		font-size 13px
-		&:active
-			background rgba(0,0,0,0.3)
+			background rgba(0,0,0,0.1)
 	address
-		font-size 10px
-		font-style normal
-		font-weight bold
-		opacity 0.3
-		text-transform uppercase
+		color rgba(0,0,0,0.5)
+		font 12px 'roboto mono'

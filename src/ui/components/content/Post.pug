@@ -1,10 +1,13 @@
 script.
 	import api from '../../../api/index.js'
+	import Time from '../../../lib/Time.coffee'
 	import StringFormat from '../../tools/StringFormat.coffee'
 	import ActionText from '../system/ActionText.pug'
+	import Button from '../system/Button.pug'
+	import MediaPlayer from '../system/MediaPlayer.pug'
 	import Avatar from './Avatar.pug'
 	import Comment from './Comment.pug'
-	import MediaPlayer from '../system/MediaPlayer.pug'
+	import Score from './Score.pug'
 	export id = null
 	post = null
 	api.watch(
@@ -18,11 +21,18 @@ script.
 {#if post}
 	article.post
 		header.post-header
+			.post-flair {post.link_flair_text}
+			h1.post-title {post.title}
 			.post-info
 				.post-time
+					Score(value={post.hide_score || post.score})
+					span.post-upvote-percent ({StringFormat.percentage(post.upvote_ratio)}% upvoted)
+					{#if post.edited}
+						span.post-edit-date(title='Posted {StringFormat.date(Time.sToMs(post.created_utc))}') Edited {StringFormat.date(Time.sToMs(post.edited))}
+					{:else}
+						span.post-create-date Posted {StringFormat.date(Time.sToMs(post.created_utc))}
 				.post-author
 					Avatar(username={post.author})
-			h1.post-title {post.title}
 		section.post-content
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
@@ -40,38 +50,37 @@ script.
 									dd {option.text}
 			{:else if post.format === 'media'}
 				{@const media = post.media[galleryIndex]}
-					{#key media}
-						figure
-							{#if media.video_url}
-								MediaPlayer(audio_url={media.video_audio_url} video_url={media.video_url})
-							{:else if media.gif_url}
+					figure
+						{#if media.video_url}
+							MediaPlayer(audio_url={media.video_audio_url} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
+						{:else if media.gif_url}
+							picture
+								img.post-image(src={media.gif_url} style="max-width: 640px")
+						{:else if media.image_url}
+							a(href={media.image_url})
 								picture
-									img(src={media.gif_url})
-							{:else if media.image_url}
-								a(href={media.image_url})
-									picture
-										{#if media.aspect_ratio < 2}
-											source(srcset={media.image_url_640})
-										{:else}
-											source(srcset={media.image_url_960})
-										img(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-width: calc(100vw - 480px); width: {media.aspect_ratio >= 2 ? 960 : media.aspect_ratio >= 1 ? 640 : 480}px")
-							{#if media.caption_text || media.caption_url}
-								figcaption.post-media-caption
-									{#if media.caption_text}
-										p {media.caption_text}
-									{#if media.caption_url}
-										a(href={media.caption_url}) {media.caption_url}
+									source(srcset={media.image_url_640})
+									img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: 640px")
+						{#if media.caption_text || media.caption_url}
+							figcaption.post-image-caption
+								{#if media.caption_text}
+									p {media.caption_text}
+								{#if media.caption_url}
+									a(href={media.caption_url}) {media.caption_url}
+						{#if media.gif_url || media.image_url}
+							.post-image-actions
+								Button(action={() => console.log(media.image_url)} key='e' text='Enlarge')
 				{#if post.media.length > 1}
-					aside.post-additional-media
+					aside.post-additional-images
 						{#each post.media as media, index}
 							button(on:click={() => galleryIndex = index})
 								picture
 									source(srcset={media.image_url_108})
-									img(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; max-height: {media.aspect_ratio < 1 ? 'auto' : '36px'}; max-width: {media.aspect_ratio > 1 ? 'auto' : '36px'}")
+									img.post-additional-image-thumbnail(class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
-						iframe(allowfullscreen='true' allow={media.iframe_allow} height={media.iframe_height} src={media.iframe_url} width={media.iframe_width})
+						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
 					{:else if media.html}
 						{@html media.html}
 			{:else if post.format === 'link'}
@@ -81,59 +90,70 @@ script.
 		{#if post.replies?.length}
 			ol.post-replies
 				{#each post.replies as replyId}
-					.post-reply-tree
-						Comment(id={replyId})
+					Comment(id={replyId})
 				{#if post.more_replies}
-					.post-reply-tree
-						ActionText(text='More replies...')
+					ActionText(text='More replies...')
 
 style.
 	.post
-		align-items center
-		display flex
-		flex-flow column nowrap
-		padding 40px 0
-	.post-additional-media
-		align-items flex-start
+		padding 2em 0
+	.post-additional-images
 		display flex
 		flex-flow column wrap
-		gap 4px
-		left 100%
+		gap 6px
 		height 100%
 		position absolute
-		padding 0 4px
+		padding 0 2px
+		left calc(640px + 1em)
 		top 0
-		& button
-			background black
+	.post-additional-image-thumbnail
+		border 3px solid rgba(0,0,0,0.1)
+		object-fit contain
+		width 54px
+	.post-additional-image-thumbnail-selected
+		border-color currentColor
 	.post-content
-		margin-top 20px
+		margin-top 2em
 		position relative
 		overflow-wrap anywhere
-		& img
-			cursor zoom-in
 	.post-header
-		width 480px
+		padding 2em 0
+		width 640px
+	.post-image
+		cursor zoom-in
+	.post-image-actions
+		display flex
+		gap 1em
+		margin-top 1em
+	.post-image-caption
+		font-size 12px
+		padding 7px
 	.post-info
 		display flex
+		margin-top 1em
 		justify-content space-between
-	.post-media-caption
-		font 12px consolas
-		margin-top 0.66em
 	.post-replies
-		margin-top 40px
-		padding-inline-start 0
-		width 480px
-	.post-reply-tree
-		margin-top 4em
+		padding 2em 0
+		width 640px
 	.post-predictions
-		width 480px
+		width 640px
 	.post-prediction-options > li
 		display flex
-	.post-selftext
-		width 480px
 	:global(.post-selftext-media img)
-		margin 1.33em 0
-		max-width 100%
+		max-width 480px
+	.post-time
+		color rgba(0,0,0,0.5)
+		font 12px 'roboto mono'
+		letter-spacing 0
 	.post-title
+		align-items flex-end
+		display flex
+		height 5em
+		font-size 1.5em
+		letter-spacing 0
+		line-height 1
 		margin 0
 		overflow-wrap anywhere
+	iframe
+		aspect-ratio 16/9
+		height 360px

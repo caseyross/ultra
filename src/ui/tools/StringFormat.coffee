@@ -23,18 +23,18 @@ export default {
 	commentBody: (input) ->
 		input
 			.slice(16, -6)
-			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
+			#.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
 
 	date: (input) ->
 		input = new Date(input)
 		year = String(input.getFullYear())[2..].padStart(2, '0')
-		month = String(input.getMonth() + 1).padStart(2, '0')
-		day = String(input.getDate()).padStart(2, '0')
+		month = String(input.getMonth() + 1)
+		day = String(input.getDate())
 		dayOfTheWeek = daysOfTheWeek[input.getDay()]
-		hour = String(input.getHours()).padStart(2, '0')
+		hour = String(input.getHours())
 		minute = String(input.getMinutes()).padStart(2, '0')
-		return "#{month}/#{day}/#{year} (#{dayOfTheWeek}) #{hour}:#{minute}"
+		return "#{month}/#{day}/#{year} (#{dayOfTheWeek}) #{if hour > 12 then hour % 12 else hour}:#{minute}#{if hour < 12 then 'am' else 'pm'}"
 
 	distinguish: (input) -> switch input
 		when 'admin' then '(reddit employee)'
@@ -42,16 +42,17 @@ export default {
 		when 'special' then '(reddit alumnus)'
 		else ''
 
+	percentage: (input) -> Math.trunc(100 * input)
+
+	plusMinus: (input) ->
+		if input > 0 then '+' + input
+		else input
+
 	postBody: (input) ->
 		input
 			.slice(31, -20)
-			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
+			#.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
 			.replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='post-selftext-media'><a href='https://$1.redd.it/$2'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>")
 
-	score: (input) -> switch
-		when not Number.isFinite(input) then 'New'
-		when input < 0 then input
-		else '+' + input
-		
 }

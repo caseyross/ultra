@@ -3,6 +3,7 @@ script.
 	import StringFormat from '../../tools/StringFormat.coffee'
 	import ActionText from '../system/ActionText.pug'
 	import Avatar from './Avatar.pug'
+	import Score from './Score.pug'
 	export id = null
 	comment = null
 	api.watch(id, (x) -> { data: comment } = x)
@@ -10,12 +11,14 @@ script.
 {#if comment}
 	.comment-tree
 		article.comment(role='comment')
-			.comment-author
-				Avatar(username={comment.author})
-			.comment-body
-				{@html StringFormat.commentBody(comment.body_html)}
-			.comment-score
-				button.score-button {StringFormat.score(comment.score_hidden || comment.score)}
+			.comment-gutter
+				.comment-author
+					Avatar(username={comment.author})
+			.comment-main
+				.comment-meta
+					Score(value={comment.score_hidden || comment.score})
+				.comment-body
+					{@html StringFormat.commentBody(comment.body_html)}
 		{#if comment.replies.length > 0}
 			ol.comment-replies
 				{#each comment.replies as replyId}
@@ -28,18 +31,18 @@ script.
 						ActionText(text='Continue this thread...')
 
 style.
+	.actions-button
+		background transparent
+		float right
+		font 13px 'roboto mono'
+		letter-spacing 0
+		margin-right 1ch
+		opacity 0
 	.comment
 		display flex
 		gap 1ch
 		position relative
-		width 400px
 	.comment-body
-		background rgba(0,0,0,0.025)
-		border-radius 1ch
-		flex 1
-		font 10pt arial
-		letter-spacing 0
-		padding 1ch
 		overflow-wrap anywhere
 	:global(.comment-body img)
 		border-radius 4px
@@ -50,21 +53,13 @@ style.
 		width auto
 	.comment-expand-replies
 		margin-top 1em
+	.comment-meta
+		display flex
+		display none
+		gap 1ch
 	.comment-replies
 		border-left 1px solid gainsboro
 		margin-inline-start 1em
 		padding-inline-start 3ch
-	.comment-score
-		font-size 13px
-		font-weight bold
-		left 100%
-		opacity 0.3
-		padding 1ch
-		position absolute
-		text-transform uppercase
-		top 0
 	.comment-tree
 		margin-top 2em
-	.score-button
-		&:active
-			background rgba(0,0,0,0.3)
