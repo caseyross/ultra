@@ -52,24 +52,23 @@ script.
 				{@const media = post.media[galleryIndex]}
 					figure
 						{#if media.video_url}
-							MediaPlayer(audio_url={media.video_audio_url} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
-						{:else if media.gif_url}
-							picture
-								img.post-image(src={media.gif_url} style="max-width: 640px")
-						{:else if media.image_url}
-							a(href={media.image_url})
+							MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.gif_url} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
+						{:else if media.gif_url || media.image_url}
+							a(href={media.gif_url || media.image_url} rel='external noopener preconnect' target='_blank')
 								picture
-									source(srcset={media.image_url_640})
-									img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: 640px")
-						{#if media.caption_text || media.caption_url}
-							figcaption.post-image-caption
-								{#if media.caption_text}
-									p {media.caption_text}
-								{#if media.caption_url}
-									a(href={media.caption_url}) {media.caption_url}
-						{#if media.gif_url || media.image_url}
+									{#if media.gif_url}
+										img.post-image(src={media.gif_url} style="max-width: 640px")
+									{:else if media.image_url}
+										source(srcset={media.image_url_640})
+										img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: 640px")
+							{#if media.caption_text || media.caption_url}
+								figcaption.post-image-caption
+									{#if media.caption_text}
+										p {media.caption_text}
+									{#if media.caption_url}
+										a(href={media.caption_url}) {media.caption_url}
 							.post-image-actions
-								Button(action={() => console.log(media.image_url)} key='e' text='Enlarge')
+								Button(action={() => window.open(media.image_url)} key='f' text='Fullscreen')
 				{#if post.media.length > 1}
 					aside.post-additional-images
 						{#each post.media as media, index}
@@ -77,14 +76,20 @@ script.
 								picture
 									source(srcset={media.image_url_108})
 									img.post-additional-image-thumbnail(class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+						Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='t' text='↑')
+						Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='g' text='↓')
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
 						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
+						.post-iframe-actions
+							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}
 						{@html media.html}
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
+				.post-link-actions
+						Button(action={() => window.open(post.url)} key='e' text='Open')
 			{:else}
 				p [Error displaying post.]
 		{#if post.replies?.length}
@@ -98,17 +103,18 @@ style.
 	.post
 		padding 2em 0
 	.post-additional-images
+		align-items flex-start
 		display flex
-		flex-flow column wrap
+		flex-flow column nowrap
 		gap 6px
+		left calc(640px + 1em)
 		height 100%
 		position absolute
 		padding 0 2px
-		left calc(640px + 1em)
+		overflow auto
 		top 0
 	.post-additional-image-thumbnail
 		border 3px solid rgba(0,0,0,0.1)
-		object-fit contain
 		width 54px
 	.post-additional-image-thumbnail-selected
 		border-color currentColor
@@ -119,6 +125,10 @@ style.
 	.post-header
 		padding 2em 0
 		width 640px
+	.post-iframe-actions
+		display flex
+		gap 1em
+		margin-top 1em
 	.post-image
 		cursor zoom-in
 	.post-image-actions
@@ -128,10 +138,15 @@ style.
 	.post-image-caption
 		font-size 12px
 		padding 7px
+		width 640px
 	.post-info
 		display flex
 		margin-top 1em
 		justify-content space-between
+	.post-link-actions
+		display flex
+		gap 1em
+		margin-top 1em
 	.post-replies
 		padding 2em 0
 		width 640px

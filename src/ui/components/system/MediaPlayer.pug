@@ -2,6 +2,7 @@ script.
 	import Button from './Button.pug'
 	import { onMount } from 'svelte'
 	export audio_url = null
+	export mimic_gif = false
 	export video_aspect_ratio = 1
 	export video_url = null
 	stati = {
@@ -11,6 +12,7 @@ script.
 	audio = null
 	buffered = []
 	duration = 0
+	looping = mimic_gif
 	mouseIdle = false
 	mouseIdleTimerId = null
 	status = stati.LOADING
@@ -43,7 +45,7 @@ script.
 			200
 		)
 
-video(bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleMousedown} on:mousemove={() => wakeMouse()} style="aspect-ratio: {video_aspect_ratio}; cursor: {document.fullscreenElement && document.fullscreenElement === video && mouseIdle ? 'none' : 'auto'}")
+video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:this={video} loop={looping} on:contextmenu={e => e.altKey || e.preventDefault()} on:mousedown={handleMousedown} on:mousemove={() => wakeMouse()} style="aspect-ratio: {video_aspect_ratio}; cursor: {document.fullscreenElement && document.fullscreenElement === video && mouseIdle ? 'none' : 'auto'}; height: {mimic_gif ? 'auto' : '360px'}; width: {mimic_gif ? '640px' : 'auto'}")
 	source(src={video_url} type='video/mp4')
 audio(bind:this={audio})
 	source(src={audio_url} type='audio/mp4')
@@ -53,20 +55,23 @@ audio(bind:this={audio})
 	Button(action={() => time = Math.max(0, time - 3)} key='r' text='Rewind 3sec')
 	Button(action={() => time = Math.min(duration, time + 3)} key='shift r' text='Forward 3sec')
 	Button(action={() => video.requestFullscreen()} key='f' text='Fullscreen')
-nav.video-controls
-	.media-playback-container
-		span.media-status {status}
-		{#each buffered as region}
-			span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
-		input.media-scrubber(bind:value={time} max={duration} min={0} step={0.01} type='range')
-	.video-controls-second-row
-		.media-volume-container
-			span.mute-region MUTE
-			span.sound-region SOUND
-			input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.01} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
-		.media-time-info
-			time.media-elapsed-duration {time.toFixed(2)}
-			time.media-total-duration {duration.toFixed(2)}
+	{#if mimic_gif}
+		Button(action={() => looping = !looping} activated={looping} key='l' text='Loop')
+{#if !mimic_gif}
+	nav.video-controls
+		.media-playback-container
+			span.media-status {status}
+			{#each buffered as region}
+				span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
+			input.media-scrubber(bind:value={time} max={duration} min={0} step={0.01} type='range')
+		.video-controls-second-row
+			.media-volume-container
+				span.mute-region MUTE
+				span.sound-region SOUND
+				input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.01} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
+			.media-time-info
+				time.media-elapsed-duration {time.toFixed(2)}
+				time.media-total-duration {duration.toFixed(2)}
 
 style.
 	::-webkit-media-controls
@@ -156,4 +161,3 @@ style.
 		background black
 		border-radius 6px
 		display block
-		height 360px
