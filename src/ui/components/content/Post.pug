@@ -67,10 +67,11 @@ script.
 										p {media.caption_text}
 									{#if media.caption_url}
 										a(href={media.caption_url}) {media.caption_url}
-							.post-image-actions
+							menu.post-image-actions
+								Button(action={() => window.open(media.image_url)} key='e' text='Open')
 								Button(action={() => window.open(media.image_url)} key='f' text='Fullscreen')
 				{#if post.media.length > 1}
-					aside.post-additional-images
+					menu.post-additional-images
 						{#each post.media as media, index}
 							button(on:click={() => galleryIndex = index})
 								picture
@@ -82,14 +83,14 @@ script.
 				{#each post.media as media}
 					{#if media.iframe_url}
 						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
-						.post-iframe-actions
+						menu.post-iframe-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}
 						{@html media.html}
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
-				.post-link-actions
-						Button(action={() => window.open(post.url)} key='e' text='Open')
+				menu.post-link-actions
+					Button(action={() => window.open(post.url)} key='e' text='Open')
 			{:else}
 				p [Error displaying post.]
 		{#if post.replies?.length}
