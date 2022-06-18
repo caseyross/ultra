@@ -50,23 +50,24 @@ script.
 									dd {option.text}
 			{:else if post.format === 'media'}
 				{@const media = post.media[galleryIndex]}
-					figure
-						{#if media.video_url}
-							MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
-						{:else if media.image_url}
-							a(href={media.image_url} rel='external noopener preconnect' target='_blank')
-								picture
-									source(srcset={media.image_url_640})
-									img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
-							{#if media.caption_text || media.caption_url}
-								figcaption.post-image-caption
-									{#if media.caption_text}
-										p {media.caption_text}
-									{#if media.caption_url}
-										a(href={media.caption_url}) {media.caption_url}
-							menu.post-image-actions
-								Button(action={() => window.open(media.image_url)} key='e' text='Open')
-								Button(action={() => window.open(media.image_url)} key='f' text='Fullscreen')
+					{#key media}
+						figure
+							{#if media.video_url}
+								MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
+							{:else if media.image_url}
+								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
+									picture
+										source(srcset={media.image_url_640})
+										img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
+								{#if media.caption_text || media.caption_url}
+									figcaption.post-image-caption
+										{#if media.caption_text}
+											p {media.caption_text}
+										{#if media.caption_url}
+											a(href={media.caption_url}) {media.caption_url}
+								menu.post-image-actions
+									Button(action={() => window.open(media.image_url)} key='e' text='Open')
+									Button(action={() => window.open(media.image_url)} key='f' text='Fullscreen')
 				{#if post.media.length > 1}
 					menu.post-additional-images
 						{#each post.media as media, index}
