@@ -2,14 +2,16 @@ script.
 	import KeyLabel from './KeyLabel.pug'
 	import hotkey from '../../mixins/hotkey.coffee'
 	export action = null
+	export activated = false
+	export disabled = false
 	export key = null
 	export text = ''
 
 {#if key}
 	<!-- -->
-	button(on:mousedown={action} on:click={action} use:hotkey={key})
-		KeyLabel(key={key})
+	button(class:activated={activated} disabled={disabled} on:mousedown={action} on:click={action} use:hotkey={key})
 		span.button-text {text}
+		KeyLabel(key={key})
 {:else}
 	button
 		span.button-text {text}
@@ -18,9 +20,15 @@ style.
 	button
 		background rgba(0,0,0,0.05)
 		display flex
+		flex-flow row-reverse nowrap
 		border-radius 6px
 		gap 5px
 		line-height 18px
 		padding 4px 6px
+		&:disabled
+			opacity 0.5
 		&:hover
 			background rgba(0,0,0,0.10)
+		&.activated
+			background rgba(0,0,0,0.50)
+			color white

@@ -23,7 +23,7 @@ export default {
 	commentBody: (input) ->
 		input
 			.slice(16, -6)
-			#.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
+			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
 
 	date: (input) ->
@@ -42,6 +42,14 @@ export default {
 		when 'special' then '(reddit alumnus)'
 		else ''
 
+	durationMinutesSeconds: (input) ->
+		seconds = Time.msToS(input, { trunc: true })
+		minutes = 0
+		while seconds >= 60
+			seconds = seconds - 60
+			minutes = minutes + 1
+		return "#{String(minutes).padStart(2, '0')}:#{String(seconds).padStart(2, '0')}"
+
 	percentage: (input) -> Math.trunc(100 * input)
 
 	plusMinus: (input) ->
@@ -51,7 +59,7 @@ export default {
 	postBody: (input) ->
 		input
 			.slice(31, -20)
-			#.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
+			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
 			.replace(/(%5C_|\\_)/g, "_")
 			.replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='post-selftext-media'><a href='https://$1.redd.it/$2'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>")
 
