@@ -59,7 +59,7 @@ script.
 		)
 
 .media-player
-	video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} class:video-mimic-gif={mimic_gif} class:video-hide-controls={fullscreened() && mouseIdle} loop={looping})
+	video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} class:video-hide-controls={fullscreened() && mouseIdle} loop={looping})
 		source(src={video_url} type='video/mp4')
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
@@ -70,17 +70,18 @@ script.
 			Button(action={() => video.requestFullscreen()} key='f' text='Fullscreen')
 			{#if mimic_gif}
 				Button(action={() => looping = !looping} activated={looping} key='l' text='Loop')
-		menu.media-status
-			.media-scrobbler-container
-				figure.media-scrobbler-graphics
-					{#each buffered as region}
-						span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
-				input.media-scrobbler(bind:value={time} max={duration} min={0} step={1/30} type='range')
-			.media-volume-container
-				span.mute-region MUTE
-				span.sound-region SOUND
-				input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
-		time.media-duration {StringFormat.durationMinutesSeconds(Time.sToMs(duration))}
+		{#if !mimic_gif}
+			menu.media-status
+				.media-scrobbler-container
+					figure.media-scrobbler-graphics
+						{#each buffered as region}
+							span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
+					input.media-scrobbler(bind:value={time} max={duration} min={0} step={1/30} type='range')
+				.media-volume-container
+					span.mute-region MUTE
+					span.sound-region SOUND
+					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
+			time.media-duration {StringFormat.durationMinutesSeconds(Time.sToMs(duration))}
 
 style.
 	::-webkit-media-controls

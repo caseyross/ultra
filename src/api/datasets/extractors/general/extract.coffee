@@ -84,9 +84,10 @@ export default extract = (rawData) ->
 						if data.s.mp4
 							mediaObject.video_url = data.s.mp4
 							mediaObject.video_width = data.s.x
-						else if data.s.gif
-							mediaObject.gif_url = data.s.gif
-							mediaObject.gif_width = data.s.x
+						if data.s.gif
+							mediaObject.is_gif = true
+							mediaObject.image_url = data.s.gif
+							mediaObject['image_url_' + data.s.x] = data.s.gif
 						else
 							mediaObject.image_url = data.s.u
 							mediaObject['image_url_' + data.s.x] = data.s.u
@@ -103,12 +104,14 @@ export default extract = (rawData) ->
 						data = item.variants.mp4
 						mediaObject.video_url = data.source.url
 						mediaObject.video_width = data.source.width
-					if item.variants.gif 
+					if item.variants.gif
+						mediaObject.is_gif = true
 						data = item.variants.gif
-						mediaObject.gif_url = data.source.url
-						mediaObject.gif_width = data.source.width
-					mediaObject.image_url = item.source.url
-					mediaObject['image_url_' + item.source.width] = item.source.url
+						mediaObject.image_url = data.source.url
+						mediaObject['image_url_' + data.source.width] = data.source.url
+					else
+						mediaObject.image_url = item.source.url
+						mediaObject['image_url_' + item.source.width] = item.source.url
 					item.resolutions.forEach((res) ->
 						mediaObject['image_url_' + res.width] = res.url
 					)
@@ -116,14 +119,17 @@ export default extract = (rawData) ->
 					return mediaObject
 				)
 			else if post.url.hostname == 'i.redd.it'
-				post.media[0] = if post.url.pathname.endsWith('gif') then { video_url: post.url } else { image_url: post.url }
+				post.media[0] =
+					image_url: post.url
+					is_gif: post.url.pathname.endsWith('gif')
 			if hosted_video_data
 				video = hosted_video_data
 				post.media[0] =
 					aspect_ratio: video.width / video.height
+					is_gif: video.is_gif
+					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 					video_url: video.fallback_url ? post.url
 					video_width: video.width
-					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 			else if iframe_embeddable(post.url)
 				post.media[0] = iframe_embeddable(post.url)
 			else if html_embeddable(post)

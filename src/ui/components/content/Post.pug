@@ -52,15 +52,12 @@ script.
 				{@const media = post.media[galleryIndex]}
 					figure
 						{#if media.video_url}
-							MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.gif_url} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
-						{:else if media.gif_url || media.image_url}
-							a(href={media.gif_url || media.image_url} rel='external noopener preconnect' target='_blank')
+							MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
+						{:else if media.image_url}
+							a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 								picture
-									{#if media.gif_url}
-										img.post-image(src={media.gif_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
-									{:else if media.image_url}
-										source(srcset={media.image_url_640})
-										img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
+									source(srcset={media.image_url_640})
+									img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
 							{#if media.caption_text || media.caption_url}
 								figcaption.post-image-caption
 									{#if media.caption_text}
