@@ -7,6 +7,7 @@ script.
 	import MediaPlayer from '../system/MediaPlayer.pug'
 	import Avatar from './Avatar.pug'
 	import Comment from './Comment.pug'
+	import Flair from './Flair.pug'
 	import Score from './Score.pug'
 	export id = null
 	post = null
@@ -21,7 +22,8 @@ script.
 {#if post}
 	article.post
 		header.post-header
-			.post-flair {post.link_flair_text}
+			{#if post.link_flair_richtext}
+				Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext})
 			h1.post-title {post.title}
 			.post-info
 				.post-time

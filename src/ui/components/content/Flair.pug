@@ -1,0 +1,20 @@
+script.
+	export color = 'transparent'
+	export richtext = []
+
+span.flair
+	{#each richtext as segment}
+		{#if segment.e === 'text'}
+			| {segment.t}
+		{:else if segment.e === 'emoji'}
+			img.flair-emoji(alt={segment.a} src={segment.u} style="background: {color}" title={segment.a})
+
+style.
+	.flair
+		align-items center
+		display inline-flex
+		font-size 12px
+		gap 6px
+	.flair-emoji
+		height 16px
+		padding 5px
