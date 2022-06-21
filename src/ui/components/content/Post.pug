@@ -51,6 +51,15 @@ script.
 										meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
 									dd {option.text}
 			{:else if post.format === 'media'}
+				{#if post.media.length > 1}
+					menu.post-additional-images
+						Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='a' text='←')
+						{#each post.media as media, index}
+							button(on:click={() => galleryIndex = index})
+								picture
+									source(srcset={media.image_url_108})
+									img.post-additional-image-thumbnail(class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
+						Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='d' text='→')
 				{@const media = post.media[galleryIndex]}
 					{#key media}
 						figure
@@ -70,15 +79,6 @@ script.
 								menu.post-image-actions
 									Button(action={() => window.open(media.image_url)} key='e' text='Open')
 									Button(action={() => window.open(media.image_url)} key='f' text='Fullscreen')
-				{#if post.media.length > 1}
-					menu.post-additional-images
-						{#each post.media as media, index}
-							button(on:click={() => galleryIndex = index})
-								picture
-									source(srcset={media.image_url_108})
-									img.post-additional-image-thumbnail(class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
-						Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='t' text='↑')
-						Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='g' text='↓')
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -104,16 +104,8 @@ style.
 	.post
 		padding 2em 0
 	.post-additional-images
-		align-items flex-start
+		align-items flex-end
 		display flex
-		flex-flow column nowrap
-		gap 6px
-		left calc(640px + 1em)
-		height 100%
-		position absolute
-		padding 0 2px
-		overflow auto
-		top 0
 	.post-additional-image-thumbnail
 		border 3px solid rgba(0,0,0,0.1)
 		width 54px
@@ -125,7 +117,7 @@ style.
 		overflow-wrap anywhere
 		width 480px
 	.post-header
-		padding 2em 0
+		margin-top 2em
 		width 480px
 	.post-iframe-actions
 		display flex
@@ -133,6 +125,7 @@ style.
 		margin-top 1em
 	.post-image
 		cursor zoom-in
+		margin-top 1em
 		width 480px
 	.post-image-actions
 		display flex
@@ -157,6 +150,7 @@ style.
 	.post-prediction-options > li
 		display flex
 	:global(.post-selftext-media img)
+		max-height 480px
 		max-width 480px
 	.post-time
 		color rgba(0,0,0,0.5)

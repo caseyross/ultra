@@ -13,13 +13,11 @@ script.
 	)
 
 .listing
-	.listing-information
-		input.listing-name-input(placeholder='r/subreddit' type='text')
-	.listing-items
-		{#if loading}
-			p LOADING...
-		{:else if itemIds && itemIds.length}
-			ol
+	nav
+		.listing-information
+			input.listing-name-input(placeholder='r/subreddit' type='text')
+		{#if itemIds && itemIds.length}
+			ol.listing-contents
 				{#each itemIds as itemId}
 					{#if api.parse.datasetType(itemId) === 'comment'}
 						Comment(id={itemId})
@@ -35,25 +33,18 @@ style.
 	.listing
 		display grid
 		grid-template-rows 100%
+		grid-template-columns 40% 60%
 		height 100vh
 		width 100vw
-		@media (min-width: 900px)
-			grid-template-columns 0 220px 740px
-		@media (min-width: 1366px)
-			grid-template-columns 1fr 220px 780px
-		@media (min-width: 1920px)
-			grid-template-columns 1fr 300px 1300px
 	.listing-information
-		box-sizing border-box
-		height 100%
+		border 1px solid
+		flex 0 0 80px
+	.listing-contents
+		border-right 1px solid
+		flex 1
+		margin 0
 		overflow hidden
-		padding 2em
-	.listing-items
-		align-items flex-end
-		display flex
-		flex-flow column nowrap
-		height 100%
-		overflow hidden
+		padding 0
 	.listing-name-input
 		background rgba(0,0,0,0.05)
 		border-radius 1ch
@@ -65,8 +56,9 @@ style.
 	.listing-selected-item
 		height 100%
 		overflow auto
-		padding-left 50px
+		padding-left 48px
 		padding-right 70px
-	ol
-		border 1px solid
-		padding 0
+	nav
+		display flex
+		flex-flow column nowrap
+		padding-left calc(100% - 320px)
