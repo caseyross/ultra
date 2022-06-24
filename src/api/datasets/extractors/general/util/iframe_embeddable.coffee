@@ -17,6 +17,13 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 			iframe_url: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
 		else
 			null
+	when 'open.spotify.com'
+		descriptor = url.pathname.split('/')[2]
+		if descriptor?.length
+			iframe_allow: 'encrypted-media'
+			iframe_url: "https://open.spotify.com/embed?uri=spotify%3Aalbum%3A#{descriptor}"
+		else
+			null
 	when 'redgifs.com'
 		descriptor = url.pathname.split('/')[2]
 		if descriptor?.length
