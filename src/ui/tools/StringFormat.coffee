@@ -23,7 +23,20 @@ export default {
 	commentBody: (input) ->
 		input
 			.slice(16, -6)
-			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
+			.replace(/&nbsp;/g, '')
+			.replace(/&#x200B;/g, '')
+			.replace(/<p>/g, '')
+			.replace(/<\/p>/g, '')
+			.replace(/<blockquote>\n+/g, '<blockquote>')
+			.replace(/<\/blockquote>\n+/g, '<\/blockquote>\n')
+			.replace(/<ol>\n/g, '<ol>')
+			.replace(/\n<\/ol>\n/g, '</ol>')
+			.replace(/<ul>\n/g, '<ul>')
+			.replace(/\n<\/ul>\n/g, '</ul>')
+			.replace(/<\/h1>\n/g, '<\/h1>')
+			.replace(/<\/h2>\n/g, '<\/h2>')
+			.replace(/<\/h3>\n/g, '<\/h3>')
+			.replace(/<\/table>\n/g, '<\/table>')
 			.replace(/(%5C_|\\_)/g, "_")
 
 	date: (input) ->
@@ -59,8 +72,20 @@ export default {
 	postBody: (input) ->
 		input
 			.slice(31, -20)
-			.replace(/<p>&(#x200B|nbsp);<\/p>/g, "")
+			.replace(/&nbsp;/g, '')
+			.replace(/&#x200B;/g, '')
+			.replace(/<p>/g, '')
+			.replace(/<\/p>/g, '')
+			.replace(/<blockquote>\n+/g, '<blockquote>')
+			.replace(/<\/blockquote>\n+/g, '<\/blockquote>\n')
+			.replace(/<ol>\n/g, '<ol>')
+			.replace(/\n<\/ol>\n/g, '</ol>')
+			.replace(/<ul>\n/g, '<ul>')
+			.replace(/\n<\/ul>\n/g, '</ul>')
+			.replace(/<\/h1>\n/g, '<\/h1>')
+			.replace(/<\/h2>\n/g, '<\/h2>')
+			.replace(/<\/h3>\n/g, '<\/h3>')
+			.replace(/<\/table>\n/g, '<\/table>')
 			.replace(/(%5C_|\\_)/g, "_")
-			.replace(/<p><a href="https:\/\/(i|preview).redd.it\/(.*)">(.*)<\/a><\/p>/g, "<figure class='post-selftext-media'><a href='https://$1.redd.it/$2'><img alt='$3' src='https://$1.redd.it/$2'></a></figure>")
-
+			.replace(/<a href="https:\/\/(i|preview).redd.it\/(.*?)">(.*?)<\/a>/g, "<figure class='post-selftext-media'><figcaption><a href='https://$1.redd.it/$2'>$3</a></figcaption><img alt='' src='https://$1.redd.it/$2'></figure>")
 }

@@ -5,7 +5,6 @@ script.
 	import { onMount } from 'svelte'
 	export audio_url = null
 	export mimic_gif = false
-	export video_aspect_ratio = 1
 	export video_url = null
 	stati = {
 		LOADING: 'LOADING...'
@@ -59,6 +58,8 @@ script.
 		)
 
 .media-player
+	<!-- in general, videos never have captions -->
+	<!-- svelte-ignore a11y-media-has-caption -->
 	video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} class:video-hide-controls={fullscreened() && mouseIdle} loop={looping})
 		source(src={video_url} type='video/mp4')
 	audio(bind:this={audio})

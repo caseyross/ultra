@@ -13,14 +13,8 @@ script.
 		)
 
 address.avatar(on:mouseenter={() => userInfoPopupVisible = true} on:mouseleave={() => userInfoPopupVisible = false})
-	{#if username !== '[deleted]'}
-		a(href="/u/{username}")
-			{#if userInfo?.profile_img}
-				img.avatar-profile-picture(src={userInfo.profile_img})
-			{:else}
-				.avatar-profile-picture-not-available
-	{:else}
-		.avatar-profile-picture-not-available
+	a(href="{username === '[deleted]' ? '' : '/u/' + username}")
+		img.avatar-picture(alt='' decoding='async' fetchpriority='low' loading='lazy' src={userInfo?.profile_img})
 	{#if userInfoPopupVisible}
 		.avatar-user-info-popup
 			.avatar-user-info-popup-username u/{username}
@@ -33,14 +27,9 @@ style.
 	.avatar
 		cursor pointer
 		position relative
-	.avatar-profile-picture
+	.avatar-picture
 		aspect-ratio 1
 		background transparent
-		border-radius 50%
-		height 24px
-	.avatar-profile-picture-not-available
-		aspect-ratio 1
-		background rgba(0,0,0,0.025)
 		border-radius 50%
 		height 24px
 	.avatar-user-info-popup

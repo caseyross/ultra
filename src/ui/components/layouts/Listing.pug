@@ -28,8 +28,6 @@ script.
 			{#key selectedId}
 				Post(id={selectedId})
 style.
-	.global-navigation
-		background rgba(0,0,0,0.1)
 	.listing
 		display grid
 		grid-template-rows 100%
@@ -54,11 +52,13 @@ style.
 		padding 1ch 2ch
 		width 360px
 	.listing-selected-item
+		contain content
 		height 100%
 		overflow auto
 		padding-left 48px
-		padding-right 70px
+		padding-right 24px
 	nav
+		contain content
 		display flex
 		flex-flow column nowrap
 		padding-left calc(100% - 320px)

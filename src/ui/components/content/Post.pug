@@ -58,18 +58,18 @@ script.
 							button(on:click={() => galleryIndex = index})
 								picture
 									source(srcset={media.image_url_108})
-									img.post-additional-image-thumbnail(class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
+									img.post-additional-image-thumbnail(alt='thumbnail for image {index + 1} in gallery' class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
 						Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='d' text='→')
 				{@const media = post.media[galleryIndex]}
 					{#key media}
 						figure
 							{#if media.video_url}
-								MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_aspect_ratio={media.aspect_ratio} video_url={media.video_url})
+								MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_url={media.video_url})
 							{:else if media.image_url}
 								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_640})
-										img.post-image(src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
+										img.post-image(alt='image {galleryIndex + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -82,7 +82,7 @@ script.
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
-						iframe(allowfullscreen='true' allow={media.iframe_allow} src={media.iframe_url})
+						iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} title='embedded content from {post.url.hostname}')
 						menu.post-iframe-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}
@@ -98,7 +98,7 @@ script.
 				{#each post.replies as replyId}
 					Comment(id={replyId})
 				{#if post.more_replies}
-					ActionText(text='More replies...')
+					ActionText(text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
 
 style.
 	.post
@@ -114,7 +114,7 @@ style.
 	.post-content
 		margin-top 2em
 		position relative
-		overflow-wrap anywhere
+		white-space pre-wrap
 		width 480px
 	.post-header
 		margin-top 2em
@@ -126,7 +126,8 @@ style.
 	.post-image
 		cursor zoom-in
 		margin-top 1em
-		width 480px
+		height auto !important
+		width 480px !important
 	.post-image-actions
 		display flex
 		gap 1em
@@ -149,9 +150,12 @@ style.
 		width 640px
 	.post-prediction-options > li
 		display flex
+	:global(.post-selftext-media)
+		margin-top 0.5em
 	:global(.post-selftext-media img)
-		max-height 480px
-		max-width 480px
+		cursor zoom-in
+		max-height 9em
+		max-width 100%
 	.post-time
 		color rgba(0,0,0,0.5)
 		font 12px 'roboto mono'
