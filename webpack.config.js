@@ -75,16 +75,17 @@ module.exports = {
 		runtimeChunk: 'single', // with multiple entries on one page, need single runtime chunk to avoid duplicate module instantiations
 	},
 	output: {
-		clean: true, // cleanup output directory before emitting assets
+		clean: true, // cleanup local output directory before emitting assets
 		filename: '[name].[contenthash].js',
-		path: path.join(__dirname, 'dist'), // output directory, absolute path required
-		publicPath: '', // root path for generated assets
+		path: path.join(__dirname, 'dist'), // local filesystem output directory, absolute path required
+		publicPath: '/', // location where the browser should look on the webserver to find output assets
 	},
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
 			favicon: './src/ui/assets/favicons/favicon_16.png',
 			inject: false, // manual script placement in template
+			publicPath: '/',
 			template: './src/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({

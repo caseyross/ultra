@@ -1,9 +1,8 @@
 import './ui/stylesheets/global.styl'
-import UIRoot from './ui/components/UIRoot.pug'
+import Router from './ui/Router.pug'
 
 try
-	new UIRoot
+	new Router
 		target: document.body
-		props:
-			id: 'subreddit_posts:combatfootage:hot:10'
+catch error
 	alert(error)

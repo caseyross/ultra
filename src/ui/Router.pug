@@ -1,0 +1,47 @@
+script.
+	import Listing from './components/layouts/Listing.pug'
+	import parseRoute from './parseRoute.coffee'
+	route = parseRoute(location)
+	navigate = (url, options = { replace: false }) ->
+		if options.replace
+			history.replaceState(null, null, url)
+		else
+			history.pushState(null, null, url)
+	document.addEventListener('click',
+		(event) ->
+			if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A' and event.target.origin is origin
+				navigate(new URL(event.target.href))
+				route = parseRoute(location)
+				event.preventDefault())
+	document.addEventListener('keydown',
+		(event) ->
+			if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A' and event.target.origin is origin
+				navigate(new URL(event.target.href))
+				route = parseRoute(location)
+				event.preventDefault())
+	window.addEventListener('popstate',
+		(event) ->
+			route = parseRoute(location)
+			event.preventDefault())
+
+{#if route.path === 'subreddit'}
+	{#key route}
+		Listing(id="subreddit_posts:{route.data.name}:{route.data.sort}:10")
+{:else}
+	h1 The requested page is not supported yet.
+	dl
+		dt Page type:
+		dd {route.path}
+		dt Data:
+		dd
+			{#if route.data === null}
+				| [null]
+			{:else}
+				dl
+					{#each Object.keys(route.data) as key}
+						dt {key}:
+						dd {route.data[key]}
+
+style.
+	dd
+		font-weight bold
