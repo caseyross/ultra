@@ -1,3 +1,5 @@
+NON_SUBREDDIT_TOP_LEVEL_PATHS = [undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'rising', 's', 'search', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
+
 INVALID = {
 	path: 'invalid'
 	data: null
@@ -10,10 +12,10 @@ TODO = {
 export default (url) ->
 	path = url.pathname.split('/')
 	query = new URLSearchParams(url.search)
-	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] then path = path[1..]
-	if path[1] is 'home' then path = path[1..]
+	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3]? then path = path[1..]
+	if path[1] not in NON_SUBREDDIT_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	switch path[1]
-		when undefined, '', 'best', 'controversial', 'hot', 'new', 'rising', 'top'
+		when undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 			sort = path[1] ? query.get('sort')
 			switch sort
 				when 'controversial', 'top'
