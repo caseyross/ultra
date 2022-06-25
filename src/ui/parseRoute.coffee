@@ -102,7 +102,7 @@ export default (url) ->
 							sort: sort
 					}
 				when filter is 'search' then return TODO
-				when filter is 'wiki'
+				when filter is 'w' or filter is 'wiki'
 					subreddit_name = path[2]
 					switch
 						when !subreddit_name? then return INVALID
@@ -240,7 +240,7 @@ export default (url) ->
 							sort = sort + '_' + range
 						else
 							sort = sort + '_all'
-				when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+				when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 					break
 				else
 					sort = 'new'
