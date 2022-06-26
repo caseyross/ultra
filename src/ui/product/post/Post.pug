@@ -17,6 +17,8 @@ script.
 	)
 	galleryIndex = 0
 
+svelte:head
+	title {post ? post.title : shortId}
 {#if post}
 	article.post
 		header.post-header

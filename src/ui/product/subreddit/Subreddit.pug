@@ -6,11 +6,18 @@ script.
 	import Post from '../post/Post.pug'
 	export name = null
 	export sort = null
+	info = null
 	postIds = null
 	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
 		{ data: postIds  } = x
 	)
+	api.watch(api.format.datasetId('subreddit_info', name), (x) ->
+		{ data: info  } = x
+		console.log info
+	)
 
+svelte:head
+	title {info ? info.title : name}
 nav
 	input(placeholder='subreddit name' type='text' value={name})
 	ol
