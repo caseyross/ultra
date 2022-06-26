@@ -1,4 +1,4 @@
-NON_SUBREDDIT_TOP_LEVEL_PATHS = [undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'rising', 's', 'search', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
+RECOGNIZED_TOP_LEVEL_PATHS = [undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
 
 INVALID = {
 	path: 'invalid'
@@ -13,7 +13,7 @@ export default (url) ->
 	path = url.pathname.split('/')
 	query = new URLSearchParams(url.search)
 	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3]? then path = path[1..]
-	if path[1] not in NON_SUBREDDIT_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
+	if path[1] not in RECOGNIZED_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	switch path[1]
 		when undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 			sort = path[1] ? query.get('sort')
@@ -82,7 +82,7 @@ export default (url) ->
 					id: id
 					sort: sort
 			}
-		when 'r', 'reddit', 'subreddit'
+		when 'r', 'subreddit'
 			filter = path[3]
 			id = path[4]
 			switch
