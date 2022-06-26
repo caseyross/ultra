@@ -7,14 +7,10 @@ script.
 	export key = null
 	export text = ''
 
-{#if key}
-	<!-- -->
-	button(class:activated={activated} disabled={disabled} on:mousedown={action} on:click={action} use:hotkey={key})
-		span.button-text {text}
+button(class:activated={activated} disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
+	span.button-text {text}
+	{#if key}
 		KeyLabel(key={key})
-{:else}
-	button
-		span.button-text {text}
 
 style.
 	button
