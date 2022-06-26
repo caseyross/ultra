@@ -16,23 +16,23 @@ export default (url) ->
 	if path[1] not in RECOGNIZED_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	switch path[1]
 		when undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
-			sort = path[1] ? query.get('sort')
-			switch sort
+			posts_sort = path[1] ? query.get('sort')
+			switch posts_sort
 				when 'controversial', 'top'
-					range = query.get('t')
+					time_range = query.get('t')
 					switch
-						when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-							sort = sort + '_' + range
+						when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+							posts_sort = posts_sort + '_' + time_range
 						else
-							sort = sort + '_week'
+							posts_sort = posts_sort + '_week'
 				when 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 					break
 				else
-					sort = 'best'
+					posts_sort = 'best'
 			return {
 				path: 'home'
 				data:
-					sort: sort
+					posts_sort: posts_sort
 			}
 		when 'm', 'multi', 'multireddit'
 			user_name = path[2]
@@ -40,71 +40,71 @@ export default (url) ->
 			switch
 				when !user_name? or !multireddit_name then return INVALID
 				else break
-			sort = path[4] ? query.get('sort')
-			switch sort
+			posts_sort = path[4] ? query.get('sort')
+			switch posts_sort
 				when 'controversial', 'top'
-					range = query.get('t')
+					time_range = query.get('t')
 					switch
-						when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-							sort = sort + '_' + range
+						when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+							posts_sort = posts_sort + '_' + time_range
 						else
-							sort = sort + '_month'
+							posts_sort = posts_sort + '_month'
 				when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 					break
 				else
-					sort = 'hot'
+					posts_sort = 'hot'
 			return {
 				path: 'multireddit'
 				data:
 					multireddit_name: multireddit_name
-					sort: sort
+					posts_sort: sort
 					user_name: user_name
 			}
 		when 'mail', 'message', 'messages' then return TODO
 		when 'p', 'post'
-			id = path[2]
+			post_short_id = path[2]
 			switch
-				when !id? then return INVALID
+				when !post_short_id? then return INVALID
 				else break
-			sort = query.get('sort')
-			switch sort
+			comments_sort = query.get('sort')
+			switch comments_sort
 				when 'best', 'controversial', 'new', 'old', 'qa', 'top'
 					break
 				else
-					sort = 'best'
-			comment_id = path[4]
+					comments_sort = 'best'
+			comment_short_id = path[4]
 			comment_context = query.get('context')
 			return {
 				path: 'post'
 				data:
-					comment_id: comment_id
 					comment_context: comment_context
-					id: id
-					sort: sort
+					comment_short_id: comment_short_id
+					comments_sort: comments_sort
+					post_short_id: post_short_id
 			}
 		when 'r', 'subreddit'
-			filter = path[3]
-			id = path[4]
-			switch
-				when filter is 'comments' and id?
-					sort = query.get('sort')
-					switch sort
+			switch path[3]
+				when 'comments'
+					post_short_id = path[4]
+					if !post_short_id? then return INVALID
+					comments_sort = query.get('sort')
+					switch comments_sort
 						when 'best', 'controversial', 'new', 'old', 'qa', 'top'
 							break
 						else
-							sort = 'best'
-					comment_id = path[6]
+							comments_sort = 'best'
+					comment_short_id = path[6]
 					comment_context = query.get('context')
 					return {
 						path: 'post'
 						data:
-							comment_id: comment_id
 							comment_context: comment_context
-							id: id
-							sort: sort
+							comment_short_id: comment_short_id
+							comments_sort: comments_sort
+							post_short_id: post_short_id
 					}
-				when filter is 'search' then return TODO
-				when filter is 'w' or filter is 'wiki'
+				when 'search' then return TODO
+				when 'w', 'wiki'
 					subreddit_name = path[2]
 					switch
 						when !subreddit_name? then return INVALID
@@ -123,44 +123,44 @@ export default (url) ->
 							subreddit_name: subreddit_name
 					}
 				else
-					name = path[2]
+					subreddit_name = path[2]
 					switch
-						when !name? then return INVALID
-						when name.length < 2 then return INVALID
-						when name is 'all'
-							sort = path[3] ? query.get('sort')
-							switch sort
+						when !subreddit_name? then return INVALID
+						when subreddit_name.length < 2 then return INVALID
+						when subreddit_name is 'all'
+							posts_sort = path[3] ? query.get('sort')
+							switch posts_sort
 								when 'controversial', 'top'
-									range = query.get('t')
+									time_range = query.get('t')
 									switch
-										when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-											sort = sort + '_' + range
+										when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+											posts_sort = posts_sort + '_' + time_range
 										else
-											sort = sort + '_week'
+											posts_sort = posts_sort + '_week'
 								when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 									break
 								else
-									sort = 'hot'
+									posts_sort = 'hot'
 							return {
 								path: 'all'
 								data:
-									sort: sort
+									posts_sort: posts_sort
 							}
-						when name is 'mod' then return TODO
-						when name is 'popular'
-							sort = path[3] ? query.get('sort')
-							switch sort
+						when subreddit_name is 'mod' then return TODO
+						when subreddit_name is 'popular'
+							posts_sort = path[3] ? query.get('sort')
+							switch posts_sort
 								when 'controversial', 'top'
-									range = query.get('t')
+									time_range = query.get('t')
 									switch
-										when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-											sort = sort + '_' + range
+										when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+											posts_sort = posts_sort + '_' + time_range
 										else
-											sort = sort + '_week'
+											posts_sort = posts_sort + '_week'
 								when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 									break
 								else
-									sort = 'hot'
+									posts_sort = 'hot'
 							geo_filter = query.get('geo_filter')
 							switch
 								when !geo_filter?
@@ -171,87 +171,83 @@ export default (url) ->
 								path: 'popular'
 								data:
 									geo_filter: geo_filter
-									sort: sort
+									posts_sort: posts_sort
 							}
 						else
-							sort = path[3] ? query.get('sort')
-							switch sort
+							posts_sort = path[3] ? query.get('sort')
+							switch posts_sort
 								when 'controversial', 'top'
-									range = query.get('t')
+									time_range = query.get('t')
 									switch
-										when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-											sort = sort + '_' + range
+										when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+											posts_sort = posts_sort + '_' + time_range
 										else
-											sort = sort + '_month'
+											posts_sort = posts_sort + '_month'
 								when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 									break
 								else
-									sort = 'hot'
+									posts_sort = 'hot'
 							return {
 								path: 'subreddit'
 								data:
-									name: name
-									sort: sort
+									posts_sort: posts_sort
+									subreddit_name: subreddit_name
 							}
 		when 's', 'search' then return TODO
 		when 'u', 'user'
-			name = path[2]
+			user_name = path[2]
 			switch
-				when !name? then return INVALID
+				when !user_name? then return INVALID
 				else break
-			filter = path[3]
-			switch filter
+			switch path[3]
 				when 'comments'
-					break
+					items_filter = 'comments'
 				when 'm', 'multi', 'multireddit'
-					user_name = name
 					multireddit_name = path[4]
 					switch
-						when !user_name? or !multireddit_name then return INVALID
+						when !multireddit_name then return INVALID
 						else break
-					sort = path[5] ? query.get('sort')
-					switch sort
+					posts_sort = path[5] ? query.get('sort')
+					switch posts_sort
 						when 'controversial', 'top'
-							range = query.get('t')
+							time_range = query.get('t')
 							switch
-								when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-									sort = sort + '_' + range
+								when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+									posts_sort = posts_sort + '_' + time_range
 								else
-									sort = sort + '_month'
+									posts_sort = posts_sort + '_month'
 						when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 							break
 						else
-							sort = 'hot'
+							posts_sort = 'hot'
 					return {
 						path: 'multireddit'
 						data:
 							multireddit_name: multireddit_name
-							sort: sort
+							posts_sort: posts_sort
 							user_name: user_name
 					}
-				when 'submitted'
-					filter = 'posts'
 				else
-					filter = 'posts_and_comments'
-			sort = query.get('sort')
-			switch sort
+					items_filter = 'posts'
+			items_sort = query.get('sort')
+			switch items_sort
 				when 'controversial', 'top'
-					range = query.get('t')
+					time_range = query.get('t')
 					switch
-						when range in ['hour', 'day', 'week', 'month', 'year', 'all']
-							sort = sort + '_' + range
+						when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
+							items_sort = items_sort + '_' + time_range
 						else
-							sort = sort + '_all'
+							items_sort = items_sort + '_all'
 				when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 					break
 				else
-					sort = 'new'
+					items_sort = 'new'
 			return {
 				path: 'user'
 				data:
-					filter: filter
-					name: name
-					sort: sort
+					items_filter: items_filter
+					items_sort: items_sort
+					user_name: user_name
 			}
 		when 'w', 'wiki'
 			subreddit_name = path[2]
@@ -265,7 +261,7 @@ export default (url) ->
 				else break
 			revision_id = query.get('v')
 			return {
-				path: 'wiki_page'
+				path: 'wiki'
 				data:
 					page_name: page_name
 					revision_id: revision_id

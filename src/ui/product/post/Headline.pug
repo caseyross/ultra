@@ -3,11 +3,11 @@ script.
 	import Time from '../../../lib/Time.coffee'
 	import StringFormat from '../../../lib/StringFormat.coffee'
 	import Score from './Score.pug'
-	export id = null
+	export postId = null
 	export selected = false
 	export onSelect = null
 	post = null
-	api.watch(id, (x) -> { data: post } = x)
+	api.watch(postId, (x) -> { data: post } = x)
 
 {#if post}
 	.headline(class:selected={selected} on:mousedown={onSelect})

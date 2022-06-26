@@ -9,13 +9,11 @@ script.
 	import Flair from './Flair.pug'
 	import MediaPlayer from './MediaPlayer.pug'
 	import Score from './Score.pug'
-	export id = null
+	export shortId = null
 	post = null
-	api.watch(
-		id
-		(x) ->
-			{ data: post } = x
-			if post.user_info_tranches then for tranch in post.user_info_tranches then api.load(tranch)
+	api.watch(api.format.datasetId('post', shortId), (x) ->
+		{ data: post } = x
+		if post?.user_info_tranches then for tranch in post.user_info_tranches then api.load(tranch)
 	)
 	galleryIndex = 0
 

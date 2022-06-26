@@ -1,0 +1,22 @@
+script.
+	import api from '../../../api/index.js'
+	import formatRoute from '../../infra/formatRoute.coffee'
+	import Comment from '../post/Comment.pug'
+	import Headline from '../post/Headline.pug'
+	import Post from '../post/Post.pug'
+	export name = null
+	export sort = null
+	postIds = null
+	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
+		{ data: postIds  } = x
+	)
+
+nav
+	input(placeholder='subreddit name' type='text' value={name})
+	ol
+		{#if postIds}
+			{#each postIds as id}
+				a(href={formatRoute(id)})
+					Headline(postId={id})
+
+style.
