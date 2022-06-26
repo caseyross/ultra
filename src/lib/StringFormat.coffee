@@ -1,4 +1,4 @@
-import Time from '../../lib/Time.coffee'
+import Time from './Time.coffee'
 
 count = (number, string) ->
 	if number == 1 then "#{number} #{string}" else "#{number} #{string}s"

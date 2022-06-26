@@ -1,5 +1,8 @@
+import './env/Array.coffee'
+import './env/Math.coffee'
+
 import api from './api/index.js'
-import parseRoute from './ui/parseRoute.coffee'
+import parseRoute from './ui/infra/parseRoute.coffee'
 
 api.configure({
 	client_id: process.env.API_CLIENT_ID
