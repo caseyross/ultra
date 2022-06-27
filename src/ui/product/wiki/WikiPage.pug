@@ -1,0 +1,49 @@
+script.
+	import StringFormat from '../../../lib/StringFormat.coffee'
+	import Time from '../../../lib/Time.coffee'
+	import api from '../../../api/index.js'
+	export page_name = null
+	export revision_id = null
+	export subreddit_name = null
+	page = null
+	api.watch(api.format.datasetId('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page } = x)
+
+{#if page}
+	.wiki-page
+		h1.wiki-page-name {subreddit_name} / {page_name}
+		.wiki-page-info
+			.wiki-page-edit-date Last revised {StringFormat.ago(Time.sToMs(page.revision_date))}
+		.wiki-page-body
+			{@html page.content_html}
+
+style.
+	.wiki-page
+		padding 6em 0
+		width 480px
+	.wiki-page-body
+		margin-top 3em
+	.wiki-page-info
+		align-items center
+		color rgba(0,0,0,0.5)
+		display flex
+		font 12px 'roboto mono'
+		gap 1ch
+		margin-top 1em
+	.wiki-page-name
+		font-size 2em
+	:global(.wiki-page .toc)
+		font-size 12px
+		line-height 1
+		position fixed
+		left calc(50% + 320px)
+		top 8em
+	:global(.wiki-page .toc ol)
+	:global(.wiki-page .toc ul)
+		list-style-type none
+		padding 0
+	:global(.wiki-page .toc ol ol)
+	:global(.wiki-page .toc ol ul)
+	:global(.wiki-page .toc ul ol)
+	:global(.wiki-page .toc ul ul)
+		border-left 1px solid rgba(0,0,0,0.1)
+		padding-left 3ch

@@ -1,4 +1,4 @@
-RECOGNIZED_TOP_LEVEL_PATHS = [undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
+RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
 
 INVALID = {
 	path: 'invalid'
@@ -12,10 +12,11 @@ TODO = {
 export default (url) ->
 	path = url.pathname.split('/')
 	query = new URLSearchParams(url.search)
-	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3]? then path = path[1..]
+	if path.last is '' then path.pop()
+	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3] then path = path[1..]
 	if path[1] not in RECOGNIZED_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	switch path[1]
-		when undefined, '', 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+		when undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 			posts_sort = path[1] ? query.get('sort')
 			switch posts_sort
 				when 'controversial', 'top'
@@ -38,7 +39,7 @@ export default (url) ->
 			user_name = path[2]
 			multireddit_name = path[3]
 			switch
-				when !user_name? or !multireddit_name then return INVALID
+				when !user_name or !multireddit_name then return INVALID
 				else break
 			posts_sort = path[4] ? query.get('sort')
 			switch posts_sort
@@ -64,7 +65,7 @@ export default (url) ->
 		when 'p', 'post'
 			post_short_id = path[2]
 			switch
-				when !post_short_id? then return INVALID
+				when !post_short_id then return INVALID
 				else break
 			comments_sort = query.get('sort')
 			switch comments_sort
@@ -86,7 +87,7 @@ export default (url) ->
 			switch path[3]
 				when 'comments'
 					post_short_id = path[4]
-					if !post_short_id? then return INVALID
+					if !post_short_id then return INVALID
 					comments_sort = query.get('sort')
 					switch comments_sort
 						when 'best', 'controversial', 'new', 'old', 'qa', 'top'
@@ -107,12 +108,18 @@ export default (url) ->
 				when 'w', 'wiki'
 					subreddit_name = path[2]
 					switch
-						when !subreddit_name? then return INVALID
+						when !subreddit_name then return INVALID
 						when subreddit_name.length < 2 then return INVALID
 						else break
 					page_name = path[4]
 					switch
-						when !page_name? then page_name = 'index'
+						when !page_name then page_name = 'index'
+						when page_name is 'pages'
+							return {
+								path: 'wiki_page_list'
+								data:
+									subreddit_name: subreddit_name
+							}
 						else break
 					revision_id = query.get('v')
 					return {
@@ -125,7 +132,7 @@ export default (url) ->
 				else
 					subreddit_name = path[2]
 					switch
-						when !subreddit_name? then return INVALID
+						when !subreddit_name then return INVALID
 						when subreddit_name.length < 2 then return INVALID
 						when subreddit_name is 'all'
 							posts_sort = path[3] ? query.get('sort')
@@ -163,7 +170,7 @@ export default (url) ->
 									posts_sort = 'hot'
 							geo_filter = query.get('geo_filter')
 							switch
-								when !geo_filter?
+								when !geo_filter
 									geo_filter = 'GLOBAL'
 								else
 									break
@@ -197,7 +204,7 @@ export default (url) ->
 		when 'u', 'user'
 			user_name = path[2]
 			switch
-				when !user_name? then return INVALID
+				when !user_name then return INVALID
 				else break
 			switch path[3]
 				when 'comments'
@@ -252,16 +259,22 @@ export default (url) ->
 		when 'w', 'wiki'
 			subreddit_name = path[2]
 			switch
-				when !subreddit_name? then return INVALID
+				when !subreddit_name then return INVALID
 				when subreddit_name.length < 2 then return INVALID
 				else break
 			page_name = path[3]
 			switch
-				when !page_name? then page_name = 'index'
+				when !page_name then page_name = 'index'
+				when page_name is 'pages'
+					return {
+						path: 'wiki_page_list'
+						data:
+							subreddit_name: subreddit_name
+					}
 				else break
 			revision_id = query.get('v')
 			return {
-				path: 'wiki'
+				path: 'wiki_page'
 				data:
 					page_name: page_name
 					revision_id: revision_id

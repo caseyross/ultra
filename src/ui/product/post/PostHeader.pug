@@ -1,0 +1,54 @@
+script.
+	import StringFormat from '../../../lib/StringFormat.coffee'
+	import Time from '../../../lib/Time.coffee'
+	import Avatar from '../user/Avatar.pug'
+	import Flair from './Flair.pug'
+	import Score from './Score.pug'
+	import api from '../../../api/index.js'
+	export shortId = null
+	post = null
+	api.watch(api.format.datasetId('post', shortId), (x) ->
+		{ data: post } = x
+		if post?.user_info_tranches then for tranch in post.user_info_tranches then api.load(tranch)
+	)
+
+{#if post}
+	header.post-header
+		.empty
+		.post-flair
+			{#if post.link_flair_text}
+				Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
+		.post-score
+			Score(value={post.hide_score || post.score})
+		.post-header-layout-core
+			h1.post-title {post.title}
+			.post-info
+				Avatar(autoload={false} username={post.author})
+				span.post-create-date Posted {StringFormat.ago(Time.sToMs(post.created_utc))}
+				{#if post.edited}
+					span.post-edit-date(title="Last edited {StringFormat.ago(Time.sToMs(post.edited))}") *
+
+style.
+	.post-header
+		display grid
+		gap 1em 2em
+		grid-auto-flow row
+		grid-template-columns 80px 480px
+		left -110px
+		position relative
+	.post-info
+		align-items center
+		color rgba(0,0,0,0.5)
+		display flex
+		font 12px 'roboto mono'
+		gap 1ch
+		margin-top 1em
+	.post-score
+		text-align right
+	.post-title
+		align-items flex-end
+		display flex
+		font-size 1.5em
+		line-height 1
+		margin 0
+		overflow-wrap anywhere

@@ -1,14 +1,10 @@
 script.
-	import api from '../../../api/index.js'
-	import Time from '../../../lib/Time.coffee'
-	import StringFormat from '../../../lib/StringFormat.coffee'
 	import ActionText from '../generic/ActionText.pug'
 	import Button from '../generic/Button.pug'
-	import Avatar from '../user/Avatar.pug'
 	import Comment from './Comment.pug'
-	import Flair from './Flair.pug'
 	import MediaPlayer from './MediaPlayer.pug'
-	import Score from './Score.pug'
+	import PostHeader from './PostHeader.pug'
+	import api from '../../../api/index.js'
 	export shortId = null
 	post = null
 	api.watch(api.format.datasetId('post', shortId), (x) ->
@@ -21,25 +17,12 @@ svelte:head
 	title {post ? post.title : shortId}
 {#if post}
 	article.post
-		header.post-header
-			{#if post.link_flair_richtext}
-				Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext})
-			h1.post-title {post.title}
-			.post-info
-				.post-time
-					Score(value={post.hide_score || post.score})
-					span.post-upvote-percent ({StringFormat.percentage(post.upvote_ratio)}% upvoted)
-					{#if post.edited}
-						span.post-edit-date(title='Posted {StringFormat.date(Time.sToMs(post.created_utc))}') Edited {StringFormat.date(Time.sToMs(post.edited))}
-					{:else}
-						span.post-create-date Posted {StringFormat.date(Time.sToMs(post.created_utc))}
-				.post-author
-					Avatar(username={post.author})
+		PostHeader(shortId={shortId})
 		section.post-content
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
 					.post-selftext
-						{@html StringFormat.postBody(post.selftext_html)}
+						{@html post.selftext_html.replace(/<p><a href="https:\/\/preview.redd.it\/(.*?)">(.*?)<\/a><\/p>/g, "<img alt='$2' class='post-selftext-media' src='https://preview.redd.it/$1' title='$2'>")}
 			{:else if post.format === 'prediction'}
 				.post-predictions
 					{#each post.tournament_data.predictions as prediction}
@@ -82,7 +65,7 @@ svelte:head
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
-						iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} title='embedded content from {post.url.hostname}')
+						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} title='embedded content from {post.url.hostname}')
 						menu.post-iframe-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}
@@ -98,7 +81,8 @@ svelte:head
 				{#each post.replies as replyId}
 					Comment(id={replyId})
 				{#if post.more_replies}
-					ActionText(text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
+					.post-more-replies
+						ActionText(text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
 
 style.
 	.post
@@ -114,11 +98,10 @@ style.
 	.post-content
 		margin-top 2em
 		position relative
-		white-space pre-wrap
 		width 480px
-	.post-header
-		margin-top 2em
-		width 480px
+	.post-iframe
+		aspect-ratio 1
+		height 480px
 	.post-iframe-actions
 		display flex
 		gap 1em
@@ -136,14 +119,12 @@ style.
 		font-size 12px
 		max-width 480px
 		padding 7px
-	.post-info
-		display flex
-		margin-top 1em
-		justify-content space-between
 	.post-link-actions
 		display flex
 		gap 1em
 		margin-top 1em
+	.post-more-replies
+		margin-top 2em
 	.post-replies
 		padding 2em 0
 	.post-predictions
@@ -151,24 +132,5 @@ style.
 	.post-prediction-options > li
 		display flex
 	:global(.post-selftext-media)
-		margin-top 0.5em
-	:global(.post-selftext-media img)
-		cursor zoom-in
-		max-height 9em
+		margin-top 1em
 		max-width 100%
-	.post-time
-		color rgba(0,0,0,0.5)
-		font 12px 'roboto mono'
-		letter-spacing 0
-	.post-title
-		align-items flex-end
-		display flex
-		height 5em
-		font-size 1.5em
-		letter-spacing 0
-		line-height 1
-		margin 0
-		overflow-wrap anywhere
-	iframe
-		aspect-ratio 1
-		height 480px

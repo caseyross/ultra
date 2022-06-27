@@ -2,6 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import Time from '../../../lib/Time.coffee'
 	import StringFormat from '../../../lib/StringFormat.coffee'
+	export autoload = false
 	export username = null
 	userInfo = null
 	userInfoPopupVisible = false
@@ -9,7 +10,7 @@ script.
 		api.watch(
 			"user_info:#{username.toLowerCase()}"
 			(x) -> { data: userInfo } = x
-			{ autoload: false }
+			{ autoload: autoload }
 		)
 
 address.avatar(on:mouseenter={() => userInfoPopupVisible = true} on:mouseleave={() => userInfoPopupVisible = false})

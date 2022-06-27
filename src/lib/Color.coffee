@@ -4,7 +4,7 @@ export default class Color
 		@hex = hex
 
 	asContrastHex: ->
-		if not (@hex.startsWith('#') and @hex.length is 7)
+		if not (@hex and @hex.startsWith('#') and @hex.length is 7)
 			return '#000000'
 		red = Number.parseInt(@hex[1..2], 16) / 255
 		green = Number.parseInt(@hex[3..4], 16) / 255

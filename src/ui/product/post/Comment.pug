@@ -1,6 +1,5 @@
 script.
 	import api from '../../../api/index.js'
-	import StringFormat from '../../../lib/StringFormat.coffee'
 	import ActionText from '../generic/ActionText.pug'
 	import Avatar from '../user/Avatar.pug'
 	import Score from './Score.pug'
@@ -18,7 +17,7 @@ script.
 			button.comment-line-separator
 		.comment-layout-core
 			.comment-body
-				{@html StringFormat.commentBody(comment.body_html)}
+				{@html comment.body_html}
 			{#if showReplies && comment.replies.length > 0}
 				ol.comment-replies
 					{#each comment.replies as replyId}
@@ -38,7 +37,6 @@ style.
 		position relative
 	.comment-body
 		max-width 450px
-		white-space pre-wrap
 	:global(.comment-body img)
 		border-radius 6px
 		display inline
@@ -55,4 +53,7 @@ style.
 		flex 1
 		opacity 0.1
 	.comment-more-replies
+		margin-top 2em
+	.comment-replies
+		padding 0
 		margin-top 2em

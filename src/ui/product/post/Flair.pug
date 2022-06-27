@@ -1,20 +1,26 @@
 script.
-	export color = 'transparent'
-	export richtext = []
+	import Color from '../../../lib/Color.coffee'
+	export color = null
+	export richtext = null
+	export text = null
 
-span.flair
-	{#each richtext as segment}
-		{#if segment.e === 'text'}
-			| {segment.t}
-		{:else if segment.e === 'emoji'}
-			img.flair-emoji(alt={segment.a} src={segment.u} style="background: {color}" title={segment.a})
+span.flair(style="background: {color}; color: {(new Color(color)).asContrastHex()}")
+	{#if richtext && richtext.length}
+		{#each richtext as segment}
+			{#if segment.e === 'text'}
+				| {segment.t}
+			{:else if segment.e === 'emoji'}
+				img.flair-emoji(alt={segment.a} src={segment.u} title={segment.a})
+	{:else}
+		| {text}
 
 style.
 	.flair
 		align-items center
+		background rgba(0,0,0,0.1)
+		border-radius 1ch
 		display inline-flex
 		font-size 12px
-		gap 6px
+		padding 0 1ch
 	.flair-emoji
 		height 16px
-		padding 5px

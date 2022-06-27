@@ -2,7 +2,7 @@
 *
 	margin-bottom 0
 *:first-child
-	margin-top 0
+	margin-top 0 !important
 
 // General
 html
@@ -13,29 +13,32 @@ html
 
 // Body
 body
-	align-items center
-	display flex
-	flex-flow column nowrap
+	padding-left calc(50% - 240px)
 	margin 0
 
 // Paragraphs
+p
+	margin 1em 0 0 0
 hr
 	background currentColor
 	border 0
 	height 1px
-	margin 0
+	margin 1em 0 0 0
 
 // Formatted text
 a
-	color inherit
-	word-break break-all
+	color mediumslateblue
+	text-decoration none
+	overflow-wrap break-word
+	&:visited
+		color lightsteelblue
 address
 	font-style normal
 
 // Verbatim text
 blockquote
 	border-left 2px solid gainsboro
-	margin 0
+	margin 1em 0 0 0
 	opacity 0.75
 	padding-inline-start 1ch
 code
@@ -61,17 +64,15 @@ pre
 			opacity 1
 
 // Lists
+li
+	margin 1em 0 0 0
 menu
 	margin 0
 	padding 0
 ol
-	list-style decimal
-	margin 0
-	padding-inline-start 3ch
 ul
-	list-style disc
-	margin 0
-	padding-inline-start 3ch
+	margin 1em 0 0 0
+	padding-inline-start 20px
 
 // Headers
 h1
@@ -82,7 +83,7 @@ h5
 h6
 	font-size 1.16em
 	font-weight bold
-	margin 0
+	margin 1em 0 0 0
 h1
 	font-size 1.33em
 
@@ -92,12 +93,12 @@ table
 	font-size 12px
 	line-height 15px
 	white-space pre-wrap
-thead
-	text-align left
 td
 th
 	padding 0.5em 2ch 0.5em 0
 	vertical-align top
+th
+	text-align left
 
 // Media
 figure

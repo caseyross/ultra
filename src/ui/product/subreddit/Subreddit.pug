@@ -1,9 +1,7 @@
 script.
+	import PostHeader from '../post/PostHeader.pug'
 	import api from '../../../api/index.js'
 	import formatRoute from '../../infra/formatRoute.coffee'
-	import Comment from '../post/Comment.pug'
-	import Headline from '../post/Headline.pug'
-	import Post from '../post/Post.pug'
 	export name = null
 	export sort = null
 	info = null
@@ -13,17 +11,26 @@ script.
 	)
 	api.watch(api.format.datasetId('subreddit_info', name), (x) ->
 		{ data: info  } = x
-		console.log info
 	)
 
 svelte:head
 	title {info ? info.title : name}
-nav
-	input(placeholder='subreddit name' type='text' value={name})
-	ol
+.subreddit
+	input.subreddit-name(placeholder='subreddit name' type='text' value={name})
+	ol.subreddit-posts
 		{#if postIds}
 			{#each postIds as id}
-				a(href={formatRoute(id)})
-					Headline(postId={id})
+				a.subreddit-post-link(href={formatRoute(id)})
+					PostHeader(shortId={api.parse.datasetFilters(id)[0]})
 
 style.
+	.subreddit
+		padding 2em 0
+	.subreddit-name
+		font-size 2em
+		font-weight bold
+	.subreddit-posts
+		padding 0
+	.subreddit-post-link
+		display block
+		margin-top 2em

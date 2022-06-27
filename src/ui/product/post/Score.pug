@@ -6,13 +6,12 @@ button.score
 	{#if Number.isFinite(value)}
 		data.score-value {StringFormat.plusMinus(value)}
 	{:else}
-		data.score-value.score-value-hidden Score hidden
+		data.score-value.score-value-hidden ???
 
 style.
 	.score
 		background transparent
 		font 12px 'roboto mono'
-		letter-spacing 0
 	.score-value
 		font-size 15px
 	.score-value-hidden
