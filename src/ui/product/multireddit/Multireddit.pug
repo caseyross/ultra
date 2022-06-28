@@ -1,0 +1,37 @@
+script.
+	import PostHeader from '../post/PostHeader.pug'
+	import api from '../../../api/index.js'
+	import formatRoute from '../../infra/formatRoute.coffee'
+	export name = null
+	export posts_sort = null
+	export user_name = null
+	info = null
+	postIds = null
+	api.watch(api.format.datasetId('multireddit_posts', user_name, name, posts_sort, 10), (x) ->
+		{ data: postIds  } = x
+	)
+	api.watch(api.format.datasetId('multireddit_info', user_name, name), (x) ->
+		{ data: info  } = x
+	)
+
+svelte:head
+	title {name}
+.multireddit
+	.multireddit-name {user_name} / {name}
+	ol.multireddit-posts
+		{#if postIds}
+			{#each postIds as id}
+				a.multireddit-post-link(href={formatRoute(id)})
+					PostHeader(shortId={api.parse.datasetFilters(id)[0]})
+
+style.
+	.multireddit
+		padding 2em 0
+	.multireddit-name
+		font-size 2em
+		font-weight bold
+	.multireddit-posts
+		padding 0
+	.multireddit-post-link
+		display block
+		margin-top 2em

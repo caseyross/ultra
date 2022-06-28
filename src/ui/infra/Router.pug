@@ -1,5 +1,9 @@
 script.
 	import Post from '../product/post/Post.pug'
+	import Multireddit from '../product/multireddit/Multireddit.pug'
+	import MultiredditAll from '../product/multireddit/MultiredditAll.pug'
+	import MultiredditHome from '../product/multireddit/MultiredditHome.pug'
+	import MultiredditPopular from '../product/multireddit/MultiredditPopular.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
 	import UserProfile from '../product/user/UserProfile.pug'
 	import WikiPage from '../product/wiki/WikiPage.pug'
@@ -34,7 +38,15 @@ script.
 			route = parseRoute(location)
 			event.preventDefault())
 
-{#if route.path === 'post'}
+{#if route.path === 'all'}
+	MultiredditAll(posts_sort={route.data.posts_sort})
+{:else if route.path === 'home'}
+	MultiredditHome(posts_sort={route.data.posts_sort})
+{:else if route.path === 'multireddit'}
+	Multireddit(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
+{:else if route.path === 'popular'}
+	MultiredditPopular(posts_sort={route.data.posts_sort})
+{:else if route.path === 'post'}
 	Post(shortId={route.data.post_short_id})
 {:else if route.path === 'subreddit'}
 	Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})

@@ -58,7 +58,7 @@ export default (url) ->
 				path: 'multireddit'
 				data:
 					multireddit_name: multireddit_name
-					posts_sort: sort
+					posts_sort: posts_sort
 					user_name: user_name
 			}
 		when 'mail', 'message', 'messages' then return TODO
