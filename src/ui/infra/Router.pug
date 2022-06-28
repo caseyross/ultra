@@ -1,6 +1,7 @@
 script.
 	import Post from '../product/post/Post.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
+	import UserProfile from '../product/user/UserProfile.pug'
 	import WikiPage from '../product/wiki/WikiPage.pug'
 	import parseRoute from './parseRoute.coffee'
 	route = parseRoute(location)
@@ -37,6 +38,8 @@ script.
 	Post(shortId={route.data.post_short_id})
 {:else if route.path === 'subreddit'}
 	Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
+{:else if route.path === 'user'}
+	UserProfile(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
 {:else if route.path === 'wiki_page'}
 	{#key route}
 		WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})

@@ -1,0 +1,51 @@
+script.
+	import Comment from '../post/Comment.pug'
+	import PostHeader from '../post/PostHeader.pug'
+	import api from '../../../api/index.js'
+	import formatRoute from '../../infra/formatRoute.coffee'
+	export items_filter = null
+	export items_sort = null
+	export user_name = null
+	info = null
+	commentIds = null
+	postIds = null
+	api.watch(api.format.datasetId('user_info', user_name), (x) ->
+		{ data: info  } = x
+	)
+	switch items_filter
+		when 'comments'
+			api.watch(api.format.datasetId('user_comments', user_name, items_sort, 10), (x) ->
+				{ data: commentIds } = x
+			)
+		else
+			api.watch(api.format.datasetId('user_posts', user_name, items_sort, 10), (x) ->
+				{ data: postIds } = x
+			)
+
+svelte:head
+	title u/{user_name}
+.user-profile
+	input.user-profile-name(placeholder='user name' type='text' value='u/{user_name}')
+	{#if postIds}
+		ol.user-profile-posts
+			{#each postIds as id}
+				a.user-profile-post-link(href={formatRoute(id)})
+					PostHeader(shortId={api.parse.datasetFilters(id)[0]})
+	{:else if commentIds}
+		ol.user-profile-comments
+			{#each commentIds as id}
+				Comment(id={id} showReplies={false})
+
+style.
+	.user-profile
+		padding 2em 0
+	.user-profile-comments
+		padding 0
+	.user-profile-name
+		font-size 2em
+		font-weight bold
+	.user-profile-posts
+		padding 0
+	.user-profile-post-link
+		display block
+		margin-top 2em
