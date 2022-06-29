@@ -1,4 +1,5 @@
 script.
+	import Button from '../product/generic/Button.pug'
 	import Post from '../product/post/Post.pug'
 	import Multireddit from '../product/multireddit/Multireddit.pug'
 	import MultiredditAll from '../product/multireddit/MultiredditAll.pug'
@@ -38,37 +39,41 @@ script.
 			route = parseRoute(location)
 			event.preventDefault())
 
-{#if route.path === 'all'}
-	MultiredditAll(posts_sort={route.data.posts_sort})
-{:else if route.path === 'home'}
-	MultiredditHome(posts_sort={route.data.posts_sort})
-{:else if route.path === 'multireddit'}
-	Multireddit(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
-{:else if route.path === 'popular'}
-	MultiredditPopular(posts_sort={route.data.posts_sort})
-{:else if route.path === 'post'}
-	Post(shortId={route.data.post_short_id})
-{:else if route.path === 'subreddit'}
-	Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
-{:else if route.path === 'user'}
-	UserProfile(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
-{:else if route.path === 'wiki_page'}
-	{#key route}
+{#key route}
+	{#if route.data.listing_prev_url}
+		Button(key='a' link={route.data.listing_prev_url} text='Previous list item')
+	{#if route.data.listing_next_url}
+		Button(key='d' link={route.data.listing_next_url} text='Next list item')
+	{#if route.path === 'all'}
+		MultiredditAll(posts_sort={route.data.posts_sort})
+	{:else if route.path === 'home'}
+		MultiredditHome(posts_sort={route.data.posts_sort})
+	{:else if route.path === 'multireddit'}
+		Multireddit(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
+	{:else if route.path === 'popular'}
+		MultiredditPopular(posts_sort={route.data.posts_sort})
+	{:else if route.path === 'post'}
+		Post(shortId={route.data.post_short_id})
+	{:else if route.path === 'subreddit'}
+		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
+	{:else if route.path === 'user'}
+		UserProfile(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
+	{:else if route.path === 'wiki_page'}
 		WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
-{:else}
-	h1 The requested page is not supported yet.
-	dl
-		dt Page type:
-		dd {route.path}
-		dt Data:
-		dd
-			{#if route.data === null}
-				| [null]
-			{:else}
-				dl
-					{#each Object.keys(route.data) as key}
-						dt {key}:
-						dd {route.data[key]}
+	{:else}
+		h1 The requested page is not supported yet.
+		dl
+			dt Page type:
+			dd {route.path}
+			dt Data:
+			dd
+				{#if route.data === null}
+					| [null]
+				{:else}
+					dl
+						{#each Object.keys(route.data) as key}
+							dt {key}:
+							dd {route.data[key]}
 
 style.
 	dd

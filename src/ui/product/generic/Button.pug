@@ -5,17 +5,29 @@ script.
 	export activated = false
 	export disabled = false
 	export key = null
+	export link = null
 	export text = ''
 
-button(class:activated={activated} disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
-	span.button-text {text}
-	{#if key}
-		KeyLabel(key={key})
+{#if link}
+	a(class:activated={activated} disabled={disabled} href={link} use:hotkey={key})
+		slot
+		{#if text}
+			span.button-text {text}
+		{#if key}
+			KeyLabel(key={key})
+{:else}
+	button(class:activated={activated} disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
+		slot
+		{#if text}	
+			span.button-text {text}
+		{#if key}
+			KeyLabel(key={key})
 
 style.
+	a
 	button
 		background rgba(0,0,0,0.05)
-		display flex
+		display inline-flex
 		flex-flow row-reverse nowrap
 		border-radius 6px
 		gap 5px

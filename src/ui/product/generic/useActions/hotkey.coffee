@@ -7,9 +7,8 @@ document.addEventListener('keydown', (e) ->
 export default (element, char) ->
 	if !char? then return null
 	handlers[char] = ->
-		element.dispatchEvent(new Event('mousedown'))
-		element.dispatchEvent(new Event('mouseup'))
-		element.dispatchEvent(new Event('click'))
+		element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+		element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
 	return {
 		destroy: ->
 			delete handlers[char]

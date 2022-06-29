@@ -19,8 +19,10 @@ svelte:head
 	input.subreddit-name(placeholder='subreddit name' type='text' value={name})
 	ol.subreddit-posts
 		{#if postIds}
-			{#each postIds as id}
-				a.subreddit-post-link(href={formatRoute(id)})
+			{#each postIds as id, index}
+				{@const next = postIds.filter((x, i) => i > index).map(x => api.parse.datasetFilters(x)[0]).join(',')}
+				{@const prev = postIds.filter((x, i) => i < index).map(x => api.parse.datasetFilters(x)[0]).join(',')}
+				a.subreddit-post-link(href={formatRoute(id, { next, prev })})
 					PostHeader(shortId={api.parse.datasetFilters(id)[0]})
 
 style.

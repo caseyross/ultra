@@ -16,6 +16,8 @@ script.
 svelte:head
 	title {post ? post.title : shortId}
 {#if post}
+	{#if post.subreddit}
+		Button(key='q' link='/r/{post.subreddit}' text='Back to r/{post.subreddit}')
 	article.post
 		PostHeader(shortId={shortId})
 		section.post-content
@@ -38,7 +40,7 @@ svelte:head
 					menu.post-additional-images
 						Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='a' text='←')
 						{#each post.media as media, index}
-							button(on:click={() => galleryIndex = index})
+							Button(action={() => galleryIndex = index})
 								picture
 									source(srcset={media.image_url_108})
 									img.post-additional-image-thumbnail(alt='thumbnail for image {index + 1} in gallery' class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
