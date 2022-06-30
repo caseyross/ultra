@@ -6,15 +6,16 @@
 
 // General
 html
-	font 15px/20px inter
-	font-feature-settings 'case', 'cv04', 'cv05', 'cv07', 'cv11', 'ss03', 'tnum'
+	font 14px roboto
 *:focus
 	outline-color gold
 
 // Body
 body
+	align-items center
+	display flex
+	flex-flow column nowrap
 	margin 0
-	padding-left calc(50vw - 240px)
 	scrollbar-gutter stable
 
 // Paragraphs
@@ -30,7 +31,7 @@ hr
 a
 	color mediumslateblue
 	text-decoration none
-	overflow-wrap break-word
+	overflow-wrap anywhere
 	&:visited
 		color lightsteelblue
 address
@@ -66,7 +67,7 @@ pre
 
 // Lists
 li
-	margin 1em 0 0 0
+	margin 0
 menu
 	margin 0
 	padding 0
@@ -90,9 +91,11 @@ h1
 
 // Tables
 table
-	border-collapse collapse
+	border 1px solid
 	font-size 12px
 	line-height 15px
+	margin 1em 0 0 0
+	padding 1ch
 	white-space pre-wrap
 td
 th

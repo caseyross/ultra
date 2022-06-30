@@ -24,7 +24,7 @@ svelte:head
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
 					.post-selftext
-						{@html post.selftext_html.replace(/<p><a href="https:\/\/preview.redd.it\/(.*?)">(.*?)<\/a><\/p>/g, "<img alt='$2' class='post-selftext-media' src='https://preview.redd.it/$1' title='$2'>")}
+						{@html post.selftext_html.replace(/<p>\s*(&#x200b;|&#x200B;|&nbsp;)\s*<\/p>/g, '').replace(/<p><a href="https:\/\/preview.redd.it\/(.*?)">(.*?)<\/a><\/p>/g, "<img alt='$2' class='post-selftext-media' src='https://preview.redd.it/$1' title='$2'>")}
 			{:else if post.format === 'prediction'}
 				.post-predictions
 					{#each post.tournament_data.predictions as prediction}
@@ -54,7 +54,7 @@ svelte:head
 								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_640})
-										img.post-image(alt='image {galleryIndex + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '480px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '480px'}")
+										img.post-image(alt='image {galleryIndex + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '640px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '640px'}")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -89,6 +89,7 @@ svelte:head
 style.
 	.post
 		padding 2em 0
+		width 640px
 	.post-additional-images
 		align-items flex-end
 		display flex
@@ -100,10 +101,9 @@ style.
 	.post-content
 		margin-top 2em
 		position relative
-		width 480px
 	.post-iframe
-		aspect-ratio 1
-		height 480px
+		aspect-ratio 16/9
+		width 100%
 	.post-iframe-actions
 		display flex
 		gap 1em
@@ -111,15 +111,12 @@ style.
 	.post-image
 		cursor zoom-in
 		margin-top 1em
-		height auto !important
-		width 480px !important
 	.post-image-actions
 		display flex
 		gap 1em
 		margin-top 1em
 	.post-image-caption
 		font-size 12px
-		max-width 480px
 		padding 7px
 	.post-link-actions
 		display flex
@@ -129,8 +126,6 @@ style.
 		margin-top 2em
 	.post-replies
 		padding 2em 0
-	.post-predictions
-		width 640px
 	.post-prediction-options > li
 		display flex
 	:global(.post-selftext-media)
