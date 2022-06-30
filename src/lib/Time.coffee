@@ -62,4 +62,8 @@ export default {
 					count: if options.trunc then Math.trunc(count) else count
 					unit: unit
 				}
+
+	localHour: ->
+		(new Date()).getHours()
+
 }

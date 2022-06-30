@@ -4,17 +4,30 @@
 *:first-child
 	margin-top 0 !important
 
+// Theming
+.theme-light
+	--bgcolor white
+	--color black
+	--linkcolor mediumslateblue
+	color-scheme light
+.theme-dark
+	--bgcolor #1d263b
+	--color white
+	--linkcolor wheat
+	color-scheme dark
+
 // General
-html
-	font 14px roboto
 *:focus
 	outline-color gold
 
 // Body
 body
 	align-items center
+	background-color var(--bgcolor)
+	color var(--color)
 	display flex
 	flex-flow column nowrap
+	font 14px roboto
 	margin 0
 	scrollbar-gutter stable
 
@@ -29,11 +42,9 @@ hr
 
 // Formatted text
 a
-	color mediumslateblue
+	color var(--linkcolor)
 	text-decoration none
 	overflow-wrap anywhere
-	&:visited
-		color lightsteelblue
 address
 	font-style normal
 
@@ -121,22 +132,14 @@ video
 
 // Interactive
 button
-	color inherit
+input
+	background inherit
 	border 0
+	color inherit
 	cursor pointer
 	font inherit
 	letter-spacing inherit
 	line-height inherit
-	padding 0
-	white-space pre
-	word-spacing inherit
-input
-	border 0
-	color inherit
-	font inherit
-	letter-spacing inherit
-	line-height inherit
-	margin 0
 	padding 0
 	white-space pre
 	word-spacing inherit
