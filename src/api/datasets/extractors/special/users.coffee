@@ -4,10 +4,10 @@ export default (rawData) ->
 	result =
 		main: null
 		sub: []
-	for user_fullname, user_info of rawData
+	for user_fullname, user of rawData
 		result.sub.push({
-			id: format.datasetId('user_info', user_info.name)
-			data: user_info
+			id: format.datasetId('user', user.name)
+			data: user
 			partial: true
 		})
 	result.main =

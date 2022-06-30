@@ -9,7 +9,7 @@ script.
 	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
 		{ data: postIds  } = x
 	)
-	api.watch(api.format.datasetId('subreddit_info', name), (x) ->
+	api.watch(api.format.datasetId('subreddit', name), (x) ->
 		{ data: info  } = x
 	)
 

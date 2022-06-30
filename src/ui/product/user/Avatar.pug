@@ -8,7 +8,7 @@ script.
 	userInfoPopupVisible = false
 	if username != '[deleted]'
 		api.watch(
-			"user_info:#{username.toLowerCase()}"
+			"user:#{username.toLowerCase()}"
 			(x) -> { data: userInfo } = x
 			{ autoload: autoload }
 		)

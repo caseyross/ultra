@@ -9,7 +9,7 @@ script.
 	info = null
 	commentIds = null
 	postIds = null
-	api.watch(api.format.datasetId('user_info', user_name), (x) ->
+	api.watch(api.format.datasetId('user', user_name), (x) ->
 		{ data: info  } = x
 	)
 	switch items_filter

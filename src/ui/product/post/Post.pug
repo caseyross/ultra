@@ -9,7 +9,7 @@ script.
 	post = null
 	api.watch(api.format.datasetId('post', shortId), (x) ->
 		{ data: post } = x
-		if post?.user_info_tranches then for tranch in post.user_info_tranches then api.load(tranch)
+		if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
 	)
 	galleryIndex = 0
 

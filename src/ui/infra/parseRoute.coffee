@@ -133,14 +133,14 @@ export default (url) ->
 						when !page_name then page_name = 'index'
 						when page_name is 'pages'
 							return {
-								path: 'wiki_page_list'
+								path: 'wiki_list'
 								data:
 									subreddit_name: subreddit_name
 							}
 						else break
 					revision_id = query.get('v')
 					return {
-						path: 'wiki_page'
+						path: 'wiki'
 						data:
 							page_name: page_name
 							revision_id: revision_id
@@ -284,14 +284,14 @@ export default (url) ->
 				when !page_name then page_name = 'index'
 				when page_name is 'pages'
 					return {
-						path: 'wiki_page_list'
+						path: 'wiki_list'
 						data:
 							subreddit_name: subreddit_name
 					}
 				else break
 			revision_id = query.get('v')
 			return {
-				path: 'wiki_page'
+				path: 'wiki'
 				data:
 					page_name: page_name
 					revision_id: revision_id

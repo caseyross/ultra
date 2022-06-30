@@ -43,11 +43,11 @@ export default extract = (rawData) ->
 			delete user.icon_img
 			user.profile_over_18 = user.subreddit.over_18
 			result.main =
-				id: format.datasetId('user_info', user.name)
-				id: format.datasetId('user_info', user.name)
+				id: format.datasetId('user', user.name)
+				id: format.datasetId('user', user.name)
 				data: user
 			result.sub.push({
-				id: format.datasetId('subreddit_info', user.subreddit.display_name)
+				id: format.datasetId('subreddit', user.subreddit.display_name)
 				data: user.subreddit
 				partial: true # Marks objects known to be an incomplete version of data from another API route.
 			})
@@ -150,7 +150,7 @@ export default extract = (rawData) ->
 			# Process subreddit information, if present.
 			if post.sr_detail
 				result.sub.push({
-					id: format.datasetId('subreddit_info', post.subreddit)
+					id: format.datasetId('subreddit', post.subreddit)
 					data: post.sr_detail
 					partial: true
 				})
@@ -166,11 +166,11 @@ export default extract = (rawData) ->
 				data: rawData.data
 		when 't5'
 			result.main =
-				id: format.datasetId('subreddit_info', rawData.data.display_name)
+				id: format.datasetId('subreddit', rawData.data.display_name)
 				data: rawData.data
 		when 'wikipage'
 			wikipage = rawData.data
-			revised_by_user_id = format.datasetId('user_info', wikipage.revision_by.data.name)
+			revised_by_user_id = format.datasetId('user', wikipage.revision_by.data.name)
 			result.sub.push({
 				id: revised_by_user_id
 				data: wikipage.revision_by.data
@@ -181,7 +181,7 @@ export default extract = (rawData) ->
 				data: wikipage
 		when 'LabeledMulti'
 			result.main =
-				id: format.datasetId('multireddit_info', rawData.data.owner, rawData.data.name)
+				id: format.datasetId('multireddit', rawData.data.owner, rawData.data.name)
 				data: rawData.data
 		when 'Listing'
 			listing = rawData.data.children
@@ -206,7 +206,7 @@ export default extract = (rawData) ->
 				data: rawData.data
 		when 'LiveUpdateEvent'
 			result.main =
-				id: format.datasetId('livethread_info', rawData.data.id)
+				id: format.datasetId('livethread', rawData.data.id)
 				data: rawData.data
 		when 'UserList'
 			result.main =

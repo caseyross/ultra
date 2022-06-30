@@ -3,7 +3,7 @@ import { get } from '../infra/requests.coffee'
 CURRENT_USER_NAME = 'caseyross'
 
 export default {
-	current_user_info: ->
+	current_user: ->
 		get("/api/v1/me")
 	current_user_multireddits: ->
 		get("/api/multi/mine")
@@ -39,7 +39,7 @@ export default {
 		get("/subreddits/popular", {
 			limit: 100
 		})
-	multireddit_info: (user_name, multireddit_name) ->
+	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve(null)
 		else get("/api/multi/user/#{user_name}/m/#{multireddit_name}")
 	multireddit_posts: (user_name, multireddit_name, posts_sort, max_posts, after_post_short_id) ->
@@ -116,7 +116,7 @@ export default {
 		})
 	subreddit_emotes: (subreddit_name) ->
 		get("/api/v1/#{subreddit_name}/emojis/all")
-	subreddit_info: (subreddit_name) ->
+	subreddit: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about")
 	subreddit_moderators: (subreddit_name, after_user_short_id) ->
 		get("/r/#{subreddit_name}/about/moderators", {
@@ -150,13 +150,9 @@ export default {
 			sort: comments_sort.split('_')[0]
 			t: comments_sort.split('_')[1]
 		})
-	user_info: (user_name) ->
+	user: (user_name) ->
 		get("/user/#{user_name}/about", {
 			sr_detail: true
-		})
-	user_info_bulk: (...user_short_ids) ->
-		get("/api/user_data_by_account_ids", {
-			ids: user_short_ids.map((short_id) -> "t2_#{short_id}")
 		})
 	user_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/submitted", {
@@ -167,6 +163,10 @@ export default {
 		})
 	user_public_multireddits: (user_name) ->
 		get("/api/multi/user/#{user_name}")
+	users: (...user_short_ids) ->
+		get("/api/user_data_by_account_ids", {
+			ids: user_short_ids.map((short_id) -> "t2_#{short_id}")
+		})
 	wiki: (subreddit_name, page_name, version_short_id) ->
 		get("/r/#{subreddit_name}/wiki/#{page_name}", {
 			v: version_short_id

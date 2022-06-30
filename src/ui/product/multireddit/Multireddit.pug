@@ -10,7 +10,7 @@ script.
 	api.watch(api.format.datasetId('multireddit_posts', user_name, name, posts_sort, 10), (x) ->
 		{ data: postIds  } = x
 	)
-	api.watch(api.format.datasetId('multireddit_info', user_name, name), (x) ->
+	api.watch(api.format.datasetId('multireddit', user_name, name), (x) ->
 		{ data: info  } = x
 	)
 

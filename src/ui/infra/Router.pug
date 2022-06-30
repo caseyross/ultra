@@ -1,13 +1,13 @@
 script.
+	import All from '../product/multireddit/All.pug'
 	import Button from '../product/generic/Button.pug'
-	import Post from '../product/post/Post.pug'
+	import Home from '../product/multireddit/Home.pug'
 	import Multireddit from '../product/multireddit/Multireddit.pug'
-	import MultiredditAll from '../product/multireddit/MultiredditAll.pug'
-	import MultiredditHome from '../product/multireddit/MultiredditHome.pug'
-	import MultiredditPopular from '../product/multireddit/MultiredditPopular.pug'
+	import Popular from '../product/multireddit/Popular.pug'
+	import Post from '../product/post/Post.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
-	import UserProfile from '../product/user/UserProfile.pug'
-	import WikiPage from '../product/wiki/WikiPage.pug'
+	import User from '../product/user/User.pug'
+	import Wiki from '../product/wiki/Wiki.pug'
 	import parseRoute from './parseRoute.coffee'
 	route = parseRoute(location)
 	navigate = (url, options = { replace: false }) ->
@@ -45,21 +45,21 @@ script.
 	{#if route.data.listing_next_url}
 		Button(key='d' link={route.data.listing_next_url} text='Next list item')
 	{#if route.path === 'all'}
-		MultiredditAll(posts_sort={route.data.posts_sort})
+		All(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'home'}
-		MultiredditHome(posts_sort={route.data.posts_sort})
+		Home(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'multireddit'}
 		Multireddit(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
 	{:else if route.path === 'popular'}
-		MultiredditPopular(posts_sort={route.data.posts_sort})
+		Popular(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'post'}
 		Post(shortId={route.data.post_short_id})
 	{:else if route.path === 'subreddit'}
 		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 	{:else if route.path === 'user'}
-		UserProfile(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
-	{:else if route.path === 'wiki_page'}
-		WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
+		User(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
+	{:else if route.path === 'wiki'}
+		Wiki(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
 	{:else}
 		h1 The requested page is not supported yet.
 		dl
