@@ -40,10 +40,6 @@ script.
 			event.preventDefault())
 
 {#key route}
-	{#if route.data.listing_prev_url}
-		Button(key='a' link={route.data.listing_prev_url} text='Previous list item')
-	{#if route.data.listing_next_url}
-		Button(key='d' link={route.data.listing_next_url} text='Next list item')
 	{#if route.path === 'all'}
 		All(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'home'}
@@ -53,7 +49,7 @@ script.
 	{:else if route.path === 'popular'}
 		Popular(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'post'}
-		Post(shortId={route.data.post_short_id})
+		Post(shortId={route.data.post_short_id} showHeader={true})
 	{:else if route.path === 'subreddit'}
 		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 	{:else if route.path === 'user'}

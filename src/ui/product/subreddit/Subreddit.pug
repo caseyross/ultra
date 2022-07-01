@@ -1,16 +1,19 @@
 script.
 	import PostHeader from '../post/PostHeader.pug'
+	import Post from '../post/Post.pug'
 	import api from '../../../api/index.js'
 	import formatRoute from '../../infra/formatRoute.coffee'
 	export name = null
 	export sort = null
 	info = null
-	postIds = null
-	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
-		{ data: postIds  } = x
-	)
 	api.watch(api.format.datasetId('subreddit', name), (x) ->
 		{ data: info  } = x
+	)
+	postIds = null
+	selectedPostId = null
+	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
+		{ data: postIds } = x
+		selectedPostId = postIds?[0]
 	)
 
 svelte:head
@@ -19,15 +22,18 @@ svelte:head
 	input.subreddit-name(placeholder='subreddit name' type='text' value={name})
 	ol.subreddit-posts
 		{#if postIds}
-			{#each postIds as id, index}
-				{@const next = postIds.filter((x, i) => i > index).map(x => api.parse.datasetFilters(x)[0]).join(',')}
-				{@const prev = postIds.filter((x, i) => i < index).map(x => api.parse.datasetFilters(x)[0]).join(',')}
-				a.subreddit-post-link(href={formatRoute(id, { next, prev })})
+			{#each postIds as id}
+				a.subreddit-post-link(href={formatRoute(id)})
 					PostHeader(shortId={api.parse.datasetFilters(id)[0]})
+{#if selectedPostId}
+	Post(shortId={selectedPostId.split(':')[1]} showHeader={false})
 
 style.
 	.subreddit
 		padding 2em 0
+		position fixed
+		right calc(50% + 310px)
+		width 200px
 	.subreddit-name
 		font-size 2em
 		font-weight bold

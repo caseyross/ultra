@@ -14,12 +14,12 @@ script.
 
 {#if post}
 	header.post-header
-		.empty
-		.post-flair
-			{#if post.link_flair_text}
-				Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
-		.post-score
-			Score(value={post.hide_score || post.score})
+		.post-meta
+			.post-score
+				Score(value={post.hide_score || post.score})
+			.post-flair
+				{#if post.link_flair_text}
+					Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
 		.post-header-layout-core
 			h1.post-title {post.title}
 			.post-info
@@ -29,25 +29,16 @@ script.
 					span.post-edit-date(title="Last edited {StringFormat.ago(Time.sToMs(post.edited))}") *
 
 style.
-	.post-header
-		display grid
-		gap 1em 2em
-		grid-auto-flow row
-		grid-template-columns 80px 640px
-		left -110px
-		position relative
 	.post-info
 		align-items center
+		color #808080
 		display flex
 		font 12px 'roboto mono'
 		gap 1ch
 		margin-top 1em
-	.post-score
-		text-align right
 	.post-title
 		align-items flex-end
 		display flex
-		font-size 1.5em
-		line-height 1
+		font-size 16px
 		margin 0
 		overflow-wrap anywhere

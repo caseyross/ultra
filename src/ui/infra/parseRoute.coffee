@@ -78,26 +78,12 @@ export default (url) ->
 					comments_sort = 'best'
 			comment_short_id = path[4]
 			comment_context = query.get('context')
-			listing_next = query.get('next')?.split(',')
-			listing_prev = query.get('prev')?.split(',')
-			if listing_next?.length
-				listing_next_url = formatRoute(
-					api.format.datasetId('post', listing_next[0]),
-					{ next: listing_next[1..], prev: [post_short_id].concat(listing_prev) }
-				)
-			if listing_prev?.length
-				listing_prev_url = formatRoute(
-					api.format.datasetId('post', listing_prev[0]),
-					{ next: [post_short_id].concat(listing_next), prev: listing_prev[1..] }
-				)
 			return {
 				path: 'post'
 				data:
 					comment_context: comment_context
 					comment_short_id: comment_short_id
 					comments_sort: comments_sort
-					listing_next_url: listing_next_url ? null
-					listing_prev_url: listing_prev_url ? null
 					post_short_id: post_short_id
 			}
 		when 'r', 'subreddit'

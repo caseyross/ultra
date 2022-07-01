@@ -6,6 +6,7 @@ script.
 	import PostHeader from './PostHeader.pug'
 	import api from '../../../api/index.js'
 	export shortId = null
+	export showHeader = true
 	post = null
 	api.watch(api.format.datasetId('post', shortId), (x) ->
 		{ data: post } = x
@@ -16,10 +17,9 @@ script.
 svelte:head
 	title {post ? post.title : shortId}
 {#if post}
-	{#if post.subreddit}
-		Button(key='q' link='/r/{post.subreddit}' text='Back to r/{post.subreddit}')
 	article.post
-		PostHeader(shortId={shortId})
+		{#if showHeader}
+			PostHeader(shortId={shortId})
 		section.post-content
 			{#if post.format === 'self'}
 				{#if post.selftext_html}
@@ -54,7 +54,7 @@ svelte:head
 								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_640})
-										img.post-image(alt='image {galleryIndex + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '640px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '640px'}")
+										img.post-image(alt='image {galleryIndex + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -88,8 +88,9 @@ svelte:head
 
 style.
 	.post
-		padding 2em 0
-		width 640px
+		border-left 1px solid var(--separatorcolor)
+		padding 2em 0 2em 48px
+		width 480px
 	.post-additional-images
 		align-items flex-end
 		display flex
@@ -111,6 +112,7 @@ style.
 	.post-image
 		cursor zoom-in
 		margin-top 1em
+		width 100%
 	.post-image-actions
 		display flex
 		gap 1em

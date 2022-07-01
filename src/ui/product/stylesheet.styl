@@ -8,12 +8,16 @@
 .theme-light
 	--bgcolor white
 	--color black
+	--commentcolor aliceblue
 	--linkcolor mediumslateblue
+	--separatorcolor gainsboro
 	color-scheme light
 .theme-dark
 	--bgcolor #1d263b
 	--color white
+	--commentcolor #1e2846
 	--linkcolor wheat
+	--separatorcolor cornflowerblue
 	color-scheme dark
 
 // General
@@ -27,7 +31,7 @@ body
 	color var(--color)
 	display flex
 	flex-flow column nowrap
-	font 14px roboto
+	font 15px/20px ui-serif, system-ui, arial, 'yu gothic'
 	margin 0
 	scrollbar-gutter stable
 
@@ -50,17 +54,15 @@ address
 
 // Verbatim text
 blockquote
-	background rgba(0,0,0,0.1)
 	margin 1em 0 0 0
-	opacity 0.75
-	padding 0.5em 1ch
+	opacity 0.5
 code
 	font inherit
 pre
 	background repeating-linear-gradient(45deg, rgba(0,0,0,0.1), transparent 1px, transparent 0.5em), repeating-linear-gradient(-45deg, rgba(0,0,0,0.1), transparent 1px, transparent 0.5em)
 	display inline-block
 	font 12px 'roboto mono'
-	white-space pre
+	white-space pre-wrap
 
 // Spoilers
 .md-spoiler-text
@@ -94,11 +96,9 @@ h3
 h4
 h5
 h6
-	font-size 1.16em
+	font-size 18px
 	font-weight bold
 	margin 1em 0 0 0
-h1
-	font-size 1.33em
 
 // Tables
 table
@@ -143,10 +143,3 @@ input
 	padding 0
 	white-space pre
 	word-spacing inherit
-
-// Fonts
-@font-face
-	font-family 'inter'
-	font-style normal italic
-	font-weight 100 900
-	src url('./font_inter_var.woff2') format('woff2')
