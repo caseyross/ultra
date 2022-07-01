@@ -1,44 +1,61 @@
 script.
+	import Button from '../generic/Button.pug'
+	import ListingLayout from '../generic/ListingLayout.pug'
 	import PostHeader from '../post/PostHeader.pug'
 	import Post from '../post/Post.pug'
+	import Rules from './Rules.pug'
+	import Wiki from './Wiki.pug'
 	import api from '../../../api/index.js'
-	import formatRoute from '../../infra/formatRoute.coffee'
 	export name = null
 	export sort = null
+	selection = null
 	info = null
 	api.watch(api.format.datasetId('subreddit', name), (x) ->
 		{ data: info  } = x
 	)
 	postIds = null
-	selectedPostId = null
 	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
 		{ data: postIds } = x
-		selectedPostId = postIds?[0]
+		selection = postIds?[0]
 	)
+
 
 svelte:head
 	title {info ? info.title : name}
-.subreddit
-	input.subreddit-name(placeholder='subreddit name' type='text' value={name})
-	ol.subreddit-posts
-		{#if postIds}
-			{#each postIds as id}
-				a.subreddit-post-link(href={formatRoute(id)})
-					PostHeader(shortId={api.parse.datasetFilters(id)[0]})
-{#if selectedPostId}
-	Post(shortId={selectedPostId.split(':')[1]} showHeader={false})
+ListingLayout
+	.subreddit-navigation(slot='navigation')
+		input.subreddit-name(placeholder='subreddit name' type='text' value={name})
+		Button(action={() => selection = 'about'} text='ABOUT')
+		Button(action={() => selection = 'rules'} text='RULES')
+		Button(action={() => selection = 'wiki'} text='WIKI')
+		hr
+		strong POSTS
+		ol.subreddit-posts
+			{#if postIds}
+				{#each postIds as id}
+					button.subreddit-post-link(on:mousedown={() => selection = id})
+						PostHeader(shortId={api.parse.datasetFilters(id)[0]})
+	.subreddit-selection(slot='selection')
+		{#key selection}
+			{#if selection === 'about'}
+				{#if info}
+					.subreddit-description
+						{@html info.description_html}
+			{:else if selection === 'rules'}
+				Rules(subreddit_name={name})
+			{:else if selection === 'wiki'}
+				Wiki(subreddit_name={name} page_name='index')
+			{:else if selection?.startsWith('post')}
+				Post(shortId={selection.split(':')[1]} showHeader={false})
 
 style.
-	.subreddit
+	.subreddit-description
 		padding 2em 0
-		position fixed
-		right calc(50% + 310px)
-		width 200px
 	.subreddit-name
 		font-size 2em
 		font-weight bold
-	.subreddit-posts
-		padding 0
 	.subreddit-post-link
-		display block
+		color var(--linkcolor)
 		margin-top 2em
+		text-align left
+		width 100%

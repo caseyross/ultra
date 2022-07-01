@@ -1,0 +1,25 @@
+script.
+	import api from '../../../api/index.js'
+	export subreddit_name = null
+	rules = null
+	api.watch(api.format.datasetId('subreddit_rules', subreddit_name), (x) ->
+		{ data: rules } = x
+	)
+
+{#if rules}
+	ol.subreddit-rules
+		{#each rules.rules as rule}
+			details.subreddit-rule
+				summary.subreddit-rule-name {rule.short_name}
+				.subreddit-rule-description {@html rule.description_html}
+
+style.
+	.subreddit-rules
+		padding 2em 0
+	.subreddit-rule
+		margin 1em 0 0 0
+	.subreddit-rule-name
+		color var(--linkcolor)
+		font-weight bold
+	.subreddit-rule-description
+		padding 1em

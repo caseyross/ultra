@@ -1,0 +1,23 @@
+script.
+
+.listing-layout
+	.listing-layout-navigation
+		slot(name='navigation')
+	.listing-layout-selection
+		slot(name='selection')
+
+style.
+	.listing-layout
+		display grid
+		grid-template-columns 256px 529px
+		grid-template-rows 100vh
+	.listing-layout-navigation
+		height 100%
+		overflow auto
+		scrollbar-gutter stable
+	.listing-layout-selection
+		border-left 1px solid var(--separatorcolor)
+		height 100%
+		overflow auto
+		padding-left 48px
+		scrollbar-gutter stable
