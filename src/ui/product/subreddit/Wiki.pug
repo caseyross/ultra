@@ -8,6 +8,8 @@ script.
 	page = null
 	api.watch(api.format.datasetId('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page } = x)
 
+svelte:head
+	title {subreddit_name} / {page_name}{revision_id ? ' @ ' + revision_id : ''}
 {#if page}
 	.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name}

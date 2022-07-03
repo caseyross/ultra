@@ -30,6 +30,11 @@ ListingLayout
 		Button(action={() => selection = 'wiki'} text='WIKI')
 		hr
 		strong POSTS
+		Button(link='/r/{name}/new' text='NEW')
+		Button(link='/r/{name}/rising' text='RISING')
+		Button(link='/r/{name}/hot' text='HOT')
+		Button(link='/r/{name}/top' text='TOP')
+		Button(link='/r/{name}/controversial' text='CONTROVERSIAL')
 		ol.subreddit-posts
 			{#if postIds}
 				{#each postIds as id}

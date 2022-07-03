@@ -67,7 +67,7 @@ svelte:head
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
-						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} title='embedded content from {post.url.hostname}')
+						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} style='aspect_ratio: {media.iframe_source_aspect_ratio}' title='embedded content from {post.url.hostname}')
 						menu.post-iframe-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}
@@ -102,7 +102,7 @@ style.
 		margin-top 2em
 		position relative
 	.post-iframe
-		aspect-ratio 16/9
+		aspect-ratio 1
 		width 100%
 	.post-iframe-actions
 		display flex
@@ -110,7 +110,6 @@ style.
 		margin-top 1em
 	.post-image
 		cursor zoom-in
-		margin-top 1em
 		width 100%
 	.post-image-actions
 		display flex
