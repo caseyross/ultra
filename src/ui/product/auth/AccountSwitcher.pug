@@ -1,0 +1,9 @@
+script.
+	import Button from '../generic/Button.pug'
+	import api from '../../../api/index.js'
+	status = api.getLoginStatus()
+
+{#if status === 'logged-in'}
+	Button(action={() => { api.logout(); status = api.getLoginStatus() }} text='Log out')
+{:else}
+	Button(link={api.getLoginURL(location.pathname)} text='Log in ↗')

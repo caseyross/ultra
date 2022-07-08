@@ -1,0 +1,20 @@
+script.
+	export route = null
+
+h1 The requested page is not supported yet.
+dl
+	dt Page type:
+	dd {route.path}
+	dt Data:
+	dd
+		{#if route.data === null}
+			| [null]
+		{:else}
+			dl
+				{#each Object.keys(route.data) as key}
+					dt {key}:
+					dd {route.data[key]}
+
+style.
+	dd
+		font-weight bold

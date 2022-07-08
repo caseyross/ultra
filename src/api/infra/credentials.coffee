@@ -1,5 +1,6 @@
-import errors from './errors.coffee'
 import Time from '../../lib/Time.coffee'
+import errors from './errors.coffee'
+import ratelimit from './ratelimit.coffee'
 
 waitForRenew = (f) ->
 	if localStorage['api.credentials.renewing'] is 'TRUE'
@@ -17,6 +18,7 @@ credentials = {
 		delete localStorage['api.credentials.exchange_token']
 		delete localStorage['api.credentials.key_expiry']
 		delete localStorage['api.credentials.key']
+		ratelimit.forget()
 
 	renew: ->
 		# In the event that multiple instances of the application are instantiated simultaneously, we don't want them competing to acquire the credentials, which are shared.

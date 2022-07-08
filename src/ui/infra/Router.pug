@@ -8,6 +8,7 @@ script.
 	import Subreddit from '../product/subreddit/Subreddit.pug'
 	import User from '../product/user/User.pug'
 	import Wiki from '../product/subreddit/Wiki.pug'
+	import NotImplemented from './NotImplemented.pug'
 	import parseRoute from './parseRoute.coffee'
 	route = parseRoute(location)
 	navigate = (url, options = { replace: false }) ->
@@ -57,20 +58,4 @@ script.
 	{:else if route.path === 'wiki'}
 		Wiki(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
 	{:else}
-		h1 The requested page is not supported yet.
-		dl
-			dt Page type:
-			dd {route.path}
-			dt Data:
-			dd
-				{#if route.data === null}
-					| [null]
-				{:else}
-					dl
-						{#each Object.keys(route.data) as key}
-							dt {key}:
-							dd {route.data[key]}
-
-style.
-	dd
-		font-weight bold
+		NotImplemented(route={route})

@@ -2,6 +2,10 @@ import Time from '../../lib/Time.coffee'
 
 ratelimit = {
 
+	forget: ->
+		delete localStorage['api.ratelimit.remaining']
+		delete localStorage['api.ratelimit.reset']
+
 	# Upon startup, or in the case that the server fails to provide ratelimit feedback, we need to assume ratelimit parameters.
 	sanitize: ->
 		remaining = Number localStorage['api.ratelimit.remaining']

@@ -42,6 +42,7 @@ export default {
 	ConnectionFailedError,
 	CredentialsRequiredError,
 	InvalidRequestError,
+	LoginFailedError,
 	RatelimitExceededError,
 	ResourceMovedError,
 	ServerNotAvailableError,

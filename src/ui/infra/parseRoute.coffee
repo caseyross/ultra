@@ -1,6 +1,3 @@
-import api from '../../api/index.js'
-import formatRoute from './formatRoute.coffee'
-
 RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
 
 INVALID = {
@@ -15,9 +12,13 @@ TODO = {
 export default (url) ->
 	path = url.pathname.split('/')
 	query = new URLSearchParams(url.search)
+	# Normalize trailing slash if present.
 	if path.last is '' then path.pop()
+	# Strip global SEO prefixes.
 	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3] then path = path[1..]
+	# Treat top-level path as subreddit name unless otherwise identified.
 	if path[1] not in RECOGNIZED_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
+	# Core routing logic begins from here.
 	switch path[1]
 		when undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
 			posts_sort = path[1] ? query.get('sort')

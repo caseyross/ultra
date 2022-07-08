@@ -8,6 +8,9 @@ import datasetSpecialExtractor from './datasets/extractors/special/extract.coffe
 
 cache = {}
 
+export deleteCachedData = ->
+	cache = {}
+
 get = (id) ->
 	if cache[id] then return cache[id]
 	return null
