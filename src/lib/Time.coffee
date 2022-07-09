@@ -13,7 +13,7 @@ units =
 		value: 1000 * 60 * 60 * 24 * 7
 	day:
 		name: 'day'
-		short_name: 'day'
+		short_name: 'd'
 		value: 1000 * 60 * 60 * 24
 	hour:
 		name: 'hour'
