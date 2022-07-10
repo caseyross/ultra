@@ -15,7 +15,11 @@ script.
 	galleryIndex = 0
 
 svelte:head
-	title {post ? post.title : shortId}
+	{#if showHeader}
+		{#if post}
+			title post: {post.title}
+		{:else}
+			title post: {shortId}
 {#if post}
 	article.post
 		{#if showHeader}

@@ -21,7 +21,7 @@ script.
 
 
 svelte:head
-	title {info ? info.title : name}
+	title subreddit: {name}
 ListingLayout
 	.subreddit-navigation(slot='navigation')
 		input.subreddit-name(placeholder='subreddit name' type='text' value={name})

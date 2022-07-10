@@ -23,7 +23,7 @@ script.
 			)
 
 svelte:head
-	title u/{user_name}
+	title user: {user_name}: {items_filter}
 .user-profile
 	input.user-profile-name(placeholder='user name' type='text' value='u/{user_name}')
 	{#if postIds}
