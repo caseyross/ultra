@@ -74,14 +74,14 @@ module.exports = {
 		clean: true, // cleanup local output directory before emitting assets
 		filename: '[name].[contenthash].js',
 		path: path.join(__dirname, 'dist'), // local filesystem output directory, absolute path required
-		publicPath: '', // location where the browser should look on the webserver to find output assets
+		publicPath: '/', // location where the browser should look on the webserver to find output assets
 	},
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
 			favicon: './src/ui/product/favicon_16.png',
 			inject: false, // manual script placement in template
-			publicPath: '',
+			publicPath: '/',
 			template: './src/ui/infra/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
