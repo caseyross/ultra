@@ -1,7 +1,6 @@
 script.
 	import api from '../../../api/index.js'
-	import Time from '../../../lib/Time.coffee'
-	import StringFormat from '../../../lib/StringFormat.coffee'
+	import Format from '../../../lib/Format.coffee'
 	export autoload = false
 	export username = null
 	userInfo = null
@@ -20,9 +19,9 @@ address.avatar(on:mouseenter={() => userInfoPopupVisible = true} on:mouseleave={
 		.avatar-user-info-popup
 			.avatar-user-info-popup-username u/{username}
 			{#if userInfo?.created_utc}
-				.avatar-user-info-popup-cakeday {StringFormat.date(Time.sToMs(userInfo.created_utc))}
+				.avatar-user-info-popup-cakeday Account created: {Format.time.sRelative(userInfo.created_utc)}
 			{#if userInfo?.comment_karma && userInfo?.link_karma}
-				.avatar-user-info-popup-karma {userInfo.link_karma + userInfo.comment_karma} karma ({StringFormat.percentage(userInfo.comment_karma / (userInfo.link_karma + userInfo.comment_karma))}% comment)
+				.avatar-user-info-popup-karma {userInfo.link_karma + userInfo.comment_karma} karma ({Format.number.percent(userInfo.comment_karma, userInfo.comment_karma + userInfo.link_karma)}% comment)
 
 style.
 	.avatar

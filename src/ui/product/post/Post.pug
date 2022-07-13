@@ -71,7 +71,9 @@ svelte:head
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
-						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} style='aspect_ratio: {media.iframe_source_aspect_ratio}' title='embedded content from {post.url.hostname}')
+						<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+						<!-- svelte-ignore a11y-missing-attribute -->
+						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} style='aspect_ratio: {media.iframe_source_aspect_ratio}')
 						menu.post-iframe-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}

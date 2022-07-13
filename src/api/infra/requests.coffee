@@ -1,7 +1,6 @@
 import credentials from './credentials.coffee'
 import errors from './errors.coffee'
 import ratelimit from './ratelimit.coffee'
-import Time from '../../lib/Time.coffee'
 
 export get = (endpoint, query) -> call('GET', endpoint, { query })
 export patch = (endpoint, content) -> call('PATCH', endpoint, { content })

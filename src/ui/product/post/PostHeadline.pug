@@ -2,7 +2,6 @@ script.
 	import Format from '../../../lib/Format.coffee'
 	import Avatar from '../user/Avatar.pug'
 	import Flair from './Flair.pug'
-	import Score from './Score.pug'
 	import api from '../../../api/index.js'
 	export shortId = null
 	post = null
@@ -12,28 +11,35 @@ script.
 	)
 
 {#if post}
-	header.post-header
+	.post-headline
 		.post-meta
-			.post-score
-				Score(value={post.hide_score || post.score})
+			Avatar(autoload={false} username={post.author})
 			.post-flair
 				{#if post.link_flair_text}
 					Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
-		.post-header-layout-core
-			h1.post-title {post.title}
-			.post-info
-				Avatar(autoload={false} username={post.author})
-				span.post-create-date Posted {Format.time.sRelative(post.created_utc)}
-				{#if post.edited}
-					span.post-edit-date(title="Last edited {Format.time.sRelative(post.edited)}") *
-
+		h1.post-title {post.title}
+		.post-info
+			time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
+			data.post-comment-count {post.num_comments} 💬
 style.
+	.post-headline
+		background var(--commentcolor)
+		border-radius 1em
+		padding 1em
+		position relative
+	.post-meta
+		display flex
+		justify-content space-between
+		position absolute
+		top -1em
+		width calc(100% - 2em)
 	.post-info
 		align-items center
 		color #808080
 		display flex
 		font 12px 'roboto mono'
 		gap 1ch
+		justify-content space-between
 		margin-top 1em
 	.post-title
 		align-items flex-end

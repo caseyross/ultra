@@ -1,6 +1,5 @@
 script.
-	import StringFormat from '../../../lib/StringFormat.coffee'
-	import Time from '../../../lib/Time.coffee'
+	import Format from '../../../lib/Format.coffee'
 	import api from '../../../api/index.js'
 	export page_name = null
 	export revision_id = null
@@ -14,7 +13,7 @@ svelte:head
 	.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name}
 		.wiki-page-info
-			.wiki-page-edit-date Last revised {StringFormat.ago(Time.sToMs(page.revision_date))}
+			.wiki-page-edit-date Last revised {Format.time.sRelative(page.revision_date)}
 		.wiki-page-body
 			{@html page.content_html}
 

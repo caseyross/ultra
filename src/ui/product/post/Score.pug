@@ -1,10 +1,10 @@
 script.
-	import StringFormat from '../../../lib/StringFormat.coffee'
+	import Format from '../../../lib/Format.coffee'
 	export value = null
 
 button.score
 	{#if Number.isFinite(value)}
-		data.score-value {StringFormat.plusMinus(value)}
+		data.score-value {Format.number.plusMinus(value)}
 	{:else}
 		data.score-value.score-value-hidden ???
 

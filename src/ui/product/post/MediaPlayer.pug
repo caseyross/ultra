@@ -1,6 +1,5 @@
 script.
-	import Time from '../../../lib/Time.coffee'
-	import StringFormat from '../../../lib/StringFormat.coffee'
+	import Format from '../../../lib/Format.coffee'
 	import Button from '../generic/Button.pug'
 	import { onMount } from 'svelte'
 	export audio_url = null
@@ -82,7 +81,7 @@ script.
 					span.mute-region MUTE
 					span.sound-region SOUND
 					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
-			time.media-duration {StringFormat.durationMinutesSeconds(Time.sToMs(duration))}
+			time.media-duration {Format.time.sMediaDuration(duration)}
 
 style.
 	::-webkit-media-controls
@@ -174,7 +173,7 @@ style.
 		position absolute
 		top 0
 	video
-		aspect-ratio 16/9
+		aspect-ratio 1
 		width 100%
 		&.video-hide-controls
 			cursor none

@@ -1,7 +1,7 @@
 script.
 	import Button from '../generic/Button.pug'
 	import ListingLayout from '../generic/ListingLayout.pug'
-	import PostHeader from '../post/PostHeader.pug'
+	import PostHeadline from '../post/PostHeadline.pug'
 	import Post from '../post/Post.pug'
 	import Rules from './Rules.pug'
 	import Wiki from './Wiki.pug'
@@ -24,22 +24,23 @@ svelte:head
 	title subreddit: {name}
 ListingLayout
 	.subreddit-navigation(slot='navigation')
-		input.subreddit-name(placeholder='subreddit name' type='text' value={name})
+		.subreddit-name
+			Button(text={name})
 		Button(action={() => selection = 'about'} text='ABOUT')
 		Button(action={() => selection = 'rules'} text='RULES')
+		Button(action={() => selection = 'search'} text='SEARCH')
 		Button(action={() => selection = 'wiki'} text='WIKI')
 		hr
-		strong POSTS
-		Button(link='/r/{name}/new' text='NEW')
-		Button(link='/r/{name}/rising' text='RISING')
-		Button(link='/r/{name}/hot' text='HOT')
-		Button(link='/r/{name}/top' text='TOP')
-		Button(link='/r/{name}/controversial' text='CONTROVERSIAL')
+		Button(link='/r/{name}/new' text='New')
+		Button(link='/r/{name}/rising' text='Rising')
+		Button(link='/r/{name}/hot' text='Hot')
+		Button(link='/r/{name}/top' text='Top')
+		Button(link='/r/{name}/controversial' text='Contro.')
 		ol.subreddit-posts
 			{#if postIds}
 				{#each postIds as id}
 					button.subreddit-post-link(on:mousedown={() => selection = id})
-						PostHeader(shortId={api.parse.datasetFilters(id)[0]})
+						PostHeadline(shortId={api.parse.datasetFilters(id)[0]})
 	.subreddit-selection(slot='selection')
 		{#key selection}
 			{#if selection === 'about'}

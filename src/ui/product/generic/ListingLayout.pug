@@ -12,7 +12,7 @@ script.
 style.
 	.listing-layout
 		display grid
-		grid-template-columns 256px 529px
+		grid-template-columns 310px 560px
 		grid-template-rows 100vh
 	.listing-layout-account
 		right 1em
@@ -21,10 +21,11 @@ style.
 	.listing-layout-navigation
 		height 100%
 		overflow auto
-		scrollbar-gutter stable
+		&::-webkit-scrollbar
+			display none
 	.listing-layout-selection
-		border-left 1px solid var(--separatorcolor)
 		height 100%
 		overflow auto
 		padding-left 48px
-		scrollbar-gutter stable
+		&::-webkit-scrollbar
+			display none

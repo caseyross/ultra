@@ -5,7 +5,7 @@ units =
 		value: 1000 * 60 * 60 * 24 * 366
 	month:
 		name: 'month'
-		short_name: 'mo'
+		short_name: 'mth'
 		value: 1000 * 60 * 60 * 24 * 31
 	week:
 		name: 'week'
