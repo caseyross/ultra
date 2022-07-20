@@ -1,3 +1,23 @@
+// Type
+@font-face
+	font-family 'Albert Sans'
+	font-weight 400
+	src url('./font_albertsans_400.woff2')
+@font-face
+	font-family 'Albert Sans'
+	font-weight 700
+	src url('./font_albertsans_700.woff2')
+@font-face
+	font-family 'Albert Sans'
+	font-style italic
+	font-weight 400
+	src url('./font_albertsans_400_i.woff2')
+@font-face
+	font-family 'Albert Sans'
+	font-style italic
+	font-weight 400
+	src url('./font_albertsans_700_i.woff2')
+
 // Single-direction margin
 *
 	margin-bottom 0
@@ -11,60 +31,72 @@
 	--commentcolor aliceblue
 	--linkcolor mediumslateblue
 	--separatorcolor gainsboro
+	--tintcolor rgba(0,0,0,0.05)
 	color-scheme light
 .theme-dark
 	--bgcolor #1d263b
 	--color white
 	--commentcolor #1e2846
 	--linkcolor wheat
-	--separatorcolor cornflowerblue
+	--separatorcolor slategrey
+	--tintcolor rgba(0,0,0,0.25)
 	color-scheme dark
 
 // General
 *:focus
 	outline-color gold
-.md
-	overflow-wrap anywhere
 
 // Body
 body
-	align-items center
 	background-color var(--bgcolor)
 	color var(--color)
-	display flex
-	flex-flow column nowrap
-	font 15px/20px ui-serif, system-ui, arial, 'yu gothic'
+	font 11pt/1.5 'Albert Sans', 'Microsoft Sans Serif', 'Yu Gothic'
 	margin 0
+	padding-left calc(50% - 240px)
+	padding-right 8px
 	scrollbar-gutter stable
 
 // Paragraphs
 p
-	margin 1em 0 0 0
+	margin 0.5em 0 0 0
+	width 600px
 hr
 	background currentColor
 	border 0
 	height 1px
-	margin 1em 0 0 0
+	margin 2em 0 0 0
+	width 480px
 
 // Formatted text
 a
 	color var(--linkcolor)
 	text-decoration none
 	overflow-wrap anywhere
+a:not(:is(a[href*='reddit.com/'], a[href*='redd.it/'], a[href^='/'], a[href^='#']))::before
+	content '↗️' / 'External link'
+	font bold 0.8em 'Meiryo'
+	margin-inline-end 1ch
+	opacity 0.8
 address
 	font-style normal
 
 // Verbatim text
 blockquote
-	margin 1em 0 0 0
-	opacity 0.5
+	border-left 5px solid var(--separatorcolor)
+	margin 0.5em 0 0 2px
+	opacity 0.8
+	padding 0 0 0 10px
 code
-	font inherit
 pre
-	background repeating-linear-gradient(45deg, rgba(0,0,0,0.1), transparent 1px, transparent 0.5em), repeating-linear-gradient(-45deg, rgba(0,0,0,0.1), transparent 1px, transparent 0.5em)
-	display inline-block
-	font 12px 'roboto mono'
+	background var(--tintcolor)
+	font-family 'roboto mono'
 	white-space pre-wrap
+pre
+	display inline-block
+	font-size 12px
+	padding 1em
+	& code
+		background transparent
 
 // Spoilers
 .md-spoiler-text
@@ -81,23 +113,28 @@ pre
 			opacity 1
 
 // Lists
-li
-	margin 0
 menu
-	margin 0
-	padding 0
 ol
 ul
-	margin 1em 0 0 0
+	margin 0
 	padding 0
-.md ol
-.md ul
-	padding-inline-start 20px
 ol ol
 ol ul
 ul ol
 ul ul
-	margin 0
+	list-style-type initial
+.md ol
+.md ul
+	margin 0.25em 0 0 0
+	padding-inline-start 18px
+.md ol ol
+.md ol ul
+.md ul ol
+.md ul ul
+	margin 0.25em 0 0 0
+li
+	margin 0.25em 0 0 0
+	max-width 582px
 
 // Headers
 h1
@@ -106,24 +143,31 @@ h3
 h4
 h5
 h6
-	font-size 18px
-	font-weight bold
 	margin 1em 0 0 0
+h1
+	font-size 1.5em
+h2
+	font-size 1.35em
+h3
+	font-size 1.2em
+h4
+h5
+h6
+	font-size 1em
 
 // Tables
 table
-	border 1px solid
+	background rgba(0,0,0,0.1)
 	font-size 12px
-	line-height 15px
-	margin 1em 0 0 0
-	padding 1ch
-	white-space pre-wrap
+	line-height 1.25
+	margin 0.5em 0 0 0
+	padding 1em
 td
 th
-	padding 0.5em 2ch 0.5em 0
-	vertical-align top
-th
-	text-align left
+	padding 0.1em
+td ~ td
+th ~ th
+	padding-left 0.9em
 
 // Media
 figure

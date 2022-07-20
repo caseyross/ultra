@@ -4,7 +4,7 @@ script.
 	export richtext = null
 	export text = null
 
-span.flair(style="background: {color}; color: {(new Color(color)).asContrastHex()}")
+span.flair(style="background: {color || 'orangered'}; color: {color ? (new Color(color)).asContrastHex() : 'white'}")
 	{#if richtext && richtext.length}
 		{#each richtext as segment}
 			{#if segment.e === 'text'}
@@ -17,10 +17,8 @@ span.flair(style="background: {color}; color: {(new Color(color)).asContrastHex(
 style.
 	.flair
 		align-items center
-		border 1px solid var(--color)
 		border-radius 99px
 		display inline-flex
-		font-size 11px
 		gap 1ch
 		padding 0 1em
 	.flair-emoji

@@ -2,30 +2,38 @@ script.
 	import AccountSwitcher from '../auth/AccountSwitcher.pug'
 
 .listing-layout
-	.listing-layout-account
-		AccountSwitcher
 	.listing-layout-navigation
 		slot(name='navigation')
 	.listing-layout-selection
 		slot(name='selection')
+	.listing-layout-account
+		AccountSwitcher
 
 style.
-	.listing-layout
-		display grid
-		grid-template-columns 310px 560px
-		grid-template-rows 100vh
 	.listing-layout-account
-		right 1em
+		align-items center
+		display flex
+		flex-flow column nowrap
+		padding 16px
 		position fixed
-		top 1em
+		right 0
+		top 0
 	.listing-layout-navigation
+		box-sizing border-box
+		justify-self flex-end
 		height 100%
+		left calc(50% - 480px)
 		overflow auto
+		padding 16px
+		position fixed
+		top 0
+		width 240px
 		&::-webkit-scrollbar
 			display none
 	.listing-layout-selection
+		box-sizing border-box
 		height 100%
 		overflow auto
-		padding-left 48px
+		padding 48px
 		&::-webkit-scrollbar
 			display none

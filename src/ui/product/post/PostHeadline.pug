@@ -1,6 +1,5 @@
 script.
 	import Format from '../../../lib/Format.coffee'
-	import Avatar from '../user/Avatar.pug'
 	import Flair from './Flair.pug'
 	import api from '../../../api/index.js'
 	export shortId = null
@@ -13,7 +12,6 @@ script.
 {#if post}
 	.post-headline
 		.post-meta
-			Avatar(autoload={false} username={post.author})
 			.post-flair
 				{#if post.link_flair_text}
 					Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
@@ -21,6 +19,9 @@ script.
 		.post-info
 			time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
 			data.post-comment-count {post.num_comments} 💬
+		.post-subreddit in
+			a(href='/r/{post.subreddit}') {post.subreddit}
+
 style.
 	.post-headline
 		background var(--commentcolor)
@@ -35,15 +36,20 @@ style.
 		width calc(100% - 2em)
 	.post-info
 		align-items center
-		color #808080
 		display flex
-		font 12px 'roboto mono'
+		font-size 12px
 		gap 1ch
 		justify-content space-between
 		margin-top 1em
+		opacity 0.75
 	.post-title
 		align-items flex-end
+		color var(--linkcolor)
 		display flex
-		font-size 16px
+		font-size 18px
+		font-weight normal
 		margin 0
 		overflow-wrap anywhere
+	.post-subreddit
+		float right
+		margin-top 0.5em

@@ -1,4 +1,4 @@
-RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
+RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
 
 INVALID = {
 	path: 'invalid'
@@ -10,8 +10,8 @@ TODO = {
 }
 
 export default (url) ->
-	path = url.pathname.split('/')
-	query = new URLSearchParams(url.search)
+	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
+	query = new URLSearchParams(decodeURI(url.search))
 	# Normalize trailing slash if present.
 	if path.last is '' then path.pop()
 	# Strip global SEO prefixes.
@@ -66,7 +66,7 @@ export default (url) ->
 					user_name: user_name
 			}
 		when 'mail', 'message', 'messages' then return TODO
-		when 'p', 'post'
+		when 'p', 'post', 'tb'
 			post_short_id = path[2]
 			switch
 				when !post_short_id then return INVALID
@@ -115,7 +115,7 @@ export default (url) ->
 						when !subreddit_name then return INVALID
 						when subreddit_name.length < 2 then return INVALID
 						else break
-					page_name = path[4]
+					page_name = path[4..].join('/') # wiki pages can be nested
 					switch
 						when !page_name then page_name = 'index'
 						when page_name is 'pages'
@@ -266,7 +266,7 @@ export default (url) ->
 				when !subreddit_name then return INVALID
 				when subreddit_name.length < 2 then return INVALID
 				else break
-			page_name = path[3]
+			page_name = path[3..].join('/') # wiki pages can be nested
 			switch
 				when !page_name then page_name = 'index'
 				when page_name is 'pages'

@@ -1,5 +1,6 @@
 script.
 	import Format from '../../../lib/Format.coffee'
+	import Markup from '../generic/Markup.pug'
 	import api from '../../../api/index.js'
 	export page_name = null
 	export revision_id = null
@@ -8,35 +9,47 @@ script.
 	api.watch(api.format.datasetId('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page } = x)
 
 svelte:head
-	title wiki: {subreddit_name}: {page_name}
+	title wiki: {subreddit_name}: {page_name.split('/').join(': ')}
 {#if page}
 	.wiki-page
-		h1.wiki-page-name {subreddit_name} / {page_name}
+		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
 		.wiki-page-info
-			.wiki-page-edit-date Last revised {Format.time.sRelative(page.revision_date)}
+			.wiki-page-edit-date Revised {Format.time.sRelative(page.revision_date)}
 		.wiki-page-body
-			{@html page.content_html}
+			Markup(html={page.content_html})
 
 style.
 	.wiki-page
 		padding 6em 0
-		width 480px
 	.wiki-page-body
 		margin-top 3em
+		position relative
 	.wiki-page-info
 		align-items center
 		display flex
-		font 12px 'roboto mono'
+		font-size 12px
 		gap 1ch
 		margin-top 1em
+		opacity 0.5
 	.wiki-page-name
 		font-size 2em
 	:global(.wiki-page .toc)
+		box-sizing border-box
 		font-size 12px
 		line-height 1
+		max-height 100vh
+		overflow auto
+		padding 8em 0
 		position fixed
-		left calc(50% + 320px)
-		top 8em
+		right calc(50% + 320px)
+		top 0
+		&::-webkit-scrollbar
+			display none
+	:global(.wiki-page .toc > ul)
+		background var(--tintcolor)
+		padding 3em 2em !important
+	:global(.wiki-page .toc li)
+		margin-top 1em
 	:global(.wiki-page .toc ol)
 	:global(.wiki-page .toc ul)
 		list-style-type none
@@ -46,4 +59,4 @@ style.
 	:global(.wiki-page .toc ul ol)
 	:global(.wiki-page .toc ul ul)
 		border-left 1px solid rgba(0,0,0,0.1)
-		padding-left 3ch
+		padding-left 1em

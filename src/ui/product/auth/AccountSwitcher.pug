@@ -6,4 +6,4 @@ script.
 {#if status === 'logged-in'}
 	Button(action={() => { api.logout(); status = api.getLoginStatus() }} text='Log out')
 {:else}
-	Button(link={api.getLoginURL(location.pathname)} text='Log in ↗')
+	Button(link={api.getLoginURL(location.pathname)} text='Log in')

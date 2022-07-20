@@ -3,37 +3,44 @@ script.
 	import Format from '../../../lib/Format.coffee'
 	export autoload = false
 	export username = null
+	deleted = username is '[deleted]'
 	userInfo = null
 	userInfoPopupVisible = false
-	if username != '[deleted]'
+	if not deleted
 		api.watch(
 			"user:#{username.toLowerCase()}"
 			(x) -> { data: userInfo } = x
 			{ autoload: autoload }
 		)
 
-address.avatar(on:mouseenter={() => userInfoPopupVisible = true} on:mouseleave={() => userInfoPopupVisible = false})
-	a(href="{username === '[deleted]' ? '' : '/u/' + username}")
-		img.avatar-picture(alt='' decoding='async' fetchpriority='low' loading='lazy' src={userInfo?.profile_img})
-	{#if userInfoPopupVisible}
-		.avatar-user-info-popup
-			.avatar-user-info-popup-username u/{username}
-			{#if userInfo?.created_utc}
-				.avatar-user-info-popup-cakeday Account created: {Format.time.sRelative(userInfo.created_utc)}
-			{#if userInfo?.comment_karma && userInfo?.link_karma}
-				.avatar-user-info-popup-karma {userInfo.link_karma + userInfo.comment_karma} karma ({Format.number.percent(userInfo.comment_karma, userInfo.comment_karma + userInfo.link_karma)}% comment)
+{#if deleted}
+	address.avatar
+		figure.avatar-picture-user-unknown
+{:else}
+	address.avatar(on:mouseenter={() => userInfoPopupVisible = true} on:mouseleave={() => userInfoPopupVisible = false})
+		a(href='/u/{username}')
+			img.avatar-picture(alt='' decoding='async' fetchpriority='low' loading='lazy' src={userInfo?.profile_img})
+		{#if userInfoPopupVisible}
+			.avatar-user-info-popup
+				.avatar-user-info-popup-username u/{username}
+				{#if userInfo?.created_utc}
+					.avatar-user-info-popup-cakeday Account created: {Format.time.sRelative(userInfo.created_utc)}
+				{#if userInfo?.comment_karma && userInfo?.link_karma}
+					.avatar-user-info-popup-karma {userInfo.link_karma + userInfo.comment_karma} karma ({Format.number.percent(userInfo.comment_karma, userInfo.comment_karma + userInfo.link_karma)}% comment)
 
 style.
 	.avatar
-		cursor pointer
-		position relative
-	.avatar-picture
 		aspect-ratio 1
-		background transparent
-		border-radius 50%
-		height 24px
+		clip-path circle(50%)
+		position relative
+		width 16px
+	.avatar-picture
+		width 100%
+	.avatar-picture-user-unknown
+		background var(--tintcolor)
+		height 100%
 	.avatar-user-info-popup
-		background white
+		background var(--bgcolor)
 		border 1px solid
 		border-radius 1ch
 		bottom 0

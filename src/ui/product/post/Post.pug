@@ -4,6 +4,7 @@ script.
 	import Comment from './Comment.pug'
 	import MediaPlayer from './MediaPlayer.pug'
 	import PostHeader from './PostHeader.pug'
+	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../../api/index.js'
 	export shortId = null
 	export showHeader = true
@@ -26,9 +27,8 @@ svelte:head
 			PostHeader(shortId={shortId})
 		section.post-content
 			{#if post.format === 'self'}
-				{#if post.selftext_html}
-					.post-selftext
-						{@html post.selftext_html.replace(/<p>\s*(&#x200b;|&#x200B;|&nbsp;)\s*<\/p>/g, '').replace(/<p><a href="https:\/\/preview.redd.it\/(.*?)">(.*?)<\/a><\/p>/g, "<img alt='$2' class='post-selftext-media' src='https://preview.redd.it/$1' title='$2'>")}
+				{#if !post.selftext.length}
+					.post-selftext-empty [No post text.]
 			{:else if post.format === 'prediction'}
 				.post-predictions
 					{#each post.tournament_data.predictions as prediction}
@@ -73,7 +73,7 @@ svelte:head
 					{#if media.iframe_url}
 						<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 						<!-- svelte-ignore a11y-missing-attribute -->
-						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url} style='aspect_ratio: {media.iframe_source_aspect_ratio}')
+						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
 						menu.post-iframe-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open')
 					{:else if media.html}
@@ -84,10 +84,13 @@ svelte:head
 					Button(action={() => window.open(post.url)} key='e' text='Open')
 			{:else}
 				p [Error displaying post.]
+			{#if post.selftext_html}
+				.post-selftext
+					SelftextMarkup(html={post.selftext_html})
 		{#if post.replies?.length}
 			ol.post-replies
 				{#each post.replies as replyId}
-					Comment(id={replyId})
+					Comment(id={replyId} topLevel={true})
 				{#if post.more_replies}
 					.post-more-replies
 						ActionText(text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
@@ -95,7 +98,6 @@ svelte:head
 style.
 	.post
 		padding 2em 0 2em 0
-		width 480px
 	.post-additional-images
 		align-items flex-end
 		display flex
@@ -108,7 +110,7 @@ style.
 		margin-top 2em
 		position relative
 	.post-iframe
-		aspect-ratio 1
+		aspect-ratio 16 / 9
 		width 100%
 	.post-iframe-actions
 		display flex
@@ -130,8 +132,8 @@ style.
 		margin-top 1em
 	.post-more-replies
 		margin-top 2em
-	.post-replies
-		padding 2em 0
+	:global(.post-replies > .comment)
+		margin-top 3em !important
 	.post-prediction-options > li
 		display flex
 	:global(.post-selftext-media)

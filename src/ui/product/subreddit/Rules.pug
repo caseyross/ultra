@@ -1,4 +1,5 @@
 script.
+	import Markup from '../generic/Markup.pug'
 	import api from '../../../api/index.js'
 	export subreddit_name = null
 	rules = null
@@ -11,7 +12,8 @@ script.
 		{#each rules.rules as rule}
 			details.subreddit-rule
 				summary.subreddit-rule-name {rule.short_name}
-				.subreddit-rule-description {@html rule.description_html}
+				.subreddit-rule-description
+					Markup(html={rule.description_html})
 
 style.
 	.subreddit-rules

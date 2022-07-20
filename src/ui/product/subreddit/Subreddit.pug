@@ -1,5 +1,6 @@
 script.
 	import Button from '../generic/Button.pug'
+	import Markup from '../generic/Markup.pug'
 	import ListingLayout from '../generic/ListingLayout.pug'
 	import PostHeadline from '../post/PostHeadline.pug'
 	import Post from '../post/Post.pug'
@@ -46,7 +47,7 @@ ListingLayout
 			{#if selection === 'about'}
 				{#if info}
 					.subreddit-description
-						{@html info.description_html}
+						Markup(html={info.description_html})
 			{:else if selection === 'rules'}
 				Rules(subreddit_name={name})
 			{:else if selection === 'wiki'}
@@ -60,8 +61,9 @@ style.
 	.subreddit-name
 		font-size 2em
 		font-weight bold
+	.subreddit-posts
+		padding 2em 0
 	.subreddit-post-link
-		color var(--linkcolor)
 		margin-top 2em
 		text-align left
 		width 100%

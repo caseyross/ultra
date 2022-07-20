@@ -2,7 +2,6 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 	when 'clips.twitch.tv'
 		descriptor = url.pathname.split('/')[1]
 		if descriptor?.length
-			iframe_source_aspect_ratio: '16 / 9'
 			iframe_url: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
 		else
 			null
@@ -15,7 +14,6 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 	when 'm.twitch.tv'
 		descriptor = url.pathname.split('/')[2]
 		if descriptor?.length
-			iframe_source_aspect_ratio: '16 / 9'
 			iframe_url: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
 		else
 			null
@@ -41,7 +39,6 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 	when 'twitch.tv'
 		descriptor = url.pathname.split('/')[3]
 		if descriptor?.length
-			iframe_source_aspect_ratio: '16 / 9'
 			iframe_url: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
 		else
 			null
@@ -49,7 +46,6 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 		descriptor = url.pathname.split('/')[1]
 		if descriptor?.length
 			iframe_allow: 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-			iframe_source_aspect_ratio: '16 / 9'
 			iframe_url: "https://www.youtube.com/embed/#{descriptor}"
 		else
 			null
@@ -57,7 +53,6 @@ export default (url) -> switch (if url.hostname.startsWith('www') then url.hostn
 		descriptor = url.searchParams.get('v')
 		if descriptor?.length and url.pathname.split('/')[1] != 'clip' # clip URLs don't contain the information necessary for embedding
 			iframe_allow: 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-			iframe_source_aspect_ratio: '16 / 9'
 			iframe_url: "https://www.youtube.com/embed/#{descriptor}"
 		else
 			null

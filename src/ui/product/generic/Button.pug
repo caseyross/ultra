@@ -10,18 +10,18 @@ script.
 
 {#if link}
 	a(class:activated={activated} disabled={disabled} href={link} use:hotkey={key})
+		{#if key}
+			KeyLabel(key={key})
 		slot
 		{#if text}
-			span.button-text {text}
-		{#if key}
-			KeyLabel(key={key})
+			| {text}
 {:else}
 	button(class:activated={activated} disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
-		slot
-		{#if text}	
-			span.button-text {text}
 		{#if key}
 			KeyLabel(key={key})
+		slot
+		{#if text}	
+			| {text}
 
 style.
 	a
@@ -29,7 +29,6 @@ style.
 		background rgba(0,0,0,0.05)
 		border-radius 6px
 		display inline-flex
-		flex-flow row-reverse nowrap
 		font-weight bold
 		gap 5px
 		line-height 18px
