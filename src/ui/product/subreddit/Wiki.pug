@@ -1,15 +1,20 @@
 script.
+	import Markup from '../text/Markup.pug'
+	import PageUnavailable from '../../infra/PageUnavailable.pug'
 	import Format from '../../../lib/Format.coffee'
-	import Markup from '../generic/Markup.pug'
 	import api from '../../../api/index.js'
 	export page_name = null
 	export revision_id = null
 	export subreddit_name = null
+	error = null
 	page = null
-	api.watch(api.format.datasetId('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page } = x)
+	api.watch(api.format.datasetId('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page, error: error } = x)
 
 svelte:head
 	title wiki: {subreddit_name}: {page_name.split('/').join(': ')}
+{#if error}
+	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
+		PageUnavailable(path='/r/{subreddit_name}/wiki/{page_name}?v={revision_id}')
 {#if page}
 	.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}

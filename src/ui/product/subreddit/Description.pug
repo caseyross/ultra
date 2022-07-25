@@ -1,0 +1,14 @@
+script.
+	import Markup from '../text/Markup.pug'
+	import api from '../../../api/index.js'
+	export subreddit_name = null
+	info = null
+	api.watch(api.format.datasetId('subreddit', subreddit_name), (x) -> { data: info } = x)
+
+{#if info}
+	.subreddit-description
+		Markup(html={info.description_html})
+
+style.
+	.subreddit-description
+		padding 2em 0

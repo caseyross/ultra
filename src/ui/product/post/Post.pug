@@ -1,34 +1,48 @@
 script.
-	import ActionText from '../generic/ActionText.pug'
-	import Button from '../generic/Button.pug'
+	import Format from '../../../lib/Format.coffee'
+	import Avatar from '../user/Avatar.pug'
+	import AVPlayer from './AVPlayer.pug'
+	import Button from '../controls/Button.pug'
 	import Comment from './Comment.pug'
-	import MediaPlayer from './MediaPlayer.pug'
-	import PostHeader from './PostHeader.pug'
+	import Flair from './Flair.pug'
+	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../../api/index.js'
-	export shortId = null
-	export showHeader = true
+	export id = null
+	export setPageTitle = true
 	post = null
-	api.watch(api.format.datasetId('post', shortId), (x) ->
+	api.watch(id, (x) ->
 		{ data: post } = x
 		if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
 	)
 	galleryIndex = 0
 
 svelte:head
-	{#if showHeader}
+	{#if setPageTitle}
 		{#if post}
 			title post: {post.title}
 		{:else}
-			title post: {shortId}
+			title post: {api.parse.datasetFilters(id)[0]}
 {#if post}
 	article.post
-		{#if showHeader}
-			PostHeader(shortId={shortId})
+		header.post-header
+			.post-meta
+				.post-score
+					Score(value={post.hide_score || post.score})
+				.post-flair
+					{#if post.link_flair_text}
+						Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
+			.post-header-layout-core
+				h1.post-title {post.title}
+				.post-info
+					Avatar(autoload={false} username={post.author})
+					span.post-create-date Posted {Format.time.sRelative(post.created_utc)}
+					{#if post.edited}
+						span.post-edit-date(title="Last edited {Format.time.sRelative(post.edited)}") *
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}
-					.post-selftext-empty [No post text.]
+					.post-selftext-empty
 			{:else if post.format === 'prediction'}
 				.post-predictions
 					{#each post.tournament_data.predictions as prediction}
@@ -42,18 +56,18 @@ svelte:head
 			{:else if post.format === 'media'}
 				{#if post.media.length > 1}
 					menu.post-additional-images
-						Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='a' text='←')
+						Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='t' text='←')
 						{#each post.media as media, index}
 							Button(action={() => galleryIndex = index})
 								picture
 									source(srcset={media.image_url_108})
 									img.post-additional-image-thumbnail(alt='thumbnail for image {index + 1} in gallery' class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
-						Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='d' text='→')
+						Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='g' text='→')
 				{@const media = post.media[galleryIndex]}
 					{#key media}
 						figure
 							{#if media.video_url}
-								MediaPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_url={media.video_url})
+								AVPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_url={media.video_url})
 							{:else if media.image_url}
 								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 									picture
@@ -66,8 +80,8 @@ svelte:head
 										{#if media.caption_url}
 											a(href={media.caption_url}) {media.caption_url}
 								menu.post-image-actions
-									Button(action={() => window.open(media.image_url)} key='e' text='Open')
-									Button(action={() => window.open(media.image_url)} key='f' text='Fullscreen')
+									Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
+									Button(action={() => window.open(media.image_url)} key='o' text='Open original')
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -75,13 +89,13 @@ svelte:head
 						<!-- svelte-ignore a11y-missing-attribute -->
 						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
 						menu.post-iframe-actions
-							Button(action={() => window.open(post.url)} key='e' text='Open')
+							Button(action={() => window.open(post.url)} key='o' text='Open original')
 					{:else if media.html}
 						{@html media.html}
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 				menu.post-link-actions
-					Button(action={() => window.open(post.url)} key='e' text='Open')
+					Button(action={() => window.open(post.url)} key='e' text='Open link')
 			{:else}
 				p [Error displaying post.]
 			{#if post.selftext_html}
@@ -93,11 +107,12 @@ svelte:head
 					Comment(id={replyId} topLevel={true})
 				{#if post.more_replies}
 					.post-more-replies
-						ActionText(text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
+						Button(appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
 
 style.
 	.post
-		padding 2em 0 2em 0
+		padding 2em 0
+		width 480px
 	.post-additional-images
 		align-items flex-end
 		display flex
@@ -109,6 +124,13 @@ style.
 	.post-content
 		margin-top 2em
 		position relative
+	.post-info
+		align-items center
+		color #808080
+		display flex
+		font 12px 'roboto mono'
+		gap 1ch
+		margin-top 1em
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
@@ -137,5 +159,8 @@ style.
 	.post-prediction-options > li
 		display flex
 	:global(.post-selftext-media)
-		margin-top 1em
 		max-width 100%
+		padding 1em 0
+	.post-title
+		font-size 2.5em
+		line-height 1.25

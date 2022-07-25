@@ -1,8 +1,8 @@
 script.
 	import api from '../../../api/index.js'
-	import ActionText from '../generic/ActionText.pug'
 	import Avatar from '../user/Avatar.pug'
-	import Markup from '../generic/Markup.pug'
+	import Button from '../controls/Button.pug'
+	import Markup from '../text/Markup.pug'
 	import Score from './Score.pug'
 	export id = null
 	export showReplies = true
@@ -29,10 +29,10 @@ script.
 						svelte:self(id={replyId})
 					{#if comment.more_replies}
 						.comment-more-replies
-							ActionText(text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
+							Button(appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
 					{#if comment.deeper_replies}
 						.comment-more-replies
-							ActionText(text='→ Continue this thread...')
+							Button(appearance='text' text='→ Continue this thread...')
 
 style.
 	.comment

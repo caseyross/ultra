@@ -1,11 +1,9 @@
 script.
-	import Markup from '../generic/Markup.pug'
+	import Markup from '../text/Markup.pug'
 	import api from '../../../api/index.js'
 	export subreddit_name = null
 	rules = null
-	api.watch(api.format.datasetId('subreddit_rules', subreddit_name), (x) ->
-		{ data: rules } = x
-	)
+	api.watch(api.format.datasetId('subreddit_rules', subreddit_name), (x) -> { data: rules } = x)
 
 {#if rules}
 	ol.subreddit-rules

@@ -1,6 +1,6 @@
 script.
 	import Format from '../../../lib/Format.coffee'
-	import Button from '../generic/Button.pug'
+	import Button from '../controls/Button.pug'
 	import { onMount } from 'svelte'
 	export audio_url = null
 	export mimic_gif = false
@@ -65,9 +65,8 @@ script.
 		source(src={audio_url} type='audio/mp4')
 	menu.media-player-controls
 		menu.media-actions
-			Button(action={() => paused && video.play()} disabled={!paused} key='e' text='Play')
-			Button(action={() => !paused && video.pause()} disabled={paused} key='s' text='Pause')
-			Button(action={() => video.requestFullscreen()} key='f' text='Fullscreen')
+			Button(action={() => paused ? video.play() : video.pause()} key='k' text='Play/Pause')
+			Button(action={() => fullscreened() ? document.exitFullscreen() : video.requestFullscreen()} key='f' text='Fullscreen')
 			{#if mimic_gif}
 				Button(action={() => looping = !looping} activated={looping} key='l' text='Loop')
 		{#if !mimic_gif}
@@ -140,7 +139,7 @@ style.
 			width 2px
 	.mute-region
 		align-items center
-		background darkseagreen
+		border-right 1px solid
 		display flex
 		flex 1
 		font 12px 'roboto mono'
@@ -148,7 +147,6 @@ style.
 		justify-content center
 	.sound-region
 		align-items center
-		background coral
 		display flex
 		flex 2
 		font 12px 'roboto mono'

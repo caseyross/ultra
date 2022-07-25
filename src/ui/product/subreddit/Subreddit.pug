@@ -1,69 +1,42 @@
 script.
-	import Button from '../generic/Button.pug'
-	import Markup from '../generic/Markup.pug'
-	import ListingLayout from '../generic/ListingLayout.pug'
-	import PostHeadline from '../post/PostHeadline.pug'
+	import Button from '../controls/Button.pug'
+	import ListingLayout from '../listing/ListingLayout.pug'
+	import PageUnavailable from '../../infra/PageUnavailable.pug'
 	import Post from '../post/Post.pug'
-	import Rules from './Rules.pug'
-	import Wiki from './Wiki.pug'
+	import PostCard from '../post/PostCard.pug'
+	import PostList from '../listing/PostList.pug'
+	import { hotkey } from '../controls/useActions/index.js'
 	import api from '../../../api/index.js'
 	export name = null
 	export sort = null
-	selection = null
-	info = null
-	api.watch(api.format.datasetId('subreddit', name), (x) ->
-		{ data: info  } = x
-	)
+	error = null
 	postIds = null
-	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) ->
-		{ data: postIds } = x
-		selection = postIds?[0]
-	)
-
+	postIndex = -1
+	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) -> { data: postIds, error: error } = x)
 
 svelte:head
 	title subreddit: {name}
-ListingLayout
-	.subreddit-navigation(slot='navigation')
-		.subreddit-name
-			Button(text={name})
-		Button(action={() => selection = 'about'} text='ABOUT')
-		Button(action={() => selection = 'rules'} text='RULES')
-		Button(action={() => selection = 'search'} text='SEARCH')
-		Button(action={() => selection = 'wiki'} text='WIKI')
-		hr
-		Button(link='/r/{name}/new' text='New')
-		Button(link='/r/{name}/rising' text='Rising')
-		Button(link='/r/{name}/hot' text='Hot')
-		Button(link='/r/{name}/top' text='Top')
-		Button(link='/r/{name}/controversial' text='Contro.')
-		ol.subreddit-posts
-			{#if postIds}
-				{#each postIds as id}
-					button.subreddit-post-link(on:mousedown={() => selection = id})
-						PostHeadline(shortId={api.parse.datasetFilters(id)[0]})
-	.subreddit-selection(slot='selection')
-		{#key selection}
-			{#if selection === 'about'}
-				{#if info}
-					.subreddit-description
-						Markup(html={info.description_html})
-			{:else if selection === 'rules'}
-				Rules(subreddit_name={name})
-			{:else if selection === 'wiki'}
-				Wiki(subreddit_name={name} page_name='index')
-			{:else if selection?.startsWith('post')}
-				Post(shortId={selection.split(':')[1]} showHeader={false})
-
-style.
-	.subreddit-description
-		padding 2em 0
-	.subreddit-name
-		font-size 2em
-		font-weight bold
-	.subreddit-posts
-		padding 2em 0
-	.subreddit-post-link
-		margin-top 2em
-		text-align left
-		width 100%
+{#if error}
+	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
+		PageUnavailable(path='/r/{name}')
+{:else if postIds}
+	{#key postIndex}
+		ListingLayout
+			.subreddit-navigation(slot='navigation')
+				{#if postIndex < 0}
+					div(style='display: none')
+						Button(link='/r/{name}/search' text='Search')
+						Button(link='/r/{name}/wiki' text='Wiki')
+						hr
+						Button(link='/r/{name}/new' text='New')
+						Button(link='/r/{name}/rising' text='Rising')
+						Button(link='/r/{name}/hot' text='Hot')
+						Button(link='/r/{name}/top' text='Top')
+						Button(link='/r/{name}/controversial' text='Contro.')
+					PostList(ids={postIds} on:select={(event) => postIndex = event.detail.index})
+			.subreddit-selection(slot='selection')
+				{#if postIndex > -1}
+					Post(id={postIds[postIndex]} setPageTitle={false})
+			.subreddit-next(slot='next')
+				{#if postIndex > -1 && postIndex < postIds.length - 1}
+					PostCard(id={postIds[postIndex + 1]} on:select={(event) => postIndex = postIndex + 1})

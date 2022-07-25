@@ -1,4 +1,4 @@
-RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki']
+RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'dev', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki', 'video']
 
 INVALID = {
 	path: 'invalid'
@@ -6,6 +6,10 @@ INVALID = {
 }
 TODO = {
 	path: 'todo'
+	data: null
+}
+WONT_IMPLEMENT = {
+	path: 'wont_implement'
 	data: null
 }
 
@@ -39,6 +43,10 @@ export default (url) ->
 				data:
 					posts_sort: posts_sort
 			}
+		when 'about' then return WONT_IMPLEMENT
+		when 'channel', 'chat' then return WONT_IMPLEMENT
+		when 'dev' then return WONT_IMPLEMENT
+		when 'gallery' then return WONT_IMPLEMENT
 		when 'm', 'multi', 'multireddit'
 			user_name = path[2]
 			multireddit_name = path[3]
@@ -87,8 +95,10 @@ export default (url) ->
 					comments_sort: comments_sort
 					post_short_id: post_short_id
 			}
+		when 'poll' then return WONT_IMPLEMENT
 		when 'r', 'subreddit'
 			switch path[3]
+				when 'about' then return WONT_IMPLEMENT
 				when 'comments'
 					post_short_id = path[4]
 					if !post_short_id then return INVALID
@@ -108,7 +118,7 @@ export default (url) ->
 							comments_sort: comments_sort
 							post_short_id: post_short_id
 					}
-				when 'search' then return TODO
+				when 's', 'search' then return TODO
 				when 'w', 'wiki'
 					subreddit_name = path[2]
 					switch
@@ -260,6 +270,7 @@ export default (url) ->
 					items_sort: items_sort
 					user_name: user_name
 			}
+		when 'video' then return WONT_IMPLEMENT
 		when 'w', 'wiki'
 			subreddit_name = path[2]
 			switch

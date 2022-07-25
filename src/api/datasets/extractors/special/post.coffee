@@ -26,7 +26,7 @@ export default (rawData) ->
 	# 4. Setup bulk user information leads.
 	post.user_tranches = []
 	user_short_ids_tranch = new Set()
-	user_short_ids_tranch.add(post.author_fullname[3..])
+	if post.author_fullname? then user_short_ids_tranch.add(post.author_fullname[3..])
 	for commentDataset in commentDatasets
 		if commentDataset.data.author_fullname? then user_short_ids_tranch.add(commentDataset.data.author_fullname[3..])
 		if user_short_ids_tranch.size == 500

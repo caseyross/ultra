@@ -1,9 +1,6 @@
 script.
-	import All from '../product/multireddit/All.pug'
-	import Button from '../product/generic/Button.pug'
-	import Home from '../product/multireddit/Home.pug'
-	import Multireddit from '../product/multireddit/Multireddit.pug'
-	import Popular from '../product/multireddit/Popular.pug'
+	import AccountSwitcher from '../product/account/AccountSwitcher.pug'
+	import Button from '../product/controls/Button.pug'
 	import Post from '../product/post/Post.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
 	import User from '../product/user/User.pug'
@@ -41,17 +38,19 @@ script.
 	# END SPA LINK HANDLING LOGIC
 	#
 
-{#key route}
+nav.global-nav
+	a.global-home-link(href='/')
+main
 	{#if route.path === 'all'}
-		All(posts_sort={route.data.posts_sort})
+		NotImplemented(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'home'}
-		Home(posts_sort={route.data.posts_sort})
+		NotImplemented(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'multireddit'}
-		Multireddit(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
+		NotImplemented(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
 	{:else if route.path === 'popular'}
-		Popular(posts_sort={route.data.posts_sort})
+		NotImplemented(posts_sort={route.data.posts_sort})
 	{:else if route.path === 'post'}
-		Post(shortId={route.data.post_short_id} showHeader={true})
+		Post(id={'post:' + route.data.post_short_id})
 	{:else if route.path === 'subreddit'}
 		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 	{:else if route.path === 'user'}
@@ -60,3 +59,44 @@ script.
 		Wiki(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
 	{:else}
 		NotImplemented(route={route})
+nav.account-nav
+	AccountSwitcher
+
+style.
+	.account-nav
+		align-items flex-end
+		display flex
+		flex-flow column nowrap
+		padding 16px
+		position fixed
+		right 0
+		top 0
+		width 64px
+	.global-nav
+		align-items flex-start
+		display flex
+		flex-flow column nowrap
+		left 0
+		height 100vh
+		padding 16px
+		position fixed
+		top 0
+		width 96px
+	.global-home-link
+		aspect-ratio 1
+		background var(--linkcolor)
+		border-radius 50%
+		display block
+		height 64px
+	main
+		display flex
+		flex-flow column nowrap
+		left 5vw
+		height 100vh
+		overflow-y auto
+		padding-left calc(50% - 300px)
+		position fixed
+		top 0
+		width calc(100vw - 160px)
+		&::-webkit-scrollbar
+			display none

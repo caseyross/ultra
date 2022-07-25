@@ -1,0 +1,46 @@
+script.
+	import hotkey from './useActions/hotkey.coffee'
+	import HotkeyLabel from './HotkeyLabel.pug'
+	export action = null
+	export activated = false
+	export appearance = 'button'
+	export disabled = false
+	export key = null
+	export link = null
+	export text = ''
+
+{#if link}
+	a(class:activated={activated} class:appearance-button={appearance === 'button'} class:appearance-text={appearance === 'text'} disabled={disabled} href={link} use:hotkey={key})
+		{#if key}
+			HotkeyLabel(key={key})
+		slot
+		{#if text}
+			| {text}
+{:else}
+	button(class:activated={activated} class:appearance-button={appearance === 'button'} class:appearance-text={appearance === 'text'} disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
+		{#if key}
+			HotkeyLabel(key={key})
+		slot
+		{#if text}	
+			| {text}
+
+style.
+	.appearance-button
+		background rgba(0,0,0,0.05)
+		border-radius 6px
+		display inline-flex
+		font-weight bold
+		gap 5px
+		line-height 18px
+		padding 4px 6px
+		&:disabled
+			opacity 0.5
+		&:hover
+			background rgba(0,0,0,0.10)
+		&.activated
+			background rgba(0,0,0,0.50)
+			color white
+	.appearance-text
+		color var(--linkcolor)
+		font-size 12px
+		font-weight bold

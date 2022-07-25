@@ -1,0 +1,15 @@
+script.
+	export path = ''
+
+.page-unavailable
+	h1 Page unavailable
+	p This page is not available to you.
+	p We suggest that you
+		a(href='https://www.reddit.com{path}') confirm its status on reddit.com.
+
+style.
+	.page-unavailable
+		display flex
+		flex-flow column nowrap
+		height 100%
+		justify-content center

@@ -1,18 +1,8 @@
 script.
-	error = null
-		
+	export error = null
+
 h1 Whoops!
 p There was an error. We didn't expect this.
-{#if error !== null}
+{#if error}
 	p Technical details:
-	{#if typeof error === 'object'}
-		dl
-			{#each Object.keys(error) as key}
-				dt {key}:
-				dd {error[key]}
-	{:else}
-		pre {error}
-
-style.
-	dd
-		font-weight bold
+	pre {error.stack || error}
