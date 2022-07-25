@@ -37,8 +37,8 @@ call = (method, endpoint, { query = {}, content }) ->
 	.then (response) ->
 		ratelimit.update({
 			count: 1
-			remaining: response.headers.get 'X-Ratelimit-Remaining'
-			secondsUntilReset: response.headers.get 'X-Ratelimit-Reset'
+			remaining: Number response.headers.get('X-Ratelimit-Remaining')
+			secondsUntilReset: Number response.headers.get('X-Ratelimit-Reset')
 		})
 		code = response.status
 		switch

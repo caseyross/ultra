@@ -1,0 +1,40 @@
+script.
+	import Time from '../../lib/Time.coffee'
+	import api from '../../api/index.js'
+	online = true
+	ratelimitMax = 60
+	ratelimitRemaining = 60
+	overallStatus =
+		code: 'unknown'
+		description: 'Waiting for status...'
+	checkVitals = ->
+		online = navigator?.onLine
+		{ estimatedMaxRequests: ratelimitMax, remainingRequests: ratelimitRemaining } = api.getRatelimitStatus()
+		overallStatus = switch
+			when not online
+				{ code: 'error', description: 'No connection to Reddit servers' }
+			when ratelimitRemaining < 1
+				{ code: 'error', description: 'Temporarily unable to load Reddit data' }
+			when (ratelimitRemaining / ratelimitMax) < 0.25
+				{ code: 'caution', description: 'Limited ability to get data from Reddit' }
+			else
+				{ code: 'ok', description: 'All systems normal' }
+	checkVitals()
+	setInterval(checkVitals, Time.sToMs(3))
+
+data.vitals-monitor(class='vitals-{overallStatus.code}' title='{overallStatus.description}')
+
+style.
+	.vitals-monitor
+		aspect-ratio 1
+		border-radius 50%
+		height 16px
+		transition all 0.5s
+		&.vitals-unknown
+			background gray
+		&.vitals-ok
+			background lightseagreen
+		&.vitals-caution
+			background wheat
+		&.vitals-error
+			background salmon

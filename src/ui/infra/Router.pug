@@ -4,6 +4,7 @@ script.
 	import Post from '../product/post/Post.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
 	import User from '../product/user/User.pug'
+	import VitalsMonitor from './VitalsMonitor.pug'
 	import Wiki from '../product/subreddit/Wiki.pug'
 	import NotImplemented from './NotImplemented.pug'
 	import parseRoute from './parseRoute.coffee'
@@ -40,6 +41,7 @@ script.
 
 nav.global-nav
 	a.global-home-link(href='/')
+	VitalsMonitor
 main
 	{#if route.path === 'all'}
 		NotImplemented(posts_sort={route.data.posts_sort})
@@ -74,8 +76,10 @@ style.
 		width 64px
 	.global-nav
 		align-items flex-start
+		box-sizing border-box
 		display flex
 		flex-flow column nowrap
+		justify-content space-between
 		left 0
 		height 100vh
 		padding 16px

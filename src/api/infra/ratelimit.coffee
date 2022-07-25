@@ -3,6 +3,7 @@ import Time from '../../lib/Time.coffee'
 ratelimit = {
 
 	forget: ->
+		delete localStorage['api.ratelimit.max']
 		delete localStorage['api.ratelimit.remaining']
 		delete localStorage['api.ratelimit.reset']
 
@@ -13,13 +14,16 @@ ratelimit = {
 		if not Number.isFinite(reset) or reset < Time.epochMs()
 			localStorage['api.ratelimit.reset'] = Time.epochMs() + Time.sToMs(60)
 			localStorage['api.ratelimit.remaining'] = 60
+			localStorage['api.ratelimit.max'] = 60
 		else if not Number.isFinite(remaining)
 			localStorage['api.ratelimit.remaining'] = 60
+			localStorage['api.ratelimit.max'] = 60
 
 	# Update the known ratelimit parameters with authoritative server feedback, or, failing that, with a simple count of requests sent.
 	update: ({ count, remaining, secondsUntilReset }) ->
 		if remaining?
 			localStorage['api.ratelimit.remaining'] = remaining
+			if (remaining + 1) > Number(localStorage['api.ratelimit.max']) then localStorage['api.ratelimit.max'] = remaining + 1
 		else
 			localStorage['api.ratelimit.remaining'] = localStorage['api.ratelimit.remaining'] - count
 		if secondsUntilReset?
@@ -47,3 +51,11 @@ Object.defineProperty(ratelimit, 'msUntilReset', {
 })
 
 export default ratelimit
+
+export getRatelimitStatus = ->
+	ratelimit.sanitize()
+	return {
+		estimatedMaxRequests: Number localStorage['api.ratelimit.max']
+		remainingRequests: Number localStorage['api.ratelimit.remaining']
+		resetDate: new Date(localStorage['api.ratelimit.reset'])
+	}

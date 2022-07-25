@@ -4,6 +4,7 @@ import { load, preload, reload, send, watch } from './operations.coffee'
 import errors from './infra/errors.coffee'
 import format from './infra/format.coffee'
 import parse from './infra/parse.coffee'
+import { getRatelimitStatus } from './infra/ratelimit.coffee'
 
 export default {
 
@@ -12,6 +13,7 @@ export default {
 	format,
 	getLoginStatus,
 	getLoginURL,
+	getRatelimitStatus,
 	handlePendingLogin,
 	load,
 	logout,
