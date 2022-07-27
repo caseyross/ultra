@@ -12,7 +12,7 @@ script.
 	error = null
 	postIds = null
 	postIndex = -1
-	api.watch(api.format.datasetId('subreddit_posts', name, sort, 10), (x) -> { data: postIds, error: error } = x)
+	api.watch(api.ID.dataset('subreddit_posts', name, sort, 10), (x) -> { data: postIds, error: error } = x)
 
 svelte:head
 	title subreddit: {name}

@@ -22,7 +22,7 @@ svelte:head
 		{#if post}
 			title post: {post.title}
 		{:else}
-			title post: {api.parse.datasetFilters(id)[0]}
+			title post: {api.ID.body(id)[0]}
 {#if post}
 	article.post
 		header.post-header

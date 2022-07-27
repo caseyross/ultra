@@ -1,16 +1,16 @@
-import api from '../api/index.js'
 import parseRoute from './infra/parseRoute.coffee'
+import api from '../api/index.js'
 import { Time } from '../utils/index.js'
 
 # Set the API config from environment vars.
 api.configure({
-	client_id: process.env.API_CLIENT_ID
-	redirect_uri: process.env.API_REDIRECT_URI
+	clientID: process.env.API_CLIENT_ID
+	redirectURI: process.env.API_REDIRECT_URI
 })
 
 # If a login attempt was started by a prior instance of the application, finish it.
 if api.getLoginStatus() is 'pending'
-	{ error, memoString: rememberedPath } = api.handlePendingLogin()
+	{ error, memoString: rememberedPath } = api.finishPendingLogin()
 	if error
 		switch error.reason
 			when 'no-matching-login-attempt' then alert("Login failed. The login process was not followed correctly.")

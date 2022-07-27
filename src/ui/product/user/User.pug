@@ -15,12 +15,12 @@ script.
 	commentIds = null
 	postIds = null
 	postIndex = -1
-	api.watch(api.format.datasetId('user', user_name), (x) -> { data: info, error: error } = x)
+	api.watch(api.ID.dataset('user', user_name), (x) -> { data: info, error: error } = x)
 	switch items_filter
 		when 'comments'
-			api.watch(api.format.datasetId('user_comments', user_name, items_sort, 10), (x) -> { data: commentIds } = x)
+			api.watch(api.ID.dataset('user_comments', user_name, items_sort, 10), (x) -> { data: commentIds } = x)
 		else
-			api.watch(api.format.datasetId('user_posts', user_name, items_sort, 10), (x) -> { data: postIds } = x)
+			api.watch(api.ID.dataset('user_posts', user_name, items_sort, 10), (x) -> { data: postIds } = x)
 
 svelte:head
 	title user: {user_name}: {items_filter}

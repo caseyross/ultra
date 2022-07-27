@@ -1,4 +1,4 @@
-import { get } from '../infra/requests.coffee'
+import { get } from '../../network/http.coffee'
 
 CURRENT_USER_NAME = 'caseyross'
 

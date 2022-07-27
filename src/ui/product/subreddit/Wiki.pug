@@ -8,7 +8,7 @@ script.
 	export subreddit_name = null
 	error = null
 	page = null
-	api.watch(api.format.datasetId('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page, error: error } = x)
+	api.watch(api.ID.dataset('wiki', subreddit_name, page_name, revision_id), (x) -> { data: page, error: error } = x)
 
 svelte:head
 	title wiki: {subreddit_name}: {page_name.split('/').join(': ')}

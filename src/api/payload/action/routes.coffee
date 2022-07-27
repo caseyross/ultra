@@ -1,4 +1,4 @@
-import { post } from '../infra/requests.coffee'
+import { post } from '../../network/http.coffee'
 
 export default {
 	save_comment: (comment_short_id) ->

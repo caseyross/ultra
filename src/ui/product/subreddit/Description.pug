@@ -3,7 +3,7 @@ script.
 	import api from '../../../api/index.js'
 	export subreddit_name = null
 	info = null
-	api.watch(api.format.datasetId('subreddit', subreddit_name), (x) -> { data: info } = x)
+	api.watch(api.ID.dataset('subreddit', subreddit_name), (x) -> { data: info } = x)
 
 {#if info}
 	.subreddit-description

@@ -1,6 +1,6 @@
-import { Time } from '../../utils/index.js'
 import errors from './errors.coffee'
 import ratelimit from './ratelimit.coffee'
+import { Time } from '../../utils/index.js'
 
 waitForRenew = (f) ->
 	if localStorage['api.credentials.renewing'] is 'TRUE'

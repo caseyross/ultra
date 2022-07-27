@@ -1,5 +1,5 @@
-import format from '../../../infra/format.coffee'
-import extract from '../general/extract.coffee'
+import extract from '../extract.coffee'
+import ID from '../../ID.coffee'
 
 # Our "post" API response type is slightly different from Reddit's "t3" kind.
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.
@@ -19,7 +19,7 @@ export default (rawData) ->
 	# 1. Detect and process a "more comments" object.
 	if rawData[1].data.children?.at(-1)?.kind is 'more'
 		more = rawData[1].data.children.pop()
-		post.more_replies = more.data.children.map((child) -> format.datasetId('comment', child))
+		post.more_replies = more.data.children.map((child) -> ID.dataset('comment', child))
 	# 2. Extract the comments from the listing.
 	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1])
 	# 3. Link the top-level comments via their IDs.
@@ -31,10 +31,10 @@ export default (rawData) ->
 	for commentDataset in commentDatasets
 		if commentDataset.data.author_fullname? then user_short_ids_tranch.add(commentDataset.data.author_fullname[3..])
 		if user_short_ids_tranch.size == 500
-			post.user_tranches.push(format.datasetId('users', ...user_short_ids_tranch))
+			post.user_tranches.push(ID.dataset('users', ...user_short_ids_tranch))
 			user_short_ids_tranch.clear()
 	if user_short_ids_tranch.size > 0
-		post.user_tranches.push(format.datasetId('users', ...user_short_ids_tranch))
+		post.user_tranches.push(ID.dataset('users', ...user_short_ids_tranch))
 	# 5. Merge the extracted comment objects into the complete post data.
 	result.main =
 		id: postDataset.id

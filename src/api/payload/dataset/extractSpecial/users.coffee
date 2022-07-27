@@ -1,4 +1,4 @@
-import format from '../../../infra/format.coffee'
+import ID from '../../ID.coffee'
 
 export default (rawData) ->
 	result =
@@ -6,7 +6,7 @@ export default (rawData) ->
 		sub: []
 	for user_fullname, user of rawData
 		result.sub.push({
-			id: format.datasetId('user', user.name)
+			id: ID.dataset('user', user.name)
 			data: user
 			partial: true
 		})
