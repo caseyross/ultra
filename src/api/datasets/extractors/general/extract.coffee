@@ -21,11 +21,11 @@ export default extract = (rawData) ->
 			repliesListing = comment.replies?.data?.children
 			if !Array.isArray(repliesListing) then repliesListing = []
 			# Detect and process a "continue this thread" link in the comment's replies.
-			if repliesListing.last?.kind is 'more' and repliesListing.last.depth >= 10
+			if repliesListing.at(-1)?.kind is 'more' and repliesListing.at(-1).depth >= 10
 				repliesListing.pop()
 				comment.deep_replies = true
 			# Detect and process a "more comments" object in the comment's replies.
-			if repliesListing.last?.kind is 'more'
+			if repliesListing.at(-1)?.kind is 'more'
 				more = repliesListing.pop()
 				comment.more_replies = more.data.children
 			# Recursively extract all comments in this comment's reply tree.

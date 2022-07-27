@@ -17,7 +17,7 @@ export default (url) ->
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
 	query = new URLSearchParams(decodeURI(url.search))
 	# Normalize trailing slash if present.
-	if path.last is '' then path.pop()
+	if path.at(-1) is '' then path.pop()
 	# Strip global SEO prefixes.
 	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3] then path = path[1..]
 	# Treat top-level path as subreddit name unless otherwise identified.

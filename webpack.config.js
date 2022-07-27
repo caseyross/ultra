@@ -12,10 +12,10 @@ const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-
 module.exports = {
 	entry: {
 		preboot: {
-			import: './src/preboot.coffee',
+			import: './src/ui/preboot.coffee',
 		},
 		boot: {
-			import: './src/boot.coffee',
+			import: './src/ui/boot.coffee',
 			dependOn: 'preboot',
 		}
 	},
@@ -79,7 +79,7 @@ module.exports = {
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
-			favicon: './src/ui/product/favicon_16.png',
+			favicon: './src/ui/favicon_16.png',
 			inject: false, // manual script placement in template
 			publicPath: '/',
 			template: './src/ui/infra/index.html',

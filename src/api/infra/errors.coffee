@@ -1,4 +1,4 @@
-import Time from '../../lib/Time.coffee'
+import { Time } from '../../utils/index.js'
 
 class AnyError extends Error
 	constructor: (message) ->

@@ -1,7 +1,7 @@
 script.
 	import Flair from './Flair.pug'
 	import api from '../../../api/index.js'
-	import Format from '../../../lib/Format.coffee'
+	import { Format } from '../../../utils/index.js'
 	import formatRoute from '../../infra/formatRoute.coffee'
 	import { createEventDispatcher } from 'svelte'
 	dispatch = createEventDispatcher()

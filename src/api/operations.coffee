@@ -1,4 +1,4 @@
-import Time from '../lib/Time.coffee'
+import { Time } from '../utils/index.js'
 import ratelimit from './infra/ratelimit.coffee'
 import parse from './infra/parse.coffee'
 import actionRoutes from './actions/routes.coffee'

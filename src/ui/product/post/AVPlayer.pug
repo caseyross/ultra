@@ -1,5 +1,5 @@
 script.
-	import Format from '../../../lib/Format.coffee'
+	import { Format } from '../../../utils/index.js'
 	import Button from '../controls/Button.pug'
 	import { onMount } from 'svelte'
 	export audio_url = null
@@ -11,6 +11,10 @@ script.
 	}
 	audio = null
 	buffered = []
+	clamp = (min, max, value) ->
+		if value < min then return min
+		if value > max then return max
+		return value
 	duration = 0
 	fullscreened = -> document.fullscreenElement? and document.fullscreenElement is video
 	looping = mimic_gif
@@ -79,7 +83,7 @@ script.
 				.media-volume-container
 					span.mute-region MUTE
 					span.sound-region SOUND
-					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = Math.clamp(0, 1, e.target.value)})
+					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = clamp(0, 1, e.target.value)})
 			time.media-duration {Format.time.sMediaDuration(duration)}
 
 style.

@@ -1,10 +1,6 @@
-import './env/Array.coffee'
-import './env/Math.coffee'
-
-import Time from './lib/Time.coffee'
-
-import api from './api/index.js'
-import parseRoute from './ui/infra/parseRoute.coffee'
+import api from '../api/index.js'
+import parseRoute from './infra/parseRoute.coffee'
+import { Time } from '../utils/index.js'
 
 # Set the API config from environment vars.
 api.configure({

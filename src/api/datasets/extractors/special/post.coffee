@@ -12,11 +12,12 @@ export default (rawData) ->
 	# Extract the bare post from the posts listing.
 	# Put aside the other datasets from the posts listing for the end result.
 	{ main: { data: ids }, sub: datasets } = extract(rawData[0])
-	[ posts, other ] = datasets.partition((dataset) -> dataset.id == ids[0])
-	post = posts[0].data
+	postDataset = datasets.find((dataset) -> dataset.id == ids[0])
+	otherDatasets = datasets.filter((dataset) -> dataset.id != ids[0])
+	post = postDataset.data
 	# Process and organize the comment data.
 	# 1. Detect and process a "more comments" object.
-	if rawData[1].data.children?.last?.kind is 'more'
+	if rawData[1].data.children?.at(-1)?.kind is 'more'
 		more = rawData[1].data.children.pop()
 		post.more_replies = more.data.children.map((child) -> format.datasetId('comment', child))
 	# 2. Extract the comments from the listing.
@@ -36,7 +37,7 @@ export default (rawData) ->
 		post.user_tranches.push(format.datasetId('users', ...user_short_ids_tranch))
 	# 5. Merge the extracted comment objects into the complete post data.
 	result.main =
-		id: posts[0].id
+		id: postDataset.id
 		data: post
-	result.sub = other.concat(commentDatasets)
+	result.sub = otherDatasets.concat(commentDatasets)
 	return result
