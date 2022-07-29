@@ -4,14 +4,18 @@ script.
 	import api from '../../../api/index.js'
 	export name = null
 	export sort = null
+	export user_name = null
 	error = null
 	postIds = null
-	api.watch(api.ID.dataset('subreddit_posts', name, sort, 10), (x) -> { data: postIds, error: error } = x)
+	api.watch(api.ID.dataset('multireddit_posts', user_name, name, sort, 10), (x) -> { data: postIds, error: error } = x)
 
 svelte:head
-	title subreddit: {name}
+	{#if user_name === 'r' && name === 'home'}
+		title frontpage
+	{:else}
+		title multi: {user_name}/{name}
 {#if error}
 	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
-		PageUnavailable(path='/r/{name}')
+		PageUnavailable(path='/user/{user_name}/m/{name}')
 {:else if postIds}
-	PostList(ids={postIds})
+	PostList(ids={postIds} multireddit={true})

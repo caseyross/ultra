@@ -7,6 +7,7 @@ script.
 	export id = null
 	export showReplies = true
 	export topLevel = false
+	collapsed = false
 	comment = null
 	api.watch(id, (x) -> { data: comment } = x)
 
@@ -19,20 +20,23 @@ script.
 				Score(value={comment.score || comment.score_hidden})
 		.comment-layout-indent
 			Avatar(username={comment.author})
-			button.comment-line-separator
+			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		.comment-layout-core
-			.comment-body
-				Markup(html={comment.body_html})
-			{#if showReplies && comment.replies.length > 0}
-				ol.comment-replies
-					{#each comment.replies as replyId}
-						svelte:self(id={replyId})
-					{#if comment.more_replies}
-						.comment-more-replies
-							Button(appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
-					{#if comment.deeper_replies}
-						.comment-more-replies
-							Button(appearance='text' text='→ Continue this thread...')
+			{#if collapsed}
+				.comment-collapsed [ Comment collapsed. ]
+			{:else}
+				.comment-body
+					Markup(html={comment.body_html})
+				{#if showReplies && comment.replies.length > 0}
+					ol.comment-replies
+						{#each comment.replies as replyId}
+							svelte:self(id={replyId})
+						{#if comment.more_replies}
+							.comment-more-replies
+								Button(appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
+						{#if comment.deeper_replies}
+							.comment-more-replies
+								Button(appearance='text' text='→ Continue this thread...')
 
 style.
 	.comment

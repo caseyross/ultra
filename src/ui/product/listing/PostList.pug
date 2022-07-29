@@ -1,17 +1,16 @@
 script.
-	import PostCard from '../post/PostCard.pug'
-	import { createEventDispatcher } from 'svelte'
-	dispatch = createEventDispatcher()
+	import Post from '../post/Post.pug'
 	export ids = null
+	export multireddit = false
 
 ol.post-list
 	{#if ids}
-		{#each ids as id, index}
-			PostCard(id={id} on:select={() => dispatch('select', { id, index })})
+		{#each ids as id}
+			Post(id={id} multireddit={multireddit})
 
 style.
 	.post-list
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		padding 4em 0
+		padding 6em 0

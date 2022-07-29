@@ -1,6 +1,7 @@
 script.
 	import AccountSwitcher from '../product/account/AccountSwitcher.pug'
 	import Button from '../product/controls/Button.pug'
+	import Multireddit from '../product/subreddit/Multireddit.pug'
 	import Post from '../product/post/Post.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
 	import User from '../product/user/User.pug'
@@ -44,15 +45,15 @@ nav.global-nav
 	VitalsMonitor
 main
 	{#if route.path === 'all'}
-		NotImplemented(posts_sort={route.data.posts_sort})
+		Multireddit(name='all' sort={route.data.posts_sort} user_name='r')
 	{:else if route.path === 'home'}
-		NotImplemented(posts_sort={route.data.posts_sort})
+		Multireddit(name='home' sort={route.data.posts_sort} user_name='r')
 	{:else if route.path === 'multireddit'}
-		NotImplemented(name={route.data.multireddit_name} posts_sort={route.data.posts_sort} user_name={route.data.user_name})
+		Multireddit(name={route.data.multireddit_name} sort={route.data.posts_sort} user_name={route.data.user_name})
 	{:else if route.path === 'popular'}
-		NotImplemented(posts_sort={route.data.posts_sort})
+		Multireddit(name='popular' sort={route.data.posts_sort} user_name='r')
 	{:else if route.path === 'post'}
-		Post(id={'post:' + route.data.post_short_id})
+		Post(id={'post:' + route.data.post_short_id} standalone={true})
 	{:else if route.path === 'subreddit'}
 		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 	{:else if route.path === 'user'}
