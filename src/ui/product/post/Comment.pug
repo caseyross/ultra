@@ -5,7 +5,7 @@ script.
 	import Markup from '../text/Markup.pug'
 	import Score from './Score.pug'
 	export id = null
-	export showReplies = true
+	export outOfContext = false
 	export topLevel = false
 	collapsed = false
 	comment = null
@@ -15,7 +15,7 @@ script.
 	<!-- 'comment' role is draft status and not recognized yet -->
 	<!-- svelte-ignore a11y-unknown-role -->
 	article.comment(role='comment')
-		{#if topLevel}
+		{#if topLevel || outOfContext}
 			.comment-layout-score
 				Score(value={comment.score || comment.score_hidden})
 		.comment-layout-indent
@@ -27,7 +27,7 @@ script.
 			{:else}
 				.comment-body
 					Markup(html={comment.body_html})
-				{#if showReplies && comment.replies.length > 0}
+				{#if !outOfContext && comment.replies.length > 0}
 					ol.comment-replies
 						{#each comment.replies as replyId}
 							svelte:self(id={replyId})
@@ -37,6 +37,9 @@ script.
 						{#if comment.deeper_replies}
 							.comment-more-replies
 								Button(appearance='text' text='→ Continue this thread...')
+		{#if outOfContext}
+			.comment-layout-links
+				Button(link='/post/{api.ID.body(comment.parent_post)[0]}/comment/{api.ID.body(id)[0]}' text='View in post')
 
 style.
 	.comment
@@ -55,6 +58,11 @@ style.
 		display flex
 		flex 0 0 24px
 		flex-flow column nowrap
+	.comment-layout-links
+		opacity 0
+		transition all 0.25s
+		.comment:hover &
+			opacity 1
 	.comment-layout-score
 		position absolute
 		right calc(100% + 1em)

@@ -1,0 +1,15 @@
+script.
+	import Comment from '../post/Comment.pug'
+	export ids = null
+
+ol.comment-list
+	{#if ids}
+		{#each ids as id}
+			Comment(id={id} outOfContext={true})
+
+style.
+	.comment-list
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		padding 6em 0

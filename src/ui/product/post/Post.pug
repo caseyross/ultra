@@ -37,7 +37,7 @@ svelte:head
 				.post-info
 					time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
 					data.post-comment-count {post.num_comments} 💬
-				{#if multireddit}
+				{#if multireddit || standalone}
 					.post-subreddit in
 						a(href='/r/{post.subreddit}') {post.subreddit}
 		{#if expanded || standalone}

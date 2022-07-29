@@ -1,5 +1,6 @@
 script.
 	import PageUnavailable from '../../infra/PageUnavailable.pug'
+	import CommentList from '../listing/CommentList.pug'
 	import PostList from '../listing/PostList.pug'
 	import api from '../../../api/index.js'
 	export items_filter = null
@@ -23,3 +24,5 @@ svelte:head
 		PageUnavailable(path='/u/{user_name}')
 {:else if postIds}
 	PostList(ids={postIds})
+{:else if commentIds}
+	CommentList(ids={commentIds})
