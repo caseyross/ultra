@@ -6,7 +6,6 @@ script.
 	import Score from './Score.pug'
 	export id = null
 	export outOfContext = false
-	export topLevel = false
 	collapsed = false
 	comment = null
 	api.watch(id, (x) -> { data: comment } = x)
@@ -15,11 +14,9 @@ script.
 	<!-- 'comment' role is draft status and not recognized yet -->
 	<!-- svelte-ignore a11y-unknown-role -->
 	article.comment(role='comment')
-		{#if topLevel || outOfContext}
-			.comment-layout-score
-				Score(value={comment.score || comment.score_hidden})
 		.comment-layout-indent
-			Avatar(username={comment.author})
+			.comment-layout-score
+				Score(value={!comment.score_hidden && comment.score})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		.comment-layout-core
 			{#if collapsed}
@@ -45,7 +42,7 @@ style.
 	.comment
 		display flex
 		gap 1ch
-		margin-top 1.5em
+		margin-top 30px
 		position relative
 	:global(.comment-body img)
 		border-radius 6px
@@ -56,22 +53,18 @@ style.
 		width auto
 	.comment-layout-indent
 		display flex
-		flex 0 0 24px
+		flex 0 0 29px
 		flex-flow column nowrap
+		gap 6px
 	.comment-layout-links
 		opacity 0
 		transition all 0.25s
 		.comment:hover &
 			opacity 1
-	.comment-layout-score
-		position absolute
-		right calc(100% + 1em)
 	.comment-line-separator
 		background linear-gradient(to right, transparent 11px, currentColor 11px, currentColor 12px, transparent 12px)
 		flex 1
-		margin-top 1em
 		opacity 0.1
 	.comment-more-replies
-		margin-top 1.5em
 	.comment-replies
-		margin-top 1.5em
+		margin-top 30px

@@ -106,7 +106,7 @@ svelte:head
 			{#if post.replies?.length}
 				ol.post-replies
 					{#each post.replies as replyId}
-						Comment(id={replyId} topLevel={true})
+						Comment(id={replyId})
 					{#if post.more_replies}
 						.post-more-replies
 							Button(appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
@@ -174,9 +174,8 @@ style.
 		top -1em
 		width calc(100% - 2em)
 	.post-more-replies
-		margin-top 2em
 	:global(.post-replies > .comment)
-		margin-top 3em !important
+		margin-top 50px !important
 	.post-prediction-options > li
 		display flex
 	:global(.post-selftext-media)

@@ -1,15 +1,40 @@
 script.
 	import { Format } from '../../../utils/index.js'
 	export value = null
+	vote = 0
+	if Number.isFinite(value)
+		colorClass = switch
+			when vote == 1 then 'upvoted'
+			when vote == -1 then 'downvoted'
+			when value >= 2 then 'positive'
+			when value == 1 then 'neutral'
+			else 'negative'
+		displayValue = switch
+			when value >= 1000 then Math.trunc(value / 1000) + 'k'
+			when value >= -1000 then value
+			else Math.ceil(value / 1000) + 'k'
+		sizeClass = if Math.abs(value) >= 1000 then 'thousands' else 'ones'
+	else
+		colorClass = 'neutral'
+		displayValue = '?'
+		sizeClass = 'ones'
 
-button.score
-	{#if Number.isFinite(value)}
-		data.score-value {Format.number.plusMinus(value)}
-	{:else}
-		data.score-value.score-value-hidden ???
+button.score(class='score-color-{colorClass}' class='score-size-{sizeClass}') {displayValue}
 
 style.
 	.score
-		font-size 15px
-	.score-value-hidden
-		opacity 0.333
+		background var(--commentcolor)
+	.score-size-ones
+		font-size 9pt
+	.score-size-thousands
+		font-size 12pt
+	.score-color-downvoted
+		color cornflowerblue
+	.score-color-negative
+		color red
+	.score-color-neutral
+		color var(--separatorcolor)
+	.score-color-positive
+		color var(--linkcolor)
+	.score-color-upvoted
+		color chartreuse
