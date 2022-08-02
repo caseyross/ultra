@@ -1,8 +1,9 @@
 script.
 	import { Format } from '../../../utils/index.js'
 	export value = null
-	vote = 0
+	export vote = 0
 	if Number.isFinite(value)
+		value = value + vote
 		colorClass = switch
 			when vote == 1 then 'upvoted'
 			when vote == -1 then 'downvoted'
