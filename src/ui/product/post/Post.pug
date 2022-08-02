@@ -29,17 +29,21 @@ svelte:head
 	article.post
 		header.post-header
 			button.post-card(on:mousedown={() => expanded = !expanded})
-				.post-meta
-					.post-flair
-						{#if post.link_flair_text}
-							Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
-				h1.post-title {post.title}
-				.post-info
-					time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
-					data.post-comment-count {post.num_comments} 💬
-				{#if multireddit || standalone}
-					.post-subreddit in
-						a(href='/r/{post.subreddit}') {post.subreddit}
+				.post-headline-layout
+					.post-headline-layout-indent
+						Score(value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+					.post-headline-layout-core
+						.post-meta
+							.post-flair
+								{#if post.link_flair_text}
+									Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
+						h1.post-title {post.title}
+						.post-info(style='display: none')
+							time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
+							data.post-comment-count {post.num_comments} 💬
+						{#if multireddit || standalone}
+							.post-subreddit in
+								a(href='/r/{post.subreddit}') {post.subreddit}
 		{#if expanded || standalone}
 			section.post-content
 				{#if post.format === 'self'}
@@ -132,6 +136,11 @@ style.
 	.post-content
 		margin-top 2em
 		position relative
+	.post-headline-layout
+		display flex
+		gap 1ch
+	.post-headline-layout-indent
+		flex 0 0 29px
 	.post-info
 		align-items center
 		color #808080
@@ -187,6 +196,6 @@ style.
 		right 1em
 	.post-title
 		color var(--linkcolor)
-		font-size 1.33em
+		font-size 1em
 		margin 0
 		overflow-wrap anywhere
