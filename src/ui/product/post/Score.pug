@@ -1,5 +1,5 @@
 script.
-	import { Format } from '../../../utils/index.js'
+	export uploadVote = -> {}
 	export value = null
 	export vote = 0
 	if Number.isFinite(value)
@@ -19,8 +19,16 @@ script.
 		colorClass = 'neutral'
 		displayValue = '?'
 		sizeClass = 'ones'
+	toggleDownvote = ->
+		if vote == -1 then vote = 0 
+		else vote = -1
+		uploadVote(vote)
+	toggleUpvote = ->
+		if vote == 1 then vote = 0 
+		else vote = 1
+		uploadVote(vote)
 
-button.score(class='score-color-{colorClass}' class='score-size-{sizeClass}') {displayValue}
+button.score(class='score-color-{colorClass}' class='score-size-{sizeClass}' on:click={() => toggleUpvote()} on:contextmenu={() => toggleDownvote()}) {displayValue}
 
 style.
 	.score

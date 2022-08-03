@@ -31,7 +31,7 @@ svelte:head
 			button.post-card(on:mousedown={() => expanded = !expanded})
 				.post-headline-layout
 					.post-headline-layout-indent
-						Score(value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+						Score(uploadVote={(vote) => api.send(api.ID.action('vote_post', api.ID.body(id)[0], vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 					.post-headline-layout-core
 						.post-meta
 							.post-flair

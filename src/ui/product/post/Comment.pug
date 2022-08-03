@@ -16,7 +16,7 @@ script.
 	article.comment(role='comment')
 		.comment-layout-indent
 			.comment-layout-score
-				Score(value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+				Score(uploadVote={(vote) => api.send(api.ID.action('vote_comment', api.ID.body(id)[0], vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		.comment-layout-core
 			{#if collapsed}
