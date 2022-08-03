@@ -7,7 +7,7 @@ export patch = (endpoint, content) -> call('PATCH', endpoint, { content })
 export post = (endpoint, content) -> call('POST', endpoint, { content })
 export put = (endpoint, content) -> call('PUT', endpoint, { content })
 
-call = (method, endpoint, { query = {}, content }) ->
+call = (method, endpoint, { query = {}, content = {} }) ->
 	new Promise (fulfill) ->
 		if not credentials.valid then throw new errors.CredentialsRequiredError({ message: 'no valid credentials for request' })
 		fulfill()
@@ -27,8 +27,8 @@ call = (method, endpoint, { query = {}, content }) ->
 				Authorization: localStorage['api.credentials.key']
 			method: method
 		if method is 'PATCH' or method is 'POST' or method is 'PUT'
-			config.body = JSON.stringify content
-			config.headers['Content-Type'] = 'application/json'
+			config.body = new FormData()
+			for key, value of content then config.body.set(key, value)
 		fetch("https://oauth.reddit.com#{endpoint}?#{queryString}", config)
 	.catch (error) ->
 		# NOTE: a TypeError here means that either the network request failed OR the fetch config was structured badly. `fetch` does not distinguish between these errors, so we make the assumption that the config was OK.
