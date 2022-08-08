@@ -1,22 +1,9 @@
 // Type
 @font-face
-	font-family 'Albert Sans'
+	font-family 'Comic Neue'
+	font-style normal
 	font-weight 400
-	src url('./font_albertsans_400.woff2')
-@font-face
-	font-family 'Albert Sans'
-	font-weight 700
-	src url('./font_albertsans_700.woff2')
-@font-face
-	font-family 'Albert Sans'
-	font-style italic
-	font-weight 400
-	src url('./font_albertsans_400_i.woff2')
-@font-face
-	font-family 'Albert Sans'
-	font-style italic
-	font-weight 700
-	src url('./font_albertsans_700_i.woff2')
+	src url('./font_comic_neue_400.woff2')
 
 // Single-direction margin
 *
@@ -45,24 +32,24 @@
 // General
 *:focus
 	outline-color gold
+line-width-reg = 640px
 
 // Body
 body
 	background-color var(--bgcolor)
 	color var(--color)
-	font 12pt 'UD Digi Kyokasho NK-R'
+	font 14px/1.5 'Comic Neue', 'UD Digi Kyokasho NK-R'
+	letter-spacing 0.04em
 	margin 0
 
 // Paragraphs
 p
 	margin 0.5em 0 0 0
-	width 480px
+	max-width line-width-reg
 hr
-	background currentColor
-	border 0
-	height 1px
+	border 1px dotted
 	margin 1em 0 0 0
-	width 480px
+	max-width line-width-reg
 
 // Formatted text
 a
@@ -79,19 +66,23 @@ address
 
 // Verbatim text
 blockquote
-	border-left 5px solid var(--separatorcolor)
+	border-left 3px solid var(--separatorcolor)
+	font-size 12px
 	margin 0.5em 0 0 2px
+	max-width line-width-reg
 	opacity 0.8
-	padding 0 0 0 10px
+	padding 0.5em
 code
 pre
 	background var(--tintcolor)
 	font-family 'roboto mono'
+	font-size 12px
 	overflow-wrap anywhere
 	white-space pre-wrap
+code
+	padding 0.25em
 pre
 	display inline-block
-	font-size 12px
 	padding 1em
 	& code
 		background transparent
@@ -123,16 +114,14 @@ ul ul
 	list-style-type initial
 .md ol
 .md ul
-	margin 0.25em 0 0 0
+	margin 0.5em 0 0 0
+	max-width line-width-reg
 	padding-inline-start 18px
 .md ol ol
 .md ol ul
 .md ul ol
 .md ul ul
 	margin 0.25em 0 0 0
-li
-	margin 0.25em 0 0 0
-	max-width 582px
 
 // Headers
 h1
@@ -155,17 +144,14 @@ h6
 
 // Tables
 table
-	background rgba(0,0,0,0.1)
 	font-size 12px
-	line-height 1.25
 	margin 0.5em 0 0 0
-	padding 1em
+td
+	border-top 1px solid
 td
 th
-	padding 0.1em
-td ~ td
-th ~ th
-	padding-left 0.9em
+	padding 0
+	vertical-align top
 
 // Media
 figure

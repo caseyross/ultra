@@ -17,7 +17,6 @@ script.
 		if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
 	)
 	expanded = standalone
-	galleryIndex = 0
 
 svelte:head
 	{#if standalone}
@@ -61,33 +60,28 @@ svelte:head
 										dd {option.text}
 				{:else if post.format === 'media'}
 					{#if post.media.length > 1}
-						menu.post-additional-images
-							Button(action={() => galleryIndex = Math.max(0, galleryIndex - 1)} key='t' text='←')
+						.post-gallery
 							{#each post.media as media, index}
-								Button(action={() => galleryIndex = index})
-									picture
-										source(srcset={media.image_url_108})
-										img.post-additional-image-thumbnail(alt='thumbnail for image {index + 1} in gallery' class:post-additional-image-thumbnail-selected={galleryIndex === index} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; height: {media.aspect_ratio < 1 ? '36px' : 'auto'}; width: {media.aspect_ratio < 1 ? 'auto' : '36px'}")
-							Button(action={() => galleryIndex = Math.min(post.media.length - 1, galleryIndex + 1)} key='g' text='→')
-					{@const media = post.media[galleryIndex]}
-						{#key media}
-							figure
-								{#if media.video_url}
-									AVPlayer(audio_url={media.video_audio_url} mimic_gif={media.is_gif} video_url={media.video_url})
-								{:else if media.image_url}
+								figure(style='max-width: {media.aspect_ratio * 360}px')
 									a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 										picture
 											source(srcset={media.image_url_640})
-											img.post-image(alt='image {galleryIndex + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 									{#if media.caption_text || media.caption_url}
-										figcaption.post-image-caption
+										figcaption.post-gallery-image-caption
 											{#if media.caption_text}
 												p {media.caption_text}
 											{#if media.caption_url}
 												a(href={media.caption_url}) {media.caption_url}
-									menu.post-image-actions
-										Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
-										Button(action={() => window.open(media.image_url)} key='o' text='Open original')
+					{:else}
+						{@const media = post.media[0]}
+							{#if media.video_url}
+								AVPlayer(audio_url={media.video_audio_url} dimensions={[640, 360]} mimic_gif={media.is_gif} video_url={media.video_url})
+							{:else if media.image_url}
+								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
+									picture
+										source(srcset={media.aspect_ratio < 1.5 ? media.image_url_640 : media.image_url_960})
+										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {Math.min(media.source_width, media.aspect_ratio < 1.5 ? 640 : 960)}px")
 				{:else if post.format === 'embed'}
 					{#each post.media as media}
 						{#if media.iframe_url}
@@ -116,26 +110,29 @@ svelte:head
 							Button(appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
 
 style.
-	.post
-		width 480px
-	.post-additional-images
-		align-items flex-end
-		display flex
-	.post-additional-image-thumbnail
-		border 3px solid rgba(0,0,0,0.1)
-		width 54px
-	.post-additional-image-thumbnail-selected
-		border-color currentColor
 	.post-card
 		background var(--commentcolor)
 		border-radius 1em
 		text-align left
 		padding 1em
 		position relative
-		width 100%
+		width 480px
 	.post-content
 		margin-top 2em
 		position relative
+	.post-gallery
+		display flex
+		flex-flow row wrap
+		gap 40px
+	.post-gallery-image
+		max-height 360px
+		max-width 100%
+		&:hover
+			outline solid
+	.post-gallery-image-caption
+		font-size 0.75em
+		padding-top 0.5em
+		text-align center
 	.post-headline-layout
 		display flex
 		gap 1ch
@@ -150,21 +147,16 @@ style.
 		margin-top 1em
 	.post-iframe
 		aspect-ratio 16 / 9
-		width 100%
+		max-width 100%
+		width 640px
 	.post-iframe-actions
 		display flex
 		gap 1em
 		margin-top 1em
 	.post-image
-		cursor zoom-in
-		width 100%
-	.post-image-actions
-		display flex
-		gap 1em
-		margin-top 1em
-	.post-image-caption
-		font-size 12px
-		padding 7px
+		max-width 100%
+		&:hover
+			outline solid
 	.post-info
 		align-items center
 		display flex
@@ -187,6 +179,8 @@ style.
 		margin-top 50px !important
 	.post-prediction-options > li
 		display flex
+	.post-selftext
+		margin-top 40px
 	:global(.post-selftext-media)
 		max-width 100%
 		padding 1em 0

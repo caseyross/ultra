@@ -44,6 +44,8 @@ style.
 		gap 1ch
 		margin-top 30px
 		position relative
+	.comment-body
+		max-width 590px
 	:global(.comment-body img)
 		border-radius 6px
 		display inline
@@ -51,6 +53,8 @@ style.
 		margin-inline-start 1px
 		max-height 9em
 		width auto
+	.comment-layout-core
+		flex 1
 	.comment-layout-indent
 		display flex
 		flex 0 0 29px
@@ -62,9 +66,11 @@ style.
 		.comment:hover &
 			opacity 1
 	.comment-line-separator
-		background linear-gradient(to right, transparent 11px, currentColor 11px, currentColor 12px, transparent 12px)
+		border-left 1px solid
 		flex 1
 		opacity 0.1
+		&:hover
+			opacity 0.5
 	.comment-more-replies
 	.comment-replies
 		margin-top 30px

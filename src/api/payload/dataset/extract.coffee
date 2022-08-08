@@ -81,9 +81,9 @@ export default extract = (rawData) ->
 						mediaObject.image_url = null
 					if data.s
 						mediaObject.aspect_ratio = data.s.x / data.s.y
+						mediaObject.source_width = data.s.x
 						if data.s.mp4
 							mediaObject.video_url = data.s.mp4
-							mediaObject.video_width = data.s.x
 						if data.s.gif
 							mediaObject.is_gif = true
 							mediaObject.image_url = data.s.gif
@@ -103,7 +103,6 @@ export default extract = (rawData) ->
 					if item.variants.mp4
 						data = item.variants.mp4
 						mediaObject.video_url = data.source.url
-						mediaObject.video_width = data.source.width
 					if item.variants.gif
 						mediaObject.is_gif = true
 						data = item.variants.gif
@@ -116,6 +115,7 @@ export default extract = (rawData) ->
 						mediaObject['image_url_' + res.width] = res.url
 					)
 					mediaObject.aspect_ratio = item.source.width / item.source.height
+					mediaObject.source_width = item.source.width
 					return mediaObject
 				)
 			else if post.url.hostname == 'i.redd.it'
@@ -127,9 +127,9 @@ export default extract = (rawData) ->
 				post.media[0] =
 					aspect_ratio: video.width / video.height
 					is_gif: video.is_gif
+					source_width: video.width
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 					video_url: video.fallback_url ? post.url
-					video_width: video.width
 			else if iframe_embeddable(post.url)
 				post.media[0] = iframe_embeddable(post.url)
 			else if html_embeddable(post)

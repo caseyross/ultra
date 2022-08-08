@@ -3,6 +3,7 @@ script.
 	import Button from '../controls/Button.pug'
 	import { onMount } from 'svelte'
 	export audio_url = null
+	export dimensions = [480, 480]
 	export mimic_gif = false
 	export video_url = null
 	stati = {
@@ -60,10 +61,10 @@ script.
 			audio.pause()
 		)
 
-.media-player
+.media-player(style='width:{dimensions[0]}px')
 	<!-- in general, videos never have captions -->
 	<!-- svelte-ignore a11y-media-has-caption -->
-	video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} class:video-hide-controls={fullscreened() && mouseIdle} loop={looping})
+	video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} class:video-hide-controls={fullscreened() && mouseIdle} loop={looping} style='height:{dimensions[1]}px;width: {dimensions[0]}px')
 		source(src={video_url} type='video/mp4')
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
@@ -75,15 +76,15 @@ script.
 				Button(action={() => looping = !looping} activated={looping} key='l' text='Loop')
 		{#if !mimic_gif}
 			menu.media-status
+				.media-volume-container
+					span.mute-region MUTE
+					span.sound-region SOUND
+					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = clamp(0, 1, e.target.value)})
 				.media-scrobbler-container
 					figure.media-scrobbler-graphics
 						{#each buffered as region}
 							span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
 					input.media-scrobbler(bind:value={time} max={duration} min={0} step={1/30} type='range')
-				.media-volume-container
-					span.mute-region MUTE
-					span.sound-region SOUND
-					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = clamp(0, 1, e.target.value)})
 			time.media-duration {Format.time.sMediaDuration(duration)}
 
 style.
@@ -105,10 +106,7 @@ style.
 	.media-status
 		display flex
 		gap 1em
-		justify-content space-between
 		margin-top 1em
-	.media-player
-		width 480px
 	.media-player-controls
 		display flex
 		flex-flow column-reverse nowrap
@@ -123,9 +121,9 @@ style.
 	.media-scrobbler-container
 		border 1px solid
 		border-radius 6px
+		flex 1
 		height 48px
 		position relative
-		width 480px
 	.media-scrobbler-graphics
 		align-items center
 		display flex
@@ -175,7 +173,5 @@ style.
 		position absolute
 		top 0
 	video
-		aspect-ratio 1
-		width 100%
 		&.video-hide-controls
 			cursor none
