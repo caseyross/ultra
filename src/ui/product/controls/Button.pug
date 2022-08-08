@@ -26,7 +26,7 @@ script.
 
 style.
 	.appearance-button
-		background rgba(0,0,0,0.05)
+		background var(--color-control)
 		border-radius 6px
 		display inline-flex
 		font-weight bold
@@ -36,11 +36,11 @@ style.
 		&:disabled
 			opacity 0.5
 		&:hover
-			background rgba(0,0,0,0.10)
+			background var(--color-control-focused)
 		&.activated
-			background rgba(0,0,0,0.50)
+			background var(--color-control-toggled)
 			color white
 	.appearance-text
-		color var(--linkcolor)
+		color var(--color-writing-action)
 		font-size 12px
 		font-weight bold

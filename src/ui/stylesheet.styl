@@ -16,31 +16,47 @@ html
 
 // Theming
 .theme-light
-	--bgcolor white
-	--color black
-	--commentcolor aliceblue
-	--linkcolor mediumslateblue
-	--separatorcolor gainsboro
-	--tintcolor rgba(0,0,0,0.05)
+	--color-control rgba(0,0,0,0.05)
+	--color-control-focused rgba(0,0,0,0.10)
+	--color-control-toggled rgba(0,0,0,0.50)
+	--color-paper white
+	--color-paper-action aliceblue
+	--color-paper-border gainsboro
+	--color-paper-callout rgba(0,0,0,0.05)
+	--color-signal-caution wheat
+	--color-signal-error salmon
+	--color-signal-ok lightseagreen
+	--color-signal-unknown gray
+	--color-writing black
+	--color-writing-action mediumslateblue
+	--color-writing-highlight gold
 	color-scheme light
 .theme-dark
-	--bgcolor #1d263b
-	--color white
-	--commentcolor #1e2846
-	--linkcolor wheat
-	--separatorcolor slategrey
-	--tintcolor rgba(0,0,0,0.25)
+	--color-control rgba(0,0,0,0.05)
+	--color-control-focused rgba(0,0,0,0.10)
+	--color-control-toggled rgba(0,0,0,0.50)
+	--color-paper #1d263b
+	--color-paper-action #1e2846
+	--color-paper-border slategrey
+	--color-paper-callout rgba(0,0,0,0.25)
+	--color-signal-caution wheat
+	--color-signal-error salmon
+	--color-signal-ok lightseagreen
+	--color-signal-unknown gray
+	--color-writing white
+	--color-writing-action wheat
+	--color-writing-highlight gold
 	color-scheme dark
 
 // General
 *:focus
-	outline-color gold
+	outline-color var(--color-writing-highlight)
 line-width-reg = 640px
 
 // Body
 body
-	background-color var(--bgcolor)
-	color var(--color)
+	background-color var(--color-paper)
+	color var(--color-writing)
 	font 14px/1.5 var(--typeface-prop)
 	letter-spacing 0.04em
 	margin 0
@@ -56,7 +72,7 @@ hr
 
 // Formatted text
 a
-	color var(--linkcolor)
+	color var(--color-writing-action)
 	text-decoration none
 	overflow-wrap anywhere
 a:not(:is(a[href*='reddit.com/'], a[href*='redd.it/'], a[href^='/'], a[href^='#']))::before
@@ -69,7 +85,7 @@ address
 
 // Verbatim text
 blockquote
-	border-left 3px solid var(--separatorcolor)
+	border-left 3px solid var(--color-paper-border)
 	font-size 12px
 	margin 0.5em 0 0 2px
 	max-width line-width-reg
@@ -77,7 +93,7 @@ blockquote
 	padding 0.5em
 code
 pre
-	background var(--tintcolor)
+	background var(--color-paper-callout)
 	font-family var(--typeface-mono)
 	font-size 12px
 	overflow-wrap anywhere
@@ -92,14 +108,14 @@ pre
 
 // Spoilers
 .md-spoiler-text
-	background var(--color)
+	background var(--color-writing)
 	cursor text
 	padding 0.05em 0
 	opacity 0.5
 	& a
 		opacity 0
 	&:hover
-		background rgba(0,0,0,0.1)
+		background var(--color-control-focused)
 		opacity 1
 		& a
 			opacity 1
