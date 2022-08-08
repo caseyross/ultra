@@ -4,6 +4,9 @@
 	font-style normal
 	font-weight 400
 	src url('./font_comic_neue_400.woff2')
+html
+	--typeface-prop 'Comic Neue', 'UD Digi Kyokasho NK-R', 'Arial', sans-serif
+	--typeface-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
 
 // Single-direction margin
 *
@@ -38,7 +41,7 @@ line-width-reg = 640px
 body
 	background-color var(--bgcolor)
 	color var(--color)
-	font 14px/1.5 'Comic Neue', 'UD Digi Kyokasho NK-R'
+	font 14px/1.5 var(--typeface-prop)
 	letter-spacing 0.04em
 	margin 0
 
@@ -75,7 +78,7 @@ blockquote
 code
 pre
 	background var(--tintcolor)
-	font-family 'roboto mono'
+	font-family var(--typeface-mono)
 	font-size 12px
 	overflow-wrap anywhere
 	white-space pre-wrap
