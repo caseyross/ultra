@@ -74,7 +74,7 @@ export default {
 	post_more_comments: (post_short_id, comments_sort, ...comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
 		get("/api/morechildren", {
 			api_type: 'json'
-			children: comment_short_ids.map((short_id) -> "t1_#{short_id}")
+			children: 'c1:' + comment_short_ids.map((short_id) -> "t1_#{short_id}").join(',')
 			link_id: "t3_#{post_short_id}"
 			sort: comments_sort
 		})
