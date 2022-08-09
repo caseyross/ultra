@@ -1,0 +1,63 @@
+script.
+	import { Format } from '../../../utils/index.js'
+	import Flair from '../post/Flair.pug'
+	import Score from '../post/Score.pug'
+	import api from '../../../api/index.js'
+	export id = null
+	export multireddit = false
+	export select = null
+	post = null
+	api.watch(id, (x) -> { data: post } = x)
+
+button.post-card(on:mousedown={() => select(id)})
+	.post-headline-layout
+		.post-headline-layout-indent
+			Score(uploadVote={(vote) => api.send(api.ID.action('vote_post', api.ID.body(id)[0], vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+		.post-headline-layout-core
+			.post-meta
+				.post-flair
+					{#if post.link_flair_text}
+						Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
+			h1.post-title {post.title}
+			.post-info(style='display: none')
+				time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
+				data.post-comment-count {post.num_comments} 💬
+			{#if multireddit}
+				.post-subreddit in
+					a(href='/r/{post.subreddit}') {post.subreddit}
+
+style.
+	.post-card
+		background var(--color-paper-action)
+		border-radius 1em
+		max-width 480px
+		text-align left
+		padding 1em
+		position relative
+	.post-headline-layout
+		display flex
+		gap 1ch
+	.post-headline-layout-indent
+		flex 0 0 29px
+	.post-info
+		align-items center
+		display flex
+		font bold 12px var(--typeface-mono)
+		gap 1ch
+		justify-content space-between
+		opacity 0.75
+	.post-meta
+		display flex
+		justify-content space-between
+		position absolute
+		top -1em
+		width calc(100% - 2em)
+	.post-subreddit
+		margin-top 0.5em
+		position absolute
+		right 1em
+	.post-title
+		color var(--color-writing-action)
+		font-size 1em
+		margin 0
+		overflow-wrap anywhere

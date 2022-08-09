@@ -1,16 +1,17 @@
 script.
-	import Post from '../post/Post.pug'
+	import PostListItem from './PostListItem.pug'
 	export ids = null
 	export multireddit = false
+	export select = null
 
+h3 Posts
 ol.post-list
 	{#if ids}
 		{#each ids as id}
-			Post(id={id} multireddit={multireddit})
+			PostListItem(id={id} multireddit={multireddit} select={select})
 
 style.
 	.post-list
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		padding 6em 0

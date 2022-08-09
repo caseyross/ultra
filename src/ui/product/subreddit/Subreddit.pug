@@ -1,11 +1,13 @@
 script.
 	import PageUnavailable from '../../infra/PageUnavailable.pug'
+	import Post from '../post/Post.pug'
 	import PostList from '../listing/PostList.pug'
 	import api from '../../../api/index.js'
 	export name = null
 	export sort = null
 	error = null
 	postIds = null
+	selection = null
 	api.watch(api.ID.dataset('subreddit_posts', name, sort, 10), (x) -> { data: postIds, error: error } = x)
 
 svelte:head
@@ -14,4 +16,18 @@ svelte:head
 	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
 		PageUnavailable(path='/r/{name}')
 {:else if postIds}
-	PostList(ids={postIds})
+	nav.subreddit-nav
+		h1 {name}
+		PostList(ids={postIds} select={id => selection = { type: 'post', id }})
+	{#if selection}
+		{#if selection.type === 'post'}
+			{#key selection.id}
+				Post(id={selection.id})
+
+style.
+	.subreddit-nav
+		left 16vw
+		padding 6em 0
+		position fixed
+		top 0
+		width 17vw
