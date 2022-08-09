@@ -1,0 +1,41 @@
+script.
+	export contentHeight = null
+	export currentScroll = 0
+	export pattern = null
+	export scroll = null
+	export viewingWindowHeight = null
+	patternHeight = (pattern?.at(-1).start + pattern?.at(-1).height)
+	thumbDistance = -> currentScroll / contentHeight * patternHeight
+	thumbHeight = viewingWindowHeight / contentHeight * patternHeight
+	dragging = false
+	clamp = (min, max, value) ->
+		if value < min then return min
+		if value > max then return max
+		return value
+
+{#if pattern}
+	figure.minimap(on:mousemove={(e) => dragging ? scroll(contentHeight * clamp(0, 1, e.layerY / patternHeight)) : null} on:mousedown|preventDefault={(e) => {dragging = true; scroll(contentHeight * clamp(0, 1, e.layerY / patternHeight))}} on:mouseup={() => dragging = false} on:mouseleave={() => dragging = false} style='height:{patternHeight}px')
+		figure.minimap-pattern
+			{#each pattern as object}
+				data.minimap-object(style='background:{object.color};height:{object.height}px;top:{object.start}px')
+		{#key currentScroll}
+			figure.minimap-thumb(style='height:{thumbHeight}px;transform:translateY({thumbDistance()}px)')
+
+style.
+	.minimap
+		position relative
+		width 24px
+	.minimap-pattern
+		height 100%
+		width 24px
+	.minimap-object
+		border-radius 10px
+		left 10px
+		position absolute
+		width 4px
+	.minimap-thumb
+		border 2px solid var(--color-paper-border)
+		border-radius 10px
+		position absolute
+		top 0
+		width 20px

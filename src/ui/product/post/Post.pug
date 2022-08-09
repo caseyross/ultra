@@ -5,6 +5,7 @@ script.
 	import Button from '../controls/Button.pug'
 	import Comment from './Comment.pug'
 	import Flair from './Flair.pug'
+	import Minimap from '../controls/Minimap.pug'
 	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../../api/index.js'
@@ -16,6 +17,24 @@ script.
 		if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
 	)
 	expanded = standalone
+	DOM =
+		post: null
+		postContent: null
+		postReplies: null
+	currentScroll = 0
+	minimapPattern = ->
+		pattern = []
+		if DOM.post
+			DOM.postContent = null
+			DOM.postReplies = null
+			for node in DOM.post.childNodes
+				if node.classList?.contains('post-content') then DOM.postContent = node
+				else if node.classList?.contains('post-replies') then DOM.postReplies = node
+		pattern = [{
+			color: 'var(--color-paper-border)'
+			height: 200
+			start: 0
+		}]
 
 svelte:head
 	{#if standalone}
@@ -24,7 +43,7 @@ svelte:head
 		{:else}
 			title post: {api.ID.body(id)[0]}
 {#if post}
-	article.post
+	article.post(bind:this={DOM.post} on:scroll={(e) => currentScroll = e.target.scrollTop})
 		header.post-header
 			h1 {post.title}
 		section.post-content
@@ -91,10 +110,18 @@ svelte:head
 				{#if post.more_replies}
 					.post-more-replies
 						Button(appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
+		.post-minimap
+			{#key DOM.post?.scrollHeight, DOM.post?.offsetHeight}
+				Minimap(contentHeight={DOM.post?.scrollHeight} currentScroll={currentScroll} pattern={minimapPattern()} scroll={(y) => DOM.post.scrollTop = y} viewingWindowHeight={DOM.post?.offsetHeight})
 
 style.
 	.post
+		height 100%
+		max-width 640px
+		overflow auto
 		padding 6em 0
+		&::-webkit-scrollbar
+			display none
 	.post-content
 		margin-top 2em
 		position relative
@@ -127,6 +154,11 @@ style.
 		display flex
 		gap 1em
 		margin-top 1em
+	.post-minimap
+		display none
+		position fixed
+		right 28vw
+		top 6em
 	.post-more-replies
 	:global(.post-replies > .comment)
 		margin-top 50px !important
