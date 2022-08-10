@@ -6,7 +6,7 @@ import ID from '../ID.coffee'
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.
 # All extractors return the same data structure. It is described below as it is constructed.
 # NOTE: Contains side effects throughout (namely, input data modification).
-export default extract = (rawData) ->
+export default extract = (rawData, sourceID) ->
 	result =
 		main: null # The object specified by an API route.
 		sub: [] # Objects contained in the same API response as the main objects, but which "belong" to a different API route.
@@ -14,8 +14,7 @@ export default extract = (rawData) ->
 		when 't1'
 			comment = rawData.data
 			# Process parent post information.
-			comment.parent_post = ID.dataset('post', comment.link_id)
-			delete comment.link_id
+			comment.post_id = ID.dataset('post', comment.link_id)
 			# Process replies.
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			repliesListing = comment.replies?.data?.children
@@ -27,9 +26,15 @@ export default extract = (rawData) ->
 			# Detect and process a "more comments" object in the comment's replies.
 			if repliesListing.at(-1)?.kind is 'more'
 				more = repliesListing.pop()
-				comment.more_replies = more.data.children
+				if more.data.children.length
+					comment.more_replies = more.data.children
+					more_replies_sort = switch ID.prefix(sourceID)
+						when 'post' then ID.body(sourceID)[1] ? 'confidence'
+						when 'post_more_replies' then ID.body(sourceID)[2]
+						else 'confidence'
+					comment.more_replies_id = ID.dataset('post_more_replies', ID.body(comment.post_id)[0], comment.id, more_replies_sort, ...comment.more_replies)
 			# Recursively extract all comments in this comment's reply tree.
-			repliesListingDatasets = extract(comment.replies or []) # Sometimes Reddit sends an empty string instead of an empty array.
+			repliesListingDatasets = extract(comment.replies or [], sourceID) # Sometimes Reddit sends an empty string instead of an empty array.
 			# Set the IDs of the direct replies in place of the original objects.
 			comment.replies = repliesListingDatasets.main.data
 			result.main =
@@ -188,7 +193,7 @@ export default extract = (rawData) ->
 			if !Array.isArray(listing) then listing = []
 			# If each top-level object in the listing is referenceable by ID, the primary data becomes simply an array of IDs.
 			# If not, the primary data contains the full child objects.
-			listingDatasets = listing.map((item) -> extract(item))
+			listingDatasets = listing.map((item) -> extract(item, sourceID))
 			childIds = listingDatasets.map(({ main }) -> main.id)
 			if childIds.every((id) -> id?)
 				result.main =
@@ -215,7 +220,7 @@ export default extract = (rawData) ->
 		else
 			if Array.isArray(rawData)
 				# Essentially the same logic as for listings.
-				arrayDatasets = rawData.map((child) -> extract(child))
+				arrayDatasets = rawData.map((child) -> extract(child, sourceID))
 				childIds = arrayDatasets.map(({ main }) -> main.id)
 				if childIds.every((id) -> id?)
 					result.main =

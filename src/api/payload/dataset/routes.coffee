@@ -1,4 +1,4 @@
-import { get } from '../../network/http.coffee'
+import { get, post } from '../../network/http.coffee'
 
 CURRENT_USER_NAME = 'caseyross'
 
@@ -71,8 +71,8 @@ export default {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
 		})
-	post_more_comments: (post_short_id, comments_sort, ...comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
-		get("/api/morechildren", {
+	post_more_replies: (post_short_id, parent_comment_short_id, comments_sort, ...comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
+		post("/api/morechildren", {
 			api_type: 'json'
 			children: 'c1:' + comment_short_ids.map((short_id) -> "t1_#{short_id}").join(',')
 			link_id: "t3_#{post_short_id}"

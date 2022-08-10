@@ -21,7 +21,7 @@ export reload = (id) ->
 	return datasetRoutes[ID.prefix(id)](...ID.body(id))
 	.then (rawData) ->
 		extract = datasetExtractSpecial[ID.prefix(id)] ? datasetExtract
-		extract(rawData)
+		extract(rawData, id)
 	.then (datasets) ->
 		setData(id, datasets.main.data, datasets.main.partial)
 		for dataset in datasets.sub

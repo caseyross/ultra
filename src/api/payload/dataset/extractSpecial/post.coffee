@@ -5,7 +5,7 @@ import ID from '../../ID.coffee'
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.
 # Our "post" type refers to "complete" post objects, unifying posts and their comment replies.
 # Extracting our desired format out of the API response requires special handling.
-export default (rawData) ->
+export default (rawData, sourceID) ->
 	result =
 		main: null
 		sub: []
@@ -19,9 +19,10 @@ export default (rawData) ->
 	# 1. Detect and process a "more comments" object.
 	if rawData[1].data.children?.at(-1)?.kind is 'more'
 		more = rawData[1].data.children.pop()
-		post.more_replies = more.data.children.map((child) -> ID.dataset('comment', child))
+		post.more_replies = more.data.children
+		post.more_replies_id = ID.dataset('post_more_replies', post.id, '', ID.body(sourceID)[1] ? 'confidence', ...post.more_replies)
 	# 2. Extract the comments from the listing.
-	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1])
+	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1], sourceID)
 	# 3. Link the top-level comments via their IDs.
 	post.replies = topLevelCommentIds
 	# 4. Setup bulk user information leads.

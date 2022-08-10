@@ -25,15 +25,16 @@ script.
 				.comment-body
 					Markup(html={comment.body_html})
 				{#if !outOfContext && comment.replies.length > 0}
-					ol.comment-replies
-						{#each comment.replies as replyId}
-							svelte:self(id={replyId})
-						{#if comment.more_replies}
-							.comment-more-replies
-								Button(appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
-						{#if comment.deeper_replies}
-							.comment-more-replies
-								Button(appearance='text' text='→ Continue this thread...')
+					{#key comment.replies}
+						ol.comment-replies
+							{#each comment.replies as replyId}
+								svelte:self(id={replyId})
+							{#if comment.more_replies}
+								.comment-more-replies
+									Button(action={() => api.load(comment.more_replies_id)} appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
+							{#if comment.deeper_replies}
+								.comment-more-replies
+									Button(appearance='text' text='→ Continue this thread...')
 		{#if outOfContext}
 			.comment-layout-links
 				Button(link='/post/{api.ID.body(comment.parent_post)[0]}/comment/{api.ID.body(id)[0]}' text='View in post')
