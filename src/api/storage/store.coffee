@@ -5,6 +5,7 @@ import datasetRoutes from '../payload/dataset/routes.coffee'
 import datasetExtract from '../payload/dataset/extract.coffee'
 import datasetExtractSpecial from '../payload/dataset/extractSpecial/index.js'
 import { Time } from '../../utils/index.js'
+import diagnostic from '../debug/diagnostic.coffee'
 
 export load = (id) ->
 	if get(id) and get(id).partial == false then return Promise.resolve(get(id))
@@ -17,18 +18,21 @@ export preload = (id) ->
 	return false
 
 export reload = (id) ->
+	start = Time.epochMs()
 	setLoading(id)
 	return datasetRoutes[ID.prefix(id)](...ID.body(id))
 	.then (rawData) ->
 		extract = datasetExtractSpecial[ID.prefix(id)] ? datasetExtract
 		extract(rawData, id)
 	.then (datasets) ->
+		diagnostic({ id, message: "#{Time.msToS(Time.epochMs() - start).toFixed(1)}s", details: datasets.main.data})
 		setData(id, datasets.main.data, datasets.main.partial)
 		for dataset in datasets.sub
 			if not get(dataset.id) or get(dataset.id).partial == true or not dataset.partial
 				setData(dataset.id, dataset.data, dataset.partial)
 		return get(id)
 	.catch (error) ->
+		diagnostic({ id, error, message: "load failed" })
 		setError(id, error)
 		return get(id)
 

@@ -5,6 +5,7 @@ import { Time } from '../utils/index.js'
 # Set the API config from environment vars.
 api.configure({
 	clientID: process.env.API_CLIENT_ID
+	enableDiagnostics: ((new URLSearchParams(location.search)).get('debug') ? process.env.API_ENABLE_DIAGNOSTICS) in ['TRUE', 'true', '1']
 	redirectURI: process.env.API_REDIRECT_URI
 })
 
