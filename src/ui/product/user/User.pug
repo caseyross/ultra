@@ -20,7 +20,7 @@ script.
 svelte:head
 	title user: {user_name}: {items_filter}
 {#if error}
-	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
+	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/u/{user_name}')
 {:else if postIds}
 	PostList(ids={postIds})

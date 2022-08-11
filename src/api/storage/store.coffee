@@ -1,11 +1,12 @@
-import ID from '../payload/ID.coffee'
+import { Time } from '../../utils/index.js'
+import diagnostic from '../debug/diagnostic.coffee'
 import ratelimit from '../network/ratelimit.coffee'
+import ID from '../payload/ID.coffee'
 import actionRoutes from '../payload/action/routes.coffee'
 import datasetRoutes from '../payload/dataset/routes.coffee'
 import datasetExtract from '../payload/dataset/extract.coffee'
 import datasetExtractSpecial from '../payload/dataset/extractSpecial/index.js'
-import { Time } from '../../utils/index.js'
-import diagnostic from '../debug/diagnostic.coffee'
+import errors from '../errors.coffee'
 
 export load = (id) ->
 	if get(id) and get(id).partial == false then return Promise.resolve(get(id))
@@ -18,9 +19,13 @@ export preload = (id) ->
 	return false
 
 export reload = (id) ->
+	route = datasetRoutes[ID.prefix(id)]
+	if not route
+		diagnostic({ id, error: new errors.BadIDError({ id }), message: "unknown dataset type" })
+		return Promise.resolve(null)
 	start = Time.epochMs()
 	setLoading(id)
-	return datasetRoutes[ID.prefix(id)](...ID.body(id))
+	return route(...ID.body(id))
 	.then (rawData) ->
 		extract = datasetExtractSpecial[ID.prefix(id)] ? datasetExtract
 		extract(rawData, id)

@@ -1,5 +1,5 @@
+import errors from '../errors.coffee'
 import credentials from './credentials.coffee'
-import errors from './errors.coffee'
 import ratelimit from './ratelimit.coffee'
 
 export get = (endpoint, query) -> call('GET', endpoint, { query })
@@ -32,7 +32,7 @@ call = (method, endpoint, { query = {}, content = {} }) ->
 		fetch("https://oauth.reddit.com#{endpoint}?#{queryString}", config)
 	.catch (error) ->
 		# NOTE: a TypeError here means that either the network request failed OR the fetch config was structured badly. `fetch` does not distinguish between these errors, so we make the assumption that the config was OK.
-		if error instanceof TypeError then throw new errors.ConnectionFailedError({ cause: error })
+		if error instanceof TypeError then throw new errors.ServerConnectionFailedError({ cause: error })
 		throw error
 	.then (response) ->
 		ratelimit.update({
@@ -43,8 +43,8 @@ call = (method, endpoint, { query = {}, content = {} }) ->
 		code = response.status
 		switch
 			when 100 <= code <= 299 then response.json()
-			when 300 <= code <= 399 then throw new errors.ResourceMovedError({ code })
-			when 400 <= code <= 499 then throw new errors.InvalidRequestError({ code })
+			when 300 <= code <= 399 then throw new errors.ServerResourceMovedError({ code })
+			when 400 <= code <= 499 then throw new errors.ServerBadRequestError({ code })
 			when 500 <= code <= 599 then throw new errors.ServerNotAvailableError({ code })
 	.catch (error) ->
 		if error instanceof errors.AnyError then throw error

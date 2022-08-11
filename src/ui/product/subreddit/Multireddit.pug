@@ -15,7 +15,7 @@ svelte:head
 	{:else}
 		title multi: {user_name}/{name}
 {#if error}
-	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
+	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/user/{user_name}/m/{name}')
 {:else if postIds}
 	PostList(ids={postIds} multireddit={true})

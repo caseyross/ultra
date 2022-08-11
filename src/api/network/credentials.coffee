@@ -1,6 +1,6 @@
-import errors from './errors.coffee'
-import ratelimit from './ratelimit.coffee'
 import { Time } from '../../utils/index.js'
+import errors from '../errors.coffee'
+import ratelimit from './ratelimit.coffee'
 
 waitForRenew = (f) ->
 	if localStorage['api.credentials.renewing'] is 'TRUE'
@@ -59,7 +59,7 @@ credentials = {
 		return fetch('https://www.reddit.com/api/v1/access_token', config)
 		.catch (error) ->
 			# NOTE: a TypeError here means that either the network request failed OR the fetch config was structured badly. `fetch` does not distinguish between these errors, so we make the assumption that the config was OK.
-			if error instanceof TypeError then throw new errors.ConnectionFailedError({ cause: error })
+			if error instanceof TypeError then throw new errors.ServerConnectionFailedError({ cause: error })
 			throw error
 		.then (response) ->
 			response.json()

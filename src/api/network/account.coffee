@@ -1,6 +1,6 @@
-import credentials from './credentials.coffee'
-import errors from './errors.coffee'
 import { clear as clearStoredData } from '../storage/store.coffee'
+import errors from '../errors.coffee'
+import credentials from './credentials.coffee'
 
 # There are 3 possible states here, each corresponding to one stage of the login process.
 # 1. `logged-out`: No account is being used.

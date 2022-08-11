@@ -13,7 +13,7 @@ script.
 svelte:head
 	title subreddit: {name}
 {#if error}
-	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
+	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/r/{name}')
 {:else if postIds}
 	nav.subreddit-nav

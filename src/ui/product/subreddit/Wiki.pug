@@ -13,7 +13,7 @@ script.
 svelte:head
 	title wiki: {subreddit_name}: {page_name.split('/').join(': ')}
 {#if error}
-	{#if error instanceof api.errors.ConnectionFailedError || error instanceof api.errors.InvalidRequestError}
+	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/r/{subreddit_name}/wiki/{page_name}?v={revision_id}')
 {#if page}
 	.wiki-page
