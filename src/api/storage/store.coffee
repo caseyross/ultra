@@ -9,8 +9,14 @@ import datasetExtractSpecial from '../payload/dataset/extractSpecial/index.js'
 import errors from '../errors.coffee'
 
 export load = (id) ->
-	if get(id) and get(id).partial == false then return Promise.resolve(get(id))
-	return reload(id)
+	if not get(id)
+		reload(id)
+		return true
+	else if get(id).loading
+		return false
+	else if get(id).partial
+		reload(id)
+		return true
 
 export preload = (id) ->
 	if ratelimit.availableRPS > Number(localStorage['api.config.preload_threshold'])
@@ -112,6 +118,6 @@ export watch = (id, callback, options = { autoload: true }) ->
 	watchers[id].push(callback)
 	if get(id)
 		callback(get(id))
-	if options.autoload and (!get(id) or get(id).partial)
+	if options.autoload and get(id)?.partial != false
 		load(id)
 	return watchers[id].length
