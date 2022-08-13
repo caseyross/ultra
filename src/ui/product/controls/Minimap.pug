@@ -4,7 +4,7 @@ script.
 	export pattern = null
 	export scroll = null
 	export viewingWindowHeight = null
-	patternHeight = (pattern?.at(-1).start + pattern?.at(-1).height)
+	patternHeight = pattern?.at(-1)?.start + pattern?.at(-1)?.height
 	thumbDistance = -> currentScroll / contentHeight * patternHeight
 	thumbHeight = viewingWindowHeight / contentHeight * patternHeight
 	dragging = false
@@ -13,29 +13,31 @@ script.
 		if value > max then return max
 		return value
 
-{#if pattern}
+{#if pattern?.length}
 	figure.minimap(on:mousemove={(e) => dragging ? scroll(contentHeight * clamp(0, 1, e.layerY / patternHeight)) : null} on:mousedown|preventDefault={(e) => {dragging = true; scroll(contentHeight * clamp(0, 1, e.layerY / patternHeight))}} on:mouseup={() => dragging = false} on:mouseleave={() => dragging = false} style='height:{patternHeight}px')
 		figure.minimap-pattern
 			{#each pattern as object}
 				data.minimap-object(style='background:{object.color};height:{object.height}px;top:{object.start}px')
-		{#key currentScroll}
-			figure.minimap-thumb(style='height:{thumbHeight}px;transform:translateY({thumbDistance()}px)')
+		figure.minimap-thumb(style='height:{thumbHeight}px;transform:translateY({thumbDistance()}px)')
 
 style.
 	.minimap
+		align-items center
+		display flex
+		flex-flow column nowrap
 		position relative
-		width 24px
+		width 36px
 	.minimap-pattern
 		height 100%
-		width 24px
+		position relative
+		width 12px
 	.minimap-object
-		border-radius 10px
-		left 10px
+		left 2px
 		position absolute
-		width 4px
+		width 8px
 	.minimap-thumb
-		border 2px solid var(--color-paper-border)
-		border-radius 10px
+		border 1px solid var(--color-paper-border)
+		border-radius 4px
 		position absolute
 		top 0
-		width 20px
+		width 10px

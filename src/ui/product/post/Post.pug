@@ -1,4 +1,5 @@
 script.
+	import { afterUpdate } from 'svelte';
 	import { Format } from '../../../utils/index.js'
 	import Avatar from '../user/Avatar.pug'
 	import AVPlayer from './AVPlayer.pug'
@@ -11,30 +12,35 @@ script.
 	import api from '../../../api/index.js'
 	export id = null
 	export standalone = false
-	post = null
-	api.watch(id, (x) ->
-		{ data: post } = x
-		if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
-	)
-	expanded = standalone
 	DOM =
 		post: null
-		postContent: null
-		postReplies: null
+	post = null
+	api.watch(id,
+		(x) ->
+			{ data: post } = x
+			if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
+	)
 	currentScroll = 0
-	minimapPattern = ->
-		pattern = []
-		if DOM.post
-			DOM.postContent = null
-			DOM.postReplies = null
-			for node in DOM.post.childNodes
-				if node.classList?.contains('post-content') then DOM.postContent = node
-				else if node.classList?.contains('post-replies') then DOM.postReplies = node
-		pattern = [{
-			color: 'var(--color-paper-border)'
-			height: 200
-			start: 0
-		}]
+	lineHeight = 21
+	minimapPattern = []
+	afterUpdate ->
+		contentPattern =
+			if node = document.querySelector('.post-content')
+				[{
+					color: 'rgba(0,0,0,0.5)'
+					height: Math.trunc(node.clientHeight / lineHeight),
+					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / lineHeight)
+				}]
+			else []
+		commentsPattern = Array.from(
+			document.querySelectorAll('.comment-body'),
+			(node) -> ({
+					color: 'rgba(0,0,0,0.5)'
+					height: Math.trunc(node.clientHeight / lineHeight),
+					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / lineHeight)
+			})
+		)
+		minimapPattern = contentPattern.concat(commentsPattern)
 
 svelte:head
 	{#if standalone}
@@ -112,13 +118,11 @@ svelte:head
 						.post-more-replies
 							Button(action={() => api.load(post.more_replies_id)} appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
 		.post-minimap
-			{#key DOM.post?.scrollHeight, DOM.post?.offsetHeight}
-				Minimap(contentHeight={DOM.post?.scrollHeight} currentScroll={currentScroll} pattern={minimapPattern()} scroll={(y) => DOM.post.scrollTop = y} viewingWindowHeight={DOM.post?.offsetHeight})
+			Minimap(contentHeight={DOM.post?.scrollHeight} currentScroll={currentScroll} pattern={minimapPattern} scroll={(y) => DOM.post.scrollTop = y} viewingWindowHeight={DOM.post?.offsetHeight})
 
 style.
 	.post
 		height 100%
-		max-width 640px
 		overflow auto
 		padding 6em 0
 		&::-webkit-scrollbar
@@ -156,9 +160,8 @@ style.
 		gap 1em
 		margin-top 1em
 	.post-minimap
-		display none
 		position fixed
-		right 28vw
+		right 0
 		top 6em
 	.post-more-replies
 	:global(.post-replies > .comment)
