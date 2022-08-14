@@ -1,8 +1,18 @@
 script.
 	export error = null
 
-h1 Whoops!
-p There was an error. We didn't expect this.
-{#if error}
-	p Technical details:
-	pre {error.stack || error}
+.crash
+	h1 Whoops!
+	p There was an error. We didn't expect this.
+	{#if error}
+		p Technical details:
+		pre {error.stack || error}
+
+style.
+	.crash
+		align-items center
+		display flex
+		flex-flow column nowrap
+		height 100%
+		justify-content center
+		width 100%

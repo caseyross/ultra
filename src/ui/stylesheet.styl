@@ -49,6 +49,8 @@ html
 	color-scheme dark
 
 // General
+*
+	box-sizing border-box
 *:focus
 	outline-color var(--color-writing-highlight)
 line-width-reg = 640px
@@ -57,7 +59,9 @@ line-width-reg = 640px
 body
 	background-color var(--color-paper)
 	color var(--color-writing)
+	display flex
 	font 14px/1.5 var(--typeface-prop)
+	height 100vh
 	letter-spacing 0.04em
 	margin 0
 

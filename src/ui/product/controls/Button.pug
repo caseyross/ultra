@@ -7,17 +7,18 @@ script.
 	export disabled = false
 	export key = null
 	export link = null
+	export size = 'normal'
 	export text = ''
 
 {#if link}
-	a(class:activated={activated} class:appearance-button={appearance === 'button'} class:appearance-text={appearance === 'text'} disabled={disabled} href={link} use:hotkey={key})
+	a(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled} href={link} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		slot
 		{#if text}
 			| {text}
 {:else}
-	button(class:activated={activated} class:appearance-button={appearance === 'button'} class:appearance-text={appearance === 'text'} disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
+	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		slot
@@ -44,3 +45,9 @@ style.
 		color var(--color-writing-action)
 		font-size 12px
 		font-weight bold
+	.size-big
+		font-size 1.5em
+	.size-normal
+		font-size 1em
+	.size-small
+		font-size 0.75em

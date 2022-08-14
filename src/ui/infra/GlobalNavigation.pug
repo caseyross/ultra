@@ -1,0 +1,63 @@
+script.
+	import AccountSwitcher from './AccountSwitcher.pug'
+	import Button from '../product/controls/Button.pug'
+	followed = []
+	multis = ['r/all', 'r/popular']
+	subscriptions = ['subreddit1', 'subreddit2', 'subreddit3']
+	watchlist = ['subreddit0']
+
+nav.global-nav
+	h1
+		a.logo(href='/') Brand
+	section
+		Button(key='i' link='/messages/inbox' size='big' text='Inbox')
+		Button(key='m' link='/mod/queue' size='big' text='Modqueue')
+	section
+		Button(key='p' link='/u/caseyross' text='Profile')
+		Button(key='v' link='/u/caseyross/saved' text='Saved')
+	section
+		{#if watchlist.length}
+			h5 Your watchlist
+			ol
+				{#each watchlist as subreddit}
+					Button(link='/r/{subreddit}' text={subreddit})
+	section
+		{#if multis.length}
+			h5 Your multis
+			ol
+				{#each multis as multi}
+					Button(link='/{multi}' text={multi})
+	section
+		Button(key='h' link='/' text='All subscriptions')
+		{#if subscriptions.length}
+			h5 Your subscriptions
+			ol
+				{#each subscriptions as subreddit}
+					Button(link='/r/{subreddit}' text={subreddit})
+	section
+		{#if followed.length}
+			h5 Your followed users
+			ol
+				{#each followed as user}
+					Button(link='/u/{user}' text={user})
+	section
+		AccountSwitcher
+
+style.
+	ol
+		display flex
+		flex-flow column nowrap
+	section
+		display flex
+		flex-flow column nowrap
+		margin-top 2em
+		width 100%
+	.global-nav
+		align-items flex-start
+		background var(--color-paper-callout)
+		display flex
+		flex 0 0 240px
+		flex-flow column nowrap
+		height 100%
+		padding 1em
+	

@@ -1,12 +1,11 @@
 script.
-	import AccountSwitcher from '../product/account/AccountSwitcher.pug'
 	import Button from '../product/controls/Button.pug'
 	import Multireddit from '../product/subreddit/Multireddit.pug'
 	import Post from '../product/post/Post.pug'
 	import Subreddit from '../product/subreddit/Subreddit.pug'
 	import User from '../product/user/User.pug'
-	import VitalsMonitor from './VitalsMonitor.pug'
 	import Wiki from '../product/subreddit/Wiki.pug'
+	import GlobalNavigation from './GlobalNavigation.pug'
 	import NotImplemented from './NotImplemented.pug'
 	import parseRoute from './parseRoute.coffee'
 	route = parseRoute(location)
@@ -40,9 +39,8 @@ script.
 	# END SPA LINK HANDLING LOGIC
 	#
 
-nav.global-nav
-	a.global-home-link(href='/')
-	VitalsMonitor
+{#if route.path !== 'post'}
+	GlobalNavigation
 main
 	{#if route.path === 'all'}
 		Multireddit(name='all' sort={route.data.posts_sort} user_name='r')
@@ -62,48 +60,10 @@ main
 		Wiki(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
 	{:else}
 		NotImplemented(route={route})
-nav.account-nav
-	AccountSwitcher
 
 style.
-	.account-nav
-		align-items flex-end
-		box-sizing border-box
-		display flex
-		flex-flow column nowrap
-		padding 16px
-		position fixed
-		right 0
-		top 0
-		width 64px
-	.global-nav
-		align-items flex-start
-		box-sizing border-box
-		display flex
-		flex-flow column nowrap
-		justify-content space-between
-		left 0
-		height 100vh
-		padding 16px
-		position fixed
-		top 0
-		width 96px
-	.global-home-link
-		aspect-ratio 1
-		background var(--color-writing-action)
-		border-radius 50%
-		display block
-		height 64px
 	main
 		display flex
-		flex-flow column nowrap
-		left 5vw
-		height 100vh
-		max-width 960px
+		flex 1
+		height 100%
 		overflow-y auto
-		padding-left 30vw
-		position fixed
-		top 0
-		width 50vw
-		&::-webkit-scrollbar
-			display none
