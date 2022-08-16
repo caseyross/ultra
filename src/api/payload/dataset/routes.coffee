@@ -1,28 +1,8 @@
 import { get, post } from '../../network/http.coffee'
 
-CURRENT_USER_NAME = 'caseyross'
-
 export default {
 	current_user: ->
 		get("/api/v1/me")
-	current_user_multireddits: ->
-		get("/api/multi/mine")
-	current_user_saved_comments: (comments_sort, max_comments, after_comment_short_id) ->
-		get("/user/#{CURRENT_USER_NAME}/saved", {
-			after: after_comment_short_id and "t1_#{after_comment_short_id}"
-			limit: max_comments
-			sort: comments_sort.split('_')[0]
-			t: comments_sort.split('_')[1]
-			type: 'comments'
-		})
-	current_user_saved_posts: (posts_sort, max_posts, after_post_short_id) ->
-		get("/user/#{CURRENT_USER_NAME}/saved", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
-			limit: max_posts
-			sort: posts_sort.split('_')[0]
-			t: posts_sort.split('_')[1]
-			type: 'links'
-		})
 	current_user_settings: ->
 		get("/api/v1/me/prefs")
 	current_user_subscriptions: ->
@@ -34,10 +14,6 @@ export default {
 	comment: (comment_short_id) ->
 		get("/api/info", {
 			id: "t1_#{comment_short_id}"
-		})
-	global_ranking_popular_subreddits: ->
-		get("/subreddits/popular", {
-			limit: 100
 		})
 	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve(null)
@@ -114,22 +90,20 @@ export default {
 			q: search_text
 			typeahead_active: false
 		})
-	subreddit_emotes: (subreddit_name) ->
-		get("/api/v1/#{subreddit_name}/emojis/all")
 	subreddit: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about")
+	subreddits_popular: (max_subreddits) ->
+		get("/subreddits/popular", {
+			limit: max_subreddits
+		})
+	subreddit_emotes: (subreddit_name) ->
+		get("/api/v1/#{subreddit_name}/emojis/all")
 	subreddit_moderators: (subreddit_name, after_user_short_id) ->
 		get("/r/#{subreddit_name}/about/moderators", {
 			after: after_user_short_id and "t2_#{after_user_short_id}"
 			limit: 100
 			show: 'all'
 		})
-	subreddit_post_flairs: (subreddit_name) ->
-		get("/r/#{subreddit_name}/api/link_flair_v2")
-	subreddit_post_guidelines: (subreddit_name) ->
-		get("/r/#{subreddit_name}/api/submit_text")
-	subreddit_post_requirements: (subreddit_name) ->
-		get("/api/v1/#{subreddit_name}/post_requirements")
 	subreddit_posts: (subreddit_name, posts_sort, max_posts, after_post_short_id) ->
 		get("/r/#{subreddit_name}/#{posts_sort.split('_')[0]}", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
@@ -137,12 +111,26 @@ export default {
 			show: 'all'
 			t: posts_sort.split('_')[1]
 		})
+	subreddit_post_flairs: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/link_flair_v2")
+	subreddit_post_guidelines: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/submit_text")
+	subreddit_post_requirements: (subreddit_name) ->
+		get("/api/v1/#{subreddit_name}/post_requirements")
 	subreddit_rules: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about/rules")
 	subreddit_widgets: (subreddit_name) ->
 		get("/r/#{subreddit_name}/api/widgets")
 	subreddit_user_flairs: (subreddit_name) ->
 		get("/r/#{subreddit_name}/api/user_flair_v2")
+	user: (user_name) ->
+		get("/user/#{user_name}/about", {
+			sr_detail: true
+		})
+	users: (...user_short_ids) ->
+		get("/api/user_data_by_account_ids", {
+			ids: user_short_ids.map((short_id) -> "t2_#{short_id}")
+		})
 	user_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
 		get("/user/#{user_name}/comments", {
 			after: after_comment_short_id and "t1_#{after_comment_short_id}"
@@ -150,10 +138,8 @@ export default {
 			sort: comments_sort.split('_')[0]
 			t: comments_sort.split('_')[1]
 		})
-	user: (user_name) ->
-		get("/user/#{user_name}/about", {
-			sr_detail: true
-		})
+	user_multireddits: (user_name) ->
+		get("/api/multi/user/#{user_name}")
 	user_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/submitted", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
@@ -161,11 +147,21 @@ export default {
 			sort: posts_sort.split('_')[0]
 			t: posts_sort.split('_')[1]
 		})
-	user_public_multireddits: (user_name) ->
-		get("/api/multi/user/#{user_name}")
-	users: (...user_short_ids) ->
-		get("/api/user_data_by_account_ids", {
-			ids: user_short_ids.map((short_id) -> "t2_#{short_id}")
+	user_saved_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
+		get("/user/#{user_name}/saved", {
+			after: after_comment_short_id and "t1_#{after_comment_short_id}"
+			limit: max_comments
+			sort: comments_sort.split('_')[0]
+			t: comments_sort.split('_')[1]
+			type: 'comments'
+		})
+	user_saved_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
+		get("/user/#{user_name}/saved", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			sort: posts_sort.split('_')[0]
+			t: posts_sort.split('_')[1]
+			type: 'links'
 		})
 	wiki: (subreddit_name, page_name, version_short_id) ->
 		get("/r/#{subreddit_name}/wiki/#{page_name}", {
