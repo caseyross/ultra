@@ -1,0 +1,20 @@
+script.
+	import { setContext } from 'svelte'
+	import api from '../../api/index.js'
+	contextSet = false
+	status = api.getLoginStatus()
+	if status is 'logged-in'
+		if localStorage['account.username']
+			setContext('username', localStorage['account.username'])
+			contextSet = true
+		else
+			api.watch('current_user', (x) ->
+				if x?.data?.name
+					localStorage['account.username'] = x.data.name
+					location.reload() # workaround context only being settable during component initialization
+			)
+
+{#if status === 'logged-out'}
+	slot
+{:else if status === 'logged-in' && contextSet}
+	slot

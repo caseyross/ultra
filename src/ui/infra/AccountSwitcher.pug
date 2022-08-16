@@ -1,9 +1,12 @@
 script.
 	import Button from '../product/controls/Button.pug'
 	import api from '../../api/index.js'
-	status = api.getLoginStatus()
+	logout = ->
+		api.logout()
+		delete localStorage['account.username']
+		location.reload()
 
-{#if status === 'logged-in'}
-	Button(action={() => { api.logout(); status = api.getLoginStatus() }} text='Log out')
+{#if api.getLoginStatus() === 'logged-in'}
+	Button(action={() => logout()} text='Log out')
 {:else}
 	Button(link={api.getLoginURL(location.pathname)} text='Log in')

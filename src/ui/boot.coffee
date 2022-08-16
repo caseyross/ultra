@@ -1,9 +1,9 @@
 import './stylesheet.styl'
+import Application from './infra/Application.pug'
 import Crash from './infra/Crash.pug'
-import Router from './infra/Router.pug'
 
 try
-	new Router
+	new Application
 		target: document.body
 catch error
 	new Crash
