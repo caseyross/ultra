@@ -6,8 +6,8 @@ script.
 	export sort = null
 	export user_name = null
 	error = null
-	postIds = null
-	api.watch(api.ID.dataset('multireddit_posts', user_name, name, sort, 10), (x) -> { data: postIds, error: error } = x)
+	postShortIds = null
+	api.watch(api.ID.dataset('multireddit_posts', user_name, name, sort, 10), (x) -> { data: postShortIds, error: error } = x)
 
 svelte:head
 	{#if user_name === 'r' && name === 'home'}
@@ -17,5 +17,5 @@ svelte:head
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/user/{user_name}/m/{name}')
-{:else if postIds}
-	PostList(ids={postIds} multireddit={true})
+{:else if postShortIds}
+	PostList(shortIds={postShortIds} multireddit={true})

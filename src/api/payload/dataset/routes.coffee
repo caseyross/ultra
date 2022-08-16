@@ -94,7 +94,7 @@ export default {
 		get("/r/#{subreddit_name}/about")
 	subreddits_popular: (max_subreddits) ->
 		get("/subreddits/popular", {
-			limit: max_subreddits + 1 # actual number returned is limit minus 1
+			limit: Number(max_subreddits) + 1 # actual number returned is limit minus 1
 		})
 	subreddit_emotes: (subreddit_name) ->
 		get("/api/v1/#{subreddit_name}/emojis/all")

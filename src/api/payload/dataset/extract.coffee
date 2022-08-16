@@ -13,8 +13,6 @@ export default extract = (rawData, sourceID) ->
 	switch rawData.kind
 		when 't1'
 			comment = rawData.data
-			# Process parent post information.
-			comment.post_id = ID.dataset('post', comment.link_id)
 			# Process replies.
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			repliesListing = comment.replies?.data?.children
@@ -32,7 +30,7 @@ export default extract = (rawData, sourceID) ->
 						when 'post' then ID.body(sourceID)[1] ? 'confidence'
 						when 'post_more_replies' then ID.body(sourceID)[2]
 						else 'confidence'
-					comment.more_replies_id = ID.dataset('post_more_replies', ID.body(comment.post_id)[0], comment.id, more_replies_sort, ...comment.more_replies)
+					comment.more_replies_id = ID.dataset('post_more_replies', comment.link_id[3..], comment.id, more_replies_sort, ...comment.more_replies)
 			# Recursively extract all comments in this comment's reply tree.
 			repliesListingDatasets = extract(comment.replies or [], sourceID) # Sometimes Reddit sends an empty string instead of an empty array.
 			# Set the IDs of the direct replies in place of the original objects.
@@ -48,7 +46,6 @@ export default extract = (rawData, sourceID) ->
 			delete user.icon_img
 			user.profile_over_18 = user.subreddit.over_18
 			result.main =
-				id: ID.dataset('user', user.name)
 				id: ID.dataset('user', user.name)
 				data: user
 			result.sub.push({
@@ -191,14 +188,14 @@ export default extract = (rawData, sourceID) ->
 		when 'Listing'
 			listing = rawData.data.children
 			if !Array.isArray(listing) then listing = []
-			# If each top-level object in the listing is referenceable by ID, the primary data becomes simply an array of IDs.
+			# If each top-level object in the listing is referenceable by ID, the primary data becomes simply an array of short-IDs.
 			# If not, the primary data contains the full child objects.
 			listingDatasets = listing.map((item) -> extract(item, sourceID))
 			childIds = listingDatasets.map(({ main }) -> main.id)
 			if childIds.every((id) -> id?)
 				result.main =
 					id: null
-					data: childIds
+					data: childIds.map((id) -> ID.body(id)[0])
 				result.sub = listingDatasets.flatMap(({ main, sub }) -> sub.concat(main))
 			else
 				result.main =
@@ -225,7 +222,7 @@ export default extract = (rawData, sourceID) ->
 				if childIds.every((id) -> id?)
 					result.main =
 						id: null
-						data: childIds
+						data: childIds.map((id) -> ID.body(id)[0])
 					result.sub = arrayDatasets.flatMap(({ main, sub }) -> sub.concat(main))
 				else
 					result.main =

@@ -11,9 +11,9 @@ export default (rawData, sourceID) ->
 		sub: []
 	# Extract the bare post from the posts listing.
 	# Put aside the other datasets from the posts listing for the end result.
-	{ main: { data: ids }, sub: datasets } = extract(rawData[0])
-	postDataset = datasets.find((dataset) -> dataset.id == ids[0])
-	otherDatasets = datasets.filter((dataset) -> dataset.id != ids[0])
+	{ main: { data: postShortIds }, sub: datasets } = extract(rawData[0])
+	postDataset = datasets.find((dataset) -> ID.body(dataset.id)[0] == postShortIds[0])
+	otherDatasets = datasets.filter((dataset) -> ID.body(dataset.id)[0] != postShortIds[0])
 	post = postDataset.data
 	# Process and organize the comment data.
 	# 1. Detect and process a "more comments" object.

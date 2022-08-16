@@ -10,12 +10,12 @@ script.
 	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../../api/index.js'
-	export id = null
+	export shortId = null
 	export standalone = false
 	DOM =
 		post: null
 	post = null
-	api.watch(id,
+	api.watch(api.ID.dataset('post', shortId),
 		(x) ->
 			{ data: post } = x
 			if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
@@ -47,7 +47,7 @@ svelte:head
 		{#if post}
 			title post: {post.title}
 		{:else}
-			title post: {api.ID.body(id)[0]}
+			title post: {shortId}
 {#if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => currentScroll = e.target.scrollTop})
 		header.post-header
@@ -112,8 +112,8 @@ svelte:head
 		{#if post.replies?.length}
 			{#key post.replies}
 				ol.post-replies
-					{#each post.replies as replyId}
-						Comment(id={replyId})
+					{#each post.replies as replyShortId}
+						Comment(shortId={replyShortId})
 					{#if post.more_replies}
 						.post-more-replies
 							Button(action={() => api.load(post.more_replies_id)} appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")

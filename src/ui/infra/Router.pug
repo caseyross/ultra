@@ -51,7 +51,7 @@ main
 	{:else if route.path === 'popular'}
 		Multireddit(name='popular' sort={route.data.posts_sort} user_name='r')
 	{:else if route.path === 'post'}
-		Post(id={'post:' + route.data.post_short_id} standalone={true})
+		Post(shortId={route.data.post_short_id} standalone={true})
 	{:else if route.path === 'subreddit'}
 		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 	{:else if route.path === 'user'}

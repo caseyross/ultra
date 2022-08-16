@@ -1,9 +1,20 @@
 script.
+	import { getContext } from 'svelte'
+	import api from '../../api/index.js';
 	import AccountSwitcher from './AccountSwitcher.pug'
 	import Button from '../product/controls/Button.pug'
-	followed = []
-	multis = ['r/all', 'r/popular']
-	subscriptions = ['subreddit1', 'subreddit2', 'subreddit3']
+	if getContext('username')
+		multis = ['r/all', 'r/popular']
+		following = null
+		subscriptions = null
+		api.watch('current_user_subscriptions', (x) ->
+			if x?.data?.length
+				following = x.data.filter((name) -> name.startsWith('u_')).map((name) -> name[2..])
+				subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
+		)
+	else
+		popular = null
+		api.watch('subreddits_popular:11', (x) -> { data: popular } = x)
 	watchlist = ['subreddit0','subreddit0','subreddit0','subreddit0','subreddit0']
 
 nav.global-nav
@@ -19,27 +30,34 @@ nav.global-nav
 		{#if watchlist.length}
 			h5 Your watchlist
 			ol
-				{#each watchlist as subreddit, index}
-					Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit}' text={subreddit})
-	section
-		{#if multis.length}
-			h5 Your custom feeds
-			ol
-				{#each multis as multi}
-					Button(link='/{multi}' text={multi})
-	section
-		Button(key='h' link='/' text='All subscriptions')
-		{#if subscriptions.length}
-			h5 Your subscriptions
-			ol
-				{#each subscriptions as subreddit}
-					Button(link='/r/{subreddit}' text={subreddit})
-	{#if followed.length}
+				{#each watchlist as subreddit_name, index}
+					Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit_name}' text={subreddit_name})
+	{#if getContext('username')}
 		section
-			h5 Your followed users
-			ol
-				{#each followed as user}
-					Button(link='/u/{user}' text={user})
+			{#if multis?.length}
+				h5 Your custom feeds
+				ol
+					{#each multis as multi}
+						Button(link='/{multi}' text={multi})
+		section
+			Button(key='h' link='/' text='All subscriptions')
+			{#if subscriptions?.length}
+				h5 Your subscriptions
+				ol
+					{#each subscriptions as subreddit_name}
+						Button(link='/r/{subreddit_name}' text={subreddit_name})
+		{#if following?.length}
+			section
+				h5 Your followed users
+				ol
+					{#each following as user_name}
+						Button(link='/u/{user_name}' text={user_name})
+	{:else}
+		{#if popular?.length}
+			section
+				h5 Popular subreddits
+				{#each popular as subreddit_name}
+					Button(link='/r/{subreddit_name}' text={subreddit_name})
 	section
 		AccountSwitcher
 

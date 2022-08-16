@@ -1,11 +1,11 @@
 script.
 	import Comment from '../post/Comment.pug'
-	export ids = null
+	export shortIds = null
 
 ol.comment-list
-	{#if ids}
-		{#each ids as id}
-			Comment(id={id} outOfContext={true})
+	{#if shortIds}
+		{#each shortIds as shortId}
+			Comment(shortId={shortId} outOfContext={true})
 
 style.
 	.comment-list
