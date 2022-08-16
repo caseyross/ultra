@@ -4,7 +4,7 @@ script.
 	followed = []
 	multis = ['r/all', 'r/popular']
 	subscriptions = ['subreddit1', 'subreddit2', 'subreddit3']
-	watchlist = ['subreddit0']
+	watchlist = ['subreddit0','subreddit0','subreddit0','subreddit0','subreddit0']
 
 nav.global-nav
 	h1
@@ -19,11 +19,11 @@ nav.global-nav
 		{#if watchlist.length}
 			h5 Your watchlist
 			ol
-				{#each watchlist as subreddit}
-					Button(link='/r/{subreddit}' text={subreddit})
+				{#each watchlist as subreddit, index}
+					Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit}' text={subreddit})
 	section
 		{#if multis.length}
-			h5 Your multis
+			h5 Your custom feeds
 			ol
 				{#each multis as multi}
 					Button(link='/{multi}' text={multi})
@@ -34,8 +34,8 @@ nav.global-nav
 			ol
 				{#each subscriptions as subreddit}
 					Button(link='/r/{subreddit}' text={subreddit})
-	section
-		{#if followed.length}
+	{#if followed.length}
+		section
 			h5 Your followed users
 			ol
 				{#each followed as user}
