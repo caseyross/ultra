@@ -18,4 +18,7 @@ export default {
 	body: (id) ->
 		id.split(':')[1..]
 
+	bodyString: (id) ->
+		id[(id.indexOf(':') + 1)..]
+
 }

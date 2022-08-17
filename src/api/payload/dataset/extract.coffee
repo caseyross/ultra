@@ -195,7 +195,7 @@ export default extract = (rawData, sourceID) ->
 			if childIds.every((id) -> id?)
 				result.main =
 					id: null
-					data: childIds.map((id) -> ID.body(id)[0])
+					data: childIds.map((id) -> ID.bodyString(id))
 				result.sub = listingDatasets.flatMap(({ main, sub }) -> sub.concat(main))
 			else
 				result.main =
@@ -222,7 +222,7 @@ export default extract = (rawData, sourceID) ->
 				if childIds.every((id) -> id?)
 					result.main =
 						id: null
-						data: childIds.map((id) -> ID.body(id)[0])
+						data: childIds.map((id) -> ID.bodyString(id))
 					result.sub = arrayDatasets.flatMap(({ main, sub }) -> sub.concat(main))
 				else
 					result.main =

@@ -12,5 +12,5 @@ export default (rawData) ->
 		})
 	result.main =
 		id: null
-		data: result.sub.map((dataset) -> dataset.id)
+		data: result.sub.map((dataset) -> ID.bodyString(dataset.id))
 	return result
