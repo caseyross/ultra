@@ -6,23 +6,23 @@ script.
 	export name = null
 	export sort = null
 	error = null
-	postShortIds = null
+	post_short_ids = null
 	selection = null
-	api.watch(api.ID.dataset('subreddit_posts', name, sort, 10), (x) -> { data: postShortIds, error: error } = x)
+	api.watch(api.ID.dataset('subreddit_posts', name, sort, 10), (x) -> { data: post_short_ids, error: error } = x)
 
 svelte:head
 	title subreddit: {name}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/r/{name}')
-{:else if postShortIds}
+{:else if post_short_ids}
 	nav.subreddit-nav
 		h1 {name}
-		PostList(shortIds={postShortIds} select={shortId => selection = { type: 'post', shortId }})
+		PostList(short_ids={post_short_ids} select={short_id => selection = { type: 'post', short_id }})
 	{#if selection}
 		{#if selection.type === 'post'}
-			{#key selection.shortId}
-				Post(shortId={selection.shortId})
+			{#key selection.short_id}
+				Post(short_id={selection.short_id})
 
 style.
 	.subreddit-nav

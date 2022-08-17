@@ -1,28 +1,28 @@
 script.
 	import { Time } from '../../utils/index.js'
 	import api from '../../api/index.js'
-	online = true
-	ratelimitMax = 60
-	ratelimitRemaining = 60
-	overallStatus =
-		code: 'unknown'
-		description: 'Waiting for status...'
-	checkVitals = ->
+	check_vitals = ->
 		online = navigator?.onLine
-		{ estimatedMaxRequests: ratelimitMax, remainingRequests: ratelimitRemaining } = api.getRatelimitStatus()
-		overallStatus = switch
+		{ estimatedMaxRequests: ratelimit_max, remainingRequests: ratelimit_left } = api.getRatelimitStatus()
+		general_status = switch
 			when not online
 				{ code: 'error', description: 'No connection to Reddit servers' }
-			when ratelimitRemaining < 1
+			when ratelimit_left < 1
 				{ code: 'error', description: 'Temporarily unable to load Reddit data' }
-			when (ratelimitRemaining / ratelimitMax) < 0.25
+			when (ratelimit_left / ratelimit_max) < 0.25
 				{ code: 'caution', description: 'Limited ability to get data from Reddit' }
 			else
 				{ code: 'ok', description: 'All systems normal' }
-	checkVitals()
-	setInterval(checkVitals, Time.sToMs(3))
+	general_status =
+		code: 'unknown'
+		description: 'Waiting for status...'
+	online = true
+	ratelimit_left = 60
+	ratelimit_max = 60
+	check_vitals()
+	setInterval(check_vitals, Time.sToMs(3))
 
-data.vitals-monitor(class='vitals-{overallStatus.code}' title='{overallStatus.description}')
+data.vitals-monitor(class='vitals-{general_status.code}' title='{general_status.description}')
 
 style.
 	.vitals-monitor

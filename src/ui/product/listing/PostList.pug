@@ -2,13 +2,13 @@ script.
 	import PostListItem from './PostListItem.pug'
 	export multireddit = false
 	export select = null
-	export shortIds = null
+	export short_ids = null
 
 h3 Posts
 ol.post-list
-	{#if shortIds}
-		{#each shortIds as shortId}
-			PostListItem(multireddit={multireddit} select={select} shortId={shortId})
+	{#if short_ids}
+		{#each short_ids as short_id}
+			PostListItem(multireddit={multireddit} select={select} short_id={short_id})
 
 style.
 	.post-list

@@ -1,7 +1,6 @@
 script.
 	import { afterUpdate } from 'svelte';
 	import { Format } from '../../../utils/index.js'
-	import Avatar from '../user/Avatar.pug'
 	import AVPlayer from './AVPlayer.pug'
 	import Button from '../controls/Button.pug'
 	import Comment from './Comment.pug'
@@ -10,46 +9,46 @@ script.
 	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../../api/index.js'
-	export shortId = null
+	export short_id = null
 	export standalone = false
 	DOM =
 		post: null
 	post = null
-	api.watch(api.ID.dataset('post', shortId),
+	api.watch(api.ID.dataset('post', short_id),
 		(x) ->
 			{ data: post } = x
 			if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
 	)
-	currentScroll = 0
-	lineHeight = 21
-	minimapPattern = []
+	current_scroll = 0
+	line_height = 21
+	minimap_pattern = []
 	afterUpdate ->
-		contentPattern =
+		content_pattern =
 			if node = document.querySelector('.post-content')
 				[{
 					color: 'rgba(0,0,0,0.5)'
-					height: Math.trunc(node.clientHeight / lineHeight),
-					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / lineHeight)
+					height: Math.trunc(node.clientHeight / line_height),
+					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / line_height)
 				}]
 			else []
-		commentsPattern = Array.from(
+		comments_pattern = Array.from(
 			document.querySelectorAll('.comment-body'),
 			(node) -> ({
 					color: 'rgba(0,0,0,0.5)'
-					height: Math.trunc(node.clientHeight / lineHeight),
-					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / lineHeight)
+					height: Math.trunc(node.clientHeight / line_height),
+					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / line_height)
 			})
 		)
-		minimapPattern = contentPattern.concat(commentsPattern)
+		minimap_pattern = content_pattern.concat(comments_pattern)
 
 svelte:head
 	{#if standalone}
 		{#if post}
 			title post: {post.title}
 		{:else}
-			title post: {shortId}
+			title post: {short_id}
 {#if post}
-	article.post(bind:this={DOM.post} on:scroll={(e) => currentScroll = e.target.scrollTop})
+	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		header.post-header
 			h1 {post.title}
 		section.post-content
@@ -112,13 +111,13 @@ svelte:head
 		{#if post.replies?.length}
 			{#key post.replies}
 				ol.post-replies
-					{#each post.replies as replyShortId}
-						Comment(shortId={replyShortId})
+					{#each post.replies as reply_short_id}
+						Comment(short_id={reply_short_id})
 					{#if post.more_replies}
 						.post-more-replies
 							Button(action={() => api.load(post.more_replies_id)} appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
 		.post-minimap
-			Minimap(contentHeight={DOM.post?.scrollHeight} currentScroll={currentScroll} pattern={minimapPattern} scroll={(y) => DOM.post.scrollTop = y} viewingWindowHeight={DOM.post?.offsetHeight})
+			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
 
 style.
 	.post

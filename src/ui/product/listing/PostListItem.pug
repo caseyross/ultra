@@ -5,19 +5,19 @@ script.
 	import api from '../../../api/index.js'
 	export multireddit = false
 	export select = null
-	export shortId = null
+	export short_id = null
 	post = null
-	api.watch(api.ID.dataset('post', shortId), (x) -> { data: post } = x)
+	api.watch(api.ID.dataset('post', short_id), (x) -> { data: post } = x)
 
-button.post-card(on:mousedown={() => select(shortId)})
+button.post-card(on:mousedown={() => select(short_id)})
 	.post-headline-layout
 		.post-headline-layout-indent
-			Score(uploadVote={(vote) => api.send(api.ID.action('vote_post', shortId, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+			Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		.post-headline-layout-core
 			.post-meta
 				.post-flair
 					{#if post.link_flair_text}
-						Flair(color={post.link_flair_background_color} richtext={post.link_flair_richtext} text={post.link_flair_text})
+						Flair(color={post.link_flair_background_color} rich_text={post.link_flair_richtext} text={post.link_flair_text})
 			h1.post-title {post.title}
 			.post-info(style='display: none')
 				time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}

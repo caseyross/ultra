@@ -1,34 +1,34 @@
 script.
-	export uploadVote = -> {}
+	export upload_vote = -> {}
 	export value = null
 	export vote = 0
 	if Number.isFinite(value)
 		value = value + vote
-		colorClass = switch
+		color_class = switch
 			when vote == 1 then 'upvoted'
 			when vote == -1 then 'downvoted'
 			when value >= 2 then 'positive'
 			when value == 1 then 'neutral'
 			else 'negative'
-		displayValue = switch
+		display_value = switch
 			when value >= 1000 then Math.trunc(value / 1000) + 'k'
 			when value >= -1000 then value
 			else Math.ceil(value / 1000) + 'k'
-		sizeClass = if Math.abs(value) >= 1000 then 'thousands' else 'ones'
+		size_class = if Math.abs(value) >= 1000 then 'thousands' else 'ones'
 	else
-		colorClass = 'neutral'
-		displayValue = '?'
-		sizeClass = 'ones'
-	toggleDownvote = ->
+		color_class = 'neutral'
+		display_value = '?'
+		size_class = 'ones'
+	toggle_downvote = ->
 		if vote == -1 then vote = 0 
 		else vote = -1
-		uploadVote(vote)
-	toggleUpvote = ->
+		upload_vote(vote)
+	toggle_downvote = ->
 		if vote == 1 then vote = 0 
 		else vote = 1
-		uploadVote(vote)
+		upload_vote(vote)
 
-button.score(class='score-color-{colorClass}' class='score-size-{sizeClass}' on:click={() => toggleUpvote()} on:contextmenu={() => toggleDownvote()}) {displayValue}
+button.score(class='score-color-{color_class}' class='score-size-{size_class}' on:click={() => toggle_downvote()} on:contextmenu={() => toggle_downvote()}) {display_value}
 
 style.
 	.score

@@ -1,14 +1,13 @@
 script.
 	import api from '../../../api/index.js'
-	import Avatar from '../user/Avatar.pug'
 	import Button from '../controls/Button.pug'
 	import Markup from '../text/Markup.pug'
 	import Score from './Score.pug'
-	export outOfContext = false
-	export shortId = null
+	export out_of_context = false
+	export short_id = null
 	collapsed = false
 	comment = null
-	api.watch(api.ID.dataset('comment', shortId), (x) -> { data: comment } = x)
+	api.watch(api.ID.dataset('comment', short_id), (x) -> { data: comment } = x)
 
 {#if comment}
 	<!-- 'comment' role is draft status and not recognized yet -->
@@ -16,7 +15,7 @@ script.
 	article.comment(role='comment')
 		.comment-layout-indent
 			.comment-layout-score
-				Score(uploadVote={(vote) => api.send(api.ID.action('vote_comment', shortId, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+				Score(upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		.comment-layout-core
 			{#if collapsed}
@@ -24,20 +23,20 @@ script.
 			{:else}
 				.comment-body
 					Markup(html={comment.body_html})
-				{#if !outOfContext && comment.replies.length > 0}
+				{#if !out_of_context && comment.replies.length > 0}
 					{#key comment.replies}
 						ol.comment-replies
-							{#each comment.replies as replyShortId}
-								svelte:self(shortId={replyShortId})
+							{#each comment.replies as reply_short_id}
+								svelte:self(short_id={reply_short_id})
 							{#if comment.more_replies}
 								.comment-more-replies
 									Button(action={() => api.load(comment.more_replies_id)} appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
 							{#if comment.deeper_replies}
 								.comment-more-replies
 									Button(appearance='text' text='→ Continue this thread...')
-		{#if outOfContext}
+		{#if out_of_context}
 			.comment-layout-links
-				Button(link='/post/{comment.link_id.slice(3)}/comment/{shortId}' text='View in post')
+				Button(link='/post/{comment.link_id.slice(3)}/comment/{short_id}' text='View in post')
 
 style.
 	.comment

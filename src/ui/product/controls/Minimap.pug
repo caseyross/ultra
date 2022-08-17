@@ -1,12 +1,12 @@
 script.
-	export contentHeight = null
-	export currentScroll = 0
+	export content_height = null
+	export current_scroll = 0
 	export pattern = null
 	export scroll = null
-	export viewingWindowHeight = null
-	patternHeight = pattern?.at(-1)?.start + pattern?.at(-1)?.height
-	thumbDistance = -> currentScroll / contentHeight * patternHeight
-	thumbHeight = viewingWindowHeight / contentHeight * patternHeight
+	export view_height = null
+	pattern_height = pattern?.at(-1)?.start + pattern?.at(-1)?.height
+	thumb_distance = -> current_scroll / content_height * pattern_height
+	thumb_height = view_height / content_height * pattern_height
 	dragging = false
 	clamp = (min, max, value) ->
 		if value < min then return min
@@ -14,11 +14,11 @@ script.
 		return value
 
 {#if pattern?.length}
-	figure.minimap(on:mousemove={(e) => dragging ? scroll(contentHeight * clamp(0, 1, e.layerY / patternHeight)) : null} on:mousedown|preventDefault={(e) => {dragging = true; scroll(contentHeight * clamp(0, 1, e.layerY / patternHeight))}} on:mouseup={() => dragging = false} on:mouseleave={() => dragging = false} style='height:{patternHeight}px')
+	figure.minimap(on:mousemove={(e) => dragging ? scroll(content_height * clamp(0, 1, e.layerY / pattern_height)) : null} on:mousedown|preventDefault={(e) => {dragging = true; scroll(content_height * clamp(0, 1, e.layerY / pattern_height))}} on:mouseup={() => dragging = false} on:mouseleave={() => dragging = false} style='height:{pattern_height}px')
 		figure.minimap-pattern
 			{#each pattern as object}
 				data.minimap-object(style='background:{object.color};height:{object.height}px;top:{object.start}px')
-		figure.minimap-thumb(style='height:{thumbHeight}px;transform:translateY({thumbDistance()}px)')
+		figure.minimap-thumb(style='height:{thumb_height}px;transform:translateY({thumb_distance()}px)')
 
 style.
 	.minimap

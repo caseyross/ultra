@@ -1,12 +1,12 @@
 script.
 	import { Color } from '../../../utils/index.js'
 	export color = null
-	export richtext = null
+	export rich_text = null
 	export text = null
 
 span.flair(style="background: {color || 'orangered'}; color: {color ? (new Color(color)).asContrastHex() : 'white'}")
-	{#if richtext && richtext.length}
-		{#each richtext as segment}
+	{#if rich_text && rich_text.length}
+		{#each rich_text as segment}
 			{#if segment.e === 'text'}
 				| {segment.t}
 			{:else if segment.e === 'emoji'}

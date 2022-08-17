@@ -11,9 +11,9 @@ export default (rawData, sourceID) ->
 		sub: []
 	# Extract the bare post from the posts listing.
 	# Put aside the other datasets from the posts listing for the end result.
-	{ main: { data: postShortIds }, sub: datasets } = extract(rawData[0])
-	postDataset = datasets.find((dataset) -> ID.body(dataset.id)[0] == postShortIds[0])
-	otherDatasets = datasets.filter((dataset) -> ID.body(dataset.id)[0] != postShortIds[0])
+	{ main: { data: post_short_ids }, sub: datasets } = extract(rawData[0])
+	postDataset = datasets.find((dataset) -> ID.body(dataset.id)[0] == post_short_ids[0])
+	otherDatasets = datasets.filter((dataset) -> ID.body(dataset.id)[0] != post_short_ids[0])
 	post = postDataset.data
 	# Process and organize the comment data.
 	# 1. Detect and process a "more comments" object.
@@ -22,9 +22,9 @@ export default (rawData, sourceID) ->
 		post.more_replies = more.data.children
 		post.more_replies_id = ID.dataset('post_more_replies', post.id, '', ID.body(sourceID)[1] ? 'confidence', ...post.more_replies)
 	# 2. Extract the comments from the listing.
-	{ main: { data: topLevelCommentIds }, sub: commentDatasets } = extract(rawData[1], sourceID)
+	{ main: { data: direct_reply_short_ids }, sub: commentDatasets } = extract(rawData[1], sourceID)
 	# 3. Link the top-level comments via their IDs.
-	post.replies = topLevelCommentIds
+	post.replies = direct_reply_short_ids
 	# 4. Setup bulk user information leads.
 	post.user_tranches = []
 	user_short_ids_tranch = new Set()

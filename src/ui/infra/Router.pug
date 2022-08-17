@@ -7,16 +7,16 @@ script.
 	import Wiki from '../product/subreddit/Wiki.pug'
 	import GlobalNavigation from './GlobalNavigation.pug'
 	import NotImplemented from './NotImplemented.pug'
-	import parseRoute from './parseRoute.coffee'
-	route = parseRoute(location)
+	import parse_route from './parse_route.coffee'
+	route = parse_route(location)
 	#
 	# START SPA LINK HANDLING LOGIC
 	# Where possible, load internal reddit links without changing the document.
 	# Otherwise, fall back upon normal browser link-handling behavior.
 	#
-	internalNavigate = (url) ->
+	internal_navigate = (url) ->
 		history.pushState(null, null, url)
-		route = parseRoute(location)
+		route = parse_route(location)
 	document.addEventListener 'mousedown',
 		(event) ->
 			switch
@@ -25,16 +25,16 @@ script.
 					if link
 						if link.origin is origin
 							if link.pathname is location.pathname then return # allow hash change scrolling behavior
-							else internalNavigate(new URL(link.href))
+							else internal_navigate(new URL(link.href))
 						else location.href = link.href
 	document.addEventListener 'keydown',
 		(event) ->
 			if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A'
 				link = event.target
-				if (link.origin is origin) and not (link.pathname is location.pathname) then internalNavigate(new URL(link.href))
+				if (link.origin is origin) and not (link.pathname is location.pathname) then internal_navigate(new URL(link.href))
 	window.addEventListener 'popstate',
 		(event) ->
-			route = parseRoute(location)
+			route = parse_route(location)
 	#
 	# END SPA LINK HANDLING LOGIC
 	#
@@ -51,7 +51,7 @@ main
 	{:else if route.path === 'popular'}
 		Multireddit(name='popular' sort={route.data.posts_sort} user_name='r')
 	{:else if route.path === 'post'}
-		Post(shortId={route.data.post_short_id} standalone={true})
+		Post(short_id={route.data.post_short_id} standalone={true})
 	{:else if route.path === 'subreddit'}
 		Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 	{:else if route.path === 'user'}

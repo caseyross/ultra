@@ -8,21 +8,21 @@ script.
 	export user_name = null
 	error = null
 	info = null
-	commentShortIds = null
-	postShortIds = null
+	comment_short_ids = null
+	post_short_ids = null
 	api.watch(api.ID.dataset('user', user_name), (x) -> { data: info, error: error } = x)
 	switch items_filter
 		when 'comments'
-			api.watch(api.ID.dataset('user_comments', user_name, items_sort, 10), (x) -> { data: commentShortIds } = x)
+			api.watch(api.ID.dataset('user_comments', user_name, items_sort, 10), (x) -> { data: comment_short_ids } = x)
 		else
-			api.watch(api.ID.dataset('user_posts', user_name, items_sort, 10), (x) -> { data: postShortIds } = x)
+			api.watch(api.ID.dataset('user_posts', user_name, items_sort, 10), (x) -> { data: post_short_ids } = x)
 
 svelte:head
 	title user: {user_name}: {items_filter}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/u/{user_name}')
-{:else if postShortIds}
-	PostList(shortIds={postShortIds})
-{:else if commentShortIds}
-	CommentList(shortIds={commentShortIds})
+{:else if post_short_ids}
+	PostList(short_ids={post_short_ids})
+{:else if comment_short_ids}
+	CommentList(short_ids={comment_short_ids})
