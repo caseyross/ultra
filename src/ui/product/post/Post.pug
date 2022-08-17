@@ -15,9 +15,7 @@ script.
 		post: null
 	post = null
 	api.watch(api.ID.dataset('post', short_id),
-		(x) ->
-			{ data: post } = x
-			if post?.user_tranches then for tranch in post.user_tranches then api.load(tranch)
+		(x) -> { data: post } = x
 	)
 	current_scroll = 0
 	line_height = 21

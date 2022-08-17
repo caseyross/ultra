@@ -25,17 +25,12 @@ export default (rawData, sourceID) ->
 	{ main: { data: direct_reply_short_ids }, sub: commentDatasets } = extract(rawData[1], sourceID)
 	# 3. Link the top-level comments via their IDs.
 	post.replies = direct_reply_short_ids
-	# 4. Setup bulk user information leads.
-	post.user_tranches = []
-	user_short_ids_tranch = new Set()
-	if post.author_fullname? then user_short_ids_tranch.add(post.author_fullname[3..])
+	# 4. Setup list of contributors for bulk access.
+	contributor_short_ids = new Set()
+	if post.author_fullname? then contributor_short_ids.add(post.author_fullname[3..])
 	for commentDataset in commentDatasets
-		if commentDataset.data.author_fullname? then user_short_ids_tranch.add(commentDataset.data.author_fullname[3..])
-		if user_short_ids_tranch.size == 500
-			post.user_tranches.push(ID.dataset('users', ...user_short_ids_tranch))
-			user_short_ids_tranch.clear()
-	if user_short_ids_tranch.size > 0
-		post.user_tranches.push(ID.dataset('users', ...user_short_ids_tranch))
+		if commentDataset.data.author_fullname? then contributor_short_ids.add(commentDataset.data.author_fullname[3..])
+	post.contributors = Array.from(contributor_short_ids)
 	# 5. Merge the extracted comment objects into the complete post data.
 	result.main =
 		id: postDataset.id
