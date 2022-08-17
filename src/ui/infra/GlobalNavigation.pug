@@ -4,7 +4,6 @@ script.
 	import AccountSwitcher from './AccountSwitcher.pug'
 	import Button from '../product/controls/Button.pug'
 	if getContext('username')
-		multis = ['r/all', 'r/popular']
 		following = null
 		subscriptions = null
 		api.watch('current_user_subscriptions', (x) ->
@@ -12,52 +11,66 @@ script.
 				following = x.data.filter((name) -> name.startsWith('u_')).map((name) -> name[2..])
 				subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
 		)
+		multis = null
+		api.watch(api.ID.dataset('user_multireddits', getContext('username')), (x) ->
+			if x?.data?.length
+				multis = x.data.map((path) -> path.replace(':', '/'))
+		)
 	else
 		popular = null
 		api.watch('subreddits_popular:11', (x) -> { data: popular } = x)
+	global_multis = ['r/all', 'r/popular']
 	watchlist = ['subreddit0','subreddit0','subreddit0','subreddit0','subreddit0']
 
 nav.global-nav
 	h1
 		a.logo(href='/') Brand
-	section
-		Button(key='i' link='/messages/inbox' size='big' text='Inbox')
-		Button(key='m' link='/mod/queue' size='big' text='Modqueue')
-	section
-		Button(key='p' link='/u/caseyross' text='Profile')
-		Button(key='v' link='/u/caseyross/saved' text='Saved')
-	section
-		{#if watchlist.length}
-			h5 Your watchlist
-			ol
-				{#each watchlist as subreddit_name, index}
-					Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit_name}' text={subreddit_name})
 	{#if getContext('username')}
 		section
-			{#if multis?.length}
-				h5 Your custom feeds
-				ol
-					{#each multis as multi}
-						Button(link='/{multi}' text={multi})
+			Button(key='i' link='/messages/inbox' size='big' text='Inbox')
+			Button(key='m' link='/mod/queue' size='big' text='Modqueue')
 		section
+			Button(key='p' link="/u/{getContext('username')}" text='Profile')
+			Button(key='v' link="/u/{getContext('username')}/saved" text='Saved')
+	section.global-nav-scroll-area
+		{#if watchlist?.length}
+			section
+				h5 Your watchlist
+				ol
+					{#each watchlist as subreddit_name, index}
+						Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit_name}' text={subreddit_name})
+		{#if global_multis?.length}
+			section
+				h5 Global custom feeds
+				ol
+					{#each global_multis as path}
+						Button(link='/{path}' text={path})
+		{#if getContext('username')}
+			{#if multis?.length}
+				section
+					h5 Your custom feeds
+					ol
+						{#each multis as path}
+							Button(link='/m/{path}' text={path.split('/')[1]})
 			Button(key='h' link='/' text='All subscriptions')
 			{#if subscriptions?.length}
-				h5 Your subscriptions
-				ol
-					{#each subscriptions as subreddit_name}
+				section
+					h5 Your subscriptions
+					ol
+						{#each subscriptions as subreddit_name}
+							Button(link='/r/{subreddit_name}' text={subreddit_name})
+			{#if following?.length}
+				section
+					h5 Your followed users
+					ol
+						{#each following as user_name}
+							Button(link='/u/{user_name}' text={user_name})
+		{:else}
+			{#if popular?.length}
+				section
+					h5 Popular subreddits
+					{#each popular as subreddit_name}
 						Button(link='/r/{subreddit_name}' text={subreddit_name})
-		{#if following?.length}
-			section
-				h5 Your followed users
-				ol
-					{#each following as user_name}
-						Button(link='/u/{user_name}' text={user_name})
-	{:else}
-		{#if popular?.length}
-			section
-				h5 Popular subreddits
-				{#each popular as subreddit_name}
-					Button(link='/r/{subreddit_name}' text={subreddit_name})
 	section
 		AccountSwitcher
 
@@ -78,4 +91,8 @@ style.
 		flex-flow column nowrap
 		height 100%
 		padding 1em
-	
+	.global-nav-scroll-area
+		flex 1 1
+		overflow-y auto
+		&::-webkit-scrollbar
+			display none
