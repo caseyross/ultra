@@ -23,12 +23,12 @@ script.
 		if vote == -1 then vote = 0 
 		else vote = -1
 		upload_vote(vote)
-	toggle_downvote = ->
+	toggle_upvote = ->
 		if vote == 1 then vote = 0 
 		else vote = 1
 		upload_vote(vote)
 
-button.score(class='score-color-{color_class}' class='score-size-{size_class}' on:click={() => toggle_downvote()} on:contextmenu={() => toggle_downvote()}) {display_value}
+button.score(class='score-color-{color_class}' class='score-size-{size_class}' on:click={() => toggle_upvote()} on:contextmenu={() => toggle_downvote()}) {display_value}
 
 style.
 	.score
