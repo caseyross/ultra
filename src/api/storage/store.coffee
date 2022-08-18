@@ -3,9 +3,10 @@ import diagnostic from '../debug/diagnostic.coffee'
 import ratelimit from '../network/ratelimit.coffee'
 import ID from '../payload/ID.coffee'
 import actionRoutes from '../payload/action/routes.coffee'
-import datasetRoutes from '../payload/dataset/routes.coffee'
 import datasetExtract from '../payload/dataset/extract.coffee'
 import datasetExtractSpecial from '../payload/dataset/extractSpecial/index.js'
+import datasetRewrites from '../payload/dataset/rewrites.coffee'
+import datasetRoutes from '../payload/dataset/routes.coffee'
 import errors from '../errors.coffee'
 
 export load = (id) ->
@@ -41,10 +42,13 @@ export reload = (id) ->
 		for dataset in datasets.sub
 			if not get(dataset.id) or get(dataset.id).partial == true or not dataset.partial
 				setData(dataset.id, dataset.data, dataset.partial)
-		return get(id)
+		rewrite = datasetRewrites[ID.prefix(id)]
+		if rewrite
+			editData(rewrite.targetID(id), rewrite.transform(datasets.main.data))
 	.catch (error) ->
 		diagnostic({ id, error, message: "load failed" })
 		setError(id, error)
+	.finally ->
 		return get(id)
 
 export send = (id) ->
@@ -62,6 +66,10 @@ cache = {}
 
 export clear = ->
 	cache = {}
+
+export editData = (id, transform) ->
+	cache[id].data = transform(cache[id].data)
+	notify(id)
 
 export get = (id) ->
 	if cache[id] then return cache[id]

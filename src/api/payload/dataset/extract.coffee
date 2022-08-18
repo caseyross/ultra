@@ -17,20 +17,26 @@ export default extract = (rawData, sourceID) ->
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			repliesListing = comment.replies?.data?.children
 			if !Array.isArray(repliesListing) then repliesListing = []
-			# Detect and process a "continue this thread" link in the comment's replies.
-			if repliesListing.at(-1)?.kind is 'more' and repliesListing.at(-1).depth >= 10
-				repliesListing.pop()
-				comment.deep_replies = true
 			# Detect and process a "more comments" object in the comment's replies.
 			if repliesListing.at(-1)?.kind is 'more'
-				more = repliesListing.pop()
-				if more.data.children.length
-					comment.more_replies = more.data.children
-					more_replies_sort = switch ID.prefix(sourceID)
-						when 'post' then ID.body(sourceID)[1] ? 'confidence'
-						when 'post_more_replies' then ID.body(sourceID)[2]
-						else 'confidence'
-					comment.more_replies_id = ID.dataset('post_more_replies', comment.link_id[3..], comment.id, more_replies_sort, ...comment.more_replies)
+				more = repliesListing.pop().data
+				if more.id is '_'
+					comment.deeper_replies = true
+				else if more.count
+					comment.num_more_replies = more.count
+					comment.more_replies = if more.children.length then more.children else [more.id]
+					more_replies_sort =
+						switch ID.prefix(sourceID)
+							when 'post' then ID.body(sourceID)[1] ? 'confidence'
+							when 'post_more_replies' then ID.body(sourceID)[2]
+							else 'confidence'
+					comment.more_replies_id = ID.dataset(
+						'post_more_replies',
+						comment.link_id[3..],
+						comment.id,
+						more_replies_sort,
+						...comment.more_replies
+					)
 			# Recursively extract all comments in this comment's reply tree.
 			repliesListingDatasets = extract(comment.replies or [], sourceID) # Sometimes Reddit sends an empty string instead of an empty array.
 			# Set the IDs of the direct replies in place of the original objects.

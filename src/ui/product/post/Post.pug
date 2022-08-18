@@ -113,7 +113,7 @@ svelte:head
 						Comment(short_id={reply_short_id})
 					{#if post.more_replies}
 						.post-more-replies
-							Button(action={() => api.load(post.more_replies_id)} appearance='text' text="+ {post.more_replies.length} more {post.more_replies.length === 1 ? 'reply' : 'replies'}...")
+							Button(action={() => api.load(post.more_replies_id)} appearance='text' text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
 		.post-minimap
 			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
 

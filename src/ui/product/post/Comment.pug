@@ -30,7 +30,7 @@ script.
 								svelte:self(short_id={reply_short_id})
 							{#if comment.more_replies}
 								.comment-more-replies
-									Button(action={() => api.load(comment.more_replies_id)} appearance='text' text="+ {comment.more_replies.length} more {comment.more_replies.length === 1 ? 'reply' : 'replies'}...")
+									Button(action={() => api.load(comment.more_replies_id)} appearance='text' text="+ {comment.num_more_replies} more {comment.num_more_replies === 1 ? 'reply' : 'replies'}...")
 							{#if comment.deeper_replies}
 								.comment-more-replies
 									Button(appearance='text' text='→ Continue this thread...')

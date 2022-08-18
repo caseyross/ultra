@@ -18,9 +18,11 @@ export default (rawData, sourceID) ->
 	# Process and organize the comment data.
 	# 1. Detect and process a "more comments" object.
 	if rawData[1].data.children?.at(-1)?.kind is 'more'
-		more = rawData[1].data.children.pop()
-		post.more_replies = more.data.children
-		post.more_replies_id = ID.dataset('post_more_replies', post.id, '', ID.body(sourceID)[1] ? 'confidence', ...post.more_replies)
+		more = rawData[1].data.children.pop().data
+		if more.count
+			post.num_more_replies = more.count
+			post.more_replies = if more.children.length then more.children else [more.id]
+			post.more_replies_id = ID.dataset('post_more_replies', post.id, '', ID.body(sourceID)[1] ? 'confidence', ...post.more_replies)
 	# 2. Extract the comments from the listing.
 	{ main: { data: direct_reply_short_ids }, sub: commentDatasets } = extract(rawData[1], sourceID)
 	# 3. Link the top-level comments via their IDs.
