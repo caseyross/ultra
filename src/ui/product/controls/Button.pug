@@ -7,6 +7,7 @@ script.
 	export disabled = false
 	export key = null
 	export link = null
+	export loading = false
 	export size = 'normal'
 	export text = ''
 
@@ -18,12 +19,15 @@ script.
 		{#if text}
 			| {text}
 {:else}
-	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
-		{#if key}
-			HotkeyLabel(key={key})
-		slot
-		{#if text}	
-			| {text}
+	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
+		{#if loading}
+			| loading...
+		{:else}
+			{#if key}
+				HotkeyLabel(key={key})
+			slot
+			{#if text}
+				| {text}
 
 style.
 	.appearance-button

@@ -13,9 +13,12 @@ script.
 	export standalone = false
 	DOM =
 		post: null
+	replies_loading = false
 	post = null
-	api.watch(api.ID.dataset('post', short_id),
-		(x) -> { data: post } = x
+	api.watch(api.ID.dataset('post', short_id), (x) ->
+		{ data: post } = x
+		if post?.more_replies
+			api.watch(post.more_replies_id, ((x) -> { loading: replies_loading } = x), { autoload: false })
 	)
 	current_scroll = 0
 	line_height = 21
@@ -113,7 +116,7 @@ svelte:head
 						Comment(short_id={reply_short_id})
 					{#if post.more_replies}
 						.post-more-replies
-							Button(action={() => api.load(post.more_replies_id)} appearance='text' text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
+							Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
 		.post-minimap
 			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
 

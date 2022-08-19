@@ -7,7 +7,12 @@ script.
 	export short_id = null
 	collapsed = false
 	comment = null
-	api.watch(api.ID.dataset('comment', short_id), (x) -> { data: comment } = x)
+	replies_loading = false
+	api.watch(api.ID.dataset('comment', short_id), (x) ->
+		{ data: comment } = x
+		if comment?.more_replies
+			api.watch(comment.more_replies_id, ((x) -> { loading: replies_loading } = x), { autoload: false })
+	)
 
 {#if comment}
 	<!-- 'comment' role is draft status and not recognized yet -->
@@ -30,7 +35,7 @@ script.
 								svelte:self(short_id={reply_short_id})
 							{#if comment.more_replies}
 								.comment-more-replies
-									Button(action={() => api.load(comment.more_replies_id)} appearance='text' text="+ {comment.num_more_replies} more {comment.num_more_replies === 1 ? 'reply' : 'replies'}...")
+									Button(action={() => api.load(comment.more_replies_id)} appearance='text' loading={replies_loading} text="+ {comment.num_more_replies} more {comment.num_more_replies === 1 ? 'reply' : 'replies'}...")
 							{#if comment.deeper_replies}
 								.comment-more-replies
 									Button(appearance='text' text='→ Continue this thread...')
