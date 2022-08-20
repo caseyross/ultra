@@ -17,15 +17,7 @@ Format = {
 		absolute: (epochMs) ->
 			new Intl.DateTimeFormat('default', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(new Date(epochMs))
 
-		mediaDuration: (input) ->
-			seconds = Time.msToS(input, { trunc: true })
-			minutes = 0
-			while seconds >= 60
-				seconds = seconds - 60
-				minutes = minutes + 1
-			return "#{String(minutes).padStart(2, '0')}:#{String(seconds).padStart(2, '0')}"
-
-		relative: (epochMs) ->
+		humanRelative: (epochMs) ->
 			duration = Time.msToDuration(Time.epochMs() - epochMs, { trunc: true })
 			switch duration.unit.name
 				when 'year', 'month', 'week'
@@ -71,11 +63,25 @@ Format = {
 						else
 							return "#{daysBack} days ago"
 
+		mediaDuration: (input) ->
+			seconds = Time.msToS(input, { trunc: true })
+			minutes = 0
+			while seconds >= 60
+				seconds = seconds - 60
+				minutes = minutes + 1
+			return "#{String(minutes).padStart(2, '0')}:#{String(seconds).padStart(2, '0')}"
+
+		relative: (epochMs) ->
+			duration = Time.msToDuration(Time.epochMs() - epochMs, { trunc: true })
+			if duration.unit.name is 'millisecond' then return 'now'
+			return "#{duration.count}#{duration.unit.short_name}"
+
 	}
 
 }
 
 Format.time.sAbsolute = (epochS) -> Format.time.absolute Time.sToMs epochS
+Format.time.sHumanRelative = (epochS) -> Format.time.humanRelative Time.sToMs epochS
 Format.time.sMediaDuration = (epochS) -> Format.time.mediaDuration Time.sToMs epochS
 Format.time.sRelative = (epochS) -> Format.time.relative Time.sToMs epochS
 

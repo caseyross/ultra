@@ -1,4 +1,5 @@
 script.
+	import { Time } from '../../../utils/index.js'
 	import PageUnavailable from '../../infra/PageUnavailable.pug'
 	import Post from '../post/Post.pug'
 	import PostList from '../listing/PostList.pug'
@@ -9,6 +10,7 @@ script.
 	post_short_ids = null
 	selection = null
 	api.watch(api.ID.dataset('subreddit_posts', name, sort, 10), (x) -> { data: post_short_ids, error: error } = x)
+	localStorage["meta.last_visit.#{name}"] = Time.epochMs()
 
 svelte:head
 	title subreddit: {name}

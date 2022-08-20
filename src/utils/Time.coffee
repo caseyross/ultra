@@ -5,7 +5,7 @@ units =
 		value: 1000 * 60 * 60 * 24 * 366
 	month:
 		name: 'month'
-		short_name: 'mth'
+		short_name: 'mo'
 		value: 1000 * 60 * 60 * 24 * 31
 	week:
 		name: 'week'
@@ -30,7 +30,7 @@ units =
 	millisecond:
 		name: 'millisecond'
 		short_name: 'ms'
-		value: 0
+		value: 1
 
 export default {
 

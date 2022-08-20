@@ -19,7 +19,7 @@ svelte:head
 	.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
 		.wiki-page-info
-			.wiki-page-edit-date Revised {Format.time.sRelative(page.revision_date)}
+			.wiki-page-edit-date Revised {Format.time.sHumanRelative(page.revision_date)}
 		.wiki-page-body
 			Markup(html={page.content_html})
 

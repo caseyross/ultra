@@ -1,5 +1,6 @@
 script.
 	import { getContext } from 'svelte'
+	import { Format } from '../../utils/index.js';
 	import api from '../../api/index.js';
 	import AccountSwitcher from './AccountSwitcher.pug'
 	import Button from '../product/controls/Button.pug'
@@ -58,7 +59,8 @@ nav.global-nav
 					h5 Your subscriptions
 					ol
 						{#each subscriptions as subreddit_name}
-							Button(link='/r/{subreddit_name}' text={subreddit_name})
+							{@const last_visit = localStorage['meta.last_visit.' + subreddit_name]}
+							Button(badge={last_visit && Format.time.relative(last_visit)} link='/r/{subreddit_name}' text={subreddit_name})
 			{#if following?.length}
 				section
 					h5 Your followed users

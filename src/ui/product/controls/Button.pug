@@ -4,6 +4,7 @@ script.
 	export action = null
 	export activated = false
 	export appearance = 'button'
+	export badge = null
 	export disabled = false
 	export key = null
 	export link = null
@@ -18,6 +19,8 @@ script.
 		slot
 		{#if text}
 			| {text}
+		{#if badge}
+			span.badge {badge}
 {:else}
 	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
 		{#if loading}
@@ -28,6 +31,8 @@ script.
 			slot
 			{#if text}
 				| {text}
+			{#if badge}
+				span.badge {badge}
 
 style.
 	.appearance-button
@@ -49,6 +54,14 @@ style.
 		color var(--color-writing-action)
 		font-size 12px
 		font-weight bold
+	.badge
+		align-items center
+		background var(--color-control)
+		border-radius 3px
+		display inline-flex
+		font-size 0.75em
+		height 100%
+		padding 0 3px
 	.size-big
 		font-size 1.5em
 	.size-normal
