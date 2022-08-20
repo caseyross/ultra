@@ -17,24 +17,24 @@ script.
 	internal_navigate = (url) ->
 		history.pushState(null, null, url)
 		route = parse_route(location)
-	document.addEventListener 'mousedown',
-		(event) ->
-			switch
-				when event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
-					link = event.target.closest('a')
-					if link
-						if link.origin is origin
-							if link.pathname is location.pathname then return # allow hash change scrolling behavior
-							else internal_navigate(new URL(link.href))
-						else location.href = link.href
-	document.addEventListener 'keydown',
-		(event) ->
-			if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A'
-				link = event.target
-				if (link.origin is origin) and not (link.pathname is location.pathname) then internal_navigate(new URL(link.href))
-	window.addEventListener 'popstate',
-		(event) ->
-			route = parse_route(location)
+	document.addEventListener 'mousedown', (event) ->
+		if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
+			link = event.target.closest('a')
+			if link
+				if link.origin is origin
+					if link.pathname is location.pathname then return # allow hash change scrolling behavior
+					else internal_navigate(new URL(link.href))
+				else location.href = link.href
+	document.addEventListener 'click', (event) ->
+		if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
+			link = event.target.closest('a')
+			if link then event.preventDefault()
+	document.addEventListener 'keydown', (event) ->
+		if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A'
+			link = event.target
+			if (link.origin is origin) and not (link.pathname is location.pathname) then internal_navigate(new URL(link.href))
+	window.addEventListener 'popstate', (event) ->
+		route = parse_route(location)
 	#
 	# END SPA LINK HANDLING LOGIC
 	#
