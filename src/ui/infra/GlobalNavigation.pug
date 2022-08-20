@@ -5,22 +5,25 @@ script.
 	import AccountSwitcher from './AccountSwitcher.pug'
 	import Button from '../product/controls/Button.pug'
 	if getContext('username')
-		following = null
-		subscriptions = null
+		following = localStorage['cache.following']?.split(' ')
+		subscriptions = localStorage['cache.subscriptions']?.split(' ')
 		api.watch('current_user_subscriptions', (x) ->
 			if x?.data?.length
 				following = x.data.filter((name) -> name.startsWith('u_')).map((name) -> name[2..])
+				localStorage['cache.following'] = following.join(' ')
 				subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
+				localStorage['cache.subscriptions'] = subscriptions.join(' ')
 		)
-		multis = null
+		multireddits = localStorage['cache.multireddits']?.split(' ')
 		api.watch(api.ID.dataset('user_multireddits', getContext('username')), (x) ->
 			if x?.data?.length
-				multis = x.data.map((path) -> path.replace(':', '/'))
+				multireddits = x.data.map((path) -> path.replace(':', '/'))
+				localStorage['cache.multireddits'] = multireddits.join(' ')
 		)
 	else
 		popular = null
 		api.watch('subreddits_popular:11', (x) -> { data: popular } = x)
-	global_multis = ['r/all', 'r/popular']
+	global_multireddits = ['r/all', 'r/popular']
 	watchlist = ['subreddit0','subreddit0','subreddit0','subreddit0','subreddit0']
 
 nav.global-nav
@@ -40,18 +43,18 @@ nav.global-nav
 				ol
 					{#each watchlist as subreddit_name, index}
 						Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit_name}' text={subreddit_name})
-		{#if global_multis?.length}
+		{#if global_multireddits?.length}
 			section
 				h5 Global custom feeds
 				ol
-					{#each global_multis as path}
+					{#each global_multireddits as path}
 						Button(link='/{path}' text={path})
 		{#if getContext('username')}
-			{#if multis?.length}
+			{#if multireddits?.length}
 				section
 					h5 Your custom feeds
 					ol
-						{#each multis as path}
+						{#each multireddits as path}
 							Button(link='/m/{path}' text={path.split('/')[1]})
 			Button(key='h' link='/' text='All subscriptions')
 			{#if subscriptions?.length}

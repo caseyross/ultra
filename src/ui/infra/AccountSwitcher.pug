@@ -4,6 +4,9 @@ script.
 	logout = ->
 		api.logout()
 		delete localStorage['account.username']
+		delete localStorage['cache.following']
+		delete localStorage['cache.multireddits']
+		delete localStorage['cache.subscriptions']
 		location.reload()
 
 {#if api.getLoginStatus() === 'logged-in'}
