@@ -24,7 +24,9 @@ script.
 				if link.origin is origin
 					if link.pathname is location.pathname then return # allow hash change scrolling behavior
 					else internal_navigate(new URL(link.href))
-				else location.href = link.href
+				else
+					if link.target is '_blank' then window.open(link.href)
+					else location.href = link.href
 	document.addEventListener 'click', (event) ->
 		if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
 			link = event.target.closest('a')
