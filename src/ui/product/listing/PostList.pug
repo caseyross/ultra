@@ -1,5 +1,5 @@
 script.
-	import PostListItem from './PostListItem.pug'
+	import Headline from '../post/Headline.pug'
 	export multireddit = false
 	export select = null
 	export short_ids = null
@@ -8,7 +8,7 @@ h3 Posts
 ol.post-list
 	{#if short_ids}
 		{#each short_ids as short_id}
-			PostListItem(multireddit={multireddit} select={select} short_id={short_id})
+			Headline(post_short_id={short_id} select={select} show_subreddit={multireddit})
 
 style.
 	.post-list

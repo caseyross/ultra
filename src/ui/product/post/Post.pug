@@ -5,6 +5,7 @@ script.
 	import Button from '../controls/Button.pug'
 	import Comment from './Comment.pug'
 	import Flair from './Flair.pug'
+	import Headline from './Headline.pug'
 	import Minimap from '../controls/Minimap.pug'
 	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
@@ -50,8 +51,8 @@ svelte:head
 			title post: {short_id}
 {#if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
-		header.post-header
-			h1 {post.title}
+		{#if standalone}
+			Headline(post_short_id={short_id} show_subreddit={true})
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}
@@ -143,8 +144,6 @@ style.
 		font-size 0.75em
 		padding-top 0.5em
 		text-align center
-	.post-header
-		max-width 640px
 	.post-iframe
 		aspect-ratio 16 / 9
 		max-width 100%

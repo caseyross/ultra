@@ -3,16 +3,16 @@ script.
 	import Flair from '../post/Flair.pug'
 	import Score from '../post/Score.pug'
 	import api from '../../../api/index.js'
-	export multireddit = false
+	export post_short_id = null
 	export select = null
-	export short_id = null
+	export show_subreddit = false
 	post = null
-	api.watch(api.ID.dataset('post', short_id), (x) -> { data: post } = x)
+	api.watch(api.ID.dataset('post', post_short_id), (x) -> { data: post } = x)
 
-button.post-card(on:mousedown={() => select(short_id)})
+button.post-card(on:mousedown={() => select(post_short_id)})
 	.post-headline-layout
 		.post-headline-layout-indent
-			Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+			Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		.post-headline-layout-core
 			.post-meta
 				.post-flair
@@ -22,7 +22,7 @@ button.post-card(on:mousedown={() => select(short_id)})
 			.post-info(style='display: none')
 				time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
 				data.post-comment-count {post.num_comments} 💬
-			{#if multireddit}
+			{#if show_subreddit}
 				.post-subreddit in
 					a(href='/r/{post.subreddit}') {post.subreddit}
 
