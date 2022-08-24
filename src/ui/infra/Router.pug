@@ -31,8 +31,8 @@ script.
 		if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
 			link = event.target.closest('a')
 			if link
-				if (link.origin is origin) and (link.pathname is location.pathname) then return # allow hash change scrolling behavior
-			else event.preventDefault()
+				if (link.origin is origin) and (link.pathname is location.pathname) and (link.hash != location.hash) then return
+				else event.preventDefault()
 	document.addEventListener 'keydown', (event) ->
 		if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A'
 			link = event.target
