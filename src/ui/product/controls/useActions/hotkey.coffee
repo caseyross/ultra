@@ -6,10 +6,7 @@ document.addEventListener('keydown', (e) ->
 
 export default (element, char) ->
 	if !char? then return null
-	handlers[char] = ->
-		element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-		element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+	handlers[char] = -> element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, code: 'Enter', key: 'Enter' }))
 	return {
-		destroy: ->
-			delete handlers[char]
+		destroy: -> delete handlers[char]
 	}
