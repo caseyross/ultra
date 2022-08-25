@@ -79,7 +79,7 @@ a
 	color var(--color-writing-action)
 	text-decoration none
 	overflow-wrap anywhere
-a:not(:is(a[href*='reddit.com/'], a[href*='redd.it/'], a[href^='/'], a[href^='#']))::before
+a:not(:is(a[href^='/'], a[href^='#']))::before
 	content '↗️' / 'External link'
 	font bold 0.8em 'Meiryo'
 	margin-inline-end 1ch
