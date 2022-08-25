@@ -7,41 +7,61 @@ script.
 	import Wiki from '../product/subreddit/Wiki.pug'
 	import GlobalNavigation from './GlobalNavigation.pug'
 	import NotImplemented from './NotImplemented.pug'
+	### START ROUTING CODE ###
 	import parse_route from './parse_route.coffee'
-	route = parse_route(location)
-	#
-	# START SPA LINK HANDLING LOGIC
-	# Where possible, load internal reddit links without changing the document.
-	# Otherwise, fall back upon normal browser link-handling behavior.
-	#
-	internal_navigate = (url) ->
-		history.pushState(null, null, url)
-		route = parse_route(location)
-	document.addEventListener 'mousedown', (event) ->
-		if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
-			link = event.target.closest('a')
-			if link
-				if link.origin is origin
-					if link.pathname is location.pathname then return # allow hash change scrolling behavior
-					else internal_navigate(new URL(link.href))
-				else
-					if link.target is '_blank' then window.open(link.href)
-					else location.href = link.href
-	document.addEventListener 'click', (event) ->
-		if event.button is 0 and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
-			link = event.target.closest('a')
-			if link
-				if (link.origin is origin) and (link.pathname is location.pathname) and (link.hash != location.hash) then return
-				else event.preventDefault()
-	document.addEventListener 'keydown', (event) ->
-		if event.key is 'Enter' and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and event.target.tagName is 'A'
-			link = event.target
-			if (link.origin is origin) and not (link.pathname is location.pathname) then internal_navigate(new URL(link.href))
-	window.addEventListener 'popstate', (event) ->
-		route = parse_route(location)
-	#
-	# END SPA LINK HANDLING LOGIC
-	#
+	route = null
+	set_route = -> route = parse_route(location)
+	set_route()
+	external_navigate = (link) -> location.href = link.href
+	external_navigate_new_tab = (link) -> window.open(link.href)
+	internal_navigate = (link) ->
+		history.pushState(null, null, new URL(link.href))
+		set_route()
+	is_external_new_tab_intent = (link) -> link.target is '_blank'
+	is_same_hash = (link) -> link.hash is location.hash
+	is_same_origin = (link) -> link.origin is origin
+	is_same_path = (link) -> link.pathname is location.pathname
+	is_unmodified_event = (event) -> not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
+	is_unmodified_left_click = (event) -> is_unmodified_event(event) and event.button is 0 and event.detail > 0
+	is_unmodified_enter_key_on_link = (event) -> is_unmodified_event(event) and event.key is 'Enter' and event.target.tagName is 'A'
+	window.addEventListener(
+		'popstate'
+		(event) ->
+			set_route()
+	)
+	document.addEventListener(
+		'mousedown'
+		(event) ->
+			if is_unmodified_left_click(event)
+				link = event.target.closest('a')
+				if link
+					if is_same_origin(link)
+						if is_same_path(link) and not is_same_hash(link) then return # allow hash change scrolling behavior
+						internal_navigate(link)
+					else
+						if is_external_new_tab_intent(link) then external_navigate_new_tab(link)
+						else external_navigate(link)
+	)
+	document.addEventListener(
+		'click'
+		(event) ->
+			if is_unmodified_left_click(event)
+				link = event.target.closest('a')
+				if link
+					if is_same_origin(link) and is_same_path(link) and not is_same_hash(link) then return
+					event.preventDefault()
+	)
+	document.addEventListener(
+		'keydown'
+		(event) ->
+			if is_unmodified_enter_key_on_link(event)
+				link = event.target
+				if is_same_origin(link)
+					if is_same_path(link) and not is_same_hash(link) then return
+					event.preventDefault()
+					internal_navigate(link)
+	)
+	### END ROUTING CODE ###
 
 {#if route.path !== 'post'}
 	GlobalNavigation
