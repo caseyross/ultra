@@ -10,54 +10,50 @@ script.
 	api.watch(api.ID.dataset('post', post_short_id), (x) -> { data: post } = x)
 
 button.post-card(on:mousedown={() => select(post_short_id)})
-	.post-headline-layout
-		.post-headline-layout-indent
-			Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-		.post-headline-layout-core
-			.post-meta
-				.post-flair
-					{#if post.link_flair_text}
-						Flair(color={post.link_flair_background_color} rich_text={post.link_flair_richtext} text={post.link_flair_text})
-			h1.post-title {post.title}
-			.post-info(style='display: none')
-				time(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
-				data.post-comment-count {post.num_comments} 💬
-			{#if show_subreddit}
-				.post-subreddit in
-					a(href='/r/{post.subreddit}') {post.subreddit}
+	.post-meta
+		.post-flair
+			{#if post.link_flair_text}
+				Flair(color={post.link_flair_background_color} rich_text={post.link_flair_richtext} text={post.link_flair_text})
+	.post-headline
+		time.post-age(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
+		h1.post-title {post.title}
+	.post-info(style='display: none')
+		Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+		data.post-comment-count {post.num_comments} 💬
+	{#if show_subreddit}
+		.post-subreddit in
+			a(href='/r/{post.subreddit}') {post.subreddit}
 
 style.
+	.post-age
+		flex 0 0 16px
+		opacity 0.5
 	.post-card
-		background var(--color-paper-action)
+		border 1px solid rgba(0,0,0,0.5)
 		border-radius 1em
+		font-size 14px
+		line-height 1.5
 		max-width 480px
 		text-align left
-		padding 1em
+		padding 1ch
 		position relative
-	.post-headline-layout
+	.post-headline
 		display flex
 		gap 1ch
-	.post-headline-layout-indent
-		flex 0 0 29px
 	.post-info
-		align-items center
 		display flex
-		font bold 12px var(--typeface-mono)
+		font-size 0.75em
 		gap 1ch
-		justify-content space-between
-		opacity 0.75
+		margin-left 25px
 	.post-meta
 		display flex
 		justify-content space-between
-		position absolute
-		top -1em
-		width calc(100% - 2em)
+		color rgba(0,0,0,0.5)
 	.post-subreddit
 		margin-top 0.5em
 		position absolute
 		right 1em
 	.post-title
-		color var(--color-writing-action)
 		font-size 1em
 		margin 0
 		overflow-wrap anywhere

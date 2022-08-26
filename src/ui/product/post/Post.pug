@@ -71,7 +71,7 @@ svelte:head
 				{#if post.media.length > 1}
 					.post-gallery
 						{#each post.media as media, index}
-							figure(style='max-width: {media.aspect_ratio * 360}px')
+							figure(style='width: {media.aspect_ratio * 240}px')
 								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_640})
@@ -125,7 +125,8 @@ style.
 	.post
 		height 100%
 		overflow auto
-		padding 2em
+		padding 5em
+		width calc(640px + 10em)
 		&::-webkit-scrollbar
 			display none
 	.post-content
@@ -134,10 +135,9 @@ style.
 	.post-gallery
 		display flex
 		flex-flow row wrap
-		gap 40px
+		gap 1px
 	.post-gallery-image
-		max-height 360px
-		max-width 100%
+		height 240px
 		&:hover
 			outline solid
 	.post-gallery-image-caption
@@ -165,12 +165,11 @@ style.
 		right 0
 		top 6em
 	.post-more-replies
-	:global(.post-replies > .comment)
-		margin-top 50px !important
+		margin-top 2.25em
 	.post-prediction-options > li
 		display flex
-	.post-selftext
-		margin-top 40px
+	.post-replies
+		margin-top 4.5em
 	:global(.post-selftext-media)
 		max-width 100%
 		padding 1em 0

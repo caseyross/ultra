@@ -31,9 +31,7 @@ THEMES =
 	LIGHT: 'theme-light'
 set_theme = ->
 	local_hour = Time.localHour()
-	theme_class = switch
-		when 6 <= local_hour <= 18 then THEMES.LIGHT
-		else THEMES.DARK
+	theme_class = THEMES.LIGHT
 	document.body.classList.add(theme_class)
 	document.body.classList.remove(...Object.values(THEMES).filter((x) -> x != theme_class))
 window.addEventListener('DOMContentLoaded', (e) ->
