@@ -11,53 +11,48 @@ script.
 	api.watch(api.ID.dataset('post', post_short_id), (x) -> { data: post } = x)
 
 button.post-card(class:selected={selected} on:mousedown={() => select(post_short_id)})
-	.post-meta
-		.post-flair
-			{#if post.link_flair_text}
-				Flair(color={post.link_flair_background_color} rich_text={post.link_flair_richtext} text={post.link_flair_text})
-	.post-headline
-		time.post-age(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (last edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}{post.edited ? ' *' : ''}
-		h1.post-title {post.title}
-	.post-info(style='display: none')
+	time.post-age(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}
+	.post-score
 		Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+	h1.post-title {post.title}
+	div
+	div
+	.post-tags
+		{#if show_subreddit}
+			a(href='/r/{post.subreddit}') r/{post.subreddit.toLowerCase()}
+		{#if post.link_flair_text}
+			Flair(color={post.link_flair_background_color} rich_text={post.link_flair_richtext} text={post.link_flair_text})
+	.post-info(style='display: none')
 		data.post-comment-count {post.num_comments} 💬
-	{#if show_subreddit}
-		.post-subreddit in
-			a(href='/r/{post.subreddit}') {post.subreddit}
 
 style.
 	.post-age
-		flex 0 0 16px
-		opacity 0.5
+		justify-self center
 	.post-card
+		align-items baseline
 		border 1px solid transparent
 		border-radius 1em 0 0 1em
 		border-right 0
+		color rgba(0,0,0,0.5)
+		display grid
 		font-size 14px
+		gap 0 6px
+		grid-template-columns 24px 24px 1fr
 		line-height 1.5
 		max-width 480px
-		text-align left
-		padding 1ch
+		padding 1ch 1em
 		position relative
+		text-align left
 		&.selected
 			border-color inherit
-	.post-headline
+	.post-score
+		justify-self center
+	.post-tags
+		align-items center
 		display flex
-		gap 1ch
-	.post-info
-		display flex
-		font-size 0.75em
-		gap 1ch
-		margin-left 25px
-	.post-meta
-		display flex
-		justify-content space-between
-		color rgba(0,0,0,0.5)
-	.post-subreddit
-		margin-top 0.5em
-		position absolute
-		right 1em
+		gap 1em
 	.post-title
+		color black
 		font-size 1em
 		margin 0
 		overflow-wrap anywhere

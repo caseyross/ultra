@@ -1,6 +1,7 @@
 script.
 	import { Color } from '../../../utils/index.js'
 	export color = null
+	export emoji_style = null
 	export rich_text = null
 	export text = null
 
@@ -10,8 +11,11 @@ span.flair
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}
 				| {segment.t}
-			{:else if segment.e === 'emoji'}
-				img.flair-emoji(alt={segment.a} src={segment.u} title={segment.a})
+			{:else if segment.e === 'emoji' && emoji_style !== null}
+				{#if emoji_style === 'image'}
+					img.flair-emoji(alt={segment.a} src={segment.u} title={segment.a})
+				{:else if emoji_style === 'text'}
+					| {segment.a}
 	{:else}
 		| {text}
 
@@ -24,6 +28,6 @@ style.
 	.flair-color
 		aspect-ratio 1
 		border-radius 50%
-		height 16px
+		height 5px
 	.flair-emoji
 		height 16px

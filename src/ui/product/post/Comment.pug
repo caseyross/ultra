@@ -19,15 +19,14 @@ script.
 	<!-- 'comment' role is draft status and not recognized yet -->
 	<!-- svelte-ignore a11y-unknown-role -->
 	article.comment(role='comment')
-		.comment-layout-indent
-			.comment-layout-score
-				Score(upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+		section.comment-indent
+			Score(upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
-		.comment-layout-core
-			{#if collapsed}
-				.comment-collapsed [ Comment collapsed. ]
-			{:else}
-				.comment-body(title='{Format.time.sRelative(comment.created_utc)} ago by u/{comment.author}')
+		{#if collapsed}
+			section.comment-body-collapsed [ Comment collapsed. ]
+		{:else}
+			section.comment-body
+				.comment-text(title='{Format.time.sRelative(comment.created_utc)} ago by u/{comment.author}')
 					Markup(html={comment.body_html})
 				{#if !out_of_context && comment.replies.length > 0}
 					{#key comment.replies}
@@ -41,7 +40,7 @@ script.
 								.comment-more-replies
 									Button(appearance='text' text='→ Continue this thread...')
 		{#if out_of_context}
-			.comment-layout-links
+			section.comment-links
 				Button(link='/post/{comment.link_id.slice(3)}/comment/{short_id}' text='View in post')
 
 style.
@@ -51,22 +50,14 @@ style.
 		margin-top 2.25em
 		position relative
 	.comment-body
+	.comment-body-collapsed
 		width 480px
-	:global(.comment-body img)
-		border-radius 6px
-		display inline
-		margin-block-start 1px
-		margin-inline-start 1px
-		max-height 9em
-		width auto
-	.comment-layout-core
-		flex 1
-	.comment-layout-indent
+	.comment-indent
 		display flex
 		flex 0 0 20px
 		flex-flow column nowrap
 		gap 6px
-	.comment-layout-links
+	.comment-links
 		opacity 0
 		transition all 0.25s
 		.comment:hover &
@@ -81,3 +72,10 @@ style.
 	.comment-more-replies
 	.comment-replies
 		margin-top 2.25em
+	:global(.comment-text img)
+		border-radius 6px
+		display inline
+		margin-block-start 1px
+		margin-inline-start 1px
+		max-height 9em
+		width auto
