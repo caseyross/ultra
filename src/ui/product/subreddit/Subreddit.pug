@@ -20,7 +20,7 @@ svelte:head
 {:else if post_short_ids}
 	nav.subreddit-nav
 		h1 {name}
-		PostList(short_ids={post_short_ids} select={short_id => selection = { type: 'post', short_id }})
+		PostList(short_ids={post_short_ids} select={short_id => selection = { type: 'post', short_id }} selection={selection?.short_id})
 	{#if selection}
 		{#if selection.type === 'post'}
 			{#key selection.short_id}
@@ -28,6 +28,7 @@ svelte:head
 
 style.
 	.subreddit-nav
+		border-right 1px solid
 		height 100%
 		overflow-y auto
 		padding 2em 0

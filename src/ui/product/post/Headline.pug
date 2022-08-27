@@ -5,11 +5,12 @@ script.
 	import api from '../../../api/index.js'
 	export post_short_id = null
 	export select = null
+	export selected = false
 	export show_subreddit = false
 	post = null
 	api.watch(api.ID.dataset('post', post_short_id), (x) -> { data: post } = x)
 
-button.post-card(on:mousedown={() => select(post_short_id)})
+button.post-card(class:selected={selected} on:mousedown={() => select(post_short_id)})
 	.post-meta
 		.post-flair
 			{#if post.link_flair_text}
@@ -29,14 +30,17 @@ style.
 		flex 0 0 16px
 		opacity 0.5
 	.post-card
-		border 1px solid rgba(0,0,0,0.5)
-		border-radius 1em
+		border 1px solid transparent
+		border-radius 1em 0 0 1em
+		border-right 0
 		font-size 14px
 		line-height 1.5
 		max-width 480px
 		text-align left
 		padding 1ch
 		position relative
+		&.selected
+			border-color inherit
 	.post-headline
 		display flex
 		gap 1ch

@@ -89,8 +89,8 @@ svelte:head
 						{:else if media.image_url}
 							a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 								picture
-									source(srcset={media.aspect_ratio < 1.5 ? media.image_url_640 : media.image_url_960})
-									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {Math.min(media.source_width, media.aspect_ratio < 1.5 ? 640 : 960)}px")
+									source(srcset={media.image_url_960})
+									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {Math.min(media.source_width, media.aspect_ratio > 1.5 ? 720 : 480)}px")
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -126,7 +126,6 @@ style.
 		height 100%
 		overflow auto
 		padding 5em
-		width calc(640px + 10em)
 		&::-webkit-scrollbar
 			display none
 	.post-content
@@ -146,14 +145,13 @@ style.
 		text-align center
 	.post-iframe
 		aspect-ratio 16 / 9
-		max-width 100%
-		width 640px
+		height 480px
 	.post-iframe-actions
 		display flex
 		gap 1em
 		margin-top 1em
 	.post-image
-		max-width 100%
+		width 480px
 		&:hover
 			outline solid
 	.post-link-actions
@@ -170,6 +168,11 @@ style.
 		display flex
 	.post-replies
 		margin-top 4.5em
+	.post-selftext
+		font-size 14px
+		letter-spacing -0.006em
+		line-height 20px
+		width 600px
 	:global(.post-selftext-media)
-		max-width 100%
+		width 480px
 		padding 1em 0

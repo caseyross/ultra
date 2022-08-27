@@ -1,4 +1,5 @@
 script.
+	import { Format } from '../../../utils/index.js'
 	import api from '../../../api/index.js'
 	import Button from '../controls/Button.pug'
 	import Markup from '../text/Markup.pug'
@@ -26,7 +27,7 @@ script.
 			{#if collapsed}
 				.comment-collapsed [ Comment collapsed. ]
 			{:else}
-				.comment-body
+				.comment-body(title='{Format.time.sRelative(comment.created_utc)} ago by u/{comment.author}')
 					Markup(html={comment.body_html})
 				{#if !out_of_context && comment.replies.length > 0}
 					{#key comment.replies}
@@ -50,7 +51,7 @@ style.
 		margin-top 2.25em
 		position relative
 	.comment-body
-		max-width 590px
+		width 480px
 	:global(.comment-body img)
 		border-radius 6px
 		display inline
@@ -62,7 +63,7 @@ style.
 		flex 1
 	.comment-layout-indent
 		display flex
-		flex 0 0 29px
+		flex 0 0 20px
 		flex-flow column nowrap
 		gap 6px
 	.comment-layout-links
@@ -71,11 +72,12 @@ style.
 		.comment:hover &
 			opacity 1
 	.comment-line-separator
-		border-left 1px solid
+		background linear-gradient(to right, transparent 5px, currentColor 6px, transparent 6px)
 		flex 1
-		opacity 0.1
+		opacity 0.25
+		width 11px
 		&:hover
-			opacity 0.5
+			opacity 1
 	.comment-more-replies
 	.comment-replies
 		margin-top 2.25em
