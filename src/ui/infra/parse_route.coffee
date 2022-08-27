@@ -1,4 +1,4 @@
-RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'dev', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki', 'video']
+RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki', 'video']
 
 INVALID = {
 	path: 'invalid'
@@ -45,6 +45,27 @@ export default (url) ->
 			}
 		when 'about' then return WONT_IMPLEMENT
 		when 'channel', 'chat' then return WONT_IMPLEMENT
+		when 'comments', 'p', 'post', 'tb'
+			post_short_id = path[2]
+			switch
+				when !post_short_id then return INVALID
+				else break
+			comments_sort = query.get('sort')
+			switch comments_sort
+				when 'best', 'controversial', 'new', 'old', 'qa', 'top'
+					break
+				else
+					comments_sort = 'best'
+			comment_short_id = path[4]
+			comment_context = query.get('context')
+			return {
+				path: 'post'
+				data:
+					comment_context: comment_context
+					comment_short_id: comment_short_id
+					comments_sort: comments_sort
+					post_short_id: post_short_id
+			}
 		when 'dev' then return WONT_IMPLEMENT
 		when 'gallery' then return WONT_IMPLEMENT
 		when 'm', 'multi', 'multireddit'
@@ -74,27 +95,6 @@ export default (url) ->
 					user_name: user_name
 			}
 		when 'mail', 'message', 'messages' then return TODO
-		when 'p', 'post', 'tb'
-			post_short_id = path[2]
-			switch
-				when !post_short_id then return INVALID
-				else break
-			comments_sort = query.get('sort')
-			switch comments_sort
-				when 'best', 'controversial', 'new', 'old', 'qa', 'top'
-					break
-				else
-					comments_sort = 'best'
-			comment_short_id = path[4]
-			comment_context = query.get('context')
-			return {
-				path: 'post'
-				data:
-					comment_context: comment_context
-					comment_short_id: comment_short_id
-					comments_sort: comments_sort
-					post_short_id: post_short_id
-			}
 		when 'poll' then return WONT_IMPLEMENT
 		when 'r', 'subreddit'
 			switch path[3]
