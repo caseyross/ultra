@@ -20,7 +20,7 @@ script.
 	<!-- svelte-ignore a11y-unknown-role -->
 	article.comment(role='comment')
 		section.comment-indent
-			Score(upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+			Score(controversiality={comment.controversiality} upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		{#if collapsed}
 			section.comment-body-collapsed [ Comment collapsed. ]

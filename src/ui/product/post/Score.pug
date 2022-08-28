@@ -1,4 +1,5 @@
 script.
+	export controversiality = 0
 	export upload_vote = -> {}
 	export value = null
 	export vote = 0
@@ -15,6 +16,7 @@ script.
 		size_class = if Math.abs(value) >= 1000 then 'thousands' else 'ones'
 		vote_icon =
 			switch
+				when controversiality > 0 then '◇'
 				when value >= 10 then '▲'
 				when value >= 2 then '△'
 				when value <= 0 then '▽'
