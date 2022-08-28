@@ -1,8 +1,9 @@
 script.
 	import { Format } from '../../../utils/index.js'
-	import Flair from '../post/Flair.pug'
-	import Score from '../post/Score.pug'
 	import api from '../../../api/index.js'
+	import Flair from './Flair.pug'
+	import Score from './Score.pug'
+	import Tag from './Tag.pug'
 	export post_short_id = null
 	export select = null
 	export selected = false
@@ -11,13 +12,30 @@ script.
 	api.watch(api.ID.dataset('post', post_short_id), (x) -> { data: post } = x)
 
 button.post-card(class:selected={selected} on:mousedown={() => select(post_short_id)})
+	div
+	div
+	.post-tags
+		{#if post.archived}
+			Tag(name='archived')
+		{#if post.spoiler}
+			Tag(name='spoiler')
+		{#if post.locked}
+			Tag(name='locked')
+		{#if post.quarantine}
+			Tag(name='quarantined')
+		{#if post.over_18}
+			Tag(name='nsfw')
+		{#if post.stickied}
+			Tag(name='sticky')
+		{#if post.is_original_content}
+			Tag(name='oc')
 	time.post-age(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}
 	.post-score
 		Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 	h1.post-title {post.title}
 	div
 	div
-	.post-tags
+	.post-context
 		{#if show_subreddit}
 			a(href='/r/{post.subreddit}') r/{post.subreddit.toLowerCase()}
 		{#if post.link_flair_text}
@@ -45,12 +63,16 @@ style.
 		text-align left
 		&.selected
 			border-color inherit
+	.post-context
+		align-items center
+		display flex
+		gap 1em
 	.post-score
 		justify-self center
 	.post-tags
 		align-items center
 		display flex
-		gap 1em
+		gap 3px
 	.post-title
 		color black
 		font-size 1em
