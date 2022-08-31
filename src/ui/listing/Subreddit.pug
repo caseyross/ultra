@@ -1,10 +1,10 @@
 script.
-	import { Time } from '../../../utils/index.js'
+	import { Time } from '../../utils/index.js'
+	import api from '../../api/index.js'
 	import Button from '../controls/Button.pug'
-	import PageUnavailable from '../../infra/PageUnavailable.pug'
+	import PageUnavailable from '../errors/PageUnavailable.pug'
 	import Post from '../post/Post.pug'
-	import PostList from '../listing/PostList.pug'
-	import api from '../../../api/index.js'
+	import PostList from './PostList.pug'
 	export name = null
 	export sort = null
 	error = null

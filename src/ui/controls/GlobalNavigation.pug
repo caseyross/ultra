@@ -2,8 +2,8 @@ script.
 	import { getContext } from 'svelte'
 	import { Format } from '../../utils/index.js';
 	import api from '../../api/index.js';
-	import AccountSwitcher from './AccountSwitcher.pug'
-	import Button from '../product/controls/Button.pug'
+	import AccountSwitcher from '../account/AccountSwitcher.pug'
+	import Button from './Button.pug'
 	if getContext('username')
 		following = localStorage['cache.following']?.split(' ')
 		subscriptions = localStorage['cache.subscriptions']?.split(' ')

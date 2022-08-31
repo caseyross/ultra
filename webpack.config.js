@@ -82,7 +82,7 @@ module.exports = {
 			favicon: './src/ui/favicon_16.png',
 			inject: false, // manual script placement in template
 			publicPath: '/',
-			template: './src/ui/infra/index.html',
+			template: './src/ui/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
 			scriptMatchPattern: [/^runtime/, /^preboot/] // avoid add'l network roundtrip on critical path

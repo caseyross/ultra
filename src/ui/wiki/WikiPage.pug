@@ -1,8 +1,8 @@
 script.
+	import { Format } from '../../utils/index.js'
+	import api from '../../api/index.js'
 	import Markup from '../text/Markup.pug'
-	import PageUnavailable from '../../infra/PageUnavailable.pug'
-	import { Format } from '../../../utils/index.js'
-	import api from '../../../api/index.js'
+	import PageUnavailable from '../errors/PageUnavailable.pug'
 	export page_name = null
 	export revision_id = null
 	export subreddit_name = null

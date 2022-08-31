@@ -1,6 +1,6 @@
 script.
+	import api from '../../api/index.js'
 	import Markup from '../text/Markup.pug'
-	import api from '../../../api/index.js'
 	export subreddit_name = null
 	rules = null
 	api.watch(api.ID.dataset('subreddit_rules', subreddit_name), (x) -> { data: rules } = x)

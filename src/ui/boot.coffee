@@ -1,6 +1,6 @@
 import './stylesheet.styl'
-import Application from './infra/Application.pug'
-import Crash from './infra/Crash.pug'
+import Application from './routing/Application.pug'
+import Crash from './errors/Crash.pug'
 
 try
 	new Application

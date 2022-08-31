@@ -1,8 +1,8 @@
 script.
-	import PageUnavailable from '../../infra/PageUnavailable.pug'
-	import CommentList from '../listing/CommentList.pug'
-	import PostList from '../listing/PostList.pug'
-	import api from '../../../api/index.js'
+	import api from '../../api/index.js'
+	import CommentList from './CommentList.pug'
+	import PageUnavailable from '../errors/PageUnavailable.pug'
+	import PostList from './PostList.pug'
 	export items_filter = null
 	export items_sort = null
 	export user_name = null

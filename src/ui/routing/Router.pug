@@ -1,12 +1,12 @@
 script.
-	import Button from '../product/controls/Button.pug'
-	import Multireddit from '../product/subreddit/Multireddit.pug'
-	import Post from '../product/post/Post.pug'
-	import Subreddit from '../product/subreddit/Subreddit.pug'
-	import User from '../product/user/User.pug'
-	import Wiki from '../product/subreddit/Wiki.pug'
-	import GlobalNavigation from './GlobalNavigation.pug'
-	import NotImplemented from './NotImplemented.pug'
+	import Button from '../controls/Button.pug'
+	import GlobalNavigation from '../controls/GlobalNavigation.pug'
+	import Multireddit from '../listing/Multireddit.pug'
+	import Post from '../post/Post.pug'
+	import RouteNotImplemented from './RouteNotImplemented.pug'
+	import Subreddit from '../listing/Subreddit.pug'
+	import UserProfile from '../listing/UserProfile.pug'
+	import WikiPage from '../wiki/WikiPage.pug'
 	### START ROUTING CODE ###
 	import parse_route from './parse_route.coffee'
 	route = null
@@ -80,11 +80,11 @@ main
 		{:else if route.path === 'subreddit'}
 			Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
 		{:else if route.path === 'user'}
-			User(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
+			UserProfile(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
 		{:else if route.path === 'wiki'}
-			Wiki(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
+			WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
 		{:else}
-			NotImplemented(route={route})
+			RouteNotImplemented(route={route})
 
 style.
 	main

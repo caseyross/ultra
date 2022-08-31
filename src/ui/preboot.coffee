@@ -1,6 +1,6 @@
-import parse_route from './infra/parse_route.coffee'
-import api from '../api/index.js'
 import { Time } from '../utils/index.js'
+import api from '../api/index.js'
+import parse_route from './routing/parse_route.coffee'
 
 # Set the API config from environment vars.
 api.configure({
