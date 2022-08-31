@@ -20,7 +20,7 @@ script.
 	<!-- svelte-ignore a11y-unknown-role -->
 	article.comment(role='comment')
 		section.comment-indent
-			Score(controversiality={comment.controversiality} upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+			Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		{#if collapsed}
 			section.comment-body-collapsed [ Comment collapsed. ]
@@ -46,15 +46,11 @@ script.
 style.
 	.comment
 		display flex
-		gap 1ch
+		gap 6px
 		margin-top 2.25em
 		position relative
-	.comment-body
-	.comment-body-collapsed
-		width 480px
 	.comment-indent
 		display flex
-		flex 0 0 20px
 		flex-flow column nowrap
 		gap 6px
 	.comment-links
@@ -63,15 +59,21 @@ style.
 		.comment:hover &
 			opacity 1
 	.comment-line-separator
-		background linear-gradient(to right, transparent 5px, currentColor 6px, transparent 6px)
+		background linear-gradient(to right, transparent 9px, currentColor 10px, transparent 10px)
 		flex 1
 		opacity 0.25
-		width 11px
+		transition all 0.125s
+		width 21px
 		&:hover
 			opacity 1
 	.comment-more-replies
 	.comment-replies
 		margin-top 2.25em
+	.comment-text
+		background white
+		border-radius 5px
+		padding 1ch
+		width 420px
 	:global(.comment-text img)
 		border-radius 6px
 		display inline

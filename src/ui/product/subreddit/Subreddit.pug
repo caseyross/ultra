@@ -1,5 +1,6 @@
 script.
 	import { Time } from '../../../utils/index.js'
+	import Button from '../controls/Button.pug'
 	import PageUnavailable from '../../infra/PageUnavailable.pug'
 	import Post from '../post/Post.pug'
 	import PostList from '../listing/PostList.pug'
@@ -19,8 +20,14 @@ svelte:head
 		PageUnavailable(path='/r/{name}')
 {:else if post_short_ids}
 	nav.subreddit-nav
-		h1 {name}
-		PostList(short_ids={post_short_ids} select={short_id => selection = { type: 'post', short_id }} selection={selection?.short_id})
+		section.subreddit-info
+			h1 {name}
+		hr
+		section.subreddit-posts
+			PostList(short_ids={post_short_ids} select={short_id => selection = { type: 'post', short_id }} selection={selection?.short_id})
+		hr(style='margin: 0 0 1em 0')
+		section.subreddit-posts-paging
+			p Page 1
 	{#if selection}
 		{#if selection.type === 'post'}
 			{#key selection.short_id}
@@ -28,10 +35,18 @@ svelte:head
 
 style.
 	.subreddit-nav
-		border-right 1px solid
-		height 100%
+		background white
+		border 1px solid
+		border-radius 5px
+		display flex
+		flex-flow column nowrap
+		height 90%
+		padding 10px
+		position relative
+		top 5%
+		width 360px
+	.subreddit-posts
+		flex 1
 		overflow-y auto
-		padding 2em 0
-		width 320px
 		&::-webkit-scrollbar
 			display none

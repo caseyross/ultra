@@ -1,4 +1,5 @@
 script.
+	export awards = null
 	export controversiality = 0
 	export upload_vote = -> {}
 	export value = null
@@ -27,6 +28,9 @@ script.
 		display_value = '?'
 		size_class = 'ones'
 		vote_icon = '○'
+	color_class = 'neutral'
+	if awards?.length
+		awards_display_value = 'awards: ' + awards.map((award) -> "#{award.name} (#{award.count})").join(', ')
 	toggle_downvote = ->
 		if vote == -1 then vote = 0 
 		else vote = -1
@@ -37,13 +41,21 @@ script.
 		upload_vote(vote)
 
 button.score(class='score-color-{color_class}' class='score-size-{size_class}' on:click={() => toggle_upvote()} on:contextmenu={() => toggle_downvote()} title={display_value}) {vote_icon}
+	{#if awards_display_value}
+		.score-awards(title={awards_display_value})
 
 style.
 	.score
-		font-size 18px
-		width 11px
+		aspect-ratio 1
+		border-radius 50%
+		padding-bottom 1px
+		position relative
+		transition all 0.125s
+		width 19px
+		&:hover
+			background rgba(0,0,0,0.1)
 	.score-size-ones
-		font-size 0.75em
+		font-size 1em
 	.score-size-thousands
 		font-size 1em
 	.score-color-negative
@@ -52,3 +64,9 @@ style.
 		color rgba(0,0,0,0.5)
 	.score-color-positive
 		color var(--color-writing-action)
+	.score-awards
+		aspect-ratio 1
+		background gold
+		border-radius 50%
+		position absolute
+		width 5px

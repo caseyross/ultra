@@ -61,9 +61,8 @@ nav.global-nav
 				section
 					h5 Your subscriptions
 					ol
-						{#each subscriptions as subreddit_name}
-							{@const last_visit = localStorage['meta.last_visit.' + subreddit_name]}
-							Button(badge={last_visit && Format.time.relative(last_visit)} link='/r/{subreddit_name}' text={subreddit_name})
+						{#each subscriptions.sort((a, b) => localStorage['meta.last_visit.' + b] - localStorage['meta.last_visit.' + a])as subreddit_name}
+							Button(link='/r/{subreddit_name}' text={subreddit_name})
 			{#if following?.length}
 				section
 					h5 Your followed users

@@ -25,7 +25,6 @@
 	font-weight 100 900
 	src url('./font_inter_100_900.woff2')
 html
-	--typeface-prop 'Comic Neue', 'UD Digi Kyokasho NK-R', 'Arial', sans-serif
 	--typeface-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
 
 // Single-direction margin
@@ -39,7 +38,7 @@ html
 	--color-control rgba(0,0,0,0.05)
 	--color-control-focused rgba(0,0,0,0.10)
 	--color-control-toggled rgba(0,0,0,0.50)
-	--color-paper #fff2e7
+	--color-paper #eee
 	--color-paper-action aliceblue
 	--color-paper-border gainsboro
 	--color-paper-callout rgba(0,0,0,0.05)
@@ -47,7 +46,7 @@ html
 	--color-signal-error salmon
 	--color-signal-ok lightseagreen
 	--color-signal-unknown gray
-	--color-writing black
+	--color-writing rgba(0,0,0,0.9)
 	--color-writing-action mediumslateblue
 	--color-writing-highlight gold
 	color-scheme light
@@ -74,6 +73,7 @@ html
 *:focus
 	outline-color var(--color-writing-highlight)
 .md
+	cursor default
 	overflow-wrap anywhere
 line-width-reg = 640px
 
@@ -82,13 +82,9 @@ body
 	background-color var(--color-paper)
 	color var(--color-writing)
 	display flex
-	font 14px/1.5 var(--typeface-prop)
+	font 500 14px/1.6 'Inter', sans-serif
 	height 100vh
-	letter-spacing .777px
 	margin 0
-	font 13px/18px Inter
-	letter-spacing -0.003em
-	font-feature-settings 'calt' 0, 'cv02' 1, 'cv05' 1
 
 // Paragraphs
 p
@@ -135,7 +131,6 @@ pre
 // Spoilers
 .md-spoiler-text
 	background var(--color-writing)
-	cursor text
 	padding 0.1em 0.25em
 	opacity 0.77
 	& a

@@ -31,7 +31,7 @@ button.post-card(class:selected={selected} on:mousedown={() => select(post_short
 			Tag(name='oc')
 	time.post-age(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}
 	.post-score
-		Score(upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+		Score(awards={post.all_awardings} upload_vote={(vote) => api.send(api.ID.action('vote_post', post_short_id, vote))} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 	h1.post-title {post.title}
 	div
 	div
@@ -48,9 +48,9 @@ style.
 		justify-self center
 	.post-card
 		align-items baseline
+		background white
 		border 1px solid transparent
-		border-radius 1em 0 0 1em
-		border-right 0
+		border-radius 5px
 		color rgba(0,0,0,0.5)
 		display grid
 		font-size 14px
@@ -58,11 +58,11 @@ style.
 		grid-template-columns 24px 24px 1fr
 		line-height 1.5
 		max-width 480px
-		padding 1ch 1em
+		padding 10px
 		position relative
 		text-align left
 		&.selected
-			border-color inherit
+			background aliceblue
 	.post-context
 		align-items center
 		display flex
