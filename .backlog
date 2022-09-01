@@ -1,8 +1,9 @@
 M	Figure out issue with video player freezing video in certain situations
 M	Rewrite reddit.com links in link posts & image gallery captions
 
-L	Allow use of API in scripts (need localStorage substitute, user agent config)
 L	Fallback when localStorage is not available (e.g. when cookies are disabled)
 L	Rewrite links everywhere to avoid "\_" problem (we hope Reddit will fix)
 L	Table sorting
 L	Way to hide stickies
+
+Z Extract API, other libraries (?) into their own packages
