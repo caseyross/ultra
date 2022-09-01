@@ -1,11 +1,8 @@
 script.
-	import Button from '../controls/Button.pug'
 	import GlobalNavigation from '../controls/GlobalNavigation.pug'
-	import Multireddit from '../listing/Multireddit.pug'
+	import Listing from '../listing/Listing.pug'
 	import Post from '../post/Post.pug'
 	import RouteNotImplemented from './RouteNotImplemented.pug'
-	import Subreddit from '../listing/Subreddit.pug'
-	import UserProfile from '../listing/UserProfile.pug'
 	import WikiPage from '../wiki/WikiPage.pug'
 	### START ROUTING CODE ###
 	import parse_route from './parse_route.coffee'
@@ -68,19 +65,19 @@ script.
 main
 	{#key route}
 		{#if route.path === 'all'}
-			Multireddit(name='all' sort={route.data.posts_sort} user_name='r')
+			Listing(name='all' sort={route.data.posts_sort} type='multireddit' user_name='r')
 		{:else if route.path === 'home'}
-			Multireddit(name='home' sort={route.data.posts_sort} user_name='r')
+			Listing(name='home' sort={route.data.posts_sort} type='multireddit' user_name='r')
 		{:else if route.path === 'multireddit'}
-			Multireddit(name={route.data.multireddit_name} sort={route.data.posts_sort} user_name={route.data.user_name})
+			Listing(name={route.data.multireddit_name} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
 		{:else if route.path === 'popular'}
-			Multireddit(name='popular' sort={route.data.posts_sort} user_name='r')
+			Listing(name='popular' sort={route.data.posts_sort} type='multireddit' user_name='r')
 		{:else if route.path === 'post'}
 			Post(short_id={route.data.post_short_id} standalone={true})
 		{:else if route.path === 'subreddit'}
-			Subreddit(name={route.data.subreddit_name} sort={route.data.posts_sort})
+			Listing(name={route.data.subreddit_name} sort={route.data.posts_sort} type='subreddit')
 		{:else if route.path === 'user'}
-			UserProfile(items_filter={route.data.items_filter} items_sort={route.data.items_sort} user_name={route.data.user_name})
+			Listing(sort={route.data.items_sort} tab_selection={route.data.items_filter} type='user_profile' user_name={route.data.user_name})
 		{:else if route.path === 'wiki'}
 			WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
 		{:else}
