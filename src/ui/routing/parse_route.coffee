@@ -1,15 +1,18 @@
-RECOGNIZED_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'rising', 's', 'search', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki', 'video']
+KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki', 'video']
+
+COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']
 
 INVALID = {
 	path: 'invalid'
 	data: null
 }
+OFFICIAL_SITE = (path) -> {
+	path: 'official_site'
+	data:
+		path: path
+}
 TODO = {
 	path: 'todo'
-	data: null
-}
-WONT_IMPLEMENT = {
-	path: 'wont_implement'
 	data: null
 }
 
@@ -19,9 +22,9 @@ export default (url) ->
 	# Normalize trailing slash if present.
 	if path.at(-1) is '' then path.pop()
 	# Strip global SEO prefixes.
-	if path[1] in ['de', 'es', 'fr', 'it', 'pt'] and path[2] is 'r' and path[3] then path = path[1..]
+	if path[1] in COUNTRY_SEO_PREFIXES and path[2] is 'r' and path[3] then path = path[1..]
 	# Treat top-level path as subreddit name unless otherwise identified.
-	if path[1] not in RECOGNIZED_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
+	if path[1] not in KNOWN_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	# Core routing logic begins from here.
 	switch path[1]
 		when undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
@@ -43,8 +46,6 @@ export default (url) ->
 				data:
 					posts_sort: posts_sort
 			}
-		when 'about' then return WONT_IMPLEMENT
-		when 'channel', 'chat' then return WONT_IMPLEMENT
 		when 'comments', 'p', 'post', 'tb'
 			post_short_id = path[2]
 			switch
@@ -66,8 +67,6 @@ export default (url) ->
 					comments_sort: comments_sort
 					post_short_id: post_short_id
 			}
-		when 'dev' then return WONT_IMPLEMENT
-		when 'gallery' then return WONT_IMPLEMENT
 		when 'm', 'multi', 'multireddit'
 			user_name = path[2]
 			multireddit_name = path[3]
@@ -95,10 +94,9 @@ export default (url) ->
 					user_name: user_name
 			}
 		when 'mail', 'message', 'messages' then return TODO
-		when 'poll' then return WONT_IMPLEMENT
 		when 'r', 'subreddit'
 			switch path[3]
-				when 'about' then return WONT_IMPLEMENT
+				when 'about' then return OFFICIAL_SITE("/r/#{path[2]}/about")
 				when 'comments'
 					post_short_id = path[4]
 					if !post_short_id then return INVALID
@@ -119,6 +117,7 @@ export default (url) ->
 							post_short_id: post_short_id
 					}
 				when 's', 'search' then return TODO
+				when 'submit' then return OFFICIAL_SITE("/r/#{path[2]}/submit")
 				when 'w', 'wiki'
 					subreddit_name = path[2]
 					switch
@@ -270,7 +269,6 @@ export default (url) ->
 					items_sort: items_sort
 					user_name: user_name
 			}
-		when 'video' then return WONT_IMPLEMENT
 		when 'w', 'wiki'
 			subreddit_name = path[2]
 			switch
@@ -295,4 +293,4 @@ export default (url) ->
 					revision_id: revision_id
 					subreddit_name: subreddit_name
 			}
-		else return INVALID
+		else return OFFICIAL_SITE(url.pathname + url.search + url.hash)
