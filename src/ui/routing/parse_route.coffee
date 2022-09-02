@@ -1,4 +1,4 @@
-KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all', 'u', 'user', 'w', 'wiki', 'video']
+KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
 
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']
 
@@ -27,7 +27,7 @@ export default (url) ->
 	if path[1] not in KNOWN_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	# Core routing logic begins from here.
 	switch path[1]
-		when undefined, 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+		when undefined, 'best', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 			posts_sort = path[1] ? query.get('sort')
 			switch posts_sort
 				when 'controversial', 'top'
@@ -37,7 +37,7 @@ export default (url) ->
 							posts_sort = posts_sort + '_' + time_range
 						else
 							posts_sort = posts_sort + '_week'
-				when 'best', 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+				when 'best', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 					break
 				else
 					posts_sort = 'best'
@@ -82,7 +82,7 @@ export default (url) ->
 							posts_sort = posts_sort + '_' + time_range
 						else
 							posts_sort = posts_sort + '_month'
-				when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+				when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 					break
 				else
 					posts_sort = 'hot'
@@ -157,7 +157,7 @@ export default (url) ->
 											posts_sort = posts_sort + '_' + time_range
 										else
 											posts_sort = posts_sort + '_week'
-								when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+								when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 									break
 								else
 									posts_sort = 'hot'
@@ -177,7 +177,7 @@ export default (url) ->
 											posts_sort = posts_sort + '_' + time_range
 										else
 											posts_sort = posts_sort + '_week'
-								when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+								when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 									break
 								else
 									posts_sort = 'hot'
@@ -203,7 +203,7 @@ export default (url) ->
 											posts_sort = posts_sort + '_' + time_range
 										else
 											posts_sort = posts_sort + '_month'
-								when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+								when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 									break
 								else
 									posts_sort = 'hot'
@@ -236,7 +236,7 @@ export default (url) ->
 									posts_sort = posts_sort + '_' + time_range
 								else
 									posts_sort = posts_sort + '_month'
-						when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'rising', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+						when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 							break
 						else
 							posts_sort = 'hot'
@@ -258,7 +258,7 @@ export default (url) ->
 							items_sort = items_sort + '_' + time_range
 						else
 							items_sort = items_sort + '_all'
-				when 'controversial_hour', 'controversial_day', 'controversial_week', 'controversial_month', 'controversial_year', 'controversial_all', 'hot', 'new', 'top_hour', 'top_day', 'top_week', 'top_month', 'top_year', 'top_all'
+				when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 					break
 				else
 					items_sort = 'new'
