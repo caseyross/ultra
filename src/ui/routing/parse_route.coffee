@@ -75,7 +75,11 @@ export default (url) ->
 				path: 'multireddit'
 				data: { multireddit_name, posts_sort, user_name }
 			}
-		when 'mail', 'message', 'messages' then return TODO
+		when 'mail', 'message', 'messages'
+			return {
+				path: 'inbox'
+				data: null
+			}
 		when 'r', 'subreddit'
 			switch path[3]
 				when 'about' then return OFFICIAL_SITE("/r/#{path[2]}/about")

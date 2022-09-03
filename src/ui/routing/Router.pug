@@ -1,6 +1,7 @@
 script.
 	import GlobalNavigation from '../controls/GlobalNavigation.pug'
 	import Listing from '../listing/Listing.pug'
+	import Inbox from '../message/Inbox.pug'
 	import Post from '../post/Post.pug'
 	import RedirectRoute from './RedirectRoute.pug'
 	import TodoRoute from './TodoRoute.pug'
@@ -71,6 +72,8 @@ main
 			Listing(name='all' sort={route.data.posts_sort} type='multireddit' user_name='r')
 		{:else if route.path === 'home'}
 			Listing(name='home' sort={route.data.posts_sort} type='multireddit' user_name='r')
+		{:else if route.path === 'inbox'}
+			Inbox
 		{:else if route.path === 'multireddit'}
 			Listing(name={route.data.multireddit_name} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
 		{:else if route.path === 'popular'}

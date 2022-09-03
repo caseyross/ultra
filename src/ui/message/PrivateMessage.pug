@@ -1,0 +1,22 @@
+script.
+	import api from '../../api/index.js'
+	import Markup from '../text/Markup.pug'
+	export short_id = null
+	private_message = null
+	api.watch(api.ID.dataset('private_message', short_id), (x) -> { data: private_message } = x)
+
+{#if private_message}
+	.private-message
+		address FROM:
+			a(href='/u/{private_message.author}') u/{private_message.author}
+		.private-message-subject SUBJECT: {private_message.subject}
+		.private-message-text
+			Markup(html={private_message.body_html})
+
+style.
+	.private-message
+		background white
+		border-radius 5px
+		margin 1em
+		padding 1ch
+		width 480px

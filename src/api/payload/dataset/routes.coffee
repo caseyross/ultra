@@ -3,6 +3,13 @@ import { get, post } from '../../network/http.coffee'
 export default {
 	current_user: ->
 		get("/api/v1/me")
+	current_user_messages: (max_messages, after_message_fullname) ->
+		get("/message/inbox", {
+			after: after_message_fullname
+			limit: max_messages
+			mark: false
+			show: 'all'
+		})
 	current_user_settings: ->
 		get("/api/v1/me/prefs")
 	current_user_subscriptions: ->
