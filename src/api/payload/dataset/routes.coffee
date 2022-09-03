@@ -21,14 +21,14 @@ export default {
 	multireddit_posts: (user_name, multireddit_name, posts_sort, max_posts, after_post_short_id) ->
 		get(
 			switch
-				when user_name is 'r' and multireddit_name is 'home' then "/#{posts_sort.split('_')[0]}"
-				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort.split('_')[0]}"
-				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort.split('_')[0]}"
+				when user_name is 'r' and multireddit_name is 'home' then "/#{posts_sort.split('-')[0]}"
+				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort.split('-')[0]}"
+				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort.split('-')[0]}"
 			{
 				after: after_post_short_id and "t3_#{after_post_short_id}"
 				limit: max_posts
 				show: 'all'
-				t: posts_sort.split('_')[1]
+				t: posts_sort.split('-')[1]
 			}
 		)
 	post: (post_short_id, comments_sort, max_comments, spotlight_comment_short_id, spotlight_comment_context) ->
@@ -105,11 +105,11 @@ export default {
 			show: 'all'
 		})
 	subreddit_posts: (subreddit_name, posts_sort, max_posts, after_post_short_id) ->
-		get("/r/#{subreddit_name}/#{posts_sort.split('_')[0]}", {
+		get("/r/#{subreddit_name}/#{posts_sort.split('-')[0]}", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
 			show: 'all'
-			t: posts_sort.split('_')[1]
+			t: posts_sort.split('-')[1]
 		})
 	subreddit_post_flairs: (subreddit_name) ->
 		get("/r/#{subreddit_name}/api/link_flair_v2")
@@ -135,8 +135,8 @@ export default {
 		get("/user/#{user_name}/comments", {
 			after: after_comment_short_id and "t1_#{after_comment_short_id}"
 			limit: max_comments
-			sort: comments_sort.split('_')[0]
-			t: comments_sort.split('_')[1]
+			sort: comments_sort.split('-')[0]
+			t: comments_sort.split('-')[1]
 		})
 	user_multireddits: (user_name) ->
 		get("/api/multi/user/#{user_name}")
@@ -144,23 +144,23 @@ export default {
 		get("/user/#{user_name}/submitted", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
-			sort: posts_sort.split('_')[0]
-			t: posts_sort.split('_')[1]
+			sort: posts_sort.split('-')[0]
+			t: posts_sort.split('-')[1]
 		})
 	user_saved_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_comment_short_id and "t1_#{after_comment_short_id}"
 			limit: max_comments
-			sort: comments_sort.split('_')[0]
-			t: comments_sort.split('_')[1]
+			sort: comments_sort.split('-')[0]
+			t: comments_sort.split('-')[1]
 			type: 'comments'
 		})
 	user_saved_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
-			sort: posts_sort.split('_')[0]
-			t: posts_sort.split('_')[1]
+			sort: posts_sort.split('-')[0]
+			t: posts_sort.split('-')[1]
 			type: 'links'
 		})
 	wiki: (subreddit_name, page_name, version_short_id) ->

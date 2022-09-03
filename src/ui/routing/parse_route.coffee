@@ -2,6 +2,18 @@ KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comment
 
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']
 
+LISTING_SORT_OPTIONS = [
+	'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
+]
+
+POST_LISTING_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising']
+
+FRONTPAGE_POST_LISTING_SORT_OPTIONS = [...POST_LISTING_SORT_OPTIONS, 'best']
+
+POST_COMMENT_LISTING_SORT_OPTIONS = ['best', 'controversial', 'new', 'old', 'qa', 'top']
+
+LISTING_SORT_OPTION_TIME_RANGES = ['hour', 'day', 'week', 'month', 'year', 'all']
+
 INVALID = {
 	path: 'invalid'
 	data: null
@@ -26,72 +38,42 @@ export default (url) ->
 	# Treat top-level path as subreddit name unless otherwise identified.
 	if path[1] not in KNOWN_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	# Core routing logic begins from here.
+	if path[1] is undefined or path[1] in POST_LISTING_SORT_OPTIONS
+		posts_sort = path[1] ? query.get('sort')
+		if posts_sort is 'controversial' or posts_sort is 'top'
+			time_range = query.get('t')
+			if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+			else posts_sort = posts_sort + '-week'
+		else if posts_sort not in FRONTPAGE_POST_LISTING_SORT_OPTIONS then posts_sort = 'best'
+		return {
+			path: 'home'
+			data: { posts_sort }
+		}
 	switch path[1]
-		when undefined, 'best', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-			posts_sort = path[1] ? query.get('sort')
-			switch posts_sort
-				when 'controversial', 'top'
-					time_range = query.get('t')
-					switch
-						when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-							posts_sort = posts_sort + '_' + time_range
-						else
-							posts_sort = posts_sort + '_week'
-				when 'best', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-					break
-				else
-					posts_sort = 'best'
-			return {
-				path: 'home'
-				data:
-					posts_sort: posts_sort
-			}
 		when 'comments', 'p', 'post', 'tb'
 			post_short_id = path[2]
-			switch
-				when !post_short_id then return INVALID
-				else break
+			if not post_short_id then return INVALID
 			comments_sort = query.get('sort')
-			switch comments_sort
-				when 'best', 'controversial', 'new', 'old', 'qa', 'top'
-					break
-				else
-					comments_sort = 'best'
+			if comments_sort not in POST_COMMENT_LISTING_SORT_OPTIONS then comments_sort = 'best'
 			comment_short_id = path[4]
 			comment_context = query.get('context')
 			return {
 				path: 'post'
-				data:
-					comment_context: comment_context
-					comment_short_id: comment_short_id
-					comments_sort: comments_sort
-					post_short_id: post_short_id
+				data: { comment_context, comment_short_id, comments_sort, post_short_id }
 			}
 		when 'm', 'multi', 'multireddit'
 			user_name = path[2]
 			multireddit_name = path[3]
-			switch
-				when !user_name or !multireddit_name then return INVALID
-				else break
+			if not user_name or not multireddit_name then return INVALID
 			posts_sort = path[4] ? query.get('sort')
-			switch posts_sort
-				when 'controversial', 'top'
-					time_range = query.get('t')
-					switch
-						when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-							posts_sort = posts_sort + '_' + time_range
-						else
-							posts_sort = posts_sort + '_month'
-				when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-					break
-				else
-					posts_sort = 'hot'
+			if posts_sort is 'controversial' or posts_sort is 'top'
+				time_range = query.get('t')
+				if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+				else posts_sort = posts_sort + '-month'
+			else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
 			return {
 				path: 'multireddit'
-				data:
-					multireddit_name: multireddit_name
-					posts_sort: posts_sort
-					user_name: user_name
+				data: { multireddit_name, posts_sort, user_name }
 			}
 		when 'mail', 'message', 'messages' then return TODO
 		when 'r', 'subreddit'
@@ -99,198 +81,115 @@ export default (url) ->
 				when 'about' then return OFFICIAL_SITE("/r/#{path[2]}/about")
 				when 'comments'
 					post_short_id = path[4]
-					if !post_short_id then return INVALID
+					if not post_short_id then return INVALID
 					comments_sort = query.get('sort')
-					switch comments_sort
-						when 'best', 'controversial', 'new', 'old', 'qa', 'top'
-							break
-						else
-							comments_sort = 'best'
+					if comments_sort not in POST_COMMENT_LISTING_SORT_OPTIONS then comments_sort = 'best'
 					comment_short_id = path[6]
 					comment_context = query.get('context')
 					return {
 						path: 'post'
-						data:
-							comment_context: comment_context
-							comment_short_id: comment_short_id
-							comments_sort: comments_sort
-							post_short_id: post_short_id
+						data: { comment_context, comment_short_id, comments_sort, post_short_id }
 					}
 				when 's', 'search' then return TODO
 				when 'submit' then return OFFICIAL_SITE("/r/#{path[2]}/submit")
 				when 'w', 'wiki'
 					subreddit_name = path[2]
-					switch
-						when !subreddit_name then return INVALID
-						when subreddit_name.length < 2 then return INVALID
-						else break
+					if not subreddit_name or subreddit_name.length < 2 then return INVALID
 					page_name = path[4..].join('/') # wiki pages can be nested
-					switch
-						when !page_name then page_name = 'index'
-						when page_name is 'pages'
-							return {
-								path: 'wiki_list'
-								data:
-									subreddit_name: subreddit_name
-							}
-						else break
+					if page_name is 'pages'
+						return {
+							path: 'wiki_list'
+							data: { subreddit_name }
+						}
+					if not page_name then page_name = 'index'
 					revision_id = query.get('v')
 					return {
 						path: 'wiki'
-						data:
-							page_name: page_name
-							revision_id: revision_id
-							subreddit_name: subreddit_name
+						data: { page_name, revision_id, subreddit_name }
 					}
 				else
 					subreddit_name = path[2]
-					switch
-						when !subreddit_name then return INVALID
-						when subreddit_name.length < 2 then return INVALID
-						when subreddit_name is 'all'
+					if not subreddit_name or subreddit_name.length < 2 then return INVALID
+					switch subreddit_name
+						when 'all'
 							posts_sort = path[3] ? query.get('sort')
-							switch posts_sort
-								when 'controversial', 'top'
-									time_range = query.get('t')
-									switch
-										when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-											posts_sort = posts_sort + '_' + time_range
-										else
-											posts_sort = posts_sort + '_week'
-								when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-									break
-								else
-									posts_sort = 'hot'
+							if posts_sort is 'controversial' or posts_sort is 'top'
+								time_range = query.get('t')
+								if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-week'
+							else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
 							return {
 								path: 'all'
-								data:
-									posts_sort: posts_sort
+								data: { posts_sort }
 							}
-						when subreddit_name is 'mod' then return TODO
-						when subreddit_name is 'popular'
+						when 'mod' then return TODO
+						when 'popular'
 							posts_sort = path[3] ? query.get('sort')
-							switch posts_sort
-								when 'controversial', 'top'
-									time_range = query.get('t')
-									switch
-										when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-											posts_sort = posts_sort + '_' + time_range
-										else
-											posts_sort = posts_sort + '_week'
-								when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-									break
-								else
-									posts_sort = 'hot'
+							if posts_sort is 'controversial' or posts_sort is 'top'
+								time_range = query.get('t')
+								if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-week'
+							else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
 							geo_filter = query.get('geo_filter')
-							switch
-								when !geo_filter
-									geo_filter = 'GLOBAL'
-								else
-									break
+							if not geo_filter then geo_filter = 'GLOBAL'
 							return {
 								path: 'popular'
-								data:
-									geo_filter: geo_filter
-									posts_sort: posts_sort
+								data: { geo_filter, posts_sort }
 							}
 						else
 							posts_sort = path[3] ? query.get('sort')
-							switch posts_sort
-								when 'controversial', 'top'
-									time_range = query.get('t')
-									switch
-										when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-											posts_sort = posts_sort + '_' + time_range
-										else
-											posts_sort = posts_sort + '_month'
-								when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-									break
-								else
-									posts_sort = 'hot'
+							if posts_sort is 'controversial' or posts_sort is 'top'
+								time_range = query.get('t')
+								if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-month'
+							else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
 							return {
 								path: 'subreddit'
-								data:
-									posts_sort: posts_sort
-									subreddit_name: subreddit_name
+								data: { posts_sort, subreddit_name }
 							}
 		when 's', 'search' then return TODO
 		when 'u', 'user'
 			user_name = path[2]
-			switch
-				when !user_name then return INVALID
-				else break
+			if not user_name then return INVALID
 			switch path[3]
-				when 'comments'
-					items_filter = 'comments'
+				when 'comments' then items_filter = 'comments'
 				when 'm', 'multi', 'multireddit'
 					multireddit_name = path[4]
-					switch
-						when !multireddit_name then return INVALID
-						else break
+					if not multireddit_name then return INVALID
 					posts_sort = path[5] ? query.get('sort')
-					switch posts_sort
-						when 'controversial', 'top'
-							time_range = query.get('t')
-							switch
-								when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-									posts_sort = posts_sort + '_' + time_range
-								else
-									posts_sort = posts_sort + '_month'
-						when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'rising', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-							break
-						else
-							posts_sort = 'hot'
+					if posts_sort is 'controversial' or posts_sort is 'top'
+						time_range = query.get('t')
+						if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+						else posts_sort = posts_sort + '-month'
+					else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
 					return {
 						path: 'multireddit'
-						data:
-							multireddit_name: multireddit_name
-							posts_sort: posts_sort
-							user_name: user_name
+						data: { multireddit_name, posts_sort, user_name }
 					}
-				else
-					items_filter = 'posts'
+				else items_filter = 'posts'
 			items_sort = query.get('sort')
-			switch items_sort
-				when 'controversial', 'top'
-					time_range = query.get('t')
-					switch
-						when time_range in ['hour', 'day', 'week', 'month', 'year', 'all']
-							items_sort = items_sort + '_' + time_range
-						else
-							items_sort = items_sort + '_all'
-				when 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
-					break
-				else
-					items_sort = 'new'
+			if items_sort is 'controversial' or items_sort is 'top'
+				time_range = query.get('t')
+				if time_range in LISTING_SORT_OPTION_TIME_RANGES then items_sort = items_sort + '-' + time_range
+				else items_sort = items_sort + '-all'
+			else if items_sort not in LISTING_SORT_OPTIONS then items_sort = 'new'
 			return {
 				path: 'user'
-				data:
-					items_filter: items_filter
-					items_sort: items_sort
-					user_name: user_name
+				data: { items_filter, items_sort, user_name }
 			}
 		when 'w', 'wiki'
 			subreddit_name = path[2]
-			switch
-				when !subreddit_name then return INVALID
-				when subreddit_name.length < 2 then return INVALID
-				else break
+			if not subreddit_name or subreddit_name.length < 2 then return INVALID
 			page_name = path[3..].join('/') # wiki pages can be nested
-			switch
-				when !page_name then page_name = 'index'
-				when page_name is 'pages'
-					return {
-						path: 'wiki_list'
-						data:
-							subreddit_name: subreddit_name
-					}
-				else break
+			if page_name is 'pages'
+				return {
+					path: 'wiki_list'
+					data: { subreddit_name }
+				}
+			if not page_name then page_name = 'index'
 			revision_id = query.get('v')
 			return {
 				path: 'wiki'
-				data:
-					page_name: page_name
-					revision_id: revision_id
-					subreddit_name: subreddit_name
+				data: { page_name, revision_id, subreddit_name }
 			}
-		else return OFFICIAL_SITE(url.pathname + url.search + url.hash)
+	return OFFICIAL_SITE(url.pathname + url.search + url.hash)
