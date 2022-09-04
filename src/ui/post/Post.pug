@@ -85,12 +85,12 @@ svelte:head
 				{:else}
 					{@const media = post.media[0]}
 						{#if media.video_url}
-							AVPlayer(audio_url={media.video_audio_url} dimensions={[640, 360]} mimic_gif={media.is_gif} video_url={media.video_url})
+							AVPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
 						{:else if media.image_url}
 							a(href={media.image_url} rel='external noopener preconnect' target='_blank')
 								picture
 									source(srcset={media.image_url_960})
-									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {Math.min(media.source_width, media.aspect_ratio > 1.5 ? 720 : 480)}px")
+									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 			{:else if post.format === 'embed'}
 				{#each post.media as media}
 					{#if media.iframe_url}
@@ -125,13 +125,12 @@ style.
 	.post
 		height 100%
 		overflow auto
-		padding 5em
-		width 50vw
+		padding 120px 5em
 		&::-webkit-scrollbar
 			display none
 	.post-content
 		margin-top 2em
-		position relative
+		width 480px
 	.post-gallery
 		display flex
 		flex-flow row wrap
@@ -146,7 +145,7 @@ style.
 		text-align center
 	.post-iframe
 		aspect-ratio 16 / 9
-		height 480px
+		width 100%
 	.post-iframe-actions
 		display flex
 		gap 1em
@@ -170,11 +169,7 @@ style.
 	.post-replies
 		margin-top 4.5em
 	.post-selftext
-		font-size 14px
-		letter-spacing -0.006em
-		line-height 20px
 		margin-top 0.7em
-		width 600px
 	:global(.post-selftext-media)
 		width 480px
 		padding 1em 0

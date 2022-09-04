@@ -24,7 +24,6 @@ script.
 		popular = null
 		api.watch('subreddits_popular:11', (x) -> { data: popular } = x)
 	global_multireddits = ['r/all', 'r/popular']
-	watchlist = ['subreddit0','subreddit0','subreddit0','subreddit0','subreddit0']
 
 nav.global-nav
 	h1
@@ -33,16 +32,8 @@ nav.global-nav
 		section
 			Button(key='i' link='/messages/inbox' size='big' text='Inbox')
 			Button(key='m' link='/mod/queue' size='big' text='Modqueue')
-		section
-			Button(key='p' link="/u/{getContext('username')}" text='Profile')
-			Button(key='v' link="/u/{getContext('username')}/saved" text='Saved')
+			Button(key='p' link="/u/{getContext('username')}" size='big' text='Profile')
 	section.global-nav-scroll-area
-		{#if watchlist?.length}
-			section
-				h5 Your watchlist
-				ol
-					{#each watchlist as subreddit_name, index}
-						Button(key={index < 10 ? String((index + 1) % 10) : null} link='/r/{subreddit_name}' text={subreddit_name})
 		{#if global_multireddits?.length}
 			section
 				h5 Global custom feeds

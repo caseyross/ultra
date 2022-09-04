@@ -18,7 +18,7 @@ html
 	--color-control rgba(0,0,0,0.05)
 	--color-control-focused rgba(0,0,0,0.10)
 	--color-control-toggled rgba(0,0,0,0.50)
-	--color-paper #eee
+	--color-paper white
 	--color-paper-action aliceblue
 	--color-paper-border gainsboro
 	--color-paper-callout rgba(0,0,0,0.05)
@@ -55,7 +55,6 @@ html
 .md
 	cursor default
 	overflow-wrap anywhere
-line-width-reg = 640px
 
 // Body
 body
@@ -72,15 +71,20 @@ p
 hr
 	border 1px solid rgba(0,0,0,0.1)
 	margin 1em 0 0 0
-	max-width line-width-reg
 
 // Formatted text
 a
-	color inherit
+	color mediumslateblue
 	overflow-wrap anywhere
+	text-decoration none
 a[href^='/']
 a[href^='#']
-	text-decoration underline
+	-webkit-box-decoration-break clone
+	background rgba(0,0,0,0.05)
+	border-radius 3px
+	box-decoration-break clone
+	box-shadow 0 0 1px black
+	padding 3px 8px
 address
 	font-style normal
 
@@ -89,7 +93,6 @@ blockquote
 	border-left 3px solid var(--color-paper-border)
 	color green
 	margin 0.5em 0 0 2px
-	max-width line-width-reg
 	opacity 0.8
 	padding 0 0.5em
 code
@@ -132,7 +135,6 @@ ul
 .md ol
 .md ul
 	margin 0.5em 0 0 0
-	max-width line-width-reg
 	padding-inline-start 18px
 .md ol ol
 .md ol ul
