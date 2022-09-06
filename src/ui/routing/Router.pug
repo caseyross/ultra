@@ -68,18 +68,14 @@ main
 	{#key route}
 		{#if route.path === 'official_site'}
 			RedirectRoute(path={route.data.path})
-		{:else if route.path === 'all'}
-			Listing(name='all' sort={route.data.posts_sort} type='multireddit' user_name='r')
-		{:else if route.path === 'home'}
-			Listing(name='home' sort={route.data.posts_sort} type='multireddit' user_name='r')
 		{:else if route.path === 'inbox'}
 			Inbox
 		{:else if route.path === 'multireddit'}
-			Listing(name={route.data.multireddit_name} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
-		{:else if route.path === 'popular'}
-			Listing(name='popular' sort={route.data.posts_sort} type='multireddit' user_name='r')
+			Listing(name={route.data.multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
 		{:else if route.path === 'post'}
 			Post(short_id={route.data.post_short_id} standalone={true})
+		{:else if route.path === 'special_multireddit'}
+			Listing(name={route.data.special_multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='special_multireddit')
 		{:else if route.path === 'subreddit'}
 			Listing(name={route.data.subreddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='subreddit')
 		{:else if route.path === 'todo'}

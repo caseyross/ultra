@@ -24,14 +24,41 @@ script.
 	rules = null
 	switch type
 		when 'multireddit'
-			display_name = if user_name is 'r' then name else "#{user_name}/#{name}"
-			info_dataset_id = if user_name is 'r' then null else api.ID.dataset('multireddit', user_name, name)
+			application_path = "/m/#{user_name}/#{name}"
+			display_name = "#{user_name}/#{name}"
+			info_dataset_id = api.ID.dataset('multireddit', user_name, name)
 			original_path = "/user/#{user_name}/m/#{name}"
-			posts_dataset_id = api.ID.dataset('multireddit_posts', user_name, name, sort, page_size)
+			posts_dataset_id = 
+				if sort.split('-')[0] is 'search'
+					api.ID.dataset('search_posts_in_multireddit', user_name, name, sort.split('-')[1], search_text, page_size)
+				else
+					api.ID.dataset('multireddit_posts', user_name, name, sort, page_size)
+			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 			tabs = ['posts', 'about']
-			title = if user_name is 'r' and name is 'home' then 'frontpage' else "multi: #{user_name}/#{name}"
+			title = "multi: #{user_name}/#{name}"
+		when 'special_multireddit'
+			if name is 'frontpage'
+				application_path = ''
+				posts_dataset_id = api.ID.dataset('multireddit_posts', 'r', 'home', sort, page_size)
+				sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'best']
+				title = 'frontpage'
+			else
+				application_path = "/#{name}"
+				posts_dataset_id =
+					if sort.split('-')[0] is 'search'
+						api.ID.dataset('search_posts', sort.split('-')[1], search_text, page_size)
+					else
+						api.ID.dataset('multireddit_posts', name.split('/')[0], name.split('/')[1], sort, page_size)
+				sorts = switch name
+					when 'r/all' then ['new', 'rising', 'hot', 'controversial', 'top', 'search']
+					when 'r/popular' then ['new', 'rising', 'hot', 'controversial', 'top']
+				title = "multi: #{name}"
+			display_name = name
+			original_path = application_path
+			tabs = []
 		when 'subreddit'
 			localStorage["meta.last_visit.#{name.toLowerCase()}"] = Time.epochMs()
+			application_path = "/r/#{name}"
 			display_name = name
 			info_dataset_id = api.ID.dataset('subreddit', name)
 			original_path = "/r/#{name}"
@@ -41,14 +68,17 @@ script.
 				else
 					api.ID.dataset('subreddit_posts', name, sort, page_size)
 			rules_dataset_id = api.ID.dataset('subreddit_rules', name)
+			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 			tabs = ['posts', 'about', 'rules']
 			title = "subreddit: #{name}"
 		when 'user_profile'
+			application_path = "/u/#{user_name}"
 			comments_dataset_id = api.ID.dataset('user_comments', user_name, sort, page_size)
 			display_name = "u/#{user_name}"
 			info_dataset_id = api.ID.dataset('user', user_name)
 			original_path = "/u/#{user_name}"
 			posts_dataset_id = api.ID.dataset('user_posts', user_name, sort, page_size)
+			sorts = ['new', 'hot', 'controversial', 'top']
 			tabs = ['posts', 'comments', 'about']
 			title = "user: #{user_name}"
 	if comments_dataset_id
@@ -75,8 +105,8 @@ svelte:head
 			section.listing-tabs
 				{#each tabs as tab}
 					Button(action={() => tab_selection = tab} activated={tab_selection === tab} text={tab})
-		SortPicker(selection={sort.split('-')[0]})
-		TimeRangePicker(selection={sort.split('-')[1]})
+		SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
+		TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} disabled={!['top', 'controversial', 'search'].includes(sort.split('-')[0])} selection={sort.split('-')[1]})
 		hr
 		section.listing-tab-content
 			{#if tab_selection === 'about'}
@@ -89,7 +119,7 @@ svelte:head
 					CommentList(short_ids={comment_short_ids})
 			{#if tab_selection === 'posts'}
 				{#if post_short_ids}
-					PostList(multireddit={type === 'multireddit'} short_ids={post_short_ids} select={short_id => post_selection = short_id} selection={post_selection})
+					PostList(multireddit={type.endsWith('multireddit')} short_ids={post_short_ids} select={short_id => post_selection = short_id} selection={post_selection})
 			{:else if tab_selection === 'rules'}
 				{#if rules}
 					ol.subreddit-rules

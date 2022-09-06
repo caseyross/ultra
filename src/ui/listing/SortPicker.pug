@@ -1,10 +1,12 @@
 script.
+	export base_path = '/'
 	export selection = 'hot'
+	export sorts = []
 	format_href = (sort) ->
 		url = new URL(location.href)
-		url.searchParams.set('sort', sort)
+		url.pathname = base_path + '/' + sort
 		return url.toString()
-	sorts = [
+	all_sorts = [
 		{
 			label: 'New',
 			value: 'new'
@@ -26,6 +28,14 @@ script.
 			value: 'top'
 		}
 		{
+			label: 'Best',
+			value: 'best'
+		}
+		{
+			label: 'Geo...',
+			value: 'geo'
+		}
+		{
 			label: 'Search...',
 			value: 'search'
 		}
@@ -33,7 +43,7 @@ script.
 
 fieldset
 	legend Sort by
-	{#each sorts as sort}
+	{#each all_sorts.filter(x => sorts.includes(x.value)) as sort}
 		a.sort-option(class:selected={selection === sort.value} href={format_href(sort.value)}) {sort.label}
 
 style.

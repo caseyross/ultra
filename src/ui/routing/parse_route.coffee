@@ -1,18 +1,22 @@
-KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
+KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
 
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']
 
 LISTING_SORT_OPTIONS = [
-	'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
+	'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all'
 ]
 
-POST_LISTING_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising']
+SUBREDDIT_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising', 'search', 'search-hour', 'search-day', 'search-week', 'search-month', 'search-year', 'search-all']
 
-FRONTPAGE_POST_LISTING_SORT_OPTIONS = [...POST_LISTING_SORT_OPTIONS, 'best']
+R_ALL_SORT_OPTIONS = SUBREDDIT_SORT_OPTIONS
 
-POST_COMMENT_LISTING_SORT_OPTIONS = ['best', 'controversial', 'new', 'old', 'qa', 'top']
+R_POPULAR_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising']
 
-LISTING_SORT_OPTION_TIME_RANGES = ['hour', 'day', 'week', 'month', 'year', 'all']
+FRONTPAGE_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising', 'best']
+
+POST_COMMENTS_SORT_OPTIONS = ['best', 'controversial', 'new', 'old', 'qa', 'top']
+
+SORT_OPTION_TIME_RANGES = ['hour', 'day', 'week', 'month', 'year', 'all']
 
 INVALID = {
 	path: 'invalid'
@@ -38,23 +42,24 @@ export default (url) ->
 	# Treat top-level path as subreddit name unless otherwise identified.
 	if path[1] not in KNOWN_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	# Core routing logic begins from here.
-	if path[1] is undefined or path[1] in POST_LISTING_SORT_OPTIONS
+	if path[1] is undefined or path[1] in FRONTPAGE_SORT_OPTIONS
+		special_multireddit_name = 'frontpage'
 		posts_sort = path[1] ? query.get('sort')
 		if posts_sort is 'controversial' or posts_sort is 'top'
 			time_range = query.get('t')
-			if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-			else posts_sort = posts_sort + '-week'
-		else if posts_sort not in FRONTPAGE_POST_LISTING_SORT_OPTIONS then posts_sort = 'best'
+			if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+			else posts_sort = posts_sort + '-all'
+		else if posts_sort not in FRONTPAGE_SORT_OPTIONS then posts_sort = 'best'
 		return {
-			path: 'home'
-			data: { posts_sort }
+			path: 'special_multireddit'
+			data: { special_multireddit_name, posts_sort }
 		}
 	switch path[1]
 		when 'comments', 'p', 'post', 'tb'
 			post_short_id = path[2]
 			if not post_short_id then return INVALID
 			comments_sort = query.get('sort')
-			if comments_sort not in POST_COMMENT_LISTING_SORT_OPTIONS then comments_sort = 'best'
+			if comments_sort not in POST_COMMENTS_SORT_OPTIONS then comments_sort = 'best'
 			comment_short_id = path[4]
 			comment_context = query.get('context')
 			return {
@@ -66,14 +71,16 @@ export default (url) ->
 			multireddit_name = path[3]
 			if not user_name or not multireddit_name then return INVALID
 			posts_sort = path[4] ? query.get('sort')
-			if posts_sort is 'controversial' or posts_sort is 'top'
+			if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 				time_range = query.get('t')
-				if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-				else posts_sort = posts_sort + '-month'
-			else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
+				if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+				else posts_sort = posts_sort + '-all'
+			else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+			search_sort = query.get('sort')
+			search_text = query.get('q')
 			return {
 				path: 'multireddit'
-				data: { multireddit_name, posts_sort, user_name }
+				data: { multireddit_name, posts_sort, search_sort, search_text, user_name }
 			}
 		when 'mail', 'message', 'messages'
 			return {
@@ -87,24 +94,12 @@ export default (url) ->
 					post_short_id = path[4]
 					if not post_short_id then return INVALID
 					comments_sort = query.get('sort')
-					if comments_sort not in POST_COMMENT_LISTING_SORT_OPTIONS then comments_sort = 'best'
+					if comments_sort not in POST_COMMENTS_SORT_OPTIONS then comments_sort = 'best'
 					comment_short_id = path[6]
 					comment_context = query.get('context')
 					return {
 						path: 'post'
 						data: { comment_context, comment_short_id, comments_sort, post_short_id }
-					}
-				when 's', 'search'
-					subreddit_name = path[2]
-					if not subreddit_name or subreddit_name.length < 2 then return INVALID
-					time_range = query.get('t')
-					if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = 'search-' + time_range
-					else posts_sort = 'search-all'
-					search_sort = query.get('sort')
-					search_text = query.get('q')
-					return {
-						path: 'subreddit'
-						data: { posts_sort, search_sort, search_text, subreddit_name }
 					}
 				when 'submit' then return OFFICIAL_SITE("/r/#{path[2]}/submit")
 				when 'w', 'wiki'
@@ -127,40 +122,44 @@ export default (url) ->
 					if not subreddit_name or subreddit_name.length < 2 then return INVALID
 					switch subreddit_name
 						when 'all'
+							special_multireddit_name = 'r/all'
 							posts_sort = path[3] ? query.get('sort')
-							if posts_sort is 'controversial' or posts_sort is 'top'
+							if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 								time_range = query.get('t')
-								if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-week'
-							else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
+								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-all'
+							else if posts_sort not in R_ALL_SORT_OPTIONS then posts_sort = 'hot'
+							search_sort = query.get('sort')
+							search_text = query.get('q')
 							return {
-								path: 'all'
-								data: { posts_sort }
+								path: 'special_multireddit'
+								data: { special_multireddit_name, posts_sort, search_sort, search_text }
 							}
 						when 'mod' then return TODO
 						when 'popular'
+							special_multireddit_name = 'r/popular'
 							posts_sort = path[3] ? query.get('sort')
 							if posts_sort is 'controversial' or posts_sort is 'top'
 								time_range = query.get('t')
-								if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-week'
-							else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
-							geo_filter = query.get('geo_filter')
-							if not geo_filter then geo_filter = 'GLOBAL'
+								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-all'
+							else if posts_sort not in R_POPULAR_SORT_OPTIONS then posts_sort = 'hot'
 							return {
-								path: 'popular'
-								data: { geo_filter, posts_sort }
+								path: 'special_multireddit'
+								data: { special_multireddit_name, posts_sort }
 							}
 						else
 							posts_sort = path[3] ? query.get('sort')
-							if posts_sort is 'controversial' or posts_sort is 'top'
+							if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 								time_range = query.get('t')
-								if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-month'
-							else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
+								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-all'
+							else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+							search_sort = query.get('sort')
+							search_text = query.get('q')
 							return {
 								path: 'subreddit'
-								data: { posts_sort, subreddit_name }
+								data: { posts_sort, search_sort, search_text, subreddit_name }
 							}
 		when 's', 'search' then return TODO
 		when 'u', 'user'
@@ -172,20 +171,22 @@ export default (url) ->
 					multireddit_name = path[4]
 					if not multireddit_name then return INVALID
 					posts_sort = path[5] ? query.get('sort')
-					if posts_sort is 'controversial' or posts_sort is 'top'
+					if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 						time_range = query.get('t')
-						if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-						else posts_sort = posts_sort + '-month'
-					else if posts_sort not in POST_LISTING_SORT_OPTIONS then posts_sort = 'hot'
+						if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+						else posts_sort = posts_sort + '-all'
+					else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+					search_sort = query.get('sort')
+					search_text = query.get('q')
 					return {
 						path: 'multireddit'
-						data: { multireddit_name, posts_sort, user_name }
+						data: { multireddit_name, posts_sort, search_sort, search_text, user_name }
 					}
 				else items_filter = 'posts'
 			items_sort = query.get('sort')
 			if items_sort is 'controversial' or items_sort is 'top'
 				time_range = query.get('t')
-				if time_range in LISTING_SORT_OPTION_TIME_RANGES then items_sort = items_sort + '-' + time_range
+				if time_range in SORT_OPTION_TIME_RANGES then items_sort = items_sort + '-' + time_range
 				else items_sort = items_sort + '-all'
 			else if items_sort not in LISTING_SORT_OPTIONS then items_sort = 'new'
 			return {
