@@ -71,17 +71,17 @@ svelte:head
 				{#if post.media.length > 1}
 					.post-gallery
 						{#each post.media as media, index}
-							figure(style='width: {media.aspect_ratio * 240}px')
-								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
-									picture
-										source(srcset={media.image_url_640})
-										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+							figure
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-gallery-image-caption
 										{#if media.caption_text}
 											p {media.caption_text}
 										{#if media.caption_url}
 											a(href={media.caption_url}) {media.caption_url}
+								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
+									picture
+										source(srcset={media.image_url_960})
+										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 				{:else}
 					{@const media = post.media[0]}
 						{#if media.video_url}
@@ -134,15 +134,15 @@ style.
 	.post-gallery
 		display flex
 		flex-flow row wrap
-		gap 1px
+		gap 6px
 	.post-gallery-image
-		height 240px
+		width 480px
 		&:hover
 			outline solid
 	.post-gallery-image-caption
-		font-size 0.75em
-		padding-top 0.5em
-		text-align center
+		font-size 12px
+		letter-spacing 1px
+		padding 0.5em 0
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
