@@ -7,6 +7,7 @@ script.
 	import PageUnavailable from '../errors/PageUnavailable.pug'
 	import Post from '../post/Post.pug'
 	import PostList from './PostList.pug'
+	import TimeRangePicker from './TimeRangePicker.pug'
 	export name = null
 	export page_size = 10
 	export search_text = null
@@ -73,6 +74,7 @@ svelte:head
 			section.listing-tabs
 				{#each tabs as tab}
 					Button(action={() => tab_selection = tab} activated={tab_selection === tab} text={tab})
+		TimeRangePicker(selection={sort.split('-')[1]})
 		hr
 		section.listing-tab-content
 			{#if tab_selection === 'about'}
