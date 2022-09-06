@@ -8,8 +8,9 @@ script.
 	import Post from '../post/Post.pug'
 	import PostList from './PostList.pug'
 	export name = null
-	export sort = null
 	export page_size = 10
+	export search_text = null
+	export sort = null
 	export tab_selection = 'posts'
 	export type = 'subreddit'
 	export user_name = null
@@ -32,7 +33,11 @@ script.
 			display_name = name
 			info_dataset_id = api.ID.dataset('subreddit', name)
 			original_path = "/r/#{name}"
-			posts_dataset_id = api.ID.dataset('subreddit_posts', name, sort, page_size)
+			posts_dataset_id =
+				if sort.split('-')[0] is 'search'
+					api.ID.dataset('search_posts_in_subreddit', name, sort.split('-')[1], search_text, page_size)
+				else
+					api.ID.dataset('subreddit_posts', name, sort, page_size)
 			rules_dataset_id = api.ID.dataset('subreddit_rules', name)
 			tabs = ['posts', 'about', 'rules']
 			title = "subreddit: #{name}"

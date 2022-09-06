@@ -81,7 +81,7 @@ main
 		{:else if route.path === 'post'}
 			Post(short_id={route.data.post_short_id} standalone={true})
 		{:else if route.path === 'subreddit'}
-			Listing(name={route.data.subreddit_name} sort={route.data.posts_sort} type='subreddit')
+			Listing(name={route.data.subreddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='subreddit')
 		{:else if route.path === 'todo'}
 			TodoRoute(route={route})
 		{:else if route.path === 'user'}

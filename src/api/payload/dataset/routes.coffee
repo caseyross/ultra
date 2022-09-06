@@ -61,7 +61,7 @@ export default {
 			link_id: "t3_#{post_short_id}"
 			sort: comments_sort
 		})
-	search_posts: (search_text, time_range, max_posts, after_post_short_id) ->
+	search_posts: (time_range, search_text, max_posts, after_post_short_id) ->
 		get("/search", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
@@ -71,7 +71,7 @@ export default {
 			sort: 'relevance'
 			t: time_range
 		})
-	search_posts_in_subreddit: (subreddit_name, search_text, time_range, max_posts, after_post_short_id) ->
+	search_posts_in_subreddit: (subreddit_name, time_range, search_text, max_posts, after_post_short_id) ->
 		get("/r/#{subreddit_name}/search", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts

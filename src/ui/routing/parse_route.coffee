@@ -94,7 +94,18 @@ export default (url) ->
 						path: 'post'
 						data: { comment_context, comment_short_id, comments_sort, post_short_id }
 					}
-				when 's', 'search' then return TODO
+				when 's', 'search'
+					subreddit_name = path[2]
+					if not subreddit_name or subreddit_name.length < 2 then return INVALID
+					time_range = query.get('t')
+					if time_range in LISTING_SORT_OPTION_TIME_RANGES then posts_sort = 'search-' + time_range
+					else posts_sort = 'search-all'
+					search_sort = query.get('sort')
+					search_text = query.get('q')
+					return {
+						path: 'subreddit'
+						data: { posts_sort, search_sort, search_text, subreddit_name }
+					}
 				when 'submit' then return OFFICIAL_SITE("/r/#{path[2]}/submit")
 				when 'w', 'wiki'
 					subreddit_name = path[2]
