@@ -30,7 +30,8 @@ script.
 			original_path = "/user/#{user_name}/m/#{name}"
 			posts_dataset_id = 
 				if sort.split('-')[0] is 'search'
-					api.ID.dataset('search_posts_in_multireddit', user_name, name, sort.split('-')[1], search_text, page_size)
+					if search_text then api.ID.dataset('search_posts_in_multireddit', user_name, name, sort.split('-')[1], search_text, page_size)
+					else null
 				else
 					api.ID.dataset('multireddit_posts', user_name, name, sort, page_size)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
@@ -46,12 +47,13 @@ script.
 				application_path = "/#{name}"
 				posts_dataset_id =
 					if sort.split('-')[0] is 'search'
-						api.ID.dataset('search_posts', sort.split('-')[1], search_text, page_size)
+						if search_text then api.ID.dataset('search_posts', sort.split('-')[1], search_text, page_size)
+						else null
 					else
 						api.ID.dataset('multireddit_posts', name.split('/')[0], name.split('/')[1], sort, page_size)
 				sorts = switch name
 					when 'r/all' then ['new', 'rising', 'hot', 'controversial', 'top', 'search']
-					when 'r/popular' then ['new', 'rising', 'hot', 'controversial', 'top']
+					when 'r/popular' then ['new', 'rising', 'hot', 'controversial', 'top', 'geo']
 				title = "multi: #{name}"
 			display_name = name
 			original_path = application_path
@@ -64,7 +66,8 @@ script.
 			original_path = "/r/#{name}"
 			posts_dataset_id =
 				if sort.split('-')[0] is 'search'
-					api.ID.dataset('search_posts_in_subreddit', name, sort.split('-')[1], search_text, page_size)
+					if search_text then api.ID.dataset('search_posts_in_subreddit', name, sort.split('-')[1], search_text, page_size)
+					else null
 				else
 					api.ID.dataset('subreddit_posts', name, sort, page_size)
 			rules_dataset_id = api.ID.dataset('subreddit_rules', name)
