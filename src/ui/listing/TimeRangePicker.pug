@@ -1,6 +1,5 @@
 script.
 	export base_path = '/'
-	export disabled = false
 	export selection = 'all'
 	format_href = (range) ->
 		url = new URL(location.href)
@@ -33,16 +32,12 @@ script.
 		}
 	]
 
-fieldset(disabled={disabled})
+fieldset
 	legend Time range
 	{#each ranges as range}
 		a.time-range-option(class:selected={selection === range.value} href={format_href(range.value)}) {range.label}
 
 style.
-	fieldset
-		&[disabled]
-			opacity 0.5
-			pointer-events none
 	legend
 		font-feature-settings 'cpsp' 1
 		font-size 10px
@@ -57,6 +52,7 @@ style.
 		display inline-flex
 		font-size 12px
 		justify-content center
+		padding-left 1px
 		width 2em
 		&:hover
 			background rgba(0,0,0,0.1)

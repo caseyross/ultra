@@ -1,7 +1,8 @@
 handlers = {}
 
 document.addEventListener('keydown', (e) ->
-	if handlers[e.key] then handlers[e.key]()
+	if e.isTrusted and handlers[e.key]
+		handlers[e.key]()
 )
 
 export default (element, char) ->

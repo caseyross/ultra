@@ -7,6 +7,7 @@ script.
 	import PageUnavailable from '../errors/PageUnavailable.pug'
 	import Post from '../post/Post.pug'
 	import PostList from './PostList.pug'
+	import SearchInput from './SearchInput.pug'
 	import SortPicker from './SortPicker.pug'
 	import TimeRangePicker from './TimeRangePicker.pug'
 	export name = null
@@ -109,7 +110,10 @@ svelte:head
 				{#each tabs as tab}
 					Button(action={() => tab_selection = tab} activated={tab_selection === tab} text={tab})
 		SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
-		TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} disabled={!['top', 'controversial', 'search'].includes(sort.split('-')[0])} selection={sort.split('-')[1]})
+		{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
+			TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
+		{#if sort.split('-')[0] === 'search'}
+			SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
 		hr
 		section.listing-tab-content
 			{#if tab_selection === 'about'}
