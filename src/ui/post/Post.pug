@@ -1,13 +1,10 @@
 script.
 	import { afterUpdate } from 'svelte';
-	import { Format } from '../../utils/index.js'
 	import AVPlayer from './AVPlayer.pug'
 	import Button from '../controls/Button.pug'
 	import Comment from './Comment.pug'
-	import Flair from './Flair.pug'
 	import Headline from './Headline.pug'
 	import Minimap from '../controls/Minimap.pug'
-	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../api/index.js'
 	export short_id = null
@@ -52,7 +49,7 @@ svelte:head
 {#if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		{#if standalone}
-			Headline(post_short_id={short_id} show_subreddit={true})
+			Headline(post_short_id={short_id} selected={true} show_subreddit={true})
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}

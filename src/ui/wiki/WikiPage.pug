@@ -16,20 +16,20 @@ svelte:head
 	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/r/{subreddit_name}/wiki/{page_name}?v={revision_id}')
 {#if page}
-	.wiki-page
+	main.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
 		.wiki-page-info
 			.wiki-page-edit-date Revised {Format.time.sHumanRelative(page.revision_date)}
-		.wiki-page-body
+		article.wiki-page-body
 			Markup(html={page.content_html})
 
 style.
 	.wiki-page
-		margin-left 320px
+		margin-left 140px
 		padding 6em
+		width 50vw
 	.wiki-page-body
 		margin-top 3em
-		position relative
 	.wiki-page-info
 		align-items center
 		display flex

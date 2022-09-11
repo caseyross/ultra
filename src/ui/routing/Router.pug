@@ -1,5 +1,4 @@
 script.
-	import GlobalNavigation from '../controls/GlobalNavigation.pug'
 	import Listing from '../listing/Listing.pug'
 	import Inbox from '../message/Inbox.pug'
 	import Post from '../post/Post.pug'
@@ -62,33 +61,22 @@ script.
 	)
 	### END ROUTING CODE ###
 
-{#if route.path !== 'post'}
-	GlobalNavigation
-main
-	{#key route}
-		{#if route.path === 'official_site'}
-			RedirectRoute(path={route.data.path})
-		{:else if route.path === 'inbox'}
-			Inbox
-		{:else if route.path === 'multireddit'}
-			Listing(name={route.data.multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
-		{:else if route.path === 'post'}
-			Post(short_id={route.data.post_short_id} standalone={true})
-		{:else if route.path === 'special_multireddit'}
-			Listing(name={route.data.special_multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='special_multireddit')
-		{:else if route.path === 'subreddit'}
-			Listing(name={route.data.subreddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='subreddit')
-		{:else if route.path === 'todo'}
-			TodoRoute(route={route})
-		{:else if route.path === 'user'}
-			Listing(sort={route.data.items_sort} tab_selection={route.data.items_filter} type='user_profile' user_name={route.data.user_name})
-		{:else if route.path === 'wiki'}
-			WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
-
-style.
-	main
-		display flex
-		flex 1
-		height 100%
-		margin-left 15vw
-		overflow-y auto
+{#key route}
+	{#if route.path === 'official_site'}
+		RedirectRoute(path={route.data.path})
+	{:else if route.path === 'inbox'}
+		Inbox
+	{:else if route.path === 'multireddit'}
+		Listing(name={route.data.multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
+	{:else if route.path === 'post'}
+		Post(short_id={route.data.post_short_id} standalone={true})
+	{:else if route.path === 'special_multireddit'}
+		Listing(name={route.data.special_multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='special_multireddit')
+	{:else if route.path === 'subreddit'}
+		Listing(name={route.data.subreddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='subreddit')
+	{:else if route.path === 'todo'}
+		TodoRoute(route={route})
+	{:else if route.path === 'user'}
+		Listing(sort={route.data.items_sort} tab_selection={route.data.items_filter} type='user_profile' user_name={route.data.user_name})
+	{:else if route.path === 'wiki'}
+		WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})

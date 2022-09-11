@@ -1,7 +1,7 @@
 script.
+	import { getContext } from 'svelte'
 	import { Time } from '../../utils/index.js'
 	import api from '../../api/index.js'
-	import Button from '../controls/Button.pug'
 	import CommentList from './CommentList.pug'
 	import Markup from '../text/Markup.pug'
 	import PageUnavailable from '../errors/PageUnavailable.pug'
@@ -36,7 +36,6 @@ script.
 				else
 					api.ID.dataset('multireddit_posts', user_name, name, sort, page_size)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
-			tabs = ['posts', 'about']
 			title = "multi: #{user_name}/#{name}"
 		when 'special_multireddit'
 			if name is 'frontpage'
@@ -58,7 +57,6 @@ script.
 				title = "multi: #{name}"
 			display_name = name
 			original_path = application_path
-			tabs = []
 		when 'subreddit'
 			localStorage["meta.last_visit.#{name.toLowerCase()}"] = Time.epochMs()
 			application_path = "/r/#{name}"
@@ -73,7 +71,6 @@ script.
 					api.ID.dataset('subreddit_posts', name, sort, page_size)
 			rules_dataset_id = api.ID.dataset('subreddit_rules', name)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
-			tabs = ['posts', 'about', 'rules']
 			title = "subreddit: #{name}"
 		when 'user_profile'
 			application_path = "/u/#{user_name}"
@@ -83,7 +80,6 @@ script.
 			original_path = "/u/#{user_name}"
 			posts_dataset_id = api.ID.dataset('user_posts', user_name, sort, page_size)
 			sorts = ['new', 'hot', 'controversial', 'top']
-			tabs = ['posts', 'comments', 'about']
 			title = "user: #{user_name}"
 	if comments_dataset_id
 		page_selection = 1
@@ -95,6 +91,19 @@ script.
 		api.watch(posts_dataset_id, (x) -> { data: post_short_ids, error: error } = x)
 	if rules_dataset_id
 		api.watch(rules_dataset_id, (x) -> { data: rules, error: error } = x)
+	if getContext('username')
+		subscriptions = localStorage['cache.subscriptions']?.split(' ')
+		api.watch('current_user_subscriptions', (x) ->
+			if x?.data?.length
+				subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
+				localStorage['cache.subscriptions'] = subscriptions.join(' ')
+		)
+	else
+		popular = localStorage['cache.popular']?.split(' ')
+		api.watch('subreddits_popular:11', (x) ->
+			{ data: popular } = x
+			if popular then localStorage['cache.popular'] = popular.join(' ')
+		)
 
 svelte:head
 	title {title}
@@ -102,67 +111,85 @@ svelte:head
 	{#if error instanceof api.errors.ServerError}
 		PageUnavailable(path='/r/{name}')
 {:else}
-	nav.listing
-		header
-			h1 {display_name}
-		{#if tabs}
-			section.listing-tabs
-				{#each tabs as tab}
-					Button(action={() => tab_selection = tab} activated={tab_selection === tab} text={tab})
-		SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
-		{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
-			TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
-		{#if sort.split('-')[0] === 'search'}
-			SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
-		hr
-		section.listing-tab-content
-			{#if tab_selection === 'about'}
-				{#if info}
-					{#if type === 'subreddit'}
-						.subreddit-description
-							Markup(html={info.description_html})
-			{:else if tab_selection === 'comments'}
-				{#if comment_short_ids}
-					CommentList(short_ids={comment_short_ids})
-			{#if tab_selection === 'posts'}
-				{#if post_short_ids}
-					PostList(multireddit={type.endsWith('multireddit')} short_ids={post_short_ids} select={short_id => post_selection = short_id} selection={post_selection})
-			{:else if tab_selection === 'rules'}
-				{#if rules}
-					ol.subreddit-rules
-						{#each rules.rules as rule}
-							li
-								details
-									summary.subreddit-rule-name {rule.short_name}
-									.subreddit-rule-description
-										Markup(html={rule.description_html})
-		{#if tab_selection === 'comment' || tab_selection === 'posts'}
-			hr(style='margin: 0 0 1em 0')
-			section.listing-tab-content-pages
-				p Page {page_selection}
-	{#if post_selection}
-		{#key post_selection}
-			Post(short_id={post_selection})
+	main.listing
+		ol.other-listings
+			{#if subscriptions?.length}
+				{#each subscriptions.sort((a, b) => localStorage['meta.last_visit.' + b] - localStorage['meta.last_visit.' + a])as subreddit_name}
+					a.other-listing-link(href='/r/{subreddit_name}') {subreddit_name}
+			{:else if popular?.length}
+				{#each popular as subreddit_name}
+					a.other-listing-link(href='/r/{subreddit_name}') {subreddit_name}
+		nav.listing-nav
+			header
+				h1 {display_name}
+			SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
+			{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
+				TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
+			{#if sort.split('-')[0] === 'search'}
+				SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
+			hr
+			section.listing-tab-content
+				{#if tab_selection === 'about'}
+					{#if info}
+						{#if type === 'subreddit'}
+							.subreddit-description
+								Markup(html={info.description_html})
+				{:else if tab_selection === 'comments'}
+					{#if comment_short_ids}
+						CommentList(short_ids={comment_short_ids})
+				{#if tab_selection === 'posts'}
+					{#if post_short_ids}
+						PostList(multireddit={type.endsWith('multireddit')} short_ids={post_short_ids} select={short_id => post_selection = short_id} selection={post_selection})
+				{:else if tab_selection === 'rules'}
+					{#if rules}
+						ol.subreddit-rules
+							{#each rules.rules as rule}
+								li
+									details
+										summary.subreddit-rule-name {rule.short_name}
+										.subreddit-rule-description
+											Markup(html={rule.description_html})
+			{#if tab_selection === 'comment' || tab_selection === 'posts'}
+				hr(style='margin: 0 0 1em 0')
+				section.listing-tab-content-pages
+					p Page {page_selection}
+		{#if post_selection}
+			{#key post_selection}
+				Post(short_id={post_selection})
 
 style.
 	.listing
-		background white
+		display grid
+		grid-template-columns 70px 1fr 620px
+		height 100vh
+		width 100vw
+		@media (min-width: 1280px)
+			grid-template-columns 1fr 450px calc(50vw + 70px)
+	.listing-nav
 		border-radius 5px
 		display flex
 		flex-flow column nowrap
-		max-height 90%
-		padding 10px
-		position relative
-		top 5%
-		width 450px
-	.listing-tabs
-		display flex
-		gap 1ch
+		height 100vh
+		padding 58px 10px
 	.listing-tab-content
 		flex 1
 		overflow-y auto
 		&::-webkit-scrollbar
 			display none
+	.other-listings
+		align-items flex-start
+		display flex
+		flex-flow row nowrap
+		height 100vh
+		overflow-y auto
+		white-space pre
+		writing-mode vertical-lr
+		&::-webkit-scrollbar
+			display none
+	.other-listing-link
+		background none
+		box-shadow none
+		color rgba(0,0,0,0.5)
 	.subreddit-description
 		padding 10px
 	.subreddit-rules
