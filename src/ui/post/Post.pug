@@ -5,16 +5,18 @@ script.
 	import Comment from './Comment.pug'
 	import Headline from './Headline.pug'
 	import Minimap from '../controls/Minimap.pug'
+	import PageUnavailable from '../errors/PageUnavailable.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import api from '../../api/index.js'
 	export short_id = null
 	export standalone = false
 	DOM =
 		post: null
+	error = null
 	replies_loading = false
 	post = null
 	api.watch(api.ID.dataset('post', short_id), (x) ->
-		{ data: post } = x
+		{ data: post, error } = x
 		if post?.more_replies
 			api.watch(post.more_replies_id, ((x) -> { loading: replies_loading } = x), { autoload: false })
 	)
@@ -46,7 +48,10 @@ svelte:head
 			title post: {post.title}
 		{:else}
 			title post: {short_id}
-{#if post}
+{#if error}
+	{#if error instanceof api.errors.ServerError}
+		PageUnavailable(path='/{short_id}')
+{:else if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		{#if standalone}
 			Headline(post_short_id={short_id} selected={true} show_subreddit={true})

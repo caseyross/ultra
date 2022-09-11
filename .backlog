@@ -1,7 +1,6 @@
 H  Listings: properly show to r/popular (or something else?) when not logged in
 H	Posts: correctly load links with focused comments
 H	Posts: comment sorting
-H	Posts: error display when post is not available (404 etc.)
 
 M	General: compatibility with Firefox and Safari
 M	Posts: rewrite reddit.com paths in link posts & image gallery captions
