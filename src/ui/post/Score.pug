@@ -6,41 +6,38 @@ script.
 	export vote = 0
 	if Number.isFinite(value)
 		value = value + vote
-		color_class = switch
-			when value >= 2 then 'positive'
-			when value <= 0 then 'negative'
-			else 'neutral'
 		display_value = switch
-			when value >= 1000 then Math.trunc(value / 1000) + 'k'
-			when value >= -1000 then value
-			else Math.ceil(value / 1000) + 'k'
-		size_class = if Math.abs(value) >= 1000 then 'thousands' else 'ones'
-		vote_icon =
+			when value >= 1000 then Math.trunc(value / 1000) + 'k points'
+			when value <= -1000 then Math.ceil(value / 1000) + 'k points'
+			when value is 1 then '1 point'
+			else value + ' points' 
+		icon =
 			switch
-				when controversiality > 0 then '◇'
-				when value >= 10 then '▲'
-				when value >= 2 then '△'
-				when value <= 0 then '▽'
-				when value <= -10 then '▼'
-				else '○'
+				when controversiality > 0
+					if vote is 0 then '◇' else '◆'
+				when value >= 10
+					if vote is 0 then '△' else '▲'
+				when value <= -10
+					if vote is 0 then '▽' else '▼'
+				else
+					if vote is 0 then '○' else '●'
 	else
-		color_class = 'neutral'
-		display_value = '?'
-		size_class = 'ones'
-		vote_icon = '○'
-	color_class = 'neutral'
+		display_value = 'score unknown'
+		icon = if vote is 0 then '○' else '●'
 	if awards?.length
 		awards_display_value = 'awards: ' + awards.map((award) -> "#{award.name} (#{award.count})").join(', ')
 	toggle_downvote = ->
-		if vote == -1 then vote = 0 
-		else vote = -1
-		upload_vote(vote)
+		if vote == -1
+			upload_vote(0)
+		else
+			upload_vote(-1)
 	toggle_upvote = ->
-		if vote == 1 then vote = 0 
-		else vote = 1
-		upload_vote(vote)
+		if vote == 1
+			upload_vote(0)
+		else
+			upload_vote(1)
 
-button.score(class='score-color-{color_class}' class='score-size-{size_class}' on:click={() => toggle_upvote()} on:contextmenu={() => toggle_downvote()} title={display_value}) {vote_icon}
+button.score(on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }} title={display_value}) {icon}
 	{#if awards_display_value}
 		.score-awards(title={awards_display_value})
 
@@ -54,16 +51,6 @@ style.
 		width 19px
 		&:hover
 			background rgba(0,0,0,0.1)
-	.score-size-ones
-		font-size 1em
-	.score-size-thousands
-		font-size 1em
-	.score-color-negative
-		color red
-	.score-color-neutral
-		color rgba(0,0,0,0.5)
-	.score-color-positive
-		color var(--color-writing-action)
 	.score-awards
 		aspect-ratio 1
 		background gold
