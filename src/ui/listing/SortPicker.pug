@@ -20,16 +20,16 @@ script.
 			value: 'hot'
 		}
 		{
-			label: 'Ctvsl',
+			label: 'Best',
+			value: 'best'
+		}
+		{
+			label: 'Controversial',
 			value: 'controversial'
 		}
 		{
 			label: 'Top',
 			value: 'top'
-		}
-		{
-			label: 'Best',
-			value: 'best'
 		}
 		{
 			label: 'Geo...',
@@ -44,24 +44,46 @@ script.
 fieldset
 	legend Sort by
 	{#each all_sorts.filter(x => sorts.includes(x.value)) as sort}
-		a.sort-option(class:selected={selection === sort.value} href={format_href(sort.value)}) {sort.label}
+		a.sort-option(class='sort-option-{sort.value}' class:selected={selection === sort.value} href={format_href(sort.value)} title={sort.label})
 
 style.
+	fieldset
+		border 0
+		display flex
+		gap 1ch
+		padding 0
 	legend
 		font-feature-settings 'cpsp' 1
 		font-size 10px
 		opacity 0.5
 		text-transform uppercase
 	.sort-option
-		align-items center
-		border-radius 1em
+		background rgba(0,0,0,0.05)
+		border-radius 1ch
 		color inherit
-		display inline-flex
-		font-size 12px
-		height 2em
-		justify-content center
-		padding 0 1.5em
-		&:hover
-			text-decoration 4px underline rgba(0,0,0,0.1)
+		font-size 10px
+		padding 1em
+	.sort-option-best
 		&.selected
-			text-decoration 3px underline orangered
+			background pink
+			color white
+	.sort-option-controversial
+		&.selected
+			background powderblue
+			color white
+	.sort-option-hot
+		&.selected
+			background lightsalmon
+			color white
+	.sort-option-new
+		&.selected
+			background darkseagreen
+			color white
+	.sort-option-rising
+		&.selected
+			background wheat
+			color white
+	.sort-option-top
+		&.selected
+			background salmon
+			color white

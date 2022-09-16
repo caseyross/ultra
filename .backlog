@@ -2,15 +2,16 @@ H  Listings: properly show to r/popular (or something else?) when not logged in
 H	Posts: correctly load links with focused comments
 H	Posts: comment sorting
 
-M	General: compatibility with Firefox and Safari
+M	General: compatibility with Firefox and Safari (scrollbar/video/input styling, general functionality)
 M	Posts: rewrite reddit.com paths in link posts & image gallery captions
-M	Videos: UI improvements (fullscreen UI controls, play/pause indicator, etc.)
 M	Videos: figure out issue with video player freezing video in certain situations
+M	Videos: UI improvements (fullscreen control colors, volume input, ended indicator)
 
 L	General: contingency for localStorage absence (e.g. when cookies are disabled)
 L	General: more descriptive error messages when Reddit data is unavailable
 L	Listings: way to hide viewed stickies
 L	Posts: rewrite links to avoid "\_" problem (we hope Reddit will fix)
 L	Posts: ability to sort markdown tables client-side
+L	Videos: QoL UI improvements (spacebar play/pause, scrollwheel/keyboard skip forward/backward)
 
 Z	General: extract API, other libraries (?) into their own packages and publish separately

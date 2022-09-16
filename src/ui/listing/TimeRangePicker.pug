@@ -7,54 +7,71 @@ script.
 		return url.toString()
 	ranges = [
 		{
-			label: 'H',
-			value: 'hour'
-		}
-		{
-			label: 'D',
+			label: 'Day',
 			value: 'day'
 		}
 		{
-			label: 'W',
+			label: 'Week',
 			value: 'week'
 		}
 		{
-			label: 'M',
+			label: 'Month',
 			value: 'month'
 		}
 		{
-			label: 'Y',
+			label: 'Year',
 			value: 'year'
 		}
 		{
-			label: 'A',
+			label: 'All time',
 			value: 'all'
 		}
 	]
 
 fieldset
 	legend Time range
-	{#each ranges as range}
-		a.time-range-option(class:selected={selection === range.value} href={format_href(range.value)}) {range.label}
+	{#each ranges.reverse() as range}
+		a.time-range-option(class='time-range-option-{range.value}' class:selected={selection === range.value} href={format_href(range.value)} title={range.label})
 
 style.
+	fieldset
+		border 0
+		display flex
+		gap 2px
+		padding 0
 	legend
 		font-feature-settings 'cpsp' 1
 		font-size 10px
 		opacity 0.5
 		text-transform uppercase
 	.time-range-option
-		align-items center
-		aspect-ratio 1
-		border 2px solid transparent
-		border-radius 50%
+		background rgba(0,0,0,0.05)
+		border-radius 1ch
 		color inherit
-		display inline-flex
-		font-size 12px
-		justify-content center
-		padding-left 1px
-		width 2em
-		&:hover
-			background rgba(0,0,0,0.1)
+		font-size 10px
+		height 20px
+	.time-range-option-day
+		width 8px
 		&.selected
-			border 2px solid orangered
+			background salmon
+			color white
+	.time-range-option-week
+		width 16px
+		&.selected
+			background salmon
+			color white
+	.time-range-option-month
+		width 24px
+		&.selected
+			background salmon
+			color white
+	.time-range-option-year
+		width 48px
+		&.selected
+			background salmon
+			color white
+	.time-range-option-all
+		width 96px
+		&.selected
+			background salmon
+			color white

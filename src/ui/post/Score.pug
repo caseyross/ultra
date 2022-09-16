@@ -15,9 +15,9 @@ script.
 			switch
 				when controversiality > 0
 					if vote is 0 then '◇' else '◆'
-				when value >= 10
+				when value >= 5
 					if vote is 0 then '△' else '▲'
-				when value <= -10
+				when value <= -5
 					if vote is 0 then '▽' else '▼'
 				else
 					if vote is 0 then '○' else '●'
@@ -37,7 +37,7 @@ script.
 		else
 			upload_vote(1)
 
-button.score(on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }} title={display_value}) {icon}
+button.score(class='vote-{vote}' on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }} title={display_value}) {icon}
 	{#if awards_display_value}
 		.score-awards(title={awards_display_value})
 
@@ -49,6 +49,12 @@ style.
 		position relative
 		transition all 0.125s
 		width 19px
+		&.vote--1
+			color powderblue
+		&.vote-0
+			color inherit
+		&.vote-1
+			color lightsalmon
 		&:hover
 			background rgba(0,0,0,0.1)
 	.score-awards

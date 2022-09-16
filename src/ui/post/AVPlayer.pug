@@ -1,54 +1,52 @@
 script.
+	import { onMount } from 'svelte'
 	import { Format } from '../../utils/index.js'
 	import Button from '../controls/Button.pug'
-	import { onMount } from 'svelte'
 	export audio_url = null
 	export dimensions = [480, 480]
 	export mimic_gif = false
 	export video_url = null
-	stati = {
-		LOADING: 'LOADING...'
-		LOADED: 'CLICK TO PLAY'
-	}
 	audio = null
-	buffered = []
+	buffer_regions = []
 	clamp = (min, max, value) ->
 		if value < min then return min
 		if value > max then return max
 		return value
 	duration = 0
-	fullscreened = -> document.fullscreenElement? and document.fullscreenElement is video
-	looping = mimic_gif
-	mouseIdle = false
-	mouseIdleTimerId = null
+	fullscreen = false
+	mouse_idle = false
+	mouse_idle_timer_id = null
 	paused = true
-	scrobbling = false
-	status = stati.LOADING
+	player = null
 	time = 0
 	video = null
 	volume = 0.5
-	wakeMouse = ->
-		mouseIdle = false
-		clearTimeout(mouseIdleTimerId)
-		mouseIdleTimerId = setTimeout(
-			-> mouseIdle = true
+	wake_mouse = ->
+		mouse_idle = false
+		clearTimeout(mouse_idle_timer_id)
+		mouse_idle_timer_id = setTimeout(
+			-> mouse_idle = true
 			200
 		)
 	onMount ->
-		video.addEventListener('canplaythrough', (e) ->
-			status = stati.LOADED
-		)
-		video.addEventListener('contextmenu', (e) ->
-			e.altKey || e.preventDefault()
+		player.addEventListener('fullscreenchange', (e) ->
+			if document.fullscreenElement? and document.fullscreenElement is player
+				fullscreen = true
+				mouse_idle = true
+			else
+				fullscreen = false
 		)
 		video.addEventListener('mousedown', (e) ->
-			switch e.button
-				when 0
+			if e.button is 0
+				if fullscreen
 					if paused then video.play() else video.pause()
-			wakeMouse()
+					wake_mouse()
+				else
+					player.requestFullscreen()
+					video.play()
 		)
 		video.addEventListener('mousemove', (e) ->
-			wakeMouse()
+			if fullscreen then wake_mouse()
 		)
 		video.addEventListener('pause', (e) ->
 			audio.pause()
@@ -61,33 +59,38 @@ script.
 			audio.pause()
 		)
 
-.media-player(style='width:{dimensions[0]}px')
-	<!-- in general, videos never have captions -->
-	<!-- svelte-ignore a11y-media-has-caption -->
-	video(autoplay={mimic_gif} bind:buffered={buffered} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} class:video-hide-controls={fullscreened() && mouseIdle} loop={looping} style='height:{dimensions[1]}px;width: {dimensions[0]}px')
-		source(src={video_url} type='video/mp4')
+.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width:{dimensions[0]}px')
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
+	<!-- in general, videos never have captions -->
+	<!-- svelte-ignore a11y-media-has-caption -->
+	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height:{dimensions[1]}px;width:{dimensions[0]}px')
+		source(src={video_url} type='video/mp4')
+	figure.media-player-video-hint-overlay(style='height:{dimensions[1]}px;width:{dimensions[0]}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		menu.media-actions
-			Button(action={() => paused ? video.play() : video.pause()} key='k' text='Play/Pause')
-			Button(action={() => fullscreened() ? document.exitFullscreen() : video.requestFullscreen()} key='f' text='Fullscreen')
-			{#if mimic_gif}
-				Button(action={() => looping = !looping} activated={looping} key='l' text='Loop')
-		{#if !mimic_gif}
-			menu.media-status
-				.media-volume-container
-					span.mute-region MUTE
-					span.sound-region SOUND
-					input.video-volume(bind:value={volume} max={1} min={-0.5} step={0.05} type='range' on:input={(e) => audio.volume = clamp(0, 1, e.target.value)})
-				.media-scrobbler-container
-					figure.media-scrobbler-graphics
-						{#each buffered as region}
-							span.buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
-					input.media-scrobbler(bind:value={time} max={duration} min={0} step={1/30} type='range')
-			time.media-duration {Format.time.sMediaDuration(duration)}
+		Button(action={() => paused ? video.play() : video.pause()} key='p' text="{paused ? '▶' : '■'} {Format.time.sMediaDuration(time > 0 ? time : duration)}")
+		.media-scrobbler
+			figure.media-scrobbler-graphics
+				{#each buffer_regions as region}
+					span.media-scrobbler-buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
+			input.media-scrobbler-input(bind:value={time} max={duration} min={0} step={1/30} type='range')
+		.media-volume
+			span.media-volume-region-mute M
+			span.media-volume-region-sound S
+			input.media-volume-input(bind:value={volume} max={1} min={-1} step={0.1} type='range' on:input={(e) => audio.volume = clamp(0, 1, e.target.value)})
+		Button(action={() => fullscreen ? document.exitFullscreen() : player.requestFullscreen()} key='f' text={fullscreen ? '→←' : '⟷'})
 
 style.
+	audio
+		display none
+	video
+		border-radius 1ch
+		:fullscreen &
+			border-radius 0
+			height 100% !important
+			width 100% !important
+		.media-player-controls-hidden &
+			cursor none
 	::-webkit-media-controls
 		display none
 	::-webkit-slider-thumb
@@ -95,53 +98,80 @@ style.
 		background black
 		height 2em
 		width 3px
-	.buffer-region
+	.media-player
+		position relative
+		&:fullscreen
+			height 100%
+			width 100%
+	.media-player-controls
+		display flex
+		gap 1em
+		margin-top 1em
+		:fullscreen &
+			bottom 0
+			left 0
+			padding 1em 25vw
+			position fixed
+			transition opacity 0.5s
+			width 100vw
+		.media-player-controls-hidden &:not(:hover)
+			opacity 0
+	.media-player-video-hint-overlay
+		align-items center
+		background rgba(0,0,0,0.5)
+		border-radius 1ch
+		color white
+		display flex
+		justify-content center
+		left 0
+		opacity 0
+		pointer-events none
+		position absolute
+		top 0
+		.media-player:not(:fullscreen) video:hover + &
+			opacity 1
+	.media-scrobbler
+		background var(--color-control)
+		border-radius 6px
+		flex 1
+		position relative
+	.media-scrobbler-buffer-region
 		background lightgray
 		height 10px
 		position absolute
-	.media-actions
-		display flex
-		gap 1em
-		margin-top 1em
-	.media-status
-		display flex
-		gap 1em
-		margin-top 1em
-	.media-player
-		position relative
-	.media-player-controls
-		display flex
-		flex-flow column-reverse nowrap
-	.media-scrobbler
-		appearance none
-		background transparent
-		height 100%
-		left 0
-		position absolute
-		top 0
-		width 100%
-	.media-scrobbler-container
-		border 1px solid
-		border-radius 6px
-		flex 1
-		height 48px
-		position relative
 	.media-scrobbler-graphics
 		align-items center
 		display flex
 		height 100%
-	.media-volume-container
+	.media-scrobbler-input
+		appearance none
+		background transparent
+		height 100%
+		left 0
+		margin 0
+		position absolute
+		top 0
+		width 100%
+	.media-volume
 		align-items center
-		border 1px solid
+		background var(--color-control)
 		border-radius 6px
 		display flex
-		height 48px
 		position relative
-		width 160px
+		width 60px
 		::-webkit-slider-thumb
 			height 1em
 			width 2px
-	.mute-region
+	.media-volume-input
+		appearance none
+		background transparent
+		left 0
+		height 100%
+		margin 0
+		position absolute
+		top 0
+		width 100%
+	.media-volume-region-mute
 		align-items center
 		border-right 1px solid
 		display flex
@@ -149,31 +179,10 @@ style.
 		font 12px var(--typeface-mono)
 		height 100%
 		justify-content center
-	.sound-region
+	.media-volume-region-sound
 		align-items center
 		display flex
-		flex 2
+		flex 1
 		font 12px var(--typeface-mono)
 		height 100%
 		justify-content center
-	.video-volume
-		appearance none
-		background transparent
-		left 0
-		height 100%
-		position absolute
-		top 0
-		width 100%
-	audio
-		display none
-	time
-		background white
-		border-radius 6px
-		font 18px var(--typeface-mono)
-		margin 10px
-		padding 2px 6px
-		position absolute
-		top 0
-	video
-		&.video-hide-controls
-			cursor none

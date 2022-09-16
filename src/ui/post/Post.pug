@@ -112,15 +112,19 @@ svelte:head
 			{#if post.selftext_html}
 				.post-selftext
 					SelftextMarkup(html={post.selftext_html})
-		{#if post.replies?.length}
-			{#key post.replies}
-				ol.post-replies
-					{#each post.replies as reply_short_id}
-						Comment(short_id={reply_short_id})
-					{#if post.more_replies}
-						.post-more-replies
-							Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
-		.post-minimap
+		section.post-comments
+			h1.post-comments-label Comments
+			{#if post.replies?.length}
+				{#key post.replies}
+					ol.post-comments-list
+						{#each post.replies as reply_short_id}
+							Comment(short_id={reply_short_id})
+						{#if post.more_replies}
+							.post-more-replies
+								Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
+			menu.post-comments-actions
+				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
+		figure.post-minimap
 			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
 
 style.
@@ -133,6 +137,17 @@ style.
 	.post-content
 		margin-top 2em
 		width 480px
+	.post-comments
+		margin-top 2em
+	.post-comments-actions
+		margin-top 1em
+	.post-comments-label
+		font-size 10px
+		font-feature-settings 'cpsp'
+		opacity 0.5
+		text-transform uppercase
+	.post-comments-list
+		margin-top 2em
 	.post-gallery
 		display flex
 		flex-flow row wrap
@@ -140,7 +155,7 @@ style.
 	.post-gallery-image
 		width 480px
 		&:hover
-			outline solid
+			outline var(--color-writing-highlight) solid 2px
 	.post-gallery-image-caption
 		font-size 12px
 		letter-spacing 1px
@@ -155,7 +170,7 @@ style.
 	.post-image
 		width 480px
 		&:hover
-			outline solid
+			outline var(--color-writing-highlight) solid 2px
 	.post-link-actions
 		display flex
 		gap 1em
@@ -168,8 +183,6 @@ style.
 		margin-top 2.25em
 	.post-prediction-options > li
 		display flex
-	.post-replies
-		margin-top 4.5em
 	.post-selftext
 		margin-top 0.7em
 	:global(.post-selftext-media)

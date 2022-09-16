@@ -2,6 +2,7 @@ script.
 	import { getContext } from 'svelte'
 	import { Time } from '../../utils/index.js'
 	import api from '../../api/index.js'
+	import Button from '../controls/Button.pug'
 	import CommentList from './CommentList.pug'
 	import Markup from '../text/Markup.pug'
 	import PageUnavailable from '../errors/PageUnavailable.pug'
@@ -100,7 +101,7 @@ script.
 		)
 	else
 		popular = localStorage['cache.popular']?.split(' ')
-		api.watch('subreddits_popular:11', (x) ->
+		api.watch('subreddits_popular', (x) ->
 			{ data: popular } = x
 			if popular then localStorage['cache.popular'] = popular.join(' ')
 		)
@@ -121,12 +122,16 @@ svelte:head
 					a.other-listing-link(href='/r/{subreddit_name}') {subreddit_name}
 		nav.listing-nav
 			header
+				{#if type === 'subreddit'}
+					button {subscriptions.includes(name) ? '♥' : '♡'}
 				h1 {display_name}
-			SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
-			{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
-				TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
-			{#if sort.split('-')[0] === 'search'}
-				SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
+			menu
+				section(style='display: flex; gap: 2em')
+					SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
+					{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
+						TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
+				{#if sort.split('-')[0] === 'search'}
+					SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
 			hr
 			section.listing-tab-content
 				{#if tab_selection === 'about'}
@@ -149,10 +154,11 @@ svelte:head
 										summary.subreddit-rule-name {rule.short_name}
 										.subreddit-rule-description
 											Markup(html={rule.description_html})
-			{#if tab_selection === 'comment' || tab_selection === 'posts'}
-				hr(style='margin: 0 0 1em 0')
-				section.listing-tab-content-pages
-					p Page {page_selection}
+			hr(style='margin: 0 0 1em 0')
+			footer
+				{#if tab_selection === 'comment' || tab_selection === 'posts'}
+					section.listing-tab-content-pages
+						p Page {page_selection}
 		{#if post_selection}
 			{#key post_selection}
 				Post(short_id={post_selection})
@@ -171,6 +177,13 @@ style.
 		flex-flow column nowrap
 		height 100vh
 		padding 58px 10px
+		header
+			align-items baseline
+			display flex
+			gap 1em
+			margin-bottom 1em
+			h1
+				font-size 2em
 	.listing-tab-content
 		flex 1
 		overflow-y auto
