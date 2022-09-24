@@ -26,9 +26,9 @@ html
 	--color-signal-error salmon
 	--color-signal-ok lightseagreen
 	--color-signal-unknown gray
-	--color-writing rgba(0,0,0,0.9)
+	--color-writing #222
 	--color-writing-action mediumslateblue
-	--color-writing-highlight gold
+	--color-writing-highlight yellow
 	color-scheme light
 .theme-dark
 	--color-control rgba(0,0,0,0.05)
@@ -44,7 +44,7 @@ html
 	--color-signal-unknown gray
 	--color-writing white
 	--color-writing-action wheat
-	--color-writing-highlight gold
+	--color-writing-highlight yellow
 	color-scheme dark
 
 // General
@@ -79,6 +79,8 @@ a
 	color mediumslateblue
 	overflow-wrap anywhere
 	text-decoration none
+	&:hover
+		background var(--color-writing-highlight) !important
 a[href^='/']
 a[href^='#']
 	-webkit-box-decoration-break clone
@@ -117,14 +119,12 @@ pre
 // Spoilers
 .md-spoiler-text
 	background var(--color-writing)
-	padding 0.1em 0.25em
-	opacity 0.77
-	& a
-		opacity 0
+	padding 0.25em
 	&:hover
-		background var(--color-control-focused)
-		opacity 1
-		& a
+		background var(--color-paper-callout)
+	*
+		opacity 0
+		&:hover &
 			opacity 1
 
 // Lists

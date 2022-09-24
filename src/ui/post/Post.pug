@@ -99,10 +99,10 @@ svelte:head
 						<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 						<!-- svelte-ignore a11y-missing-attribute -->
 						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
-						menu.post-iframe-actions
-							Button(action={() => window.open(post.url)} key='o' text='Open original')
 					{:else if media.html}
 						{@html media.html}
+					menu.post-embed-actions
+						Button(action={() => window.open(post.url)} key='o' text='Open original')
 			{:else if post.format === 'link'}
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 				menu.post-link-actions
@@ -148,6 +148,10 @@ style.
 		text-transform uppercase
 	.post-comments-list
 		margin-top 2em
+	.post-embed-actions
+		display flex
+		gap 1em
+		margin-top 1em
 	.post-gallery
 		display flex
 		flex-flow row wrap
@@ -163,10 +167,6 @@ style.
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
-	.post-iframe-actions
-		display flex
-		gap 1em
-		margin-top 1em
 	.post-image
 		width 480px
 		&:hover
