@@ -28,30 +28,30 @@ script.
 		when 'multireddit'
 			application_path = "/m/#{user_name}/#{name}"
 			display_name = "#{user_name}/#{name}"
-			info_dataset_id = api.ID.dataset('multireddit', user_name, name)
+			info_dataset_id = api.ID('multireddit', user_name, name)
 			original_path = "/user/#{user_name}/m/#{name}"
 			posts_dataset_id = 
 				if sort.split('-')[0] is 'search'
-					if search_text then api.ID.dataset('search_posts_in_multireddit', user_name, name, sort.split('-')[1], search_text, page_size)
+					if search_text then api.ID('search_posts_in_multireddit', user_name, name, sort.split('-')[1], search_text, page_size)
 					else null
 				else
-					api.ID.dataset('multireddit_posts', user_name, name, sort, page_size)
+					api.ID('multireddit_posts', user_name, name, sort, page_size)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 			title = "multi: #{user_name}/#{name}"
 		when 'special_multireddit'
 			if name is 'frontpage'
 				application_path = ''
-				posts_dataset_id = api.ID.dataset('multireddit_posts', 'r', 'home', sort, page_size)
+				posts_dataset_id = api.ID('multireddit_posts', 'r', 'home', sort, page_size)
 				sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'best']
 				title = 'frontpage'
 			else
 				application_path = "/#{name}"
 				posts_dataset_id =
 					if sort.split('-')[0] is 'search'
-						if search_text then api.ID.dataset('search_posts', sort.split('-')[1], search_text, page_size)
+						if search_text then api.ID('search_posts', sort.split('-')[1], search_text, page_size)
 						else null
 					else
-						api.ID.dataset('multireddit_posts', name.split('/')[0], name.split('/')[1], sort, page_size)
+						api.ID('multireddit_posts', name.split('/')[0], name.split('/')[1], sort, page_size)
 				sorts = switch name
 					when 'r/all' then ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 					when 'r/popular' then ['new', 'rising', 'hot', 'controversial', 'top', 'geo']
@@ -62,48 +62,58 @@ script.
 			localStorage["meta.last_visit.#{name.toLowerCase()}"] = Time.epochMs()
 			application_path = "/r/#{name}"
 			display_name = name
-			info_dataset_id = api.ID.dataset('subreddit', name)
+			info_dataset_id = api.ID('subreddit', name)
 			original_path = "/r/#{name}"
 			posts_dataset_id =
 				if sort.split('-')[0] is 'search'
-					if search_text then api.ID.dataset('search_posts_in_subreddit', name, sort.split('-')[1], search_text, page_size)
+					if search_text then api.ID('search_posts_in_subreddit', name, sort.split('-')[1], search_text, page_size)
 					else null
 				else
-					api.ID.dataset('subreddit_posts', name, sort, page_size)
-			rules_dataset_id = api.ID.dataset('subreddit_rules', name)
+					api.ID('subreddit_posts', name, sort, page_size)
+			rules_dataset_id = api.ID('subreddit_rules', name)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 			title = "subreddit: #{name}"
 		when 'user_profile'
 			application_path = "/u/#{user_name}"
-			comments_dataset_id = api.ID.dataset('user_comments', user_name, sort, page_size)
+			comments_dataset_id = api.ID('user_comments', user_name, sort, page_size)
 			display_name = "u/#{user_name}"
-			info_dataset_id = api.ID.dataset('user', user_name)
+			info_dataset_id = api.ID('user', user_name)
 			original_path = "/u/#{user_name}"
-			posts_dataset_id = api.ID.dataset('user_posts', user_name, sort, page_size)
+			posts_dataset_id = api.ID('user_posts', user_name, sort, page_size)
 			sorts = ['new', 'hot', 'controversial', 'top']
 			title = "user: #{user_name}"
 	if comments_dataset_id
 		page_selection = 1
-		api.watch(comments_dataset_id, (x) -> { data: comment_short_ids, error: error } = x)
+		api.loadWatch(comments_dataset_id,
+			(x) -> { data: comment_short_ids, error: error } = x
+		)
 	if info_dataset_id
-		api.watch(info_dataset_id, (x) -> { data: info, error: error } = x)
+		api.loadWatch(info_dataset_id,
+			(x) -> { data: info, error: error } = x
+		)
 	if posts_dataset_id
 		page_selection = 1
-		api.watch(posts_dataset_id, (x) -> { data: post_short_ids, error: error } = x)
+		api.loadWatch(posts_dataset_id,
+			(x) -> { data: post_short_ids, error: error } = x
+		)
 	if rules_dataset_id
-		api.watch(rules_dataset_id, (x) -> { data: rules, error: error } = x)
+		api.loadWatch(rules_dataset_id,
+			(x) -> { data: rules, error: error } = x
+		)
 	if getContext('username')
 		subscriptions = localStorage['cache.subscriptions']?.split(' ')
-		api.watch('current_user_subscriptions', (x) ->
-			if x?.data?.length
-				subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
-				localStorage['cache.subscriptions'] = subscriptions.join(' ')
+		api.loadWatch('current_user_subscriptions',
+			(x) ->
+				if x?.data?.length
+					subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
+					localStorage['cache.subscriptions'] = subscriptions.join(' ')
 		)
 	else
 		popular = localStorage['cache.popular']?.split(' ')
-		api.watch('subreddits_popular', (x) ->
-			{ data: popular } = x
-			if popular then localStorage['cache.popular'] = popular.join(' ')
+		api.loadWatch('subreddits_popular',
+			(x) ->
+				{ data: popular } = x
+				if popular then localStorage['cache.popular'] = popular.join(' ')
 		)
 
 svelte:head

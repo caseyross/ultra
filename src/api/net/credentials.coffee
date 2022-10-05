@@ -1,5 +1,5 @@
 import { Time } from '../../utils/index.js'
-import errors from '../errors.coffee'
+import errors from '../core/errors.coffee'
 import ratelimit from './ratelimit.coffee'
 
 waitForRenew = (f) ->

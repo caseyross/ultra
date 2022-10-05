@@ -4,11 +4,12 @@ script.
 	import PrivateMessage from './PrivateMessage.pug'
 	comment_short_ids = null
 	private_message_short_ids = null
-	api.watch(api.ID.dataset('current_user_messages', 100), (x) ->
-		if x?.data
-			{ comment_replies, post_replies, private_messages, username_mentions } = x.data
-			comment_short_ids = comment_replies.concat(post_replies).concat(username_mentions)
-			private_message_short_ids = private_messages
+	api.loadWatch(api.ID('current_user_messages', 100),
+		(x) ->
+			if x?.data
+				{ comment_replies, post_replies, private_messages, username_mentions } = x.data
+				comment_short_ids = comment_replies.concat(post_replies).concat(username_mentions)
+				private_message_short_ids = private_messages
 	)
 
 .inbox

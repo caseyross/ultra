@@ -9,10 +9,13 @@ script.
 	collapsed = false
 	comment = null
 	replies_loading = false
-	api.watch(api.ID.dataset('comment', short_id), (x) ->
-		{ data: comment } = x
-		if comment?.more_replies
-			api.watch(comment.more_replies_id, ((x) -> { loading: replies_loading } = x), { autoload: false })
+	api.loadWatch(api.ID('comment', short_id),
+		(x) ->
+			{ data: comment } = x
+			if comment?.more_replies
+				api.watch(comment.more_replies_id,
+					(x) -> { loading: replies_loading } = x
+				)
 	)
 
 {#if comment}
@@ -20,7 +23,7 @@ script.
 	<!-- svelte-ignore a11y-unknown-role -->
 	article.comment(role='comment')
 		section.comment-indent
-			Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.send(api.ID.action('vote_comment', short_id, vote))} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+			Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
 		{#if collapsed}
 			section.comment-body-collapsed [ Comment collapsed. ]

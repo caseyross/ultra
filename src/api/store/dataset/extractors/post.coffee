@@ -1,5 +1,5 @@
-import extract from '../extract.coffee'
-import ID from '../../ID.coffee'
+import ID from '../../../core/ID.coffee'
+import extract from './extract.coffee'
 
 # Our "post" API response type is slightly different from Reddit's "t3" kind.
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.
@@ -12,8 +12,8 @@ export default (rawData, sourceID) ->
 	# Extract the bare post from the posts listing.
 	# Put aside the other datasets from the posts listing for the end result.
 	{ main: { data: post_short_ids }, sub: datasets } = extract(rawData[0])
-	postDataset = datasets.find((dataset) -> ID.body(dataset.id)[0] == post_short_ids[0])
-	otherDatasets = datasets.filter((dataset) -> ID.body(dataset.id)[0] != post_short_ids[0])
+	postDataset = datasets.find((dataset) -> ID.var(dataset.id, 1) == post_short_ids[0])
+	otherDatasets = datasets.filter((dataset) -> ID.var(dataset.id, 1) != post_short_ids[0])
 	post = postDataset.data
 	# Process and organize the comment data.
 	# 1. Detect and process a "more comments" object.
@@ -22,7 +22,7 @@ export default (rawData, sourceID) ->
 		if more.count
 			post.num_more_replies = more.count
 			post.more_replies = if more.children.length then more.children else [more.id]
-			post.more_replies_id = ID.dataset('post_more_replies', post.id, '', ID.body(sourceID)[1] ? 'confidence', ...post.more_replies)
+			post.more_replies_id = ID('post_more_replies', post.id, '', ID.var(sourceID, 2) ? 'confidence', ...post.more_replies)
 	# 2. Extract the comments from the listing.
 	{ main: { data: direct_reply_short_ids }, sub: commentDatasets } = extract(rawData[1], sourceID)
 	# 3. Link the top-level comments via their IDs.

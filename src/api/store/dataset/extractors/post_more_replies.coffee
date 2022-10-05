@@ -1,5 +1,5 @@
-import extract from '../extract.coffee'
-import ID from '../../ID.coffee'
+import ID from '../../../core/ID.coffee'
+import extract from './extract.coffee'
 
 # Unlike the initially-loaded comments for posts, "more children" results are provided as flat lists instead of trees.
 export default (rawData, sourceID) ->
@@ -18,7 +18,7 @@ export default (rawData, sourceID) ->
 				mores.push(thing.data)
 			else if thing.kind is 't1'
 				comments[thing.data.id] = extract(thing, sourceID).main
-		source_comment_short_id = ID.body(sourceID)[1]
+		source_comment_short_id = ID.var(sourceID, 2)
 		# Link up child comments onto their parents.
 		for comment_short_id, comment of comments
 			parent = switch
@@ -37,11 +37,11 @@ export default (rawData, sourceID) ->
 						else comments[more.parent_id[3..]].data
 				parent.num_more_replies = more.count
 				parent.more_replies = if more.children.length then more.children else [more.id]
-				parent.more_replies_id = ID.dataset(
+				parent.more_replies_id = ID(
 					'post_more_replies',
-					ID.body(sourceID)[0],
-					parent.id ? ID.body(sourceID)[1],
-					ID.body(sourceID)[2],
+					ID.var(sourceID, 1),
+					parent.id ? ID.var(sourceID, 2),
+					ID.var(sourceID, 3),
 					...parent.more_replies
 				)
 		result.sub = Object.values(comments)

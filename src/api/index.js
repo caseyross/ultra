@@ -1,28 +1,27 @@
-import { getLoginStatus, getLoginURL, finishPendingLogin, logout } from './network/account.coffee'
-import { getRatelimitStatus } from './network/ratelimit.coffee'
-import ID from './payload/ID.coffee'
-import { load, preload, reload, send, watch } from './storage/store.coffee'
-import configure from './configure.coffee'
-import errors from './errors.coffee'
+import configure from './core/configure.coffee'
+import errors from './core/errors.coffee'
+import ID from './core/ID.coffee'
+import { getLoginStatus, getLoginURL, finishPendingLogin, logout } from './net/account.coffee'
+import { getRatelimitStatus } from './net/ratelimit.coffee'
+import { load, loadWatch, preload, submit, watch } from './store/store.coffee'
 
 export default {
 
 	configure,
-	
 	errors,
 	ID,
-
-	load,
-	preload,
-	reload,
-	send,
-	watch,
-
-	getRatelimitStatus,
 	
 	getLoginStatus,
 	getLoginURL,
 	finishPendingLogin,
 	logout,
+	
+	getRatelimitStatus,
+
+	load,
+	loadWatch,
+	preload,
+	submit,
+	watch,
 
 }

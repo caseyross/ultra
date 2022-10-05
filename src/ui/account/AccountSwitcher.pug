@@ -12,4 +12,4 @@ script.
 {#if api.getLoginStatus() === 'logged-in'}
 	Button(action={() => logout()} text='Log out')
 {:else}
-	Button(link={api.getLoginURL(location.pathname)} text='Log in')
+	Button(link={api.getLoginURL({ memoString: location.pathname })} text='Log in')

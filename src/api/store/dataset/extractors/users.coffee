@@ -1,4 +1,4 @@
-import ID from '../../ID.coffee'
+import ID from '../../../core/ID.coffee'
 
 export default (rawData) ->
 	result =
@@ -6,11 +6,11 @@ export default (rawData) ->
 		sub: []
 	for user_fullname, user of rawData
 		result.sub.push({
-			id: ID.dataset('user', user.name)
+			id: ID('user', user.name)
 			data: user
 			partial: true
 		})
 	result.main =
 		id: null
-		data: result.sub.map((dataset) -> ID.bodyString(dataset.id))
+		data: result.sub.map((dataset) -> ID.var(dataset.id, 1))
 	return result

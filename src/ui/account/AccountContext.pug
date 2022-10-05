@@ -8,10 +8,11 @@ script.
 			setContext('username', localStorage['account.username'])
 			context_set = true
 		else
-			api.watch('current_user', (x) ->
-				if x?.data?.name
-					localStorage['account.username'] = x.data.name
-					location.reload() # workaround context only being settable during component initialization
+			api.loadWatch('current_user',
+				(x) ->
+					if x?.data?.name
+						localStorage['account.username'] = x.data.name
+						location.reload() # workaround context only being settable during component initialization
 			)
 
 {#if status === 'logged-out'}

@@ -1,4 +1,4 @@
-import { get, post } from '../../network/http.coffee'
+import { get, post } from '../../net/http.coffee'
 
 export default {
 	current_user: ->

@@ -1,5 +1,5 @@
 export default ({ details, error, id, message }) ->
-	if localStorage['api.config.enable_diagnostics'] != 'TRUE' then return
+	if localStorage['api.config.logging_enabled'] != 'TRUE' then return
 	style = switch
 		when error then 'background: orangered; color: white'
 		else 'background: mediumspringgreen; color: darkolivegreen'

@@ -15,10 +15,13 @@ script.
 	error = null
 	replies_loading = false
 	post = null
-	api.watch(api.ID.dataset('post', short_id), (x) ->
-		{ data: post, error } = x
-		if post?.more_replies
-			api.watch(post.more_replies_id, ((x) -> { loading: replies_loading } = x), { autoload: false })
+	api.loadWatch(api.ID('post', short_id),
+		(x) ->
+			{ data: post, error } = x
+			if post?.more_replies
+				api.watch(post.more_replies_id,
+					(x) -> { loading: replies_loading } = x
+				)
 	)
 	current_scroll = 0
 	line_height = 21

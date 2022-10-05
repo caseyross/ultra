@@ -1,5 +1,5 @@
-import { clear as clearStoredData } from '../storage/store.coffee'
-import errors from '../errors.coffee'
+import errors from '../core/errors.coffee'
+import { clear as clearStore } from '../store/store.coffee'
 import credentials from './credentials.coffee'
 
 # There are 3 possible states here, each corresponding to one stage of the login process.
@@ -16,8 +16,8 @@ export getLoginStatus = ->
 		return 'logged-out'
 
 # To login on a third-party Reddit app, the user must visit the offical Reddit OAuth authentication page and confirm that they want to give that app permission to use their account. We must construct and return the appropriate custom URL for the authentication page. An arbitrary string (`memoString`)can be passed through the authentication process and returned to the client after the login process finishes in order to e.g. rebuild local state on the client after page load.
-export getLoginURL = (memoString, scopeString) ->
-	echo = Math.trunc(Number.MAX_VALUE * Math.random()) + '$' + memoString
+export getLoginURL = ({ memoString, scopeString }) ->
+	echo = Math.trunc(Number.MAX_VALUE * Math.random()) + '$' + (memoString ? '')
 	localStorage['api.credentials.exchange_echo'] = echo
 	url = new URL('https://www.reddit.com/api/v1/authorize') 
 	url.search = new URLSearchParams
@@ -67,7 +67,7 @@ export finishPendingLogin = ->
 # Simple compared to the login flow. We just need to delete any local account credentials and privileged data. In the interests of being a good Reddit citizen, we also ask the API server to revoke those credentials on their side. 
 export logout = ->
 	credentials.forget()
-	clearStoredData()
+	clearStore()
 	try fetch 'https://www.reddit.com/api/v1/revoke_token',
 		method: 'POST'
 		headers:

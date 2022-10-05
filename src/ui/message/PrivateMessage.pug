@@ -3,7 +3,9 @@ script.
 	import Markup from '../text/Markup.pug'
 	export short_id = null
 	private_message = null
-	api.watch(api.ID.dataset('private_message', short_id), (x) -> { data: private_message } = x)
+	api.loadWatch(api.ID('private_message', short_id),
+		(x) -> { data: private_message } = x
+	)
 
 {#if private_message}
 	.private-message
