@@ -66,7 +66,7 @@ credentials = {
 		.then (data) ->
 			if data.token_type? and data.access_token? and Number.isFinite(Number data.expires_in)
 				localStorage['api.credentials.key'] = "#{data.token_type} #{data.access_token}"
-				localStorage['api.credentials.key_expiry'] = Time.epochMs() + Time.sToMs(data.expires_in)
+				localStorage['api.credentials.key_expiry'] = Time.unixMs() + Time.sToMs(data.expires_in)
 				if data.refresh_token? then localStorage['api.credentials.exchange_token'] = data.refresh_token
 		.finally ->
 			localStorage['api.credentials.renewing'] = 'FALSE'
@@ -78,7 +78,7 @@ Object.defineProperty(credentials, 'valid', {
 	get: ->
 		key = localStorage['api.credentials.key']
 		expiry = Number localStorage['api.credentials.key_expiry']
-		if key? and Number.isFinite(expiry) then return expiry - Time.epochMs() > 0
+		if key? and Number.isFinite(expiry) then return expiry - Time.unixMs() > 0
 		return false
 })
 

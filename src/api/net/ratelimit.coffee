@@ -11,8 +11,8 @@ ratelimit = {
 	sanitize: ->
 		remaining = Number localStorage['api.ratelimit.remaining']
 		reset = Number localStorage['api.ratelimit.reset']
-		if not Number.isFinite(reset) or reset < Time.epochMs()
-			localStorage['api.ratelimit.reset'] = Time.epochMs() + Time.sToMs(60)
+		if not Number.isFinite(reset) or reset < Time.unixMs()
+			localStorage['api.ratelimit.reset'] = Time.unixMs() + Time.sToMs(60)
 			localStorage['api.ratelimit.remaining'] = 60
 			localStorage['api.ratelimit.max'] = 60
 		else if not Number.isFinite(remaining)
@@ -27,7 +27,7 @@ ratelimit = {
 		else
 			localStorage['api.ratelimit.remaining'] = localStorage['api.ratelimit.remaining'] - count
 		if secondsUntilReset?
-			localStorage['api.ratelimit.reset'] = Time.epochMs() + Time.sToMs(secondsUntilReset)
+			localStorage['api.ratelimit.reset'] = Time.unixMs() + Time.sToMs(secondsUntilReset)
 
 }
 
@@ -36,7 +36,7 @@ Object.defineProperty(ratelimit, 'availableRPS', {
 	get: ->
 		ratelimit.sanitize()
 		requests = Number localStorage['api.ratelimit.remaining']
-		seconds = Time.msToS(Number(localStorage['api.ratelimit.reset']) - Time.epochMs())
+		seconds = Time.msToS(Number(localStorage['api.ratelimit.reset']) - Time.unixMs())
 		if requests > 0 and seconds > 0
 			return requests / seconds
 		return 0
@@ -47,7 +47,7 @@ Object.defineProperty(ratelimit, 'msUntilReset', {
 	get: ->
 		ratelimit.sanitize()
 		reset = Number localStorage['api.ratelimit.reset']
-		return reset - Time.epochMs()
+		return reset - Time.unixMs()
 })
 
 export default ratelimit

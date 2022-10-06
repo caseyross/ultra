@@ -14,11 +14,11 @@ Format = {
 
 	time: {
 
-		absolute: (epochMs) ->
-			new Intl.DateTimeFormat('default', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(new Date(epochMs))
+		absolute: (unixMs) ->
+			new Intl.DateTimeFormat('default', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(new Date(unixMs))
 
-		humanRelative: (epochMs) ->
-			duration = Time.msToDuration(Time.epochMs() - epochMs, { trunc: true })
+		humanRelative: (unixMs) ->
+			duration = Time.msToDuration(Time.unixMs() - unixMs, { trunc: true })
 			switch duration.unit.name
 				when 'year', 'month', 'week'
 					return "#{duration.count} #{duration.unit.name}#{if duration.count is 1 then '' else 's'} ago"
@@ -42,7 +42,7 @@ Format = {
 							HHMMSS = (date) ->
 								[date.getHours(), date.getMinutes(), date.getSeconds()].map((s) -> String(s).padStart(2, '0')).join(':')
 							calcDate = new Date() # technically not the actual calculation date, but close enough
-							targetDate = new Date(epochMs)
+							targetDate = new Date(unixMs)
 							if HHMMSS(calcDate) > HHMMSS(targetDate) # simple string comparison
 								duration.count
 							else
@@ -57,7 +57,7 @@ Format = {
 							0
 					switch daysBack
 						when 0
-							return "Today, #{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(new Date(epochMs))}"
+							return "Today, #{new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(new Date(unixMs))}"
 						when 1
 							return 'Yesterday'
 						else
@@ -71,8 +71,8 @@ Format = {
 				minutes = minutes + 1
 			return "#{String(minutes).padStart(2, '0')}:#{String(seconds).padStart(2, '0')}"
 
-		relative: (epochMs) ->
-			duration = Time.msToDuration(Time.epochMs() - epochMs, { trunc: true })
+		relative: (unixMs) ->
+			duration = Time.msToDuration(Time.unixMs() - unixMs, { trunc: true })
 			if duration.unit.name is 'millisecond' then return 'now'
 			return "#{duration.count}#{duration.unit.short_name}"
 

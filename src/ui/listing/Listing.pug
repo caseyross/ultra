@@ -59,7 +59,7 @@ script.
 			display_name = name
 			original_path = application_path
 		when 'subreddit'
-			localStorage["meta.last_visit.#{name.toLowerCase()}"] = Time.epochMs()
+			localStorage["meta.last_visit.#{name.toLowerCase()}"] = Time.unixMs()
 			application_path = "/r/#{name}"
 			display_name = name
 			info_dataset_id = api.ID('subreddit', name)

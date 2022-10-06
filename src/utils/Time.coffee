@@ -34,7 +34,7 @@ units =
 
 export default {
 
-	epochMs: ->
+	unixMs: ->
 		Date.now()
 
 	sToMs: (s) ->

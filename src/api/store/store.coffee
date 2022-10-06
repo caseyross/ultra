@@ -58,7 +58,7 @@ reload = (id) ->
 			message: "unknown dataset type",
 		})
 		return Promise.resolve(null)
-	startTime = Time.epochMs()
+	startTime = Time.unixMs()
 	setLoading(id)
 	return route(...ID.varArray(id)[1..])
 	.then (rawData) ->
@@ -68,7 +68,7 @@ reload = (id) ->
 		log({
 			id,
 			details: datasets.main.data,
-			message: "#{Time.msToS(Time.epochMs() - startTime).toFixed(1)}s",
+			message: "#{Time.msToS(Time.unixMs() - startTime).toFixed(1)}s",
 		})
 		setData(id, datasets.main.data, datasets.main.partial)
 		for dataset in datasets.sub
@@ -91,7 +91,7 @@ reload = (id) ->
 
 setData = (id, data, partial = false) ->
 	if !cache[id] then cache[id] = {}
-	cache[id].asOf = Time.epochMs()
+	cache[id].asOf = Time.unixMs()
 	cache[id].data = data
 	cache[id].error = false
 	cache[id].loading = false
@@ -105,7 +105,7 @@ setDataFromExisting = (id, change) ->
 
 setError = (id, error) ->
 	if !cache[id] then cache[id] = {}
-	cache[id].asOf = Time.epochMs()
+	cache[id].asOf = Time.unixMs()
 	cache[id].data = null
 	cache[id].error = error
 	cache[id].loading = false
@@ -114,7 +114,7 @@ setError = (id, error) ->
 
 setLoading = (id) ->
 	if !cache[id] then cache[id] = {}
-	cache[id].asOf = Time.epochMs()
+	cache[id].asOf = Time.unixMs()
 	cache[id].loading = true
 	notifyWatchers(id)
 
@@ -127,7 +127,7 @@ export submit = (id, payload) ->
 			message: "unknown interaction type",
 		})
 		return Promise.resolve(null)
-	startTime = Time.epochMs()
+	startTime = Time.unixMs()
 	updater = interactionUpdaters[ID.type(id)]
 	if updater
 		targetID = updater.targetID(...ID.varArray(id)[1..])
@@ -138,7 +138,7 @@ export submit = (id, payload) ->
 		log({
 			id,
 			details: { payload, response: rawData },
-			message: "#{Time.msToS(Time.epochMs() - startTime).toFixed(1)}s",
+			message: "#{Time.msToS(Time.unixMs() - startTime).toFixed(1)}s",
 		})
 		setData(id, rawData)
 	.catch (error) ->
