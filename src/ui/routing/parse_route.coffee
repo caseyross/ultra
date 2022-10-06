@@ -42,19 +42,11 @@ export default (url) ->
 	# Treat top-level path as subreddit name unless otherwise identified.
 	if path[1] not in KNOWN_TOP_LEVEL_PATHS then path = ['', 'r', ...path[1..]]
 	# Core routing logic begins from here.
-	if path[1] is undefined or path[1] in FRONTPAGE_SORT_OPTIONS
-		special_multireddit_name = 'frontpage'
-		posts_sort = path[1] ? query.get('sort')
-		if posts_sort is 'controversial' or posts_sort is 'top'
-			time_range = query.get('t')
-			if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-			else posts_sort = posts_sort + '-all'
-		else if posts_sort not in FRONTPAGE_SORT_OPTIONS then posts_sort = 'best'
-		return {
-			path: 'special_multireddit'
-			data: { special_multireddit_name, posts_sort }
-		}
 	switch path[1]
+		when undefined
+			return {
+				path: 'home'
+			}
 		when 'comments', 'p', 'post', 'tb'
 			post_short_id = path[2]
 			if not post_short_id then return INVALID

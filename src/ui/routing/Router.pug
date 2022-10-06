@@ -1,4 +1,5 @@
 script.
+	import Home from '../Home.pug'
 	import Listing from '../listing/Listing.pug'
 	import Inbox from '../message/Inbox.pug'
 	import Post from '../post/Post.pug'
@@ -64,6 +65,8 @@ script.
 {#key route}
 	{#if route.path === 'official_site'}
 		RedirectRoute(path={route.data.path})
+	{:else if route.path === 'home'}
+		Home
 	{:else if route.path === 'inbox'}
 		Inbox
 	{:else if route.path === 'multireddit'}

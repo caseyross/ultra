@@ -1,6 +1,5 @@
 script.
 	import { getContext } from 'svelte'
-	import { Time } from '../../utils/index.js'
 	import api from '../../api/index.js'
 	import Button from '../controls/Button.pug'
 	import CommentList from './CommentList.pug'
@@ -59,7 +58,6 @@ script.
 			display_name = name
 			original_path = application_path
 		when 'subreddit'
-			localStorage["meta.last_visit.#{name.toLowerCase()}"] = Time.unixMs()
 			application_path = "/r/#{name}"
 			display_name = name
 			info_dataset_id = api.ID('subreddit', name)
@@ -108,13 +106,6 @@ script.
 					subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
 					localStorage['cache.subscriptions'] = subscriptions.join(' ')
 		)
-	else
-		popular = localStorage['cache.popular']?.split(' ')
-		api.loadWatch('subreddits_popular',
-			(x) ->
-				{ data: popular } = x
-				if popular then localStorage['cache.popular'] = popular.join(' ')
-		)
 
 svelte:head
 	title {title}
@@ -123,13 +114,7 @@ svelte:head
 		PageUnavailable(path='/r/{name}')
 {:else}
 	main.listing
-		ol.other-listings
-			{#if subscriptions?.length}
-				{#each subscriptions.sort((a, b) => localStorage['meta.last_visit.' + b] - localStorage['meta.last_visit.' + a])as subreddit_name}
-					a.other-listing-link(href='/r/{subreddit_name}') {subreddit_name}
-			{:else if popular?.length}
-				{#each popular as subreddit_name}
-					a.other-listing-link(href='/r/{subreddit_name}') {subreddit_name}
+		div
 		nav.listing-nav
 			header
 				{#if type === 'subreddit'}
@@ -199,22 +184,6 @@ style.
 		overflow-y auto
 		&::-webkit-scrollbar
 			display none
-	.other-listings
-		align-items flex-start
-		display flex
-		flex-flow row nowrap
-		height 100vh
-		overflow-y auto
-		white-space pre
-		writing-mode vertical-lr
-		&::-webkit-scrollbar
-			display none
-	.other-listing-link
-		background none
-		box-shadow none
-		color rgba(0,0,0,0.5)
-		font-size 12px
-		padding 1em 0
 	.subreddit-description
 		padding 10px
 	.subreddit-rules
