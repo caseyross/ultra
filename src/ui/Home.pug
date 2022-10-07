@@ -2,6 +2,7 @@ script.
 	import { getContext } from 'svelte'
 	import api from '../api/index.js'
 	import Button from './controls/Button.pug'
+	num_unread_messages = 0
 	query = ''
 	if getContext('username')
 		subscriptions = localStorage['cache.subscriptions']?.split(' ')
@@ -10,6 +11,10 @@ script.
 				if x?.data?.length
 					subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
 					localStorage['cache.subscriptions'] = subscriptions.join(' ')
+		)
+		api.loadWatch('current_user',
+			({ data }) ->
+				num_unread_messages = data?.inbox_count
 		)
 	else
 		popular = localStorage['cache.popular']?.split(' ')
@@ -31,6 +36,8 @@ main
 			{:else if popular?.length}
 				{#each popular as subreddit_name, i}
 					Button(key={i === 0 ? 'Enter' : null} link='/r/{subreddit_name}') {subreddit_name}
+	section.account
+		Button(link='/messages/inbox') Mail ({num_unread_messages})
 
 style.
 	main
