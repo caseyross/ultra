@@ -8,7 +8,11 @@ script.
 	export subreddit_name = null
 	error = null
 	page = null
-	api.loadWatch(api.ID('wiki', subreddit_name, page_name, revision_id),
+	api.loadWatch(
+		(if revision_id
+			api.ID('wiki', subreddit_name, page_name, revision_id)
+		else
+			api.ID('wiki', subreddit_name, page_name)),
 		(x) -> { data: page, error: error } = x
 	)
 
@@ -16,7 +20,7 @@ svelte:head
 	title wiki: {subreddit_name}: {page_name.split('/').join(': ')}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
-		PageUnavailable(path='/r/{subreddit_name}/wiki/{page_name}?v={revision_id}')
+		PageUnavailable(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")
 {#if page}
 	main.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
