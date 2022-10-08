@@ -80,9 +80,9 @@ Format = {
 
 }
 
-Format.time.sAbsolute = (epochS) -> Format.time.absolute Time.sToMs epochS
-Format.time.sHumanRelative = (epochS) -> Format.time.humanRelative Time.sToMs epochS
-Format.time.sMediaDuration = (epochS) -> Format.time.mediaDuration Time.sToMs epochS
-Format.time.sRelative = (epochS) -> Format.time.relative Time.sToMs epochS
+Format.time.sAbsolute = (unixS) -> Format.time.absolute Time.sToMs unixS
+Format.time.sHumanRelative = (unixS) -> Format.time.humanRelative Time.sToMs unixS
+Format.time.sMediaDuration = (unixS) -> Format.time.mediaDuration Time.sToMs unixS
+Format.time.sRelative = (unixS) -> Format.time.relative Time.sToMs unixS
 
 export default Format
