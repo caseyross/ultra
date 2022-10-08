@@ -28,4 +28,14 @@ export default {
 			return (target) ->
 				target.likes = original.likes
 
+	subreddit_subscription:
+		targetID: (subreddit_name) ->
+			ID('subreddit', subreddit_name)
+		modify: (target, { unsubscribe }) ->
+			original =
+				user_is_subscriber: target.user_is_subscriber
+			target.user_is_subscriber = !unsubscribe
+			return (target) ->
+				target.user_is_subscriber = original.user_is_subscriber
+
 }

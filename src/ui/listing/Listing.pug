@@ -1,5 +1,4 @@
 script.
-	import { getContext } from 'svelte'
 	import api from '../../api/index.js'
 	import Button from '../controls/Button.pug'
 	import CommentList from './CommentList.pug'
@@ -98,14 +97,6 @@ script.
 		api.loadWatch(rules_dataset_id,
 			(x) -> { data: rules, error: error } = x
 		)
-	if getContext('username')
-		subscriptions = localStorage['cache.subscriptions']?.split(' ')
-		api.loadWatch('current_user_subscriptions',
-			(x) ->
-				if x?.data?.length
-					subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
-					localStorage['cache.subscriptions'] = subscriptions.join(' ')
-		)
 
 svelte:head
 	title {title}
@@ -117,8 +108,7 @@ svelte:head
 		div
 		nav.listing-nav
 			header
-				{#if type === 'subreddit'}
-					button {subscriptions.includes(name) ? '♥' : '♡'}
+				button(on:click={() => api.submit(api.ID('subreddit_subscription', name), { unsubscribe: info?.user_is_subscriber })}) {info?.user_is_subscriber ? '♥' : '♡'}
 				h1 {display_name}
 			menu
 				section(style='display: flex; gap: 2em')
