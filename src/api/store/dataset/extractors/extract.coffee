@@ -66,6 +66,8 @@ export default extract = (rawData, sourceID) ->
 			post.url = if post.url[0] == '/' then new URL("https://www.reddit.com#{post.url}") else new URL(post.url)
 			# Detect the content format for the post.
 			post.format = switch
+				when post.crosspost_parent_list
+					'crosspost'
 				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url.hostname == 'i.redd.it'
 					'media'
 				when post.tournament_data
@@ -144,16 +146,14 @@ export default extract = (rawData, sourceID) ->
 				post.media[0] = html_embeddable(post)
 			# Process crosspost source, if present.
 			if post.crosspost_parent_list?.length
-				crosspost_parent_id = ID('post', post.crosspost_parent_list[0].id)
-				result.sub.push({
-					id: crosspost_parent_id
-					data: extract({
+				crosspost_datasets = extract(
+					{
 						kind: 't3'
 						data: post.crosspost_parent_list[0]
-					})
-					partial: true
-				})
-				post.crosspost_parent = crosspost_parent_id
+					}
+				)
+				result.sub.push(crosspost_datasets.main, ...crosspost_datasets.sub)
+				post.crosspost_parent = post.crosspost_parent_list[0].id
 				delete post.crosspost_parent_list
 			# Process subreddit information, if present.
 			if post.sr_detail

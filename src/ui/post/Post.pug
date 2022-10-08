@@ -110,6 +110,8 @@ svelte:head
 				a(href={post.url} rel='external noopener preconnect') {post.url}
 				menu.post-link-actions
 					Button(action={() => window.open(post.url)} key='e' text='Open link')
+			{:else if post.format === 'crosspost'}
+				Headline(post_short_id={post.crosspost_parent} show_subreddit={true})
 			{:else}
 				p [Error displaying post.]
 			{#if post.selftext_html}
