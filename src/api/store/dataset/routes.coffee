@@ -35,6 +35,7 @@ export default {
 				after: after_post_short_id and "t3_#{after_post_short_id}"
 				limit: max_posts
 				show: 'all'
+				sr_detail: true
 				t: posts_sort.split('-')[1]
 			}
 		)
@@ -145,9 +146,9 @@ export default {
 		get("/user/#{user_name}/about", {
 			sr_detail: true
 		})
-	users: (...user_short_ids) ->
+	users: (user_short_ids) ->
 		get("/api/user_data_by_account_ids", {
-			ids: user_short_ids.map((short_id) -> "t2_#{short_id}")
+			ids: user_short_ids.split(',').map((short_id) -> "t2_#{short_id}")
 		})
 	user_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
 		get("/user/#{user_name}/comments", {

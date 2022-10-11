@@ -3,6 +3,9 @@ import Time from './Time.coffee'
 Format = {
 
 	number: {
+		
+		commas: (integer) ->
+			new Intl.NumberFormat('en-US').format(integer)
 
 		percent: (numerator, denominator) -> Math.trunc(100 * numerator / denominator)
 
