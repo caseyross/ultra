@@ -5,6 +5,18 @@
 	font-weight 100 900
 	src url('../font/inter_100_900.woff2')
 html
+	color-scheme dark
+	--color-control rgba(0,0,0,0.05)
+	--color-control-focused rgba(0,0,0,0.10)
+	--color-control-toggled rgba(0,0,0,0.50)
+	--color-paper-action aliceblue
+	--color-paper-border gainsboro
+	--color-paper-callout rgba(0,0,0,0.05)
+	--color-signal-caution wheat
+	--color-signal-error salmon
+	--color-signal-ok lightseagreen
+	--color-signal-unknown gray
+	--color-writing-action mediumslateblue
 	--typeface-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
 
 // Single-direction margin
@@ -13,45 +25,11 @@ html
 *:first-child
 	margin-top 0 !important
 
-// Theming
-.theme-light
-	--color-control rgba(0,0,0,0.05)
-	--color-control-focused rgba(0,0,0,0.10)
-	--color-control-toggled rgba(0,0,0,0.50)
-	--color-paper white
-	--color-paper-action aliceblue
-	--color-paper-border gainsboro
-	--color-paper-callout rgba(0,0,0,0.05)
-	--color-signal-caution wheat
-	--color-signal-error salmon
-	--color-signal-ok lightseagreen
-	--color-signal-unknown gray
-	--color-writing #222
-	--color-writing-action mediumslateblue
-	--color-writing-highlight yellow
-	color-scheme light
-.theme-dark
-	--color-control rgba(0,0,0,0.05)
-	--color-control-focused rgba(0,0,0,0.10)
-	--color-control-toggled rgba(0,0,0,0.50)
-	--color-paper #1d263b
-	--color-paper-action #1e2846
-	--color-paper-border slategrey
-	--color-paper-callout rgba(0,0,0,0.25)
-	--color-signal-caution wheat
-	--color-signal-error salmon
-	--color-signal-ok lightseagreen
-	--color-signal-unknown gray
-	--color-writing white
-	--color-writing-action wheat
-	--color-writing-highlight yellow
-	color-scheme dark
-
 // General
 *
 	box-sizing border-box
 *:focus
-	outline-color var(--color-writing-highlight)
+	outline-color gold
 .md
 	cursor default
 	overflow-wrap anywhere
@@ -59,8 +37,8 @@ html
 // Body
 body
 	align-items center
-	background-color var(--color-paper)
-	color var(--color-writing)
+	background-color #333
+	color #fff
 	display flex
 	flex-flow column nowrap
 	font 500 14px/1.6 'Inter', sans-serif
@@ -75,30 +53,43 @@ hr
 	margin 1em 0 0 0
 
 // Formatted text
-a
-	color mediumslateblue
-	overflow-wrap anywhere
-	text-decoration none
-	&:hover
-		background var(--color-writing-highlight) !important
-a[href^='/']
-a[href^='#']
-	-webkit-box-decoration-break clone
-	background rgba(0,0,0,0.05)
-	border-radius 3px
-	box-decoration-break clone
-	box-shadow 0 0 1px black
-	padding 3px 8px
+.md
+	a
+		color lightskyblue
+		overflow-wrap break-word
+		text-decoration none
+	a:is([href^='/'], [href^='#'])::before
+		background lightsalmon
+		border-radius 999px
+		color white
+		content 'r/'
+		display inline
+		font-size 0.8em
+		height 1.25em
+		line-height 1.25
+		margin-right 0.5em
+		padding 0 0.5em
+	a:not(:is([href^='/'], [href^='#']))::before
+		background lightskyblue
+		border-radius 999px
+		color white
+		content '→'
+		display inline
+		font-size 0.8em
+		height 1.25em
+		line-height 1.25
+		margin-right 0.5em
+		padding 0 0.125em
 address
 	font-style normal
 
 // Verbatim text
 blockquote
-	border-left 3px solid var(--color-paper-border)
-	color green
+	border-left 3px solid #666
+	color #ccc
+	font-size 0.9em
 	margin 0.5em 0 0 2px
-	opacity 0.8
-	padding 0 0.5em
+	padding-left 1em
 code
 pre
 	background var(--color-paper-callout)

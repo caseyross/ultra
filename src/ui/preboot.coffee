@@ -24,17 +24,3 @@ route = parse_route(location)
 if route.preload
 	for id in route.preload
 		api.preload(id)
-
-# Apply color theming as soon as possible, preferably before any other CSS loads.
-THEMES =
-	DARK: 'theme-dark'
-	LIGHT: 'theme-light'
-set_theme = ->
-	local_hour = Time.localHour()
-	theme_class = THEMES.LIGHT
-	document.body.classList.add(theme_class)
-	document.body.classList.remove(...Object.values(THEMES).filter((x) -> x != theme_class))
-window.addEventListener('DOMContentLoaded', (e) ->
-	set_theme()
-	setInterval(set_theme, Time.mToMs(1))
-)

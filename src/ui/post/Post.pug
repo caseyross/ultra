@@ -58,6 +58,7 @@ svelte:head
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		{#if standalone}
 			Headline(post_short_id={short_id} selected={true} show_subreddit={true})
+		header.post-header {post.title}
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}
@@ -136,11 +137,12 @@ style.
 	.post
 		height 100%
 		overflow auto
-		padding 120px 5em
+		padding 40px
 		&::-webkit-scrollbar
 			display none
 	.post-content
-		margin-top 2em
+		background #f7f7f6
+		color #000
 		width 480px
 	.post-comments
 		margin-top 2em
@@ -163,19 +165,23 @@ style.
 		gap 6px
 	.post-gallery-image
 		width 480px
-		&:hover
-			outline var(--color-writing-highlight) solid 2px
 	.post-gallery-image-caption
 		font-size 12px
 		letter-spacing 1px
 		padding 0.5em 0
+	.post-header
+		background #666
+		border-radius 20px
+		border-bottom-left-radius 0
+		border-bottom-right-radius 0
+		color white
+		padding 1em 3em
+		width 480px
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
 	.post-image
 		width 480px
-		&:hover
-			outline var(--color-writing-highlight) solid 2px
 	.post-link-actions
 		display flex
 		gap 1em
@@ -190,6 +196,8 @@ style.
 		display flex
 	.post-selftext
 		margin-top 0.7em
+		padding 1em 3em
 	:global(.post-selftext-media)
-		width 480px
+		margin-left -3em
 		padding 1em 0
+		width 480px

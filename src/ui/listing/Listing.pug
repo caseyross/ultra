@@ -105,11 +105,18 @@ svelte:head
 		PageUnavailable(path='/r/{name}')
 {:else}
 	main.listing
-		div
+		nav.general-nav
+			a.listing-icon
+			a.account-icon
+		{#if post_selection}
+			{#key post_selection}
+				Post(short_id={post_selection})
+		{:else}
+			div
 		nav.listing-nav
 			header
 				button(on:click={() => api.submit(api.ID('subreddit_subscription', name), { unsubscribe: info?.user_is_subscriber })}) {info?.user_is_subscriber ? '♥' : '♡'}
-				h1 {display_name}
+				h1 more in {display_name}
 			menu
 				section(style='display: flex; gap: 2em')
 					SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
@@ -143,32 +150,43 @@ svelte:head
 			footer
 				{#if tab_selection === 'comment' || tab_selection === 'posts'}
 					section.listing-tab-content-pages
-						p Page {page_selection}
-		{#if post_selection}
-			{#key post_selection}
-				Post(short_id={post_selection})
+						Button(text='+')
 
 style.
+	.account-icon
+		aspect-ratio 1
+		background #fff
+		border-radius 999px
+		height 32px
+	.listing-icon
+		aspect-ratio 1
+		background #fff
+		border-radius 999px
+		height 48px
+	.general-nav
+		align-items flex-end
+		border-right 1px solid #666
+		display flex
+		flex-flow column nowrap
+		justify-content space-between
+		padding 40px
 	.listing
 		display grid
-		grid-template-columns 70px 1fr 620px
+		grid-template-columns 1fr 560px 1fr
 		height 100vh
 		width 100vw
-		@media (min-width: 1280px)
-			grid-template-columns 1fr 450px calc(50vw + 70px)
 	.listing-nav
 		border-radius 5px
 		display flex
 		flex-flow column nowrap
 		height 100vh
-		padding 58px 10px
+		padding 40px
+		width 400px
 		header
 			align-items baseline
 			display flex
 			gap 1em
 			margin-bottom 1em
-			h1
-				font-size 2em
 	.listing-tab-content
 		flex 1
 		overflow-y auto
