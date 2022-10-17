@@ -84,7 +84,7 @@ svelte:head
 											p {media.caption_text}
 										{#if media.caption_url}
 											a(href={media.caption_url}) {media.caption_url}
-								a(href={media.image_url} rel='external noopener preconnect' target='_blank')
+								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_960})
 										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
@@ -93,7 +93,7 @@ svelte:head
 						{#if media.video_url}
 							AVPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
 						{:else if media.image_url}
-							a(href={media.image_url} rel='external noopener preconnect' target='_blank')
+							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 								picture
 									source(srcset={media.image_url_960})
 									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
