@@ -1,6 +1,7 @@
 script.
 	import { Format } from '../../utils/index.js'
 	import api from '../../api/index.js'
+	import Avatar from './Avatar.pug'
 	import Button from '../controls/Button.pug'
 	import Markup from '../text/Markup.pug'
 	import Score from './Score.pug'
@@ -19,65 +20,59 @@ script.
 	)
 
 {#if comment}
-	<!-- 'comment' role is draft status and not recognized yet -->
-	<!-- svelte-ignore a11y-unknown-role -->
-	article.comment(role='comment')
-		section.comment-indent
-			Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
-			button.comment-line-separator(on:mousedown={() => collapsed = !collapsed})
+	li.comment-tree
 		{#if collapsed}
-			section.comment-body-collapsed [ Comment collapsed. ]
+			article.comment-collapsed [ Comment collapsed. ]
 		{:else}
-			section.comment-body
-				.comment-text(title='{Format.time.sRelative(comment.created_utc)} ago by u/{comment.author}')
+			<!-- 'comment' role is draft status and not recognized yet -->
+			<!-- svelte-ignore a11y-unknown-role -->
+			article.comment(role='comment')
+				Avatar(username={comment.author})
+				section.comment-text(title='{Format.time.sRelative(comment.created_utc)} ago by u/{comment.author}')
+					.comment-meta
+						span.comment-score {comment.score}
+						span.comment-author {comment.author}
 					Markup(html={comment.body_html})
-				{#if !out_of_context && comment.replies.length > 0}
-					{#key comment.replies}
-						ol.comment-replies
-							{#each comment.replies as reply_short_id}
-								svelte:self(short_id={reply_short_id})
-							{#if comment.more_replies}
-								.comment-more-replies
-									Button(action={() => api.load(comment.more_replies_id)} appearance='text' loading={replies_loading} text="+ {comment.num_more_replies} more {comment.num_more_replies === 1 ? 'reply' : 'replies'}...")
-							{#if comment.deeper_replies}
-								.comment-more-replies
-									Button(appearance='text' text='→ Continue this thread...')
-		{#if out_of_context}
-			section.comment-links
-				Button(link='/post/{comment.link_id.slice(3)}/comment/{short_id}' text='View in post')
+				section.comment-actions
+					Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+			{#if !out_of_context && comment.replies.length > 0}
+				{#key comment.replies}
+					ol.comment-replies
+						{#each comment.replies as reply_short_id}
+							svelte:self(short_id={reply_short_id})
+						{#if comment.more_replies}
+							Button(action={() => api.load(comment.more_replies_id)} loading={replies_loading} text="Load {comment.num_more_replies} more")
+						{#if comment.deeper_replies}
+							.comment-more-replies
+								Button(text='Continue this thread...')
+			{#if out_of_context}
+				menu.comment-links
+					Button(link='/post/{comment.link_id.slice(3)}/comment/{short_id}' text='View in post')
 
 style.
 	.comment
 		display flex
 		gap 6px
-		margin-top 2.25em
-		position relative
-	.comment-indent
+	.comment-actions
 		display flex
 		flex-flow column nowrap
-		gap 6px
-	.comment-links
-		opacity 0
-		transition all 0.25s
-		.comment:hover &
-			opacity 1
-	.comment-line-separator
-		background linear-gradient(to right, transparent 9px, currentColor 10px, transparent 10px)
-		flex 1
-		opacity 0.25
-		transition all 0.125s
-		width 21px
-		&:hover
-			opacity 1
-	.comment-more-replies
+		justify-content flex-end
+		padding 1ch 0
+	.comment-author
+		font-size 12px
+	.comment-meta
+		opacity 0.5
 	.comment-replies
-		margin-top 2.25em
+		border-left 4px solid #666
+		padding-left 20px
+		padding-top 10px
+	.comment-score
+		font-size 18px
 	.comment-text
-		background #fff
+		background #444
 		border-radius 5px
-		color #000
+		color #ccc
 		padding 1ch
-		width 420px
 	:global(.comment-text img)
 		border-radius 6px
 		display inline
@@ -85,3 +80,6 @@ style.
 		margin-inline-start 1px
 		max-height 9em
 		width auto
+	.comment-tree
+		display block
+		margin-top 10px

@@ -1,0 +1,20 @@
+script.
+	import api from '../../api/index.js'
+	export username = null
+	img_url = null
+	api.loadWatch(api.ID('user', username), ({ data: user }) ->
+		if user
+			img_url = user.profile_img
+	)
+
+
+img.avatar(alt='' src={img_url})
+
+style.
+	.avatar
+		aspect-ratio 1
+		border-radius 999px
+		height 20px
+		position relative
+		left -7px
+		top 13px

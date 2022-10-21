@@ -108,7 +108,8 @@ svelte:head
 					menu.post-embed-actions
 						Button(action={() => window.open(post.url)} key='o' text='Open original')
 			{:else if post.format === 'link'}
-				a(href={post.url} rel='external noopener preconnect') {post.url}
+				.md.post-link
+					a(href={post.url} rel='external noopener preconnect') {post.url}
 				menu.post-link-actions
 					Button(action={() => window.open(post.url)} key='e' text='Open link')
 			{:else if post.format === 'crosspost'}
@@ -135,14 +136,14 @@ svelte:head
 
 style.
 	.post
+		background #444
 		height 100%
 		overflow auto
 		padding 40px
 		&::-webkit-scrollbar
 			display none
 	.post-content
-		background #f7f7f6
-		color #000
+		color #fff
 		width 480px
 	.post-comments
 		margin-top 2em
@@ -172,8 +173,6 @@ style.
 	.post-header
 		background #666
 		border-radius 20px
-		border-bottom-left-radius 0
-		border-bottom-right-radius 0
 		color white
 		padding 1em 3em
 		width 480px
@@ -182,6 +181,8 @@ style.
 		width 100%
 	.post-image
 		width 480px
+	.post-link
+		padding 1em 3em
 	.post-link-actions
 		display flex
 		gap 1em

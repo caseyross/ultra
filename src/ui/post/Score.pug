@@ -13,17 +13,13 @@ script.
 			else value + ' points' 
 		icon =
 			switch
-				when controversiality > 0
-					if vote is 0 then '◇' else '◆'
-				when value >= 5
-					if vote is 0 then '△' else '▲'
-				when value <= -5
-					if vote is 0 then '▽' else '▼'
-				else
-					if vote is 0 then '○' else '●'
+				when controversiality > 0 then '◆'
+				when value >= 5 then '▲'
+				when value <= -5 then '▼'
+				else '●'
 	else
 		display_value = 'score unknown'
-		icon = if vote is 0 then '○' else '●'
+		icon = '●'
 	if awards?.length
 		awards_display_value = 'awards: ' + awards.map((award) -> "#{award.name} (#{award.count})").join(', ')
 	toggle_downvote = ->
@@ -37,29 +33,32 @@ script.
 		else
 			upload_vote(1)
 
-button.score(class='vote-{vote}' on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }} title={display_value}) {icon}
+button.score(class='vote-{vote}' on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }} title={display_value})
 	{#if awards_display_value}
 		.score-awards(title={awards_display_value})
+	|{icon}
 
 style.
 	.score
+		align-items center
 		aspect-ratio 1
 		border-radius 50%
+		display flex
+		flex-flow column nowrap
 		padding-bottom 1px
 		position relative
 		transition all 0.125s
 		width 19px
 		&.vote--1
-			color powderblue
+			color red
 		&.vote-0
-			color inherit
+			color #666
 		&.vote-1
-			color lightsalmon
+			color white
 		&:hover
-			background rgba(0,0,0,0.1)
+			color gold
 	.score-awards
 		aspect-ratio 1
 		background gold
 		border-radius 50%
-		position absolute
 		width 5px
