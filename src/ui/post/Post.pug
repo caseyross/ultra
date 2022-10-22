@@ -142,14 +142,15 @@ svelte:head
 style.
 	.post
 		background #444
-		height 100%
+		box-sizing content-box
+		height calc(100% - 80px)
 		overflow auto
 		padding 40px
+		width 480px
 		&::-webkit-scrollbar
 			display none
 	.post-content
 		color #fff
-		width 480px
 	.post-comments
 		margin-top 2em
 	.post-comments-actions
@@ -170,7 +171,7 @@ style.
 		flex-flow row wrap
 		gap 6px
 	.post-gallery-image
-		width 480px
+		width 100%
 	.post-gallery-image-caption
 		font-size 12px
 		letter-spacing 1px
@@ -180,12 +181,11 @@ style.
 		border-radius 20px
 		color white
 		padding 1em 3em
-		width 480px
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
 	.post-image
-		width 480px
+		width 100%
 	.post-link
 		padding 1em 3em
 	.post-link-actions
@@ -203,7 +203,5 @@ style.
 	.post-selftext
 		margin-top 0.7em
 		padding 1em 3em
-	:global(.post-selftext-media)
-		margin-left -3em
-		padding 1em 0
-		width 480px
+		:global(& img)
+			width 100%
