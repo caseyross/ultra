@@ -2,10 +2,11 @@ script.
 	import api from '../../api/index.js'
 	export username = null
 	img_url = null
-	api.loadWatch(api.ID('user', username), ({ data: user }) ->
-		if user
-			img_url = user.profile_img
-	)
+	if username != '[deleted]'
+		api.loadWatch(api.ID('user', username), ({ data: user }) ->
+			if user
+				img_url = user.profile_img
+		)
 
 
 img.avatar(alt='' src={img_url})

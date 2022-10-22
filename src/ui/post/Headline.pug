@@ -10,7 +10,9 @@ script.
 	export show_subreddit = false
 	post = null
 	api.loadWatch(api.ID('post', post_short_id),
-		(x) -> { data: post } = x
+		(x) ->
+			{ data: post } = x
+			if post?.contributors?.length then api.load(api.ID('users', post.contributors))
 	)
 
 {#if post}

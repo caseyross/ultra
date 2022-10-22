@@ -9,13 +9,13 @@ script.
 	export short_id = null
 	collapsed = false
 	comment = null
-	replies_loading = false
+	more_replies_loading = false
 	api.loadWatch(api.ID('comment', short_id),
 		(x) ->
 			{ data: comment } = x
 			if comment?.more_replies
 				api.watch(comment.more_replies_id,
-					(x) -> { loading: replies_loading } = x
+					(x) -> { loading: more_replies_loading } = x
 				)
 	)
 
@@ -41,7 +41,7 @@ script.
 						{#each comment.replies as reply_short_id}
 							svelte:self(short_id={reply_short_id})
 						{#if comment.more_replies}
-							Button(action={() => api.load(comment.more_replies_id)} loading={replies_loading} text="Load {comment.num_more_replies} more")
+							Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="Load {comment.num_more_replies} more")
 						{#if comment.deeper_replies}
 							.comment-more-replies
 								Button(text='Continue this thread...')

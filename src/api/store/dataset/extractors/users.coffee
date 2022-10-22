@@ -8,7 +8,6 @@ export default (rawData) ->
 		result.sub.push({
 			id: ID('user', user.name)
 			data: user
-			partial: true
 		})
 	result.main =
 		id: null
