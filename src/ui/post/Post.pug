@@ -1,13 +1,13 @@
 script.
 	import { afterUpdate } from 'svelte';
-	import AVPlayer from './AVPlayer.pug'
-	import Button from '../controls/Button.pug'
+	import api from '../../api/index.js'
+	import Button from '../input/Button.pug'
 	import Comment from './Comment.pug'
 	import Headline from './Headline.pug'
-	import Minimap from '../controls/Minimap.pug'
-	import PageUnavailable from '../errors/PageUnavailable.pug'
+	import MediaPlayer from '../media/MediaPlayer.pug'
+	import Minimap from './Minimap.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
-	import api from '../../api/index.js'
+	import Unavailable from '../error/Unavailable.pug'
 	export short_id = null
 	export standalone = false
 	DOM =
@@ -58,7 +58,7 @@ svelte:head
 			title post: {short_id}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
-		PageUnavailable(path='/{short_id}')
+		Unavailable(path='/{short_id}')
 {:else if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		{#if standalone}
@@ -96,7 +96,7 @@ svelte:head
 				{:else}
 					{@const media = post.media[0]}
 						{#if media.video_url}
-							AVPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
+							MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
 						{:else if media.image_url}
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 								picture

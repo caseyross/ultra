@@ -1,16 +1,10 @@
 script.
-	import Home from '../Home.pug'
-	import Listing from '../listing/Listing.pug'
-	import Inbox from '../message/Inbox.pug'
-	import Post from '../post/Post.pug'
-	import RedirectRoute from './RedirectRoute.pug'
-	import TodoRoute from './TodoRoute.pug'
-	import WikiPage from '../wiki/WikiPage.pug'
-	### START ROUTING CODE ###
+	import AccountProvider from './account/AccountProvider.pug'
+	import Route from './Route.pug'
 	import parse_route from './parse_route.coffee'
 	route = null
-	set_route = -> route = parse_route(location)
-	set_route()
+	set_route = ->
+		route = parse_route(location)
 	external_navigate = (link) -> location.href = link.href
 	external_navigate_new_tab = (link) -> window.open(link.href)
 	internal_navigate = (link) ->
@@ -60,26 +54,7 @@ script.
 					event.preventDefault()
 					internal_navigate(link)
 	)
-	### END ROUTING CODE ###
+	set_route()
 
-{#key route}
-	{#if route.path === 'official_site'}
-		RedirectRoute(path={route.data.path})
-	{:else if route.path === 'home'}
-		Home
-	{:else if route.path === 'inbox'}
-		Inbox
-	{:else if route.path === 'multireddit'}
-		Listing(name={route.data.multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='multireddit' user_name={route.data.user_name})
-	{:else if route.path === 'post'}
-		Post(short_id={route.data.post_short_id} standalone={true})
-	{:else if route.path === 'special_multireddit'}
-		Listing(name={route.data.special_multireddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='special_multireddit')
-	{:else if route.path === 'subreddit'}
-		Listing(name={route.data.subreddit_name} search_text={route.data.search_text} sort={route.data.posts_sort} type='subreddit')
-	{:else if route.path === 'todo'}
-		TodoRoute(route={route})
-	{:else if route.path === 'user'}
-		Listing(sort={route.data.items_sort} tab_selection={route.data.items_filter} type='user_profile' user_name={route.data.user_name})
-	{:else if route.path === 'wiki'}
-		WikiPage(page_name={route.data.page_name} revision_id={route.data.revision_id} subreddit_name={route.data.subreddit_name})
+AccountProvider
+	Route(type={route.type} data={route.data})

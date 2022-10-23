@@ -1,14 +1,14 @@
 script.
 	import api from '../../api/index.js'
-	import Button from '../controls/Button.pug'
-	import CommentList from './CommentList.pug'
-	import Markup from '../text/Markup.pug'
-	import PageUnavailable from '../errors/PageUnavailable.pug'
+	import Button from '../input/Button.pug'
+	import Comment from '../post/Comment.pug'
+	import Headline from '../post/Headline.pug'
+	import Markup from '../markup/Markup.pug'
 	import Post from '../post/Post.pug'
-	import PostList from './PostList.pug'
 	import SearchInput from './SearchInput.pug'
 	import SortPicker from './SortPicker.pug'
 	import TimeRangePicker from './TimeRangePicker.pug'
+	import Unavailable from '../error/Unavailable.pug'
 	export name = null
 	export page_size = 10
 	export search_text = null
@@ -102,7 +102,7 @@ svelte:head
 	title {title}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
-		PageUnavailable(path='/r/{name}')
+		Unavailable(path='/r/{name}')
 {:else}
 	main.listing
 		nav.general-nav
@@ -132,11 +132,15 @@ svelte:head
 							.subreddit-description
 								Markup(html={info.description_html})
 				{:else if tab_selection === 'comments'}
-					{#if comment_short_ids}
-						CommentList(short_ids={comment_short_ids})
+					ol.comment-list
+						{#if comment_short_ids}
+							{#each comment_short_ids as short_id}
+								Comment(short_id={short_id} out_of_context={true})
 				{#if tab_selection === 'posts'}
-					{#if post_short_ids}
-						PostList(multireddit={type.endsWith('multireddit')} short_ids={post_short_ids} select={short_id => post_selection = short_id} selection={post_selection})
+					ol.post-list
+						{#if post_short_ids}
+							{#each post_short_ids as short_id}
+								Headline(post_short_id={short_id} select={short_id => post_selection = short_id} selected={post_selection === short_id} show_subreddit={type.endsWith('multireddit')})
 				{:else if tab_selection === 'rules'}
 					{#if rules}
 						ol.subreddit-rules
@@ -158,11 +162,11 @@ style.
 		background #fff
 		border-radius 999px
 		height 32px
-	.listing-icon
-		aspect-ratio 1
-		background #fff
-		border-radius 999px
-		height 48px
+	.comment-list
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		padding 6em 0
 	.general-nav
 		align-items flex-end
 		border-right 1px solid #666
@@ -175,6 +179,11 @@ style.
 		grid-template-columns 1fr 560px 1fr
 		height 100vh
 		width 100vw
+	.listing-icon
+		aspect-ratio 1
+		background #fff
+		border-radius 999px
+		height 48px
 	.listing-nav
 		border-radius 5px
 		display flex
@@ -192,6 +201,10 @@ style.
 		overflow-y auto
 		&::-webkit-scrollbar
 			display none
+	.post-list
+		display flex
+		flex-flow column nowrap
+		gap 1ch
 	.subreddit-description
 		padding 10px
 	.subreddit-rules

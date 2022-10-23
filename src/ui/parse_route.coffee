@@ -1,3 +1,12 @@
+INVALID = {
+	type: 'invalid'
+	data: null
+}
+OFFICIAL_SITE = (official_path) -> {
+	type: 'official_site'
+	data: { official_path }
+}
+
 KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
 
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']
@@ -18,20 +27,6 @@ POST_COMMENTS_SORT_OPTIONS = ['best', 'controversial', 'new', 'old', 'qa', 'top'
 
 SORT_OPTION_TIME_RANGES = ['hour', 'day', 'week', 'month', 'year', 'all']
 
-INVALID = {
-	path: 'invalid'
-	data: null
-}
-OFFICIAL_SITE = (path) -> {
-	path: 'official_site'
-	data:
-		path: path
-}
-TODO = {
-	path: 'todo'
-	data: null
-}
-
 export default (url) ->
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
 	query = new URLSearchParams(decodeURI(url.search))
@@ -45,7 +40,7 @@ export default (url) ->
 	switch path[1]
 		when undefined
 			return {
-				path: 'home'
+				type: 'home'
 			}
 		when 'comments', 'p', 'post', 'tb'
 			post_short_id = path[2]
@@ -55,7 +50,7 @@ export default (url) ->
 			comment_short_id = path[4]
 			comment_context = query.get('context')
 			return {
-				path: 'post'
+				type: 'post'
 				data: { comment_context, comment_short_id, comments_sort, post_short_id }
 			}
 		when 'm', 'multi', 'multireddit'
@@ -71,12 +66,12 @@ export default (url) ->
 			search_sort = query.get('sort')
 			search_text = query.get('q')
 			return {
-				path: 'multireddit'
+				type: 'multireddit'
 				data: { multireddit_name, posts_sort, search_sort, search_text, user_name }
 			}
 		when 'mail', 'message', 'messages'
 			return {
-				path: 'inbox'
+				type: 'inbox'
 				data: null
 			}
 		when 'r', 'subreddit'
@@ -90,7 +85,7 @@ export default (url) ->
 					comment_short_id = path[6]
 					comment_context = query.get('context')
 					return {
-						path: 'post'
+						type: 'post'
 						data: { comment_context, comment_short_id, comments_sort, post_short_id }
 					}
 				when 'submit' then return OFFICIAL_SITE("/r/#{path[2]}/submit")
@@ -100,13 +95,13 @@ export default (url) ->
 					page_name = path[4..].join('/') # wiki pages can be nested
 					if page_name is 'pages'
 						return {
-							path: 'wiki_list'
+							type: 'wiki_list'
 							data: { subreddit_name }
 						}
 					if not page_name then page_name = 'index'
 					revision_id = query.get('v')
 					return {
-						path: 'wiki'
+						type: 'wiki'
 						data: { page_name, revision_id, subreddit_name }
 					}
 				else
@@ -124,10 +119,10 @@ export default (url) ->
 							search_sort = query.get('sort')
 							search_text = query.get('q')
 							return {
-								path: 'special_multireddit'
+								type: 'special_multireddit'
 								data: { special_multireddit_name, posts_sort, search_sort, search_text }
 							}
-						when 'mod' then return TODO
+						when 'mod' then return OFFICIAL_SITE('/r/mod') # TODO
 						when 'popular'
 							special_multireddit_name = 'r/popular'
 							posts_sort = path[3] ? query.get('sort')
@@ -137,7 +132,7 @@ export default (url) ->
 								else posts_sort = posts_sort + '-all'
 							else if posts_sort not in R_POPULAR_SORT_OPTIONS then posts_sort = 'hot'
 							return {
-								path: 'special_multireddit'
+								type: 'special_multireddit'
 								data: { special_multireddit_name, posts_sort }
 							}
 						else
@@ -150,10 +145,10 @@ export default (url) ->
 							search_sort = query.get('sort')
 							search_text = query.get('q')
 							return {
-								path: 'subreddit'
+								type: 'subreddit'
 								data: { posts_sort, search_sort, search_text, subreddit_name }
 							}
-		when 's', 'search' then return TODO
+		when 's', 'search' then return OFFICIAL_SITE('/search') # TODO
 		when 'u', 'user'
 			user_name = path[2]
 			if not user_name then return INVALID
@@ -171,7 +166,7 @@ export default (url) ->
 					search_sort = query.get('sort')
 					search_text = query.get('q')
 					return {
-						path: 'multireddit'
+						type: 'multireddit'
 						data: { multireddit_name, posts_sort, search_sort, search_text, user_name }
 					}
 				else items_filter = 'posts'
@@ -182,7 +177,7 @@ export default (url) ->
 				else items_sort = items_sort + '-all'
 			else if items_sort not in LISTING_SORT_OPTIONS then items_sort = 'new'
 			return {
-				path: 'user'
+				type: 'user'
 				data: { items_filter, items_sort, user_name }
 			}
 		when 'w', 'wiki'
@@ -191,13 +186,13 @@ export default (url) ->
 			page_name = path[3..].join('/') # wiki pages can be nested
 			if page_name is 'pages'
 				return {
-					path: 'wiki_list'
+					type: 'wiki_list'
 					data: { subreddit_name }
 				}
 			if not page_name then page_name = 'index'
 			revision_id = query.get('v')
 			return {
-				path: 'wiki'
+				type: 'wiki'
 				data: { page_name, revision_id, subreddit_name }
 			}
 	return OFFICIAL_SITE(url.pathname + url.search + url.hash)
