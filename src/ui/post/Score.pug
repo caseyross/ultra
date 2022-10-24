@@ -14,7 +14,7 @@ script.
 button.score(class:downvoted={vote == -1} class:upvoted={vote == 1} on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }}) {controversiality > 0 ? '◆' : ''}
 	span.score-votes {Number.isFinite(value) ? value + vote : '*'}
 	{#if awards?.length}
-		span.score-awards(title={'awards: ' + awards.map(award => award.name + ' x' + award.count).join(', ')}) + {awards.reduce((a, b) => a + b.count, 0)} awards
+		span.score-awards(title={'awards: ' + awards.map(award => award.name + ' x' + award.count).join(', ')}) + {awards.reduce((a, b) => a + b.count, 0)} award(s)
 
 style.
 	.score

@@ -65,7 +65,7 @@ svelte:head
 				{#if !post.selftext.length}
 					.post-selftext-empty
 			{:else if post.format === 'prediction'}
-				.post-predictions
+				ol.post-predictions
 					{#each post.tournament_data.predictions as prediction}
 						h2.post-prediction-title {prediction.title}
 						dl.post-prediction-options
@@ -76,19 +76,19 @@ svelte:head
 									dd {option.text}
 			{:else if post.format === 'media'}
 				{#if post.media.length > 1}
-					.post-gallery
+					ol.post-gallery
 						{#each post.media as media, index}
-							figure
+							figure.post-gallery-item
+								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+									picture
+										source(srcset={media.image_url_960})
+										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-gallery-image-caption
 										{#if media.caption_text}
 											p {media.caption_text}
 										{#if media.caption_url}
 											a(href={media.caption_url}) {media.caption_url}
-								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-									picture
-										source(srcset={media.image_url_960})
-										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 				{:else}
 					{@const media = post.media[0]}
 						{#if media.video_url}
@@ -165,13 +165,16 @@ style.
 	.post-gallery
 		display flex
 		flex-flow row wrap
-		gap 6px
+		gap 20px
 	.post-gallery-image
 		width 100%
 	.post-gallery-image-caption
-		font-size 12px
-		letter-spacing 1px
-		padding 0.5em 0
+		margin-top 1em
+		color #aaa
+	.post-gallery-item
+		display flex
+		flex-flow column nowrap
+		gap 0.5ch
 	.post-header
 		background #666
 		border-radius 20px
