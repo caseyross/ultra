@@ -105,9 +105,6 @@ svelte:head
 		Unavailable(path='/r/{name}')
 {:else}
 	main.listing
-		nav.general-nav
-			a.listing-icon
-			a.account-icon
 		{#if post_selection}
 			{#key post_selection}
 				Post(short_id={post_selection})
@@ -157,33 +154,16 @@ svelte:head
 						Button(text='+')
 
 style.
-	.account-icon
-		aspect-ratio 1
-		background #fff
-		border-radius 999px
-		height 32px
 	.comment-list
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		padding 6em 0
-	.general-nav
-		align-items flex-end
-		border-right 1px solid #666
-		display flex
-		flex-flow column nowrap
-		justify-content space-between
-		padding 40px
 	.listing
 		display grid
 		grid-template-columns 1fr 560px 1fr
 		height 100vh
 		width 100vw
-	.listing-icon
-		aspect-ratio 1
-		background #fff
-		border-radius 999px
-		height 48px
 	.listing-nav
 		border-radius 5px
 		display flex

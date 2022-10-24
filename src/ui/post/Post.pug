@@ -51,19 +51,15 @@ script.
 		minimap_pattern = content_pattern.concat(comments_pattern)
 
 svelte:head
-	{#if standalone}
-		{#if post}
-			title post: {post.title}
-		{:else}
-			title post: {short_id}
+	{#if post}
+		title r/{post.subreddit.toLowerCase()} - {post.title}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		Unavailable(path='/{short_id}')
 {:else if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
-		{#if standalone}
+		header.post-header
 			Headline(post_short_id={short_id} selected={true} show_subreddit={true})
-		header.post-header {post.title}
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}

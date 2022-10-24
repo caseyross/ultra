@@ -1,0 +1,34 @@
+script.
+	export type = null
+	text = switch type
+		when 'admin' then 'adm'
+		when 'moderator' then 'mod'
+		when 'submitter' then 'op'
+		when 'vip' then 'vip'
+	description = switch type
+		when 'admin' then 'This user is speaking on behalf of Reddit Inc.'
+		when 'moderator' then 'This user is speaking as a moderator in this subreddit.'
+		when 'submitter' then 'This user is the Original Poster.'
+		when 'vip' then 'This user is a VIP.'
+
+data.distinguish(class='distinguish-{type}' title={description}) {text}
+
+style.
+	.distinguish
+		border-radius 0.25em
+		font-size 10px
+		font-feature-settings 'cpsp' 1
+		padding 0 0.25em
+		text-transform uppercase
+	.distinguish-admin
+		background orangered
+		color white
+	.distinguish-moderator
+		background green
+		color white
+	.distinguish-submitter
+		background royalblue
+		color white
+	.distinguish-vip
+		background rebeccapurple
+		color white

@@ -77,7 +77,7 @@ export default (url) ->
 		when 'r', 'subreddit'
 			switch path[3]
 				when 'about' then return OFFICIAL_SITE("/r/#{path[2]}/about")
-				when 'comments'
+				when 'comments', 'p', 'post'
 					post_short_id = path[4]
 					if not post_short_id then return INVALID
 					comments_sort = query.get('sort')

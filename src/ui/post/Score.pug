@@ -4,61 +4,29 @@ script.
 	export upload_vote = -> {}
 	export value = null
 	export vote = 0
-	if Number.isFinite(value)
-		value = value + vote
-		display_value = switch
-			when value >= 1000 then Math.trunc(value / 1000) + 'k points'
-			when value <= -1000 then Math.ceil(value / 1000) + 'k points'
-			when value is 1 then '1 point'
-			else value + ' points' 
-		icon =
-			switch
-				when controversiality > 0 then '◆'
-				when value >= 5 then '▲'
-				when value <= -5 then '▼'
-				else '●'
-	else
-		display_value = 'score unknown'
-		icon = '●'
-	if awards?.length
-		awards_display_value = 'awards: ' + awards.map((award) -> "#{award.name} (#{award.count})").join(', ')
 	toggle_downvote = ->
-		if vote == -1
-			upload_vote(0)
-		else
-			upload_vote(-1)
+		if vote == -1 then upload_vote(0)
+		else upload_vote(-1)
 	toggle_upvote = ->
-		if vote == 1
-			upload_vote(0)
-		else
-			upload_vote(1)
+		if vote == 1 then upload_vote(0)
+		else upload_vote(1)
 
-button.score(class='vote-{vote}' on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }} title={display_value})
-	{#if awards_display_value}
-		.score-awards(title={awards_display_value})
-	|{icon}
+button.score(class:downvoted={vote == -1} class:upvoted={vote == 1} on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }}) {controversiality > 0 ? '◆' : ''}
+	span.score-votes {Number.isFinite(value) ? value + vote : '*'}
+	{#if awards?.length}
+		span.score-awards(title={'awards: ' + awards.map(award => award.name + ' x' + award.count).join(', ')}) + {awards.reduce((a, b) => a + b.count, 0)} awards
 
 style.
 	.score
-		align-items center
-		aspect-ratio 1
-		border-radius 50%
-		display flex
-		flex-flow column nowrap
-		padding-bottom 1px
-		position relative
-		transition all 0.125s
-		width 19px
-		&.vote--1
-			color red
-		&.vote-0
-			color #666
-		&.vote-1
+		font-size 12px
+		font-weight bold
+	.score-awards
+		color goldenrod
+	.score-votes
+		color #888
+		&.downvoted
+			color black
+		&.upvoted
 			color white
 		&:hover
-			color gold
-	.score-awards
-		aspect-ratio 1
-		background gold
-		border-radius 50%
-		width 5px
+			color coral

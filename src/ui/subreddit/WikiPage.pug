@@ -18,7 +18,7 @@ script.
 	)
 
 svelte:head
-	title wiki: {subreddit_name}: {page_name.split('/').join(': ')}
+	title r/{subreddit_name} - Wiki - {page_name}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		Unavailable(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")

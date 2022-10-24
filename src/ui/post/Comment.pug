@@ -3,6 +3,7 @@ script.
 	import { Format } from '../../utils/index.js'
 	import Avatar from '../user/Avatar.pug'
 	import Button from '../input/Button.pug'
+	import Distinguish from '../user/Distinguish.pug'
 	import Markup from '../markup/Markup.pug'
 	import Score from './Score.pug'
 	export out_of_context = false
@@ -27,15 +28,16 @@ script.
 			<!-- 'comment' role is draft status and not recognized yet -->
 			<!-- svelte-ignore a11y-unknown-role -->
 			article.comment(role='comment')
-				Avatar(username={comment.author})
-				.comment-body
-					.comment-meta
-						span.comment-score {comment.score}
-						a.comment-author(href='/u/{comment.author}') {comment.author}
-					.comment-text(title='{Format.time.sRelative(comment.created_utc)} ago ({Format.time.sAbsolute(comment.created_utc)})')
-						Markup(html={comment.body_html})
-				.comment-actions
+				div
+				div
 					Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
+				div
+				div
+					Avatar(username={comment.author})
+					{#if comment.distinguished || comment.is_submitter}
+						Distinguish(type={comment.distinguished || 'submitter'})
+				.comment-text(title='{Format.time.sRelative(comment.created_utc)} ago ({Format.time.sAbsolute(comment.created_utc)})')
+					Markup(html={comment.body_html})
 			{#if !out_of_context && comment.replies.length > 0}
 				{#key comment.replies}
 					ol.comment-replies
@@ -52,26 +54,21 @@ script.
 
 style.
 	.comment
-		display flex
-		gap 6px
-	.comment-actions
-		display flex
-		flex-flow column nowrap
-		justify-content flex-end
-		padding 1ch 0
-	.comment-author
-		font-size 12px
-	.comment-body
-		color #ccc
+		align-items flex-start
+		display grid
+		gap 0 10px
+		grid-template-columns 20px 1fr 40px
+		grid-template-rows 24px 1fr
+		justify-items flex-start
 		padding 1ch
-	.comment-meta
-		color #888
 	.comment-replies
 		border-left 4px solid #666
-		padding-left 20px
+		margin-left 39px
 		padding-top 10px
-	.comment-score
-		font-size 18px
+	.comment-text
+		background #555
+		border-radius 10px
+		padding 1ch
 	:global(.comment-text img)
 		border-radius 6px
 		display inline

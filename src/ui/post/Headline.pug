@@ -16,7 +16,7 @@ script.
 	)
 
 {#if post}
-	button.post-card(class:selected={selected} on:mousedown={() => select(post_short_id)})
+	a.post-card(class:selected={selected} href='/r/{post.subreddit.toLowerCase()}/post/{post_short_id}')
 		div
 		.post-tags
 			{#if post.archived}
@@ -58,7 +58,7 @@ style.
 		display grid
 		font-size 14px
 		gap 0 6px
-		grid-template-columns 24px 1fr 24px
+		grid-template-columns 48px 1fr 48px
 		line-height 1.5
 		max-width 480px
 		padding 10px
@@ -66,9 +66,6 @@ style.
 		text-align left
 		&:hover
 			color wheat
-		&.selected
-			background aliceblue
-			color rgba(0,0,0,0.9)
 	.post-context
 		align-items center
 		display flex
