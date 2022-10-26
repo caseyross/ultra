@@ -26,8 +26,10 @@ main.sidebar
 						details
 							summary.subreddit-rule-name {rule.short_name}
 							.subreddit-rule-description
-								Markup(html={rule.description_html})
-
+								{#if rule.description_html}
+									Markup(html={rule.description_html})
+								{:else}
+									p [No rule description.]
 
 style.
 	.sidebar
