@@ -10,7 +10,7 @@ script.
 	export data = null
 
 {#if type === 'official_site'}
-	OfficialSiteRedirect(path={data.official_path})
+	OfficialSiteRedirect(path={data.path})
 {:else}
 	{#if type === 'home'}
 		Home

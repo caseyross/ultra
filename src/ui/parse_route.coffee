@@ -2,9 +2,9 @@ INVALID = {
 	type: 'invalid'
 	data: null
 }
-OFFICIAL_SITE = (official_path) -> {
+OFFICIAL_SITE = (from_url) -> {
 	type: 'official_site'
-	data: { official_path }
+	data: { path: from_url.pathname + from_url.search + from_url.hash }
 }
 
 KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
@@ -76,7 +76,7 @@ export default (url) ->
 			}
 		when 'r', 'subreddit'
 			switch path[3]
-				when 'about' then return OFFICIAL_SITE("/r/#{path[2]}/about")
+				when 'about' then return OFFICIAL_SITE(url)
 				when 'comments', 'p', 'post'
 					post_short_id = path[4]
 					if not post_short_id then return INVALID
@@ -88,7 +88,7 @@ export default (url) ->
 						type: 'post'
 						data: { comment_context, comment_short_id, comments_sort, post_short_id }
 					}
-				when 'submit' then return OFFICIAL_SITE("/r/#{path[2]}/submit")
+				when 'submit' then return OFFICIAL_SITE(url)
 				when 'w', 'wiki'
 					subreddit_name = path[2]
 					if not subreddit_name or subreddit_name.length < 2 then return INVALID
@@ -122,7 +122,7 @@ export default (url) ->
 								type: 'special_multireddit'
 								data: { special_multireddit_name, posts_sort, search_sort, search_text }
 							}
-						when 'mod' then return OFFICIAL_SITE('/r/mod') # TODO
+						when 'mod' then return OFFICIAL_SITE(url) # TODO
 						when 'popular'
 							special_multireddit_name = 'r/popular'
 							posts_sort = path[3] ? query.get('sort')
@@ -148,7 +148,7 @@ export default (url) ->
 								type: 'subreddit'
 								data: { posts_sort, search_sort, search_text, subreddit_name }
 							}
-		when 's', 'search' then return OFFICIAL_SITE('/search') # TODO
+		when 's', 'search' then return OFFICIAL_SITE(url) # TODO
 		when 'u', 'user'
 			user_name = path[2]
 			if not user_name then return INVALID
@@ -195,4 +195,4 @@ export default (url) ->
 				type: 'wiki'
 				data: { page_name, revision_id, subreddit_name }
 			}
-	return OFFICIAL_SITE(url.pathname + url.search + url.hash)
+	return OFFICIAL_SITE(url)
