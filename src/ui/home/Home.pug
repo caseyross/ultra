@@ -1,6 +1,7 @@
 script.
 	import { getContext } from 'svelte'
 	import api from '../../api/index.js'
+	import AccountSwitcher from '../account/AccountSwitcher.pug'
 	import Button from '../input/Button.pug'
 	num_unread_messages = 0
 	query = ''
@@ -37,6 +38,7 @@ main
 				{#each popular as subreddit_name, i}
 					Button(key={i === 0 ? 'Enter' : null} link='/r/{subreddit_name}') {subreddit_name}
 	section.account
+		AccountSwitcher
 		Button(link='/messages/inbox') Mail ({num_unread_messages})
 
 style.

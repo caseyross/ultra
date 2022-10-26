@@ -4,6 +4,7 @@ script.
 	import Inbox from './message/Inbox.pug'
 	import OfficialSiteRedirect from './error/OfficialSiteRedirect.pug'
 	import Post from './post/Post.pug'
+	import Profile from './user/Profile.pug'
 	import WikiPage from './subreddit/WikiPage.pug'
 	export type = null
 	export data = null
@@ -29,7 +30,7 @@ script.
 			Listing(name={data.subreddit_name} search_text={data.search_text} sort={data.posts_sort} type='subreddit')
 	{:else if type === 'user'}
 		{#key data}
-			Listing(sort={data.items_sort} tab_selection={data.items_filter} type='user_profile' user_name={data.user_name})
+			Profile(name={data.user_name} sort={data.items_sort})
 	{:else if type === 'wiki'}
 		{#key data}
 			WikiPage(page_name={data.page_name} revision_id={data.revision_id} subreddit_name={data.subreddit_name})

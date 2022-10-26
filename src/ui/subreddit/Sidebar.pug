@@ -1,0 +1,50 @@
+script.
+	import api from '../../api/index.js'
+	import Markup from '../markup/Markup.pug'
+	export subreddit_name = null
+	info = null
+	api.loadWatch(api.ID('subreddit', subreddit_name),
+		(x) -> { data: info } = x
+	)
+	rules = null
+	api.loadWatch(api.ID('subreddit_rules', subreddit_name),
+		(x) -> { data: rules } = x
+	)
+
+main.sidebar
+	nav.sidebar-nav
+		{#if info}
+			button(on:click={() => api.submit(api.ID('subreddit_subscription', subreddit_name), { unsubscribe: info?.user_is_subscriber })}) {info?.user_is_subscriber ? '♥' : '♡'}
+			section.subreddit-description
+				details
+					summary About this subreddit
+					Markup(html={info.description_html})
+		{#if rules}
+			ol.subreddit-rules
+				{#each rules.rules as rule}
+					li
+						details
+							summary.subreddit-rule-name {rule.short_name}
+							.subreddit-rule-description
+								Markup(html={rule.description_html})
+
+
+style.
+	.sidebar
+		color #aaa
+		height 100vh
+		width 380px
+	.sidebar-nav
+		border-radius 5px
+		display flex
+		flex-flow column nowrap
+		height 100vh
+		padding 40px
+	.subreddit-description
+		padding 10px
+	.subreddit-rules
+		padding 10px
+	.subreddit-rule-name
+		font-size 12px
+	.subreddit-rule-description
+		padding 1em

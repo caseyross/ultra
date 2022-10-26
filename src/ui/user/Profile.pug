@@ -1,0 +1,39 @@
+script.
+	import api from '../../api/index.js'
+	import Comment from '../post/Comment.pug'
+	import Listing from '../listing/Listing.pug'
+	import Markup from '../markup/Markup.pug'
+	export name = null
+	export sort = 'new'
+	export page_size = 10
+	comment_short_ids = null
+	page_selection = 1
+	api.loadWatch(api.ID('user_comments', name, sort, page_size),
+		(x) -> { data: comment_short_ids } = x
+	)
+
+svelte:head
+	title u/{name} - Profile
+main.user-profile
+	ol.user-profile-comment-list
+		{#if comment_short_ids}
+			{#each comment_short_ids as short_id}
+				Comment(short_id={short_id} out_of_context={true})
+div(style='position:fixed;left:calc(50vw + 280px);width:560px')
+	Listing(type='user_profile' user_name={name} sort='new')
+
+style.
+	.user-profile
+		background #444
+		box-sizing content-box
+		height calc(100% - 80px)
+		overflow auto
+		padding 40px
+		width 480px
+		&::-webkit-scrollbar
+			display none
+	.user-profile-comment-list
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		padding 6em 0

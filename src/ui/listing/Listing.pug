@@ -1,10 +1,7 @@
 script.
 	import api from '../../api/index.js'
 	import Button from '../input/Button.pug'
-	import Comment from '../post/Comment.pug'
 	import Headline from '../post/Headline.pug'
-	import Markup from '../markup/Markup.pug'
-	import Post from '../post/Post.pug'
 	import SearchInput from './SearchInput.pug'
 	import SortPicker from './SortPicker.pug'
 	import TimeRangePicker from './TimeRangePicker.pug'
@@ -13,20 +10,14 @@ script.
 	export page_size = 10
 	export search_text = null
 	export sort = null
-	export tab_selection = 'posts'
 	export type = 'subreddit'
 	export user_name = null
-	comment_short_ids = null
 	error = null
-	info = null
 	post_short_ids = null
-	post_selection = null
-	rules = null
 	switch type
 		when 'multireddit'
 			application_path = "/m/#{user_name}/#{name}"
 			display_name = "#{user_name}/#{name}"
-			info_dataset_id = api.ID('multireddit', user_name, name)
 			original_path = "/user/#{user_name}/m/#{name}"
 			posts_dataset_id = 
 				if sort.split('-')[0] is 'search'
@@ -35,13 +26,11 @@ script.
 				else
 					api.ID('multireddit_posts', user_name, name, sort, page_size)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
-			title = "multi: #{user_name}/#{name}"
 		when 'special_multireddit'
 			if name is 'frontpage'
 				application_path = ''
 				posts_dataset_id = api.ID('multireddit_posts', 'r', 'home', sort, page_size)
 				sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'best']
-				title = 'frontpage'
 			else
 				application_path = "/#{name}"
 				posts_dataset_id =
@@ -53,13 +42,11 @@ script.
 				sorts = switch name
 					when 'r/all' then ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 					when 'r/popular' then ['new', 'rising', 'hot', 'controversial', 'top', 'geo']
-				title = "multi: #{name}"
 			display_name = name
 			original_path = application_path
 		when 'subreddit'
 			application_path = "/r/#{name}"
 			display_name = name
-			info_dataset_id = api.ID('subreddit', name)
 			original_path = "/r/#{name}"
 			posts_dataset_id =
 				if sort.split('-')[0] is 'search'
@@ -67,52 +54,26 @@ script.
 					else null
 				else
 					api.ID('subreddit_posts', name, sort, page_size)
-			rules_dataset_id = api.ID('subreddit_rules', name)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
-			title = "subreddit: #{name}"
 		when 'user_profile'
 			application_path = "/u/#{user_name}"
-			comments_dataset_id = api.ID('user_comments', user_name, sort, page_size)
 			display_name = "u/#{user_name}"
-			info_dataset_id = api.ID('user', user_name)
 			original_path = "/u/#{user_name}"
 			posts_dataset_id = api.ID('user_posts', user_name, sort, page_size)
 			sorts = ['new', 'hot', 'controversial', 'top']
-			title = "user: #{user_name}"
-	if comments_dataset_id
-		page_selection = 1
-		api.loadWatch(comments_dataset_id,
-			(x) -> { data: comment_short_ids, error: error } = x
-		)
-	if info_dataset_id
-		api.loadWatch(info_dataset_id,
-			(x) -> { data: info, error: error } = x
-		)
 	if posts_dataset_id
 		page_selection = 1
 		api.loadWatch(posts_dataset_id,
 			(x) -> { data: post_short_ids, error: error } = x
 		)
-	if rules_dataset_id
-		api.loadWatch(rules_dataset_id,
-			(x) -> { data: rules, error: error } = x
-		)
 
-svelte:head
-	title {title}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		Unavailable(path='/r/{name}')
 {:else}
 	main.listing
-		{#if post_selection}
-			{#key post_selection}
-				Post(short_id={post_selection})
-		{:else}
-			div
 		nav.listing-nav
 			header
-				button(on:click={() => api.submit(api.ID('subreddit_subscription', name), { unsubscribe: info?.user_is_subscriber })}) {info?.user_is_subscriber ? '♥' : '♡'}
 				h1 more in {display_name}
 			menu
 				section(style='display: flex; gap: 2em')
@@ -123,47 +84,19 @@ svelte:head
 					SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
 			hr
 			section.listing-tab-content
-				{#if tab_selection === 'about'}
-					{#if info}
-						{#if type === 'subreddit'}
-							.subreddit-description
-								Markup(html={info.description_html})
-				{:else if tab_selection === 'comments'}
-					ol.comment-list
-						{#if comment_short_ids}
-							{#each comment_short_ids as short_id}
-								Comment(short_id={short_id} out_of_context={true})
-				{#if tab_selection === 'posts'}
-					ol.post-list
-						{#if post_short_ids}
-							{#each post_short_ids as short_id}
-								Headline(post_short_id={short_id} select={short_id => post_selection = short_id} selected={post_selection === short_id} show_subreddit={type.endsWith('multireddit')})
-				{:else if tab_selection === 'rules'}
-					{#if rules}
-						ol.subreddit-rules
-							{#each rules.rules as rule}
-								li
-									details
-										summary.subreddit-rule-name {rule.short_name}
-										.subreddit-rule-description
-											Markup(html={rule.description_html})
+				ol.post-list
+					{#if post_short_ids}
+						{#each post_short_ids as short_id}
+							Headline(post_short_id={short_id} show_subreddit={type.endsWith('multireddit')})
 			hr(style='margin: 0 0 1em 0')
 			footer
-				{#if tab_selection === 'comment' || tab_selection === 'posts'}
-					section.listing-tab-content-pages
-						Button(text='+')
+				section.listing-tab-content-pages
+					Button(text='+')
 
 style.
-	.comment-list
-		display flex
-		flex-flow column nowrap
-		gap 1em
-		padding 6em 0
 	.listing
-		display grid
-		grid-template-columns 1fr 560px 1fr
 		height 100vh
-		width 100vw
+		width 560px
 	.listing-nav
 		border-radius 5px
 		display flex
@@ -185,12 +118,3 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1ch
-	.subreddit-description
-		padding 10px
-	.subreddit-rules
-		padding 10px 30px
-	.subreddit-rule-name
-		color var(--color-writing-action)
-		font-weight bold
-	.subreddit-rule-description
-		padding 1em

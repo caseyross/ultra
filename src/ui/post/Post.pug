@@ -4,9 +4,11 @@ script.
 	import Button from '../input/Button.pug'
 	import Comment from './Comment.pug'
 	import Headline from './Headline.pug'
+	import Listing from '../listing/Listing.pug'
 	import MediaPlayer from '../media/MediaPlayer.pug'
 	import Minimap from './Minimap.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
+	import Sidebar from '../subreddit/Sidebar.pug'
 	import Unavailable from '../error/Unavailable.pug'
 	export short_id = null
 	export standalone = false
@@ -134,6 +136,12 @@ svelte:head
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
 		figure.post-minimap
 			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
+	{#if post.subreddit}
+		div(style='position:fixed;left:calc(50vw + 280px);width:560px')
+			Listing(type='subreddit' name={post.subreddit} sort='hot')
+	{#if post.subreddit}
+		div(style='position:fixed;left:calc(50vw - 650px);width:380px')
+			Sidebar(subreddit_name={post.subreddit})
 
 style.
 	.post
