@@ -6,15 +6,27 @@ script.
 	import SortPicker from './SortPicker.pug'
 	import TimeRangePicker from './TimeRangePicker.pug'
 	import Unavailable from '../error/Unavailable.pug'
+	export collection_short_id = null
 	export name = null
 	export page_size = 10
 	export search_text = null
 	export sort = null
 	export type = 'subreddit'
 	export user_name = null
+	collection = null
 	error = null
 	post_short_ids = null
 	switch type
+		when 'collection'
+			application_path = "/c/#{collection_short_id}"
+			display_name = "collection/#{collection_short_id}"
+			original_path = "/collection/#{collection_short_id}"
+			api.loadWatch(api.ID('collection', collection_short_id),
+				(x) ->
+					{ data: collection, error: error } = x
+					if collection then post_short_ids = collection.posts
+			)
+			sorts = []
 		when 'multireddit'
 			application_path = "/m/#{user_name}/#{name}"
 			display_name = "#{user_name}/#{name}"
@@ -75,13 +87,14 @@ script.
 		nav.listing-nav
 			header
 				h1 more in {display_name}
-			menu
-				section(style='display: flex; gap: 2em')
-					SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
-					{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
-						TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
-				{#if sort.split('-')[0] === 'search'}
-					SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
+			{#if sort}
+				menu
+					section(style='display: flex; gap: 2em')
+						SortPicker(base_path={application_path} selection={sort.split('-')[0]} sorts={sorts})
+						{#if ['top', 'controversial', 'search'].includes(sort.split('-')[0])}
+							TimeRangePicker(base_path={application_path + '/' + sort.split('-')[0]} selection={sort.split('-')[1]})
+					{#if sort.split('-')[0] === 'search'}
+						SearchInput(base_path={application_path + '/' + sort} initial_query={search_text})
 			hr
 			section.listing-tab-content
 				ol.post-list

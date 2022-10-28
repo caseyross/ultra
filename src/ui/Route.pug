@@ -12,7 +12,10 @@ script.
 {#if type === 'official_site'}
 	OfficialSiteRedirect(path={data.path})
 {:else}
-	{#if type === 'home'}
+	{#if type === 'collection'}
+		{#key data}
+			Listing(collection_short_id={data.collection_short_id} type='collection')
+	{:else if type === 'home'}
 		Home
 	{:else if type === 'inbox'}
 		Inbox

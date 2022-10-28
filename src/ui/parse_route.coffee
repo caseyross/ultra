@@ -7,7 +7,7 @@ OFFICIAL_SITE = (from_url) -> {
 	data: { path: from_url.pathname + from_url.search + from_url.hash }
 }
 
-KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
+KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'c', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
 
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']
 
@@ -42,7 +42,12 @@ export default (url) ->
 			return {
 				type: 'home'
 			}
-		when 'collection' then return OFFICIAL_SITE(url)
+		when 'c', 'collection'
+			collection_short_id = path[2]
+			return {
+				type: 'collection'
+				data: { collection_short_id }
+			}
 		when 'comments', 'p', 'post', 'tb'
 			post_short_id = path[2]
 			if not post_short_id then return INVALID
@@ -78,7 +83,12 @@ export default (url) ->
 		when 'r', 'subreddit'
 			switch path[3]
 				when 'about' then return OFFICIAL_SITE(url)
-				when 'collection' then return OFFICIAL_SITE(url)
+				when 'collection'
+					collection_short_id = path[4]
+					return {
+						type: 'collection'
+						data: { collection_short_id }
+					}
 				when 'comments', 'p', 'post'
 					post_short_id = path[4]
 					if not post_short_id then return INVALID

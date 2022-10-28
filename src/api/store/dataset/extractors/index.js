@@ -1,6 +1,7 @@
 import extract from './extract.coffee'
 
 // Special extractor functions for API routes that need data restructuring beyond what the general extractor can provide.
+import collection from './collection.coffee'
 import current_user from './current_user.coffee'
 import current_user_messages from './current_user_messages.coffee'
 import post from './post.coffee'
@@ -10,6 +11,7 @@ import users from './users.coffee'
 
 export default {
 	GENERAL: extract,
+	collection,
 	current_user,
 	current_user_messages,
 	post,

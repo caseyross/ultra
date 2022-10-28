@@ -1,6 +1,11 @@
 import { get, post } from '../../net/http.coffee'
 
 export default {
+	collection: (collection_short_id) ->
+		get("/api/v1/collections/collection", {
+			collection_id: collection_short_id
+			include_links: true
+		})
 	current_user: ->
 		get("/api/v1/me")
 	current_user_messages: (max_messages, after_message_fullname) ->
