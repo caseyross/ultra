@@ -19,17 +19,21 @@ script.
 	switch type
 		when 'collection'
 			application_path = "/c/#{collection_short_id}"
-			display_name = "collection/#{collection_short_id}"
 			original_path = "/collection/#{collection_short_id}"
+			sorts = []
+			source_display_name = collection_short_id
+			source_curator_display_name = ''
+			source_type_display_name = 'Collection'
 			api.loadWatch(api.ID('collection', collection_short_id),
 				(x) ->
 					{ data: collection, error: error } = x
-					if collection then post_short_ids = collection.posts
+					if collection
+						source_display_name = collection.title
+						source_curator_display_name = collection.author_name
+						post_short_ids = collection.posts
 			)
-			sorts = []
 		when 'multireddit'
 			application_path = "/m/#{user_name}/#{name}"
-			display_name = "#{user_name}/#{name}"
 			original_path = "/user/#{user_name}/m/#{name}"
 			posts_dataset_id = 
 				if sort.split('-')[0] is 'search'
@@ -38,6 +42,9 @@ script.
 				else
 					api.ID('multireddit_posts', user_name, name, sort, page_size)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
+			source_display_name = name
+			source_curator_display_name = user_name
+			source_type_display_name = 'Multireddit'
 		when 'special_multireddit'
 			if name is 'frontpage'
 				application_path = ''
@@ -54,11 +61,11 @@ script.
 				sorts = switch name
 					when 'r/all' then ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 					when 'r/popular' then ['new', 'rising', 'hot', 'controversial', 'top', 'geo']
-			display_name = name
 			original_path = application_path
+			source_display_name = name
+			source_type_display_name = 'Special Multireddit'
 		when 'subreddit'
 			application_path = "/r/#{name}"
-			display_name = name
 			original_path = "/r/#{name}"
 			posts_dataset_id =
 				if sort.split('-')[0] is 'search'
@@ -67,12 +74,16 @@ script.
 				else
 					api.ID('subreddit_posts', name, sort, page_size)
 			sorts = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
+			source_display_name = name
+			source_type_display_name = 'Subreddit'
 		when 'user_profile'
 			application_path = "/u/#{user_name}"
 			display_name = "u/#{user_name}"
 			original_path = "/u/#{user_name}"
 			posts_dataset_id = api.ID('user_posts', user_name, sort, page_size)
 			sorts = ['new', 'hot', 'controversial', 'top']
+			source_display_name = user_name
+			source_type_display_name = 'Profile'
 	if posts_dataset_id
 		page_selection = 1
 		api.loadWatch(posts_dataset_id,
@@ -86,7 +97,10 @@ script.
 	main.listing
 		nav.listing-nav
 			header
-				h1 more in {display_name}
+				.source-type {source_type_display_name}
+				.source-name {source_display_name}
+				{#if source_curator_display_name}
+					.source-curator {source_curator_display_name}
 			{#if sort}
 				menu
 					section(style='display: flex; gap: 2em')
