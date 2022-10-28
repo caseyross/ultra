@@ -22,14 +22,15 @@ main.sidebar
 		{#if rules}
 			ol.subreddit-rules
 				{#each rules.rules as rule}
-					li
-						details
-							summary.subreddit-rule-name {rule.short_name}
-							.subreddit-rule-description
-								{#if rule.description_html}
-									Markup(html={rule.description_html})
-								{:else}
-									p [No rule description.]
+					details.subreddit-rule
+						summary.subreddit-rule-summary
+							data.subreddit-rule-number {String(rule.priority + 1).padStart(2, '0')}
+							span.subreddit-rule-name {rule.short_name}
+						.subreddit-rule-description
+							{#if rule.description_html}
+								Markup(html={rule.description_html})
+							{:else}
+								p [No rule description.]
 
 style.
 	.sidebar
@@ -45,8 +46,25 @@ style.
 	.subreddit-description
 		padding 10px
 	.subreddit-rules
+		list-style none
 		padding 10px
-	.subreddit-rule-name
-		font-size 12px
+	.subreddit-rule
+		cursor pointer
+		padding 5px
 	.subreddit-rule-description
-		padding 1em
+		border-left 3px solid #666
+		font-size 8pt
+		margin 20px 0
+		margin-left 32px
+		padding 0 33px
+	.subreddit-rule-name
+		font-size 10pt
+		font-weight bold
+	.subreddit-rule-number
+		font-feature-settings 'tnum'
+		font-size 16px
+		font-weight bold
+	.subreddit-rule-summary
+		display grid
+		grid-template-columns 48px 1fr
+		list-style none
