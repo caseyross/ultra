@@ -1,6 +1,6 @@
 script.
 	import api from '../../api/index.js'
-	import { Format } from '../../utils/index.js'
+	import { Time } from '../../utils/index.js'
 	import Avatar from '../user/Avatar.pug'
 	import Button from '../input/Button.pug'
 	import Distinguish from '../user/Distinguish.pug'
@@ -32,7 +32,7 @@ script.
 				Avatar(username={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
 					Distinguish(type={comment.distinguished || 'submitter'})
-			.comment-text(title='{Format.time.sRelative(comment.created_utc)} ago ({Format.time.sAbsolute(comment.created_utc)})')
+			.comment-text(title='posted {Time.sToRelDateStr(comment.created_utc, { abbr: false })} ago ({Time.sToAbsDateStr(comment.created_utc)})')
 				Markup(html={comment.body_html})
 		{#if !out_of_context && comment.replies.length > 0}
 			{#key comment.replies}

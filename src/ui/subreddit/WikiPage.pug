@@ -1,6 +1,6 @@
 script.
-	import { Format } from '../../utils/index.js'
 	import api from '../../api/index.js'
+	import { Time } from '../../utils/index.js'
 	import Markup from '../markup/Markup.pug'
 	import Unavailable from '../error/Unavailable.pug'
 	export page_name = null
@@ -26,7 +26,7 @@ svelte:head
 	main.wiki-page
 		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
 		.wiki-page-info
-			.wiki-page-edit-date Revised {Format.time.sHumanRelative(page.revision_date)}
+			.wiki-page-edit-date Revised {Time.sToRelDateStr(page.revision_date, { abbr: false })} ago
 		article.wiki-page-body
 			Markup(html={page.content_html})
 

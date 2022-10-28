@@ -1,6 +1,6 @@
 script.
 	import { onMount } from 'svelte'
-	import { Format } from '../../utils/index.js'
+	import { Time } from '../../utils/index.js'
 	import Button from '../input/Button.pug'
 	export audio_url = null
 	export dimensions = [480, 480]
@@ -68,7 +68,7 @@ script.
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height:{dimensions[1]}px;width:{dimensions[0]}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={() => paused ? video.play() : video.pause()} key='p' text="{paused ? '▶' : '■'} {Format.time.sMediaDuration(time > 0 ? time : duration)}")
+		Button(action={() => paused ? video.play() : video.pause()} key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(time > 0 ? time : duration)}")
 		.media-scrobbler
 			figure.media-scrobbler-graphics
 				{#each buffer_regions as region}

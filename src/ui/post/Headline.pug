@@ -1,5 +1,5 @@
 script.
-	import { Format } from '../../utils/index.js'
+	import { Time } from '../../utils/index.js'
 	import api from '../../api/index.js'
 	import Flair from './Flair.pug'
 	import Score from './Score.pug'
@@ -37,7 +37,7 @@ script.
 		.post-score
 			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		h1.post-title {post.title}
-		time.post-age(datetime={post.created_utc} title={post.edited ? Format.time.sAbsolute(post.created_utc) + ' (edited ' + Format.time.sAbsolute(post.edited) + ')': Format.time.sAbsolute(post.created_utc)}) {Format.time.sRelative(post.created_utc)}
+		time.post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc)}
 		div
 		.post-context
 			{#if show_subreddit}
