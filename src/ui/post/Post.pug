@@ -81,7 +81,7 @@ svelte:head
 					Tag(name='oc')
 			time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
 			h1.post-title {post.title}
-			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}
