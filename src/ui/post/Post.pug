@@ -1,14 +1,17 @@
 script.
 	import { afterUpdate } from 'svelte';
 	import api from '../../api/index.js'
+	import { Time } from '../../utils/index.js'
 	import Button from '../input/Button.pug'
 	import Comment from './Comment.pug'
 	import Headline from './Headline.pug'
 	import Listing from '../listing/Listing.pug'
 	import MediaPlayer from '../media/MediaPlayer.pug'
 	import Minimap from './Minimap.pug'
+	import Score from './Score.pug'
 	import SelftextMarkup from './SelftextMarkup.pug'
 	import Sidebar from '../subreddit/Sidebar.pug'
+	import Tag from './Tag.pug'
 	import Unavailable from '../error/Unavailable.pug'
 	export short_id = null
 	export standalone = false
@@ -61,7 +64,24 @@ svelte:head
 {:else if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		header.post-header
-			Headline(post_short_id={short_id} selected={true} show_subreddit={true})
+			.post-tags
+				{#if post.archived}
+					Tag(name='archived')
+				{#if post.spoiler}
+					Tag(name='spoiler')
+				{#if post.locked}
+					Tag(name='locked')
+				{#if post.quarantine}
+					Tag(name='quarantined')
+				{#if post.over_18}
+					Tag(name='nsfw')
+				{#if post.stickied}
+					Tag(name='sticky')
+				{#if post.is_original_content}
+					Tag(name='oc')
+			time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
+			h1.post-title {post.title}
+			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		section.post-content
 			{#if post.format === 'self'}
 				{#if !post.selftext.length}
@@ -153,6 +173,8 @@ style.
 		width 480px
 		&::-webkit-scrollbar
 			display none
+	.post-create-date
+		color #888
 	.post-content
 		color #fff
 	.post-comments
@@ -184,8 +206,6 @@ style.
 		flex-flow column nowrap
 		gap 0.5ch
 	.post-header
-		background #666
-		border-radius 20px
 		color white
 		padding 1em 3em
 	.post-iframe
@@ -212,3 +232,10 @@ style.
 		padding 1em 3em
 		:global(& img)
 			width 100%
+	.post-tags
+		display flex
+		gap 3px
+	.post-title
+		font-size 22px
+		font-weight inherit
+		line-height 1.3
