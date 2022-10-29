@@ -135,6 +135,16 @@ export submit = (id, payload) ->
 		rollback = setDataFromExisting(targetID, change)
 	return route(...ID.varArray(id)[1..])(payload)
 	.then (rawData) ->
+		error = rawData?.json?.errors?[0]
+		if error
+			switch error?[0]
+				when 'USER_REQUIRED'
+					throw new errors.LoginRequiredError()
+				else
+					throw new errors.InteractionFailedError({
+						code: error?[0]
+						description: error?[1]
+					})
 		log({
 			id,
 			details: { payload, response: rawData },

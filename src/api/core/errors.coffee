@@ -31,10 +31,18 @@ class BadIDError extends AnyError
 class CredentialsRequiredError extends AnyError
 	constructor: ({ message }) ->
 		super(message)
+class InteractionFailedError extends AnyError
+	constructor: ({ code, description }) ->
+		super("#{code}: #{description}")
+		@.code = code
+		@.description = description
 class LoginFailedError extends AnyError
 	constructor: ({ reason }) ->
 		super('reason code "' + reason + '"')
 		@.reason = reason
+class LoginRequiredError extends AnyError
+	constructor: ->
+		super('need to login to perform that action')
 class RatelimitExceededError extends AnyError
 	constructor: ({ waitMs }) ->
 		super("wait #{Time.msToS(waitMs, { trunc: true })} seconds")
@@ -56,7 +64,9 @@ export default {
 
 	BadIDError
 	CredentialsRequiredError
+	InteractionFailedError
 	LoginFailedError
+	LoginRequiredError
 	RatelimitExceededError
 	
 	UnknownError
