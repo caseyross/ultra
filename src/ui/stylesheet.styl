@@ -33,12 +33,13 @@ html
 // Body
 body
 	align-items center
-	background-color #333
-	color #fff
+	background-color #343537
+	color #f2f4f7
 	display flex
 	flex-flow column nowrap
-	font 500 14px/1.6 'Inter', sans-serif
+	font 500 10pt/1.6 'Inter', sans-serif
 	height 100vh
+	letter-spacing 0.01em
 	margin 0
 
 // Paragraphs
@@ -80,8 +81,12 @@ a
 		margin-left 0.2em
 		margin-right 0.4em
 		padding 0 0.125em
+	a[target='_blank']::before
+		display none !important
 address
 	font-style normal
+strong
+	letter-spacing 0
 sub
 sup
 	line-height 0
@@ -132,12 +137,14 @@ ul
 .md ol
 .md ul
 	margin 0.5em 0 0 0
-	padding-inline-start 18px
+	padding-inline-start 25px
 .md ol ol
 .md ol ul
 .md ul ol
 .md ul ul
-	margin 0.25em 0 0 0
+	margin 0.5em 0 0 0 !important
+li
+	margin-top 0.5em
 
 // Headers
 h1
@@ -146,6 +153,7 @@ h3
 h4
 h5
 h6
+	line-height 1.25
 	margin 1em 0 0 0
 h1
 	font-size 1.5em

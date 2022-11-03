@@ -2,8 +2,10 @@ script.
 	import { afterUpdate } from 'svelte';
 	import api from '../../api/index.js'
 	import { Time } from '../../utils/index.js'
+	import Avatar from '../user/Avatar.pug'
 	import Button from '../input/Button.pug'
 	import Comment from './Comment.pug'
+	import Distinguish from '../user/Distinguish.pug'
 	import Headline from './Headline.pug'
 	import Listing from '../listing/Listing.pug'
 	import MediaPlayer from '../media/MediaPlayer.pug'
@@ -64,6 +66,9 @@ svelte:head
 {:else if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		header.post-header
+			Avatar(username={post.author})
+			{#if post.distinguished}
+				Distinguish(type={post.distinguished})
 			.post-tags
 				{#if post.archived}
 					Tag(name='archived')
@@ -165,7 +170,7 @@ svelte:head
 
 style.
 	.post
-		background #444
+		background #3f3f42
 		box-sizing content-box
 		height calc(100% - 80px)
 		overflow auto
@@ -176,7 +181,7 @@ style.
 	.post-create-date
 		color #888
 	.post-content
-		color #fff
+		margin-top 1em
 	.post-comments
 		margin-top 2em
 	.post-comments-actions
@@ -205,16 +210,11 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 0.5ch
-	.post-header
-		color white
-		padding 1em 3em
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
 	.post-image
 		width 100%
-	.post-link
-		padding 1em 3em
 	.post-link-actions
 		display flex
 		gap 1em
@@ -229,13 +229,13 @@ style.
 		display flex
 	.post-selftext
 		margin-top 0.7em
-		padding 1em 3em
 		:global(& img)
 			width 100%
 	.post-tags
 		display flex
 		gap 3px
 	.post-title
-		font-size 22px
+		font-size 12pt
 		font-weight inherit
+		letter-spacing 0.3px
 		line-height 1.3

@@ -1,5 +1,7 @@
 script.
 	import api from '../../api/index.js'
+	import { Time } from '../../utils/index.js'
+	import Avatar from './Avatar.pug'
 	import Comment from '../post/Comment.pug'
 	import Listing from '../listing/Listing.pug'
 	import Markup from '../markup/Markup.pug'
@@ -8,13 +10,24 @@ script.
 	export page_size = 10
 	comment_short_ids = null
 	page_selection = 1
-	api.loadWatch(api.ID('user_comments', name, sort, page_size),
-		(x) -> { data: comment_short_ids } = x
+	user = null
+	api.loadWatch(api.ID('user', name), (x) ->
+		{ data: user } = x
+	)
+	api.loadWatch(api.ID('user_comments', name, sort, page_size), (x) ->
+		{ data: comment_short_ids } = x
 	)
 
 svelte:head
 	title u/{name} - Profile
 main.user-profile
+	section.user-profile-basic-info
+		Avatar(size='large' username={name})
+		h1.user-profile-user-name {user ? user.name : name}
+		{#if user}
+			section
+				span.user-profile-user-age-label Account created
+				time.user-profile-user-age(title={Time.sToAbsDateStr(user.created_utc)}) {Time.sToRelDateStr(user.created_utc, { abbr: false })}
 	ol.user-profile-comment-list
 		{#if comment_short_ids}
 			{#each comment_short_ids as short_id}
@@ -32,8 +45,18 @@ style.
 		width 480px
 		&::-webkit-scrollbar
 			display none
+	.user-profile-basic-info
+		display grid
 	.user-profile-comment-list
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		padding 6em 0
+	.user-profile-user-age
+		color #888
+		font-size 30px
+	.user-profile-user-age-label
+		color #888
+		font-size 12px
+	.user-profile-user-name
+		font-size 3em

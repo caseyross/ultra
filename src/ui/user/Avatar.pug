@@ -1,5 +1,6 @@
 script.
 	import api from '../../api/index.js'
+	export size = 'normal'
 	export username = null
 	img_url = null
 	if username != '[deleted]'
@@ -8,11 +9,14 @@ script.
 				img_url = user.profile_img
 		)
 
-{#if username == '[deleted]'}
-	.avatar.avatar-not-available
-{:else}
+{#if img_url}
 	a(href='/u/{username}')
-		img.avatar(alt='u/{username}' src={img_url})
+		img.avatar(alt='' class='avatar-size-{size}' src={img_url})
+{:else if username != '[deleted]'}
+	a(href='/u/{username}')
+		.avatar.avatar-not-available
+{:else}
+	.avatar.avatar-not-available
 
 style.
 	.avatar
@@ -21,3 +25,5 @@ style.
 		height 20px
 	.avatar-not-available
 		border 4px dashed #666
+	.avatar-size-large
+		height 64px

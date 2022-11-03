@@ -43,7 +43,7 @@ script.
 			{#if show_subreddit}
 				a(href='/r/{post.subreddit}') r/{post.subreddit.toLowerCase()}
 			{#if post.link_flair_text}
-				Flair(color={post.link_flair_background_color} rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				Flair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 		div
 		.post-info(style='display: none')
 			data.post-comment-count {post.num_comments} 💬
@@ -53,8 +53,9 @@ style.
 		justify-self center
 	.post-card
 		align-items baseline
+		background #444
 		border 1px solid transparent
-		border-radius 5px
+		border-radius 10px
 		display grid
 		font-size 14px
 		gap 0 6px
@@ -77,7 +78,7 @@ style.
 		display flex
 		gap 3px
 	.post-title
-		font-size inherit
+		font-size 10pt
 		font-weight inherit
 		margin 0
 		overflow-wrap anywhere

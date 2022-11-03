@@ -28,7 +28,6 @@ script.
 			div
 				Score(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 			div
-			div
 				Avatar(username={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
 					Distinguish(type={comment.distinguished || 'submitter'})
@@ -46,21 +45,22 @@ script.
 							Button(text='Continue this thread...')
 		{#if out_of_context}
 			menu.comment-links
-				Button(link='/post/{comment.link_id.slice(3)}/comment/{short_id}' text='View in post')
+				Button(link='/post/{comment.link_id.slice(3)}/comment/{short_id}' text='View post')
 
 style.
 	.comment
 		align-items flex-start
 		display grid
 		gap 0 10px
-		grid-template-columns 20px 1fr 40px
+		grid-template-columns 20px 1fr
 		grid-template-rows 24px 1fr
 		justify-items flex-start
-		padding 1ch
+		max-width 350px
 	.comment-replies
-		border-left 4px solid #666
-		margin-left 39px
-		padding-top 10px
+		border-left 1px solid #666
+		margin-left 9px
+		margin-top 10px
+		padding-left 12px
 	.comment-text
 		background #555
 		border-radius 10px
