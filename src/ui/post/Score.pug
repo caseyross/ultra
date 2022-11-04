@@ -4,6 +4,12 @@ script.
 	export upload_vote = -> {}
 	export value = null
 	export vote = 0
+	score_text =
+		if Number.isFinite(value)
+			adjusted_value = value + vote
+			if adjusted_value < 0 then '−' + Math.abs(adjusted_value) # use minus instead of hyphen
+			else adjusted_value
+		else '*'
 	toggle_downvote = ->
 		if vote == -1 then upload_vote(0)
 		else upload_vote(-1)
@@ -12,7 +18,7 @@ script.
 		else upload_vote(1)
 
 button.score(class:downvoted={vote == -1} class:upvoted={vote == 1} on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }}) {controversiality > 0 ? '◆' : ''}
-	span.score-votes {Number.isFinite(value) ? value + vote : '*'}
+	span.score-votes {score_text}
 	{#if awards?.length}
 		span.score-awards(title={'awarded: ' + awards.map(award => award.name + ' (' + award.count + ')').join(', ')}) ★{awards.reduce((a, b) => a + b.count, 0)}
 
