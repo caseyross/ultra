@@ -187,6 +187,10 @@ export default {
 			t: posts_sort.split('-')[1]
 			type: 'links'
 		})
+	user_trophies: (user_name) ->
+		get("/api/v1/user/username/trophies", {
+			id: user_name
+		})
 	wiki: (subreddit_name, page_name, version_short_id) ->
 		get("/r/#{subreddit_name}/wiki/#{page_name}", {
 			v: version_short_id

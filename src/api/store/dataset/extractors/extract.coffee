@@ -216,6 +216,10 @@ export default extract = (rawData, sourceID) ->
 			result.main =
 				id: ID('livethread', rawData.data.id)
 				data: rawData.data
+		when 'TrophyList'
+			result.main =
+				id: null
+				data: rawData.data.trophies.map((item) -> item.data)
 		when 'UserList'
 			result.main =
 				id: null
