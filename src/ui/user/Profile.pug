@@ -10,6 +10,7 @@ script.
 	export page_size = 10
 	comment_short_ids = null
 	page_selection = 1
+	trophies = null
 	user = null
 	api.loadWatch(api.ID('user', name), (x) ->
 		{ data: user } = x
@@ -17,17 +18,25 @@ script.
 	api.loadWatch(api.ID('user_comments', name, sort, page_size), (x) ->
 		{ data: comment_short_ids } = x
 	)
+	api.loadWatch(api.ID('user_trophies', name), (x) ->
+		{ data: trophies } = x
+	)
 
 svelte:head
 	title u/{name} - Profile
 main.user-profile
 	section.user-profile-basic-info
-		Avatar(size='large' username={name})
-		h1.user-profile-user-name {user ? user.name : name}
-		{#if user}
-			section
-				span.user-profile-user-age-label Account created
-				time.user-profile-user-age(title={Time.sToAbsDateStr(user.created_utc)}) {Time.sToRelDateStr(user.created_utc, { abbr: false })}
+		div(style='text-align: center')
+			Avatar(size='large' username={name})
+			h1.user-profile-user-name {user ? user.name : name}
+			{#if user}
+				time.user-profile-user-age(title='account created {Time.sToAbsDateStr(user.created_utc)}') {Time.sToRelDateStr(user.created_utc)}
+		div
+			{#if trophies}
+				ol.user-trophies
+					{#each trophies as trophy}
+						li.user-trophy(title={trophy.description ? trophy.name + ' (' + trophy.description + ')' : trophy.name})
+							img.user-trophy-icon(alt='' src={trophy.icon_40})
 	ol.user-profile-comment-list
 		{#if comment_short_ids}
 			{#each comment_short_ids as short_id}
@@ -47,6 +56,8 @@ style.
 			display none
 	.user-profile-basic-info
 		display grid
+		gap 30px
+		grid-template-columns 128px 1fr
 	.user-profile-comment-list
 		display flex
 		flex-flow column nowrap
@@ -54,9 +65,13 @@ style.
 		padding 6em 0
 	.user-profile-user-age
 		color #888
-		font-size 30px
-	.user-profile-user-age-label
-		color #888
-		font-size 12px
+		font-size 12pt
 	.user-profile-user-name
-		font-size 3em
+		font-size 12pt
+	.user-trophies
+		display flex
+		flex-flow row wrap
+		gap 5px
+	.user-trophy
+		height 41px
+		width 41px

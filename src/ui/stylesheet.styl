@@ -103,17 +103,22 @@ pre
 	background var(--color-paper-callout)
 	font-family var(--typeface-mono)
 	font-size 12px
-	overflow-wrap anywhere
-	white-space pre-wrap
 code
 	padding 0 0.25em
+	overflow-wrap anywhere
+	white-space pre-wrap
 pre
-	border 1px solid
-	display inline-block
-	padding 1em
+	background #333
+	overflow auto
+	padding 2em
 	& code
 		background transparent
 		padding 0
+		white-space pre
+	.comment-text &
+		max-width 300px
+	.post-selftext &
+		max-width 480px
 
 // Spoilers
 .md-spoiler-text
@@ -130,20 +135,22 @@ pre
 menu
 ol
 ul
+	list-style none
 	margin 0
 	padding 0
-	& ul
-		list-style-type initial
 .md ol
 .md ul
+	list-style initial
 	margin 0.5em 0 0 0
 	padding-inline-start 25px
+	& ul
+		list-style-type initial
 .md ol ol
 .md ol ul
 .md ul ol
 .md ul ul
 	margin 0.5em 0 0 0 !important
-li
+.md li
 	margin-top 0.5em
 
 // Headers

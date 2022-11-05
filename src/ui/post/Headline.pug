@@ -5,7 +5,6 @@ script.
 	import Score from './Score.pug'
 	import Tag from './Tag.pug'
 	export post_short_id = null
-	export select = null
 	export selected = false
 	export show_subreddit = false
 	post = null
@@ -17,62 +16,48 @@ script.
 
 {#if post}
 	a.post-card(class:selected={selected} href='/r/{post.subreddit.toLowerCase()}/post/{post_short_id}')
-		div
-		.post-tags
-			{#if post.archived}
-				Tag(name='archived')
-			{#if post.spoiler}
-				Tag(name='spoiler')
-			{#if post.locked}
-				Tag(name='locked')
-			{#if post.quarantine}
-				Tag(name='quarantined')
-			{#if post.over_18}
-				Tag(name='nsfw')
-			{#if post.stickied}
-				Tag(name='sticky')
-			{#if post.is_original_content}
-				Tag(name='oc')
-		div
-		.post-score
-			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		h1.post-title {post.title}
-		time.post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc)}
-		div
-		.post-context
+		.post-metadata
 			{#if show_subreddit}
 				a(href='/r/{post.subreddit}') r/{post.subreddit.toLowerCase()}
 			{#if post.link_flair_text}
 				Flair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-		div
-		.post-info(style='display: none')
+			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+			time.post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc)}
 			data.post-comment-count {post.num_comments} 💬
+			.post-tags
+				{#if post.archived}
+					Tag(name='archived')
+				{#if post.spoiler}
+					Tag(name='spoiler')
+				{#if post.locked}
+					Tag(name='locked')
+				{#if post.quarantine}
+					Tag(name='quarantined')
+				{#if post.over_18}
+					Tag(name='nsfw')
+				{#if post.stickied}
+					Tag(name='sticky')
+				{#if post.is_original_content}
+					Tag(name='oc')
 
 style.
-	.post-age
-		justify-self center
 	.post-card
 		align-items baseline
 		background #444
-		border 1px solid transparent
+		border 2px solid transparent
 		border-radius 10px
-		display grid
-		font-size 14px
-		gap 0 6px
-		grid-template-columns 48px 1fr 48px
-		line-height 1.5
-		max-width 480px
+		display flex
+		flex-flow column nowrap
+		gap 5px
 		padding 10px
-		position relative
-		text-align left
 		&:hover
+			border-color wheat
 			color wheat
-	.post-context
+	.post-metadata
 		align-items center
 		display flex
-		gap 1em
-	.post-score
-		justify-self center
+		gap 1ch
 	.post-tags
 		align-items center
 		display flex

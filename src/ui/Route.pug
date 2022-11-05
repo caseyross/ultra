@@ -24,7 +24,7 @@ script.
 			Listing(name={data.multireddit_name} search_text={data.search_text} sort={data.posts_sort} type='multireddit' user_name={data.user_name})
 	{:else if type === 'post'}
 		{#key data}
-			Post(short_id={data.post_short_id} standalone={true})
+			Post(short_id={data.post_short_id})
 	{:else if type === 'special_multireddit'}
 		{#key data}
 			Listing(name={data.special_multireddit_name} search_text={data.search_text} sort={data.posts_sort} type='special_multireddit')

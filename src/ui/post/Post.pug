@@ -6,6 +6,7 @@ script.
 	import Button from '../input/Button.pug'
 	import Comment from './Comment.pug'
 	import Distinguish from '../user/Distinguish.pug'
+	import Flair from './Flair.pug'
 	import Headline from './Headline.pug'
 	import Listing from '../listing/Listing.pug'
 	import MediaPlayer from '../media/MediaPlayer.pug'
@@ -16,7 +17,6 @@ script.
 	import Tag from './Tag.pug'
 	import Unavailable from '../error/Unavailable.pug'
 	export short_id = null
-	export standalone = false
 	DOM =
 		post: null
 	error = null
@@ -73,6 +73,8 @@ svelte:head
 				Avatar(username={post.author})
 				Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 				time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
+				{#if post.link_flair_text}
+					Flair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 				.post-tags
 					{#if post.archived}
 						Tag(name='archived')
