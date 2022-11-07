@@ -16,15 +16,16 @@ script.
 
 {#if post}
 	a.post-card(class:selected={selected} href='/r/{post.subreddit.toLowerCase()}/post/{post_short_id}')
-		h1.post-title {post.title}
-		.post-metadata
-			{#if show_subreddit}
-				a(href='/r/{post.subreddit}') r/{post.subreddit.toLowerCase()}
+		{#if show_subreddit}
+			a.post-subreddit(href='/r/{post.subreddit}') {post.subreddit.toLowerCase()}
+		{:else}
 			{#if post.link_flair_text}
 				Flair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-			Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-			time.post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc)}
-			data.post-comment-count {post.num_comments} 💬
+		h1.post-title {post.title}
+		.post-metadata
+			.post-score
+				Score(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+				time.post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc, { abbr: false })}
 			.post-tags
 				{#if post.archived}
 					Tag(name='archived')
@@ -56,8 +57,26 @@ style.
 			color wheat
 	.post-metadata
 		align-items center
+		color #888
 		display flex
-		gap 1ch
+		justify-content space-between
+		width 100%
+	.post-score
+		align-items center
+		display flex
+		gap 10px
+	.post-subreddit::before
+		background lightskyblue
+		border-radius 999px
+		color white
+		content 'r/'
+		display inline
+		font-size 0.8em
+		height 1.25em
+		line-height 1.25
+		margin-left 0.2em
+		margin-right 0.4em
+		padding 0 0.5em
 	.post-tags
 		align-items center
 		display flex

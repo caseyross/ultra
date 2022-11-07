@@ -13,13 +13,16 @@ script.
 
 main.sidebar
 	nav.sidebar-nav
+		section
+			p Subreddit
+			p {subreddit_name}
 		{#if info}
-			button(on:click={() => api.submit(api.ID('subreddit_subscription', subreddit_name), { unsubscribe: info?.user_is_subscriber })}) {info?.user_is_subscriber ? '♥' : '♡'}
 			section.subreddit-description
 				details
 					summary About this subreddit
-					Markup(html={info.description_html})
+					p {info.public_description}
 		{#if rules}
+			p Rules
 			ol.subreddit-rules
 				{#each rules.rules as rule}
 					details.subreddit-rule
@@ -34,7 +37,6 @@ main.sidebar
 
 style.
 	.sidebar
-		color #aaa
 		height 100vh
 		width 380px
 	.sidebar-nav
@@ -48,7 +50,6 @@ style.
 	.subreddit-rules
 		padding 10px
 	.subreddit-rule
-		cursor pointer
 		font-size 9pt
 		letter-spacing 0.03em
 		padding 5px
