@@ -1,4 +1,4 @@
-export default (post) -> switch (if post.url.hostname.startsWith('www') then post.url.hostname[4..] else post.url.hostname)
+export default (post) -> switch (if post.url?.hostname.startsWith('www') then post.url?.hostname[4..] else post.url?.hostname)
 	when 'mobile.twitter.com'
 		if post.media_embed?.content
 			html: post.media_embed.content

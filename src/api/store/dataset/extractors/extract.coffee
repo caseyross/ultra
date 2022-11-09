@@ -63,12 +63,15 @@ export default extract = (rawData, sourceID) ->
 		when 't3'
 			post = rawData.data
 			# Normalize the URL - sometimes it is only given as a relative path.
-			post.url = if post.url[0] == '/' then new URL("https://www.reddit.com#{post.url}") else new URL(post.url)
+			post.url = switch
+				when !post.url then null
+				when post.url[0] == '/' then new URL("https://www.reddit.com#{post.url}")
+				else new URL(post.url)
 			# Detect the content format for the post.
 			post.format = switch
 				when post.crosspost_parent_list
 					'crosspost'
-				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url.hostname == 'i.redd.it'
+				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url?.hostname == 'i.redd.it'
 					'media'
 				when post.tournament_data
 					'prediction'
@@ -128,7 +131,7 @@ export default extract = (rawData, sourceID) ->
 					mediaObject.source_width = item.source.width
 					return mediaObject
 				)
-			else if post.url.hostname == 'i.redd.it'
+			else if post.url?.hostname == 'i.redd.it'
 				post.media[0] =
 					image_url: post.url
 					is_gif: post.url.pathname.endsWith('gif')

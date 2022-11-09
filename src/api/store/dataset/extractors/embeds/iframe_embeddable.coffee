@@ -1,4 +1,4 @@
-export default (url) -> switch (if url.hostname.startsWith('www') then url.hostname[4..] else url.hostname)
+export default (url) -> switch (if url?.hostname.startsWith('www') then url?.hostname[4..] else url?.hostname)
 	when 'clips.twitch.tv'
 		descriptor = url.pathname.split('/')[1]
 		if descriptor?.length
