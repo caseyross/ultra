@@ -142,10 +142,11 @@ svelte:head
 					menu.post-embed-actions
 						Button(action={() => window.open(post.url)} key='o' text='Open original')
 			{:else if post.format === 'link'}
-				.md.post-link
-					a(href={post.url} rel='external noopener preconnect') {post.url}
-				menu.post-link-actions
-					Button(action={() => window.open(post.url)} key='e' text='Open link')
+				{#if post.url}
+					.md.post-link
+						a(href={post.url} rel='external noopener preconnect') {post.url}
+					menu.post-link-actions
+						Button(action={() => window.open(post.url)} key='e' text='Open link')
 			{:else if post.format === 'crosspost'}
 				Headline(post_short_id={post.crosspost_parent} show_subreddit={true})
 			{:else}
