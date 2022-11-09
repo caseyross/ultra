@@ -15,6 +15,7 @@ script.
 	export user_name = null
 	collection = null
 	error = null
+	loading = false
 	post_short_ids = null
 	switch type
 		when 'collection'
@@ -87,12 +88,14 @@ script.
 	if posts_dataset_id
 		page_selection = 1
 		api.loadWatch(posts_dataset_id,
-			(x) -> { data: post_short_ids, error: error } = x
+			(x) -> { data: post_short_ids, error, loading } = x
 		)
 
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		Unavailable(path='/r/{name}')
+{:else if loading}
+	p Loading...
 {:else}
 	main.listing
 		nav.listing-nav

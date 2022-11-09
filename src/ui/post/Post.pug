@@ -20,12 +20,13 @@ script.
 	DOM =
 		post: null
 	error = null
+	loading = false
 	more_replies_loading = false
 	post = null
 	profile_data_loaded = false
 	api.loadWatch(api.ID('post', short_id),
 		(x) ->
-			{ data: post, error } = x
+			{ data: post, error, loading } = x
 			if post?.contributors?.length
 				api.loadWatch(api.ID('users', post.contributors),
 					(x) -> if x.data or x.error then profile_data_loaded = true
@@ -63,6 +64,8 @@ svelte:head
 {#if error}
 	{#if error instanceof api.errors.ServerError}
 		Unavailable(path='/{short_id}')
+{:else if loading}
+	p Loading...
 {:else if post}
 	article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 		header.post-header
