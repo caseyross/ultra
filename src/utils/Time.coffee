@@ -1,3 +1,13 @@
+# Formatter is expensive to create, so we just maintain a singleton instance
+abs_date_formatter = new Intl.DateTimeFormat('en-US', {
+	weekday: 'long',
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+	hour: 'numeric',
+	minute: 'numeric'
+})
+
 units =
 	year:
 		abbr: 'y'
@@ -82,16 +92,7 @@ Time = {
 			m = m + 1
 		return "#{String(m).padStart(2, '0')}:#{String(s).padStart(2, '0')}"
 	
-	msToAbsDateStr: (ms) ->
-		formatter = new Intl.DateTimeFormat('en-US', {
-			weekday: 'long',
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric'
-		})
-		return formatter.format(new Date(ms))
+	msToAbsDateStr: (ms) -> abs_date_formatter.format(new Date(ms))
 	
 	msToRelDateStr: (ms, opt = { abbr: true }) ->
 		duration = Time.msToTopDuration(Time.unixMs() - ms, { trunc: true })
