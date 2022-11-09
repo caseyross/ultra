@@ -178,12 +178,13 @@ export default extract = (rawData, sourceID) ->
 				data: rawData.data
 		when 'wikipage'
 			wikipage = rawData.data
-			revised_by_user_id = ID('user', wikipage.revision_by.data.name)
-			result.sub.push({
-				id: revised_by_user_id
-				data: wikipage.revision_by.data
-			})
-			wikipage.revision_by = revised_by_user_id
+			if wikipage.revision_by
+				revised_by_user_id = ID('user', wikipage.revision_by.data.name)
+				result.sub.push({
+					id: revised_by_user_id
+					data: wikipage.revision_by.data
+				})
+				wikipage.revision_by = revised_by_user_id
 			result.main =
 				id: null
 				data: wikipage
