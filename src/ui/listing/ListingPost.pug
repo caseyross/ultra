@@ -1,12 +1,17 @@
 script.
 	import api from '../../api/index.js'
 	import { Time } from '../../lib/index.js'
+	
 	import PostFlair from '../page/post/PostFlair.pug'
 	import PostScore from '../page/post/PostScore.pug'
 	import PostTag from '../page/post/PostTag.pug'
+
+	import ListingNameTag from './ListingNameTag.pug'
+	
 	export selected = false
 	export short_id = null
 	export show_subreddit = false
+	
 	post = null
 	api.loadWatch(api.ID('post', short_id),
 		(x) ->
@@ -17,7 +22,7 @@ script.
 {#if post}
 	a.listing-post(class:selected={selected} href='/r/{post.subreddit.toLowerCase()}/post/{short_id}')
 		{#if show_subreddit}
-			a.listing-post-subreddit(href='/r/{post.subreddit}') {post.subreddit.toLowerCase()}
+			ListingNameTag(link='/r/{post.subreddit}' text={post.subreddit} type='subreddit_posts')
 		{:else}
 			{#if post.link_flair_text}
 				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
@@ -65,18 +70,6 @@ style.
 		align-items center
 		display flex
 		gap 10px
-	.listing-post-subreddit::before
-		background lightskyblue
-		border-radius 999px
-		color white
-		content 'r/'
-		display inline
-		font-size 0.8em
-		height 1.25em
-		line-height 1.25
-		margin-left 0.2em
-		margin-right 0.4em
-		padding 0 0.5em
 	.listing-post-tags
 		align-items center
 		display flex

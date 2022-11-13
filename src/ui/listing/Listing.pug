@@ -1,6 +1,7 @@
 script.
 	import api from '../../api/index.js'
 	import Button from '../framework/Button.pug'
+	import ListingNameTag from './ListingNameTag.pug'
 	import ListingPost from './ListingPost.pug'
 	import ListingSearchField from './ListingSearchField.pug'
 	import ListingSort from './ListingSort.pug'
@@ -24,7 +25,6 @@ script.
 	
 	switch type
 		when 'collection_posts'
-			type_display_name = 'Collection'
 			display_name = collection_short_id
 			base_path = "/c/#{collection_short_id}"
 			official_path = "/collection/#{collection_short_id}"
@@ -37,7 +37,6 @@ script.
 					pages[0] = collection.posts
 			)
 		when 'multireddit_posts'
-			type_display_name = 'Multireddit'
 			display_name = "#{user_name}/#{multireddit_name}"
 			base_path = "/m/#{user_name}/#{multireddit_name}"
 			official_path = "/user/#{user_name}/m/#{multireddit_name}"
@@ -50,7 +49,6 @@ script.
 						base_page_id = api.ID('search_posts_in_multireddit', user_name, multireddit_name, posts_sort.split('-')[1], search_text, page_size)
 			else base_page_id = api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
 		when 'subreddit_posts'
-			type_display_name = 'Subreddit'
 			sort_options = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
 			if subreddit_name
 				display_name = subreddit_name
@@ -60,10 +58,6 @@ script.
 					if search_text
 						base_page_id = api.ID('search_posts_in_subreddit', subreddit_name, posts_sort.split('-')[1], search_text, page_size)
 				else base_page_id = api.ID('subreddit_posts', subreddit_name, posts_sort, page_size)
-				subreddit = null
-				api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
-					if subreddit then display_name = subreddit.display_name
-				)
 			else if post_short_id
 				source_post = null
 				api.loadWatch(api.ID('post', post_short_id), (x) ->
@@ -76,8 +70,7 @@ script.
 						subreddit_posts_lazy_loadable = true
 				)
 		when 'user_posts'
-			type_display_name = 'Profile'
-			display_name = "u/#{user_name}"
+			display_name = user_name
 			base_path = "/u/#{user_name}"
 			official_path = "/u/#{user_name}"
 			sort_options = ['new', 'hot', 'controversial', 'top']
@@ -116,9 +109,8 @@ nav.listing
 		p Loading...
 	{:else}
 		header
-			{#if type_display_name && display_name}
-				span.listing-type {type_display_name}:
-				span.listing-name {display_name}
+			{#if display_name}
+				ListingNameTag(link={base_path} text={display_name} type={type})
 		{#if sort_options && !subreddit_posts_lazy_loadable}
 			menu
 				section(style='display: flex; gap: 2em')
