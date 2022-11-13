@@ -128,20 +128,16 @@ nav.listing
 				{#if posts_sort.split('-')[0] === 'search'}
 					ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
 		hr
-		section.listing-content
+		ol.listing-content
 			{#if pages.length}
-				ol.listing-posts
-					{#each pages as page}
-						{#each page as short_id}
-							{#if type.endsWith('posts')}
-								ListingPost(short_id={short_id} show_subreddit={type !== 'subreddit_posts'})
-					{#if has_next_page}
-						Button(action={() => load_page(pages.length)} text='More')
+				{#each pages as page}
+					{#each page as short_id}
+						{#if type.endsWith('posts')}
+							ListingPost(short_id={short_id} show_subreddit={type !== 'subreddit_posts'})
+				{#if has_next_page}
+					Button(action={() => load_page(pages.length)} text='More')
 			{:else if subreddit_posts_lazy_loadable}
 				Button(action={() => load_page(0)} text='Load posts')
-		hr(style='margin: 0 0 1em 0')
-		footer
-			Button(text='+')
 
 style.
 	.listing
@@ -149,6 +145,7 @@ style.
 		flex-flow column nowrap
 		height 100vh
 		padding 20px
+		padding-bottom 0
 		width 400px
 		header
 			align-items baseline
@@ -156,11 +153,10 @@ style.
 			gap 1em
 			margin-bottom 1em
 	.listing-content
+		display flex
 		flex 1
+		flex-flow column nowrap
+		gap 1ch
 		overflow-y auto
 		&::-webkit-scrollbar
 			display none
-	.listing-posts
-		display flex
-		flex-flow column nowrap
-		gap 1ch
