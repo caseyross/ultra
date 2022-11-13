@@ -152,7 +152,7 @@ svelte:head
 						menu.post-link-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open link')
 				{:else if post.format === 'crosspost'}
-					ListingPost(post_short_id={post.crosspost_parent} show_subreddit={true})
+					ListingPost(short_id={post.crosspost_parent} show_subreddit={true})
 				{:else}
 					p [Error displaying post.]
 				{#if post.selftext_html}
