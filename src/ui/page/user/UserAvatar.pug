@@ -1,0 +1,29 @@
+script.
+	import api from '../../../api/index.js'
+	export name = null
+	export size = 'normal'
+	img_url = null
+	if name != '[deleted]'
+		api.loadWatch(api.ID('user', name), ({ data: user }) ->
+			if user
+				img_url = user.profile_img
+		)
+
+{#if img_url}
+	a(href='/u/{name}')
+		img.user-avatar(alt='' class='user-avatar-size-{size}' src={img_url})
+{:else if name != '[deleted]'}
+	a(href='/u/{name}')
+		.user-avatar.user-avatar-not-available(class='user-avatar-size-{size}')
+{:else}
+	.user-avatar.user-avatar-not-available(class='user-avatar-size-{size}')
+
+style.
+	.user-avatar
+		aspect-ratio 1
+		border-radius 999px
+		height 20px
+	.user-avatar-not-available
+		border 4px dashed #666
+	.user-avatar-size-large
+		height 128px

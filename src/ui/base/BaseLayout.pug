@@ -1,0 +1,20 @@
+script.
+	import BaseListingContent from './BaseListingContent.pug'
+	import BaseNavigation from './BaseNavigation.pug'
+	import BasePageContent from './BasePageContent.pug'
+	export listing_data = null
+	export listing_type = null
+	export page_data = null
+	export page_type = null
+
+main
+	BaseNavigation
+	BasePageContent(data={page_data} type={page_type})
+	BaseListingContent(data={{ ...page_data, ...listing_data }} listing_type={listing_type} page_type={page_type})
+
+style.
+	main
+		display grid
+		grid-template-columns 1fr 560px 1fr
+		height 100vh
+		width 100vh

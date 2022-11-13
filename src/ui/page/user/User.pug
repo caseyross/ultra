@@ -1,0 +1,65 @@
+script.
+	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
+	import TextHTML from '../../framework/TextHTML.pug'
+	import PostComment from '../post/PostComment.pug'
+	import UserAvatar from './UserAvatar.pug'
+	export name = null
+	comment_short_ids = null
+	trophies = null
+	user = null
+	api.loadWatch(api.ID('user', name), (x) -> { data: user } = x)
+	api.loadWatch(api.ID('user_comments', name, 'new', 50), (x) -> { data: comment_short_ids } = x)
+	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
+
+svelte:head
+	title u/{name} - Profile
+article.user
+	section.user-basic-info
+		div(style='text-align: center')
+			UserAvatar(name={name} size='large')
+			h1.user-name {user ? user.name : name}
+			{#if user}
+				time.user-age(title='account created {Time.sToAbsDateStr(user.created_utc)}') {Time.sToRelDateStr(user.created_utc)}
+		div
+			{#if trophies}
+				ol.user-trophies
+					{#each trophies as trophy}
+						li.user-trophy(title={trophy.description ? trophy.name + ' (' + trophy.description + ')' : trophy.name})
+							img.user-trophy-icon(alt='' src={trophy.icon_40})
+	ol.user-comment-list
+		{#if comment_short_ids}
+			{#each comment_short_ids as short_id}
+				PostComment(short_id={short_id} out_of_context={true})
+
+style.
+	.user
+		background #444
+		box-sizing content-box
+		height calc(100% - 80px)
+		overflow auto
+		padding 40px
+		width 480px
+		&::-webkit-scrollbar
+			display none
+	.user-age
+		color #888
+		font-size 12pt
+	.user-basic-info
+		display grid
+		gap 30px
+		grid-template-columns 128px 1fr
+	.user-comment-list
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		padding 6em 0
+	.user-name
+		font-size 12pt
+	.user-trophies
+		display flex
+		flex-flow row wrap
+		gap 5px
+	.user-trophy
+		height 41px
+		width 41px

@@ -1,0 +1,250 @@
+script.
+	import { afterUpdate } from 'svelte';
+	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
+
+	import Base404 from '../../base/Base404.pug'
+	import Button from '../../framework/Button.pug'
+	import MediaPlayer from '../../framework/MediaPlayer.pug'
+	import Minimap from '../../framework/Minimap.pug'
+	import ListingPost from '../../listing/ListingPost.pug'
+	
+	import UserAvatar from '../user/UserAvatar.pug'
+	import UserDistinguish from '../user/UserDistinguish.pug'
+	
+	import PostComment from './PostComment.pug'
+	import PostFlair from './PostFlair.pug'
+	import PostMarkupHTML from './PostMarkupHTML.pug'
+	import PostScore from './PostScore.pug'
+	import PostTag from './PostTag.pug'
+	
+	export short_id = null
+	
+	DOM =
+		post: null
+	error = null
+	loading = false
+	more_replies_loading = false
+	post = null
+	profile_data_loaded = false
+	api.loadWatch(api.ID('post', short_id),
+		(x) ->
+			{ data: post, error, loading } = x
+			if post?.contributors?.length
+				api.loadWatch(api.ID('users', post.contributors),
+					(x) -> if x.data or x.error then profile_data_loaded = true
+				)
+			if post?.more_replies
+				api.watch(post.more_replies_id,
+					(x) -> { loading: more_replies_loading } = x
+				)
+	)
+	current_scroll = 0
+	line_height = 21
+	minimap_pattern = []
+	afterUpdate ->
+		content_pattern =
+			if node = document.querySelector('.post-content')
+				[{
+					color: 'rgba(0,0,0,0.5)'
+					height: Math.trunc(node.clientHeight / line_height),
+					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / line_height)
+				}]
+			else []
+		comments_pattern = Array.from(
+			document.querySelectorAll('.comment-body'),
+			(node) -> ({
+					color: 'rgba(0,0,0,0.5)'
+					height: Math.trunc(node.clientHeight / line_height),
+					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / line_height)
+			})
+		)
+		minimap_pattern = content_pattern.concat(comments_pattern)
+
+svelte:head
+	{#if post}
+		title r/{post.subreddit.toLowerCase()} - {post.title}
+{#if error}
+	{#if error instanceof api.errors.ServerError}
+		Base404(path='/{short_id}')
+{:else if loading}
+	p Loading...
+{:else if post}
+	{#key post}
+		article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
+			header.post-header
+				h1.post-title {post.title}
+				.post-metadata
+					{#if post.distinguished}
+						UserDistinguish(type={post.distinguished})
+					UserAvatar(name={post.author})
+					PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+					time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
+					{#if post.link_flair_text}
+						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+					.post-tags
+						{#if post.archived}
+							PostTag(name='archived')
+						{#if post.spoiler}
+							PostTag(name='spoiler')
+						{#if post.locked}
+							PostTag(name='locked')
+						{#if post.quarantine}
+							PostTag(name='quarantined')
+						{#if post.over_18}
+							PostTag(name='nsfw')
+						{#if post.stickied}
+							PostTag(name='sticky')
+						{#if post.is_original_content}
+							PostTag(name='oc')
+			section.post-content
+				{#if post.format === 'self'}
+					{#if !post.selftext.length}
+						.post-selftext-empty
+				{:else if post.format === 'prediction'}
+					ol.post-predictions
+						{#each post.tournament_data.predictions as prediction}
+							h2.post-prediction-title {prediction.title}
+							dl.post-prediction-options
+								{#each prediction.options as option}
+									li
+										dt
+											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+										dd {option.text}
+				{:else if post.format === 'media'}
+					{#if post.media.length > 1}
+						ol.post-gallery
+							{#each post.media as media, index}
+								figure.post-gallery-item
+									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+										picture
+											source(srcset={media.image_url_960})
+											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+									{#if media.caption_text || media.caption_url}
+										figcaption.post-gallery-image-caption
+											{#if media.caption_text}
+												p {media.caption_text}
+											{#if media.caption_url}
+												a(href={media.caption_url}) {media.caption_url}
+					{:else}
+						{@const media = post.media[0]}
+							{#if media.video_url}
+								MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
+							{:else if media.image_url}
+								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+									picture
+										source(srcset={media.image_url_960})
+										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+				{:else if post.format === 'embed'}
+					{#each post.media as media}
+						{#if media.iframe_url}
+							<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+							<!-- svelte-ignore a11y-missing-attribute -->
+							iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
+						{:else if media.html}
+							{@html media.html}
+						menu.post-embed-actions
+							Button(action={() => window.open(post.url)} key='o' text='Open original')
+				{:else if post.format === 'link'}
+					{#if post.url}
+						.md.post-link
+							a(href={post.url} rel='external noopener preconnect') {post.url}
+						menu.post-link-actions
+							Button(action={() => window.open(post.url)} key='e' text='Open link')
+				{:else if post.format === 'crosspost'}
+					ListingPost(post_short_id={post.crosspost_parent} show_subreddit={true})
+				{:else}
+					p [Error displaying post.]
+				{#if post.selftext_html}
+					.post-selftext
+						PostMarkupHTML(html={post.selftext_html})
+			section.post-comments
+				h1.post-comments-label Comments
+				{#if post.replies?.length && profile_data_loaded}
+					{#key post.replies}
+						ol.post-comments-list
+							{#each post.replies as reply_short_id}
+								PostComment(short_id={reply_short_id})
+							{#if post.more_replies}
+								.post-more-replies
+									Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
+				menu.post-comments-actions
+					Button(disabled={post.archived || post.locked} text='+ Add a comment...')
+			figure.post-minimap
+				Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
+
+style.
+	.post
+		background #3f3f42
+		box-sizing content-box
+		height calc(100% - 80px)
+		overflow auto
+		padding 40px
+		width 480px
+		&::-webkit-scrollbar
+			display none
+	.post-content
+		margin-top 1em
+	.post-comments
+		margin-top 2em
+	.post-comments-actions
+		margin-top 1em
+	.post-comments-label
+		font-size 10px
+		font-feature-settings 'cpsp'
+		opacity 0.5
+		text-transform uppercase
+	.post-comments-list
+		margin-top 2em
+	.post-embed-actions
+		display flex
+		gap 1em
+		margin-top 1em
+	.post-gallery
+		display flex
+		flex-flow row wrap
+		gap 20px
+	.post-gallery-image
+		width 100%
+	.post-gallery-image-caption
+		color #aaa
+		text-align center
+	.post-gallery-item
+		display flex
+		flex-flow column nowrap
+		gap 0.5ch
+	.post-iframe
+		aspect-ratio 16 / 9
+		width 100%
+	.post-image
+		width 100%
+	.post-link-actions
+		display flex
+		gap 1em
+		margin-top 1em
+	.post-metadata
+		align-items center
+		color #888
+		display flex
+		gap 10px
+		margin-top 1ch
+	.post-minimap
+		position fixed
+		right 0
+		top 6em
+	.post-more-replies
+		margin-top 2.25em
+	.post-prediction-options > li
+		display flex
+	.post-selftext
+		margin-top 0.7em
+		:global(& img)
+			width 100%
+	.post-tags
+		display flex
+		gap 3px
+	.post-title
+		font-size 12pt
+		font-weight inherit
+		letter-spacing 0.025em
+		line-height 1.444

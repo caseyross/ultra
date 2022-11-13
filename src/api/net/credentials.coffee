@@ -1,4 +1,4 @@
-import { Time } from '../../utils/index.js'
+import { Time } from '../../lib/index.js'
 import errors from '../core/errors.coffee'
 import ratelimit from './ratelimit.coffee'
 

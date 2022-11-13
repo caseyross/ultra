@@ -1,0 +1,61 @@
+script.
+	import api from '../../../api/index.js'
+	import TextHTML from '../../framework/TextHTML.pug'
+	export name = null
+	info = null
+	rules = null
+	api.loadWatch(api.ID('subreddit', name), (x) -> { data: info } = x)
+	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
+
+article.subreddit
+	header
+		p Subreddit
+		p {name}
+	{#if info}
+		section.subreddit-description
+			details
+				summary About this subreddit
+				p {info.public_description}
+	{#if rules}
+		p Rules
+		ol.subreddit-rules
+			{#each rules.rules as rule}
+				details.subreddit-rule
+					summary.subreddit-rule-summary
+						data.subreddit-rule-number {String(rule.priority + 1).padStart(2, '0')}
+						span.subreddit-rule-name {rule.short_name}
+					.subreddit-rule-description
+						{#if rule.description_html}
+							TextHTML(html={rule.description_html})
+						{:else}
+							p [No description provided.]
+
+style.
+	.subreddit
+		display flex
+		flex-flow column nowrap
+		height 100vh
+		padding 40px
+		width 380px
+	.subreddit-description
+		padding 10px
+	.subreddit-rules
+		padding 10px
+	.subreddit-rule
+		font-size 9pt
+		letter-spacing 0.03em
+		padding 5px
+	.subreddit-rule-description
+		border-left 1px solid #666
+		font-size 9pt
+		margin 1em
+		padding 0 3em
+	.subreddit-rule-name
+		text-decoration underline
+	.subreddit-rule-number
+		font-feature-settings 'tnum'
+		font-weight bold
+		letter-spacing 0
+	.subreddit-rule-summary
+		display grid
+		grid-template-columns 48px 1fr

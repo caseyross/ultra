@@ -1,0 +1,7 @@
+script.
+	import TextHTML from '../../framework/TextHTML.pug'
+	export html = null
+	# Display pictures instead of links where New Reddit does so.
+	formatted = html.replace(/<a href="https:\/\/preview.redd.it\/(?<filepath>[^"]+)">(?<linktext>[^<]*)<\/a>/g, '<img alt="$<linktext>" class="post-selftext-media" src="https://preview.redd.it/$<filepath>" title="$<linktext>">')
+
+TextHTML(html={formatted})

@@ -1,0 +1,42 @@
+script.
+	export name = null
+	description = switch name
+		when 'archived' then 'This post is archived due to old age. No votes can be cast on comments, and no new comments can be added.'
+		when 'locked' then 'This post has been locked by a moderator. No new comments can be added.'
+		when 'nsfw' then 'This post is marked as Not Safe For Work.'
+		when 'oc' then 'This post is marked as Original Content.'
+		when 'quarantined' then 'This post is quarantined. The average user cannot view it.'
+		when 'spoiler' then 'This post is marked as containing spoilers.'
+		when 'sticky' then 'This post has been stickied by a moderator. It will remain here until unstickied.'
+		else ''
+
+data.post-tag(class='post-tag-{name}' title={description}) {name}
+
+style.
+	.post-tag
+		border-radius 0.25em
+		font-size 10px
+		font-feature-settings 'cpsp' 1
+		padding 0 0.25em
+		text-transform uppercase
+	.post-tag-archived
+		background tan
+		color white
+	.post-tag-locked
+		background darkgray
+		color white
+	.post-tag-nsfw
+		background lightpink
+		color white
+	.post-tag-oc
+		background deepskyblue
+		color white
+	.post-tag-quarantined
+		background darkkhaki
+		color white
+	.post-tag-spoiler
+		background gray
+		color white
+	.post-tag-sticky
+		background darkseagreen
+		color white

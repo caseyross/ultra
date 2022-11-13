@@ -1,0 +1,29 @@
+script.
+	import Button from '../framework/Button.pug'
+
+nav.global-nav
+	section
+		img.main-logo(alt='')
+		br
+		Button(key='~' text='Replies')
+		Button(key='!' text='Messages')
+		Button(key='@' text='Mentions')
+		Button(key='/' text='Go...')
+	section
+		Button(key='?' text='Help')
+		Button(key='*' text='Settings')
+		Button(key='>' text='Feedback')
+
+style.
+	.global-nav
+		align-items flex-end
+		border-right 1px solid #666
+		display flex
+		flex-flow column nowrap
+		justify-content space-between
+		padding 10px
+	.main-logo
+		background white
+		border-radius 10px
+		height 40px
+		width 160px

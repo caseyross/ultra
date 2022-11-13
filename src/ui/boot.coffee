@@ -1,12 +1,12 @@
 import './stylesheet.styl'
-import Application from './Application.pug'
-import Crash from './error/Crash.pug'
+import BaseApplication from './base/BaseApplication.pug'
+import BaseCrash from './base/BaseCrash.pug'
 
 try
-	new Application
+	new BaseApplication
 		target: document.body
 catch error
-	new Crash
+	new BaseCrash
 		target: document.body
 		props:
 			error: error

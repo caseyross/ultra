@@ -1,0 +1,30 @@
+script.
+	import Listing from '../listing/Listing.pug'
+	export data = null
+	export listing_type = null
+	export page_type = null
+
+{#key data?.posts_sort}
+	{#if listing_type}
+		Listing(type={listing_type} data={data})
+	{:else}
+		{#if page_type === 'collection'}
+			Listing(type='collection_posts' data={data})
+		{:else if page_type === 'home'}
+			Listing(type='account_subscriptions' data={data})
+		{:else if page_type === 'message'}
+			Listing(type='account_messages' data={data})
+		{:else if page_type === 'multireddit'}
+			Listing(type='multireddit_posts' data={data})
+		{:else if page_type === 'multireddit_all'}
+			Listing(type='multireddit_posts' data={{ ...data, multireddit_name: 'all', user_name: 'r' }})
+		{:else if page_type === 'multireddit_popular'}
+			Listing(type='multireddit_posts' data={{ ...data, multireddit_name: 'popular', user_name: 'r' }})
+		{:else if page_type === 'post'}
+			Listing(type='subreddit_posts' data={data})
+		{:else if page_type === 'subreddit'}
+			Listing(type='subreddit_posts' data={data})
+		{:else if page_type === 'user'}
+			Listing(type='user_posts' data={data})
+		{:else if page_type === 'wiki'}
+			Listing(type='wiki_revisions' data={data})
