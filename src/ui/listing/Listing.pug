@@ -12,9 +12,14 @@ script.
 	if !page_size then page_size = 10
 	if !posts_sort then posts_sort = 'hot'
 
-	error = null
+	base_page_id = null
+	error = false
+	has_next_page = false
 	loading = false
-	subreddit_posts_lazy_load_id = null
+	page = null
+	pages = []
+	pages_error = []
+	pages_loading = []
 	subreddit_posts_lazy_loadable = false
 	
 	switch type
@@ -24,12 +29,12 @@ script.
 			base_path = "/c/#{collection_short_id}"
 			official_path = "/collection/#{collection_short_id}"
 			collection = null
-			post_short_ids = null
-			api.loadWatch(api.ID('collection', collection_short_id), (x) ->
-				{ data: collection, error, loading } = x
+			api.loadWatch(api.ID('collection', collection_short_id), ({ data: collection, error, loading }) ->
+				if loading then pages_loading[0] = loading
+				if error then pages_error[0] = error
 				if collection
 					display_name = collection.title
-					post_short_ids = collection.posts
+					pages[0] = collection.posts
 			)
 		when 'multireddit_posts'
 			type_display_name = 'Multireddit'
@@ -40,11 +45,10 @@ script.
 			if posts_sort.split('-')[0] is 'search'
 				if search_text
 					if user_name is 'r'
-						posts_dataset_id = api.ID('search_posts', posts_sort.split('-')[1], search_text, page_size)
+						base_page_id = api.ID('search_posts', posts_sort.split('-')[1], search_text, page_size)
 					else
-						posts_dataset_id = api.ID('search_posts_in_multireddit', user_name, multireddit_name, posts_sort.split('-')[1], search_text, page_size)
-			else
-				posts_dataset_id = api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
+						base_page_id = api.ID('search_posts_in_multireddit', user_name, multireddit_name, posts_sort.split('-')[1], search_text, page_size)
+			else base_page_id = api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
 		when 'subreddit_posts'
 			type_display_name = 'Subreddit'
 			sort_options = ['new', 'rising', 'hot', 'controversial', 'top', 'search']
@@ -54,14 +58,11 @@ script.
 				official_path = "/r/#{subreddit_name}"
 				if posts_sort.split('-')[0] is 'search'
 					if search_text
-						posts_dataset_id = api.ID('search_posts_in_subreddit', subreddit_name, posts_sort.split('-')[1], search_text, page_size)
-				else
-					posts_dataset_id = api.ID('subreddit_posts', subreddit_name, posts_sort, page_size)
+						base_page_id = api.ID('search_posts_in_subreddit', subreddit_name, posts_sort.split('-')[1], search_text, page_size)
+				else base_page_id = api.ID('subreddit_posts', subreddit_name, posts_sort, page_size)
 				subreddit = null
-				api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
-					{ data: subreddit } = x
-					if subreddit
-						display_name = subreddit.display_name
+				api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
+					if subreddit then display_name = subreddit.display_name
 				)
 			else if post_short_id
 				source_post = null
@@ -71,12 +72,8 @@ script.
 						display_name = source_post.subreddit
 						base_path = "/r/#{source_post.subreddit}"
 						official_path = "/r/#{source_post.subreddit}"
-						subreddit_posts_lazy_load_id = api.ID('subreddit_posts', source_post.subreddit, posts_sort, page_size)
+						base_page_id = api.ID('subreddit_posts', source_post.subreddit, posts_sort, page_size)
 						subreddit_posts_lazy_loadable = true
-						api.watch(subreddit_posts_lazy_load_id, (x) ->
-							{ data: post_short_ids, error, loading } = x
-							subreddit_posts_lazy_loadable = false
-						)
 				)
 		when 'user_posts'
 			type_display_name = 'Profile'
@@ -84,11 +81,31 @@ script.
 			base_path = "/u/#{user_name}"
 			official_path = "/u/#{user_name}"
 			sort_options = ['new', 'hot', 'controversial', 'top']
-			posts_dataset_id = api.ID('user_posts', user_name, posts_sort, page_size)
+			base_page_id = api.ID('user_posts', user_name, posts_sort, page_size)
 
-	if posts_dataset_id
-		post_short_ids = null
-		api.loadWatch(posts_dataset_id, (x) -> { data: post_short_ids, error, loading } = x)
+	load_page = (page_number) ->
+		if page_number is 0
+			api.loadWatch(base_page_id, ({ data: page, error, loading }) ->
+				if loading then pages_loading[0] = loading
+				if error then pages_error[0] = error
+				if page
+					is_last_page = pages.length == 0
+					if is_last_page and page.length >= page_size then has_next_page = true
+					pages[0] = page
+					subreddit_posts_lazy_loadable = false
+			)
+		else
+			after_short_id = pages[page_number - 1].at(-1)
+			api.loadWatch(api.ID(base_page_id, after_short_id), ({ data: page, error, loading }) ->
+				if loading then pages_loading[page_number] = loading
+				if error then pages_error[page_number] = error
+				if page
+					is_last_page = page_number == pages.length
+					if is_last_page and page.length < page_size then has_next_page = false
+					pages[page_number] = page
+			)
+
+	if base_page_id then load_page(0)
 
 nav.listing
 	{#if error}
@@ -112,12 +129,16 @@ nav.listing
 					ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
 		hr
 		section.listing-content
-			{#if post_short_ids}
+			{#if pages.length}
 				ol.listing-posts
-					{#each post_short_ids as post_short_id}
-						ListingPost(short_id={post_short_id} show_subreddit={type !== 'subreddit_posts'})
+					{#each pages as page}
+						{#each page as short_id}
+							{#if type.endsWith('posts')}
+								ListingPost(short_id={short_id} show_subreddit={type !== 'subreddit_posts'})
+					{#if has_next_page}
+						Button(action={() => load_page(pages.length)} text='More')
 			{:else if subreddit_posts_lazy_loadable}
-				Button(action={() => api.load(subreddit_posts_lazy_load_id)} text='Load posts')
+				Button(action={() => load_page(0)} text='Load posts')
 		hr(style='margin: 0 0 1em 0')
 		footer
 			Button(text='+')
