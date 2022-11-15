@@ -49,7 +49,8 @@ script.
 					{#each comment.replies as reply_short_id}
 						svelte:self(short_id={reply_short_id})
 					{#if comment.more_replies}
-						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="Load {comment.num_more_replies} more")
+						.comment-more-replies
+							Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="Load {comment.num_more_replies} more")
 					{#if comment.deeper_replies}
 						.comment-more-replies
 							Button(text='Continue this thread...')
@@ -66,6 +67,8 @@ style.
 		background #494949
 		border-radius 10px
 		padding 1ch
+	.comment-more-replies
+		margin-top 20px
 	.comment-replies
 		border-left 1px solid #666
 		margin-left 9px
