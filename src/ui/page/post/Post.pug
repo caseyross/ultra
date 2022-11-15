@@ -177,22 +177,22 @@ style.
 	.post
 		background #3f3f42
 		box-sizing content-box
-		height calc(100% - 80px)
+		height 100%
 		overflow auto
-		padding 40px
-		width 480px
+		width 560px
 		&::-webkit-scrollbar
 			display none
 	.post-content
-		margin-top 1em
+		border-bottom 1px solid #666
+		padding 20px 40px
 	.post-comments
-		margin-top 2em
+		padding 20px 40px
 	.post-comments-actions
 		margin-top 1em
 	.post-comments-label
+		color #888
 		font-size 10px
 		font-feature-settings 'cpsp'
-		opacity 0.5
 		text-transform uppercase
 	.post-comments-list
 		margin-top 2em
@@ -213,6 +213,12 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 0.5ch
+	.post-header
+		background inherit
+		border-bottom 1px solid #666
+		padding 20px 40px
+		position sticky
+		top 0
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
