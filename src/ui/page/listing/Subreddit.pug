@@ -9,13 +9,12 @@ script.
 
 article.subreddit
 	header
-		p Subreddit
-		p {name}
+		{#if info}
+			img.subreddit-icon(src={info.community_icon || info.icon_img})
+		h1.subreddit-name {name}
 	{#if info}
 		section.subreddit-description
-			details
-				summary About this subreddit
-				p {info.public_description}
+			TextHTML(html={info.public_description_html})
 	{#if rules}
 		p Rules
 		ol.subreddit-rules
@@ -36,9 +35,15 @@ style.
 		flex-flow column nowrap
 		height 100vh
 		padding 40px
-		width 380px
 	.subreddit-description
 		padding 10px
+	.subreddit-icon
+		border-radius 999px
+		height 256px
+		margin 0 auto
+		width 256px
+	.subreddit-name
+		font-size 3em
 	.subreddit-rules
 		padding 10px
 	.subreddit-rule
