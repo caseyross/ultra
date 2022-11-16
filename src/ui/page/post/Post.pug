@@ -23,6 +23,7 @@ script.
 	DOM =
 		post: null
 	error = null
+	listing_sort = 'hot'
 	loading = false
 	more_replies_loading = false
 	post = null
@@ -152,7 +153,7 @@ svelte:head
 						menu.post-link-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open link')
 				{:else if post.format === 'crosspost'}
-					ListingPost(short_id={post.crosspost_parent} show_subreddit={true})
+					ListingPost(link_params={{ lt: 'r', ln: post.subreddit, ls: listing_sort }} short_id={post.crosspost_parent} show_subreddit={true})
 				{:else}
 					p [Error displaying post.]
 				{#if post.selftext_html}

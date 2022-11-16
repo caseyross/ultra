@@ -46,9 +46,22 @@ export default (url) ->
 			if comments_sort not in POST_COMMENTS_SORT_OPTIONS then comments_sort = 'best'
 			comment_short_id = path[4]
 			comment_context = query.get('context')
+			listing_type = switch query.get('lt')
+				when 'c' then 'collection_posts'
+				when 'm' then 'multireddit_posts'
+				when 'r' then 'subreddit_posts'
+				when 'u' then 'user_posts'
+				else null
+			collection_short_id = query.get('li')
+			multireddit_name = query.get('ln')
+			posts_sort = query.get('ls')
+			subreddit_name = query.get('ln')
+			user_name = query.get('lu')
 			return {
 				page_type: 'post'
 				page_data: { comment_context, comment_short_id, comments_sort, post_short_id }
+				listing_type: listing_type
+				listing_data: { collection_short_id, multireddit_name, posts_sort, subreddit_name, user_name }
 			}
 		when 'm', 'multi', 'multireddit'
 			user_name = path[2]
@@ -97,9 +110,22 @@ export default (url) ->
 					if comments_sort not in POST_COMMENTS_SORT_OPTIONS then comments_sort = 'best'
 					comment_short_id = path[6]
 					comment_context = query.get('context')
+					listing_type = switch query.get('lt')
+						when 'c' then 'collection_posts'
+						when 'm' then 'multireddit_posts'
+						when 'r' then 'subreddit_posts'
+						when 'u' then 'user_posts'
+						else null
+					collection_short_id = query.get('li')
+					multireddit_name = query.get('ln')
+					posts_sort = query.get('ls')
+					subreddit_name = query.get('ln') ? path[2]
+					user_name = query.get('lu')
 					return {
 						page_type: 'post'
 						page_data: { comment_context, comment_short_id, comments_sort, post_short_id }
+						listing_type: listing_type
+						listing_data: { collection_short_id, multireddit_name, posts_sort, subreddit_name, user_name }
 					}
 				when 'submit' then return ROUTE_OFFICIALSITE(url)
 				when 'w', 'wiki'
