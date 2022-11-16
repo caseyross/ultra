@@ -79,24 +79,24 @@ script.
 
 	load_page = (page_number) ->
 		if page_number is 0
-			api.loadWatch(base_page_id, ({ data: page, error, loading }) ->
-				if loading then pages_loading[0] = loading
-				if error then pages_error[0] = error
-				if page
-					is_last_page = pages.length == 0
-					if is_last_page and page.length >= page_size then has_next_page = true
-					pages[0] = page
-			)
+			page_id = base_page_id
 		else
 			after_short_id = pages[page_number - 1].at(-1)
-			api.loadWatch(api.ID(base_page_id, after_short_id), ({ data: page, error, loading }) ->
-				if loading then pages_loading[page_number] = loading
-				if error then pages_error[page_number] = error
-				if page
-					is_last_page = page_number == pages.length
-					if is_last_page and page.length < page_size then has_next_page = false
-					pages[page_number] = page
-			)
+		 	page_id = api.ID(base_page_id, after_short_id)
+		api.loadWatch(page_id, ({ data: page, error, loading }) ->
+			if loading then pages_loading[page_number] = loading
+			if error then pages_error[page_number] = error
+			if page
+				is_last_page = page_number == pages.length
+				if is_last_page
+					if page_number is 0
+						if page.length >= page_size
+							has_next_page = true
+					else
+						if page.length < page_size
+							has_next_page = false
+				pages[page_number] = page
+		)
 
 	if base_page_id then load_page(0)
 
