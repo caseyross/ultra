@@ -7,10 +7,12 @@ script.
 	api.loadWatch(api.ID('subreddit', name), (x) -> { data: info } = x)
 	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
 
+svelte:head
+	title r/{name.toLowerCase()} - Index
 article.subreddit
 	header
 		{#if info}
-			img.subreddit-icon(src={info.community_icon || info.icon_img})
+			img.subreddit-icon(alt='' src={info.community_icon || info.icon_img})
 		h1.subreddit-name {name}
 	{#if info}
 		section.subreddit-description
