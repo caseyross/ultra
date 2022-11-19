@@ -1,6 +1,7 @@
 script.
 	import { getContext } from 'svelte'
 	import api from '../../../api/index.js'
+	import { StringMatch } from '../../../lib/index.js'
 	import BaseAccountMenu from '../../base/BaseAccountMenu.pug'
 	import Button from '../../framework/Button.pug'
 	num_unread_messages = 0
@@ -32,8 +33,8 @@ main
 		input(autofocus={true} bind:value={query} type='search')
 		ol
 			{#if subscriptions?.length}
-				{#each subscriptions.filter(x => x.startsWith(query)) as subreddit_name, i}
-					Button(key={i === 0 ? 'Enter' : null} link='/r/{subreddit_name}') {subreddit_name}
+				{#each StringMatch.match(subscriptions, query) as match, i}
+					Button(key={i === 0 ? 'Enter' : null} link='/r/{match.string}') {match.string} {match.score}
 			{:else if popular?.length}
 				{#each popular as subreddit_name, i}
 					Button(key={i === 0 ? 'Enter' : null} link='/r/{subreddit_name}') {subreddit_name}
