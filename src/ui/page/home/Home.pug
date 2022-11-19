@@ -7,7 +7,7 @@ script.
 	query = ''
 	if getContext('username')
 		subscriptions = localStorage['cache.subscriptions']?.split(' ')
-		api.loadWatch('current_user_subscriptions',
+		api.loadWatch('current_user_subscribed_subreddits:100',
 			(x) ->
 				if x?.data?.length
 					subscriptions = x.data.filter((name) -> !name.startsWith('u_'))

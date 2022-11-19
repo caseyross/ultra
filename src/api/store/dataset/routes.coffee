@@ -8,18 +8,39 @@ export default {
 		})
 	current_user: ->
 		get("/api/v1/me")
-	current_user_messages: (max_messages, after_message_fullname) ->
+	current_user_messages: (max_messages, after_message_short_id) ->
 		get("/message/inbox", {
-			after: after_message_fullname
+			after: after_message_short_id and "t4_#{after_message_short_id}"
 			limit: max_messages
 			mark: false
 			show: 'all'
 		})
-	current_user_settings: ->
+	current_user_owned_multireddits:  ->
+		get("/api/multi/mine", {
+			expand_srs: true
+		})
+	current_user_preferences: ->
 		get("/api/v1/me/prefs")
-	current_user_subscriptions: ->
+	current_user_saved_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
+		get("/user/#{user_name}/saved", {
+			after: after_comment_short_id and "t1_#{after_comment_short_id}"
+			limit: max_comments
+			sort: comments_sort.split('-')[0]
+			t: comments_sort.split('-')[1]
+			type: 'comments'
+		})
+	current_user_saved_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
+		get("/user/#{user_name}/saved", {
+			after: after_post_short_id and "t3_#{after_post_short_id}"
+			limit: max_posts
+			sort: posts_sort.split('-')[0]
+			t: posts_sort.split('-')[1]
+			type: 'links'
+		})
+	current_user_subscribed_subreddits: (max_subreddits, after_subreddit_short_id) ->
 		get("/subreddits/mine/subscriber", {
-			limit: 100
+			after: after_subreddit_short_id and "t5_#{after_subreddit_short_id}"
+			limit: max_subreddits
 			show: 'all'
 			sr_detail: true
 		})
@@ -162,8 +183,6 @@ export default {
 			sort: comments_sort.split('-')[0]
 			t: comments_sort.split('-')[1]
 		})
-	user_multireddits: (user_name) ->
-		get("/api/multi/user/#{user_name}")
 	user_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/submitted", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
@@ -171,21 +190,9 @@ export default {
 			sort: posts_sort.split('-')[0]
 			t: posts_sort.split('-')[1]
 		})
-	user_saved_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
-		get("/user/#{user_name}/saved", {
-			after: after_comment_short_id and "t1_#{after_comment_short_id}"
-			limit: max_comments
-			sort: comments_sort.split('-')[0]
-			t: comments_sort.split('-')[1]
-			type: 'comments'
-		})
-	user_saved_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
-		get("/user/#{user_name}/saved", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
-			limit: max_posts
-			sort: posts_sort.split('-')[0]
-			t: posts_sort.split('-')[1]
-			type: 'links'
+	user_public_multireddits: (user_name) ->
+		get("/api/multi/user/#{user_name}", {
+			expand_srs: true
 		})
 	user_trophies: (user_name) ->
 		get("/api/v1/user/username/trophies", {

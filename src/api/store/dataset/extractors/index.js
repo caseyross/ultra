@@ -8,6 +8,7 @@ import post from './post.coffee'
 import post_more_replies from './post_more_replies.coffee'
 import subreddits_popular from './subreddits_popular.coffee'
 import users from './users.coffee'
+import user_public_multireddits from './user_public_multireddits.coffee'
 
 export default {
 	GENERAL: extract,
@@ -18,4 +19,5 @@ export default {
 	post_more_replies,
 	subreddits_popular,
 	users,
+	user_public_multireddits,
 }

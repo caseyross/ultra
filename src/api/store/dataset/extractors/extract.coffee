@@ -192,8 +192,15 @@ export default extract = (rawData, sourceID) ->
 				id: null
 				data: wikipage
 		when 'LabeledMulti'
+			for subreddit in rawData.data.subreddits
+				if subreddit.data
+					result.sub.push({
+						id: ID('subreddit', subreddit.name)
+						data: subreddit.data
+					})
+			rawData.data.subreddits = rawData.data.subreddits.map((subreddit) -> subreddit.name)
 			result.main =
-				id: ID('multireddit', rawData.data.owner, rawData.data.name)
+				id: ID('multireddit', "#{rawData.data.owner}-#{rawData.data.name}")
 				data: rawData.data
 		when 'Listing'
 			listing = rawData.data.children

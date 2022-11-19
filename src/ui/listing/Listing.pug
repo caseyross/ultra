@@ -82,7 +82,7 @@ script.
 			page_id = base_page_id
 		else
 			after_short_id = pages[page_number - 1].at(-1)
-		 	page_id = api.ID(base_page_id, after_short_id)
+			page_id = api.ID(base_page_id, after_short_id)
 		api.loadWatch(page_id, ({ data: page, error, loading }) ->
 			if loading then pages_loading[page_number] = loading
 			if error then pages_error[page_number] = error
@@ -123,9 +123,16 @@ nav.listing
 		ol.listing-content
 			{#if pages.length}
 				{#each pages as page}
-					{#each page as short_id}
-						{#if type.endsWith('posts')}
-							ListingPost(link_params={listing_post_params} short_id={short_id} show_subreddit={type !== 'subreddit_posts'})
+					{#each page as str}
+						{#if type.endsWith('multireddits')}
+							ListingNameTag(link="/m/{str.replace('-', '/')}" text={str} type='multireddit_posts')
+						{:else if type.endsWith('posts')}
+							ListingPost(link_params={listing_post_params} short_id={str} show_subreddit={type !== 'subreddit_posts'})
+						{:else if type.endsWith('subreddits')}
+							{#if str.startsWith('u_')}
+								ListingNameTag(link='/u/{str.slice(2)}' text={str.slice(2)} type='user_posts')
+							{:else}
+								ListingNameTag(link='/r/{str}' text={str} type='subreddit_posts')
 				{#if has_next_page}
 					Button(action={() => load_page(pages.length)} text='More')
 style.

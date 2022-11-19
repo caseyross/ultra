@@ -10,10 +10,8 @@ script.
 	{:else}
 		{#if page_type === 'collection'}
 			Listing(type='collection_posts' data={data})
-		{:else if page_type === 'home'}
-			Listing(type='account_subscriptions' data={data})
 		{:else if page_type === 'message'}
-			Listing(type='account_messages' data={data})
+			Listing(type='current_user_messages' data={data})
 		{:else if page_type === 'multireddit'}
 			Listing(type='multireddit_posts' data={data})
 		{:else if page_type === 'multireddit_all'}
