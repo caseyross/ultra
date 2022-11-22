@@ -1,6 +1,8 @@
 script.
 	import api from '../../api/index.js'
 	import { Time } from '../../lib/index.js'
+
+	import Button from '../framework/Button.pug'
 	
 	import PostFlair from '../page/post/PostFlair.pug'
 	import PostScore from '../page/post/PostScore.pug'
@@ -9,6 +11,8 @@ script.
 	import ListingNameTag from './ListingNameTag.pug'
 	
 	export link_params = null
+	export is_next = false
+	export is_prev = false
 	export selected = false
 	export short_id = null
 	export show_subreddit = false
@@ -21,46 +25,40 @@ script.
 	)
 
 {#if post}
-	a.listing-post(class:selected={selected} href="/r/{post.subreddit.toLowerCase()}/post/{short_id}{link_params ? '?' + new URLSearchParams(link_params) : ''}")
-		{#if show_subreddit}
-			ListingNameTag(link='/r/{post.subreddit}' text={post.subreddit} type='subreddit_posts')
-		{:else}
-			{#if post.link_flair_text}
-				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-		h1.listing-post-title {post.title}
-		.listing-post-metadata
-			.listing-post-stats
-				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-				time.listing-post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc, { abbr: false })}
-			.listing-post-tags
-				{#if post.archived}
-					PostTag(name='archived')
-				{#if post.spoiler}
-					PostTag(name='spoiler')
-				{#if post.locked}
-					PostTag(name='locked')
-				{#if post.quarantine}
-					PostTag(name='quarantined')
-				{#if post.over_18}
-					PostTag(name='nsfw')
-				{#if post.stickied}
-					PostTag(name='sticky')
-				{#if post.is_original_content}
-					PostTag(name='oc')
+	Button(activated={selected} key={is_next ? 'f' : is_prev ? 'r' : ''} link="/r/{post.subreddit.toLowerCase()}/post/{short_id}{link_params ? '?' + new URLSearchParams(link_params) : ''}")
+		.listing-post
+			{#if show_subreddit}
+				ListingNameTag(link='/r/{post.subreddit}' text={post.subreddit} type='subreddit_posts')
+			{:else}
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			.listing-post-metadata
+				.listing-post-stats
+					PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+					time.listing-post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc, { abbr: false })}
+				.listing-post-tags
+					{#if post.archived}
+						PostTag(name='archived')
+					{#if post.spoiler}
+						PostTag(name='spoiler')
+					{#if post.locked}
+						PostTag(name='locked')
+					{#if post.quarantine}
+						PostTag(name='quarantined')
+					{#if post.over_18}
+						PostTag(name='nsfw')
+					{#if post.stickied}
+						PostTag(name='sticky')
+					{#if post.is_original_content}
+						PostTag(name='oc')
+			h1.listing-post-title {post.title}
 
 style.
 	.listing-post
 		align-items baseline
-		background #444
-		border 2px solid transparent
-		border-radius 10px
 		display flex
 		flex-flow column nowrap
 		gap 5px
-		padding 10px
-		&:hover
-			border-color wheat
-			color wheat
 	.listing-post-metadata
 		align-items center
 		color #888

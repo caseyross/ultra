@@ -20,7 +20,7 @@ script.
 	player = null
 	time = 0
 	video = null
-	volume = 0.5
+	volume = 0.25
 	wake_mouse = ->
 		mouse_idle = false
 		clearTimeout(mouse_idle_timer_id)
@@ -85,7 +85,6 @@ style.
 		display none
 	video
 		background black
-		border-radius 1ch
 		:fullscreen &
 			border-radius 0
 			height 100% !important

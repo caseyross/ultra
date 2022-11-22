@@ -37,9 +37,9 @@ script.
 style.
 	.appearance-button
 		background var(--color-control)
+		border 1px solid transparent
 		border-radius 6px
 		display inline-flex
-		font-weight bold
 		gap 5px
 		line-height 18px
 		padding 4px 6px
@@ -47,6 +47,8 @@ style.
 			opacity 0.5
 		&:hover
 			background var(--color-control-focused)
+			border-color wheat
+			color wheat
 		&.activated
 			background var(--color-control-toggled)
 			color white

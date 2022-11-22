@@ -6,9 +6,11 @@
 	src url('../vendor/inter_100_900.woff2')
 html
 	color-scheme dark
+	--color-background-default #343537
 	--color-control rgba(0,0,0,0.05)
 	--color-control-focused rgba(0,0,0,0.10)
 	--color-control-toggled rgba(0,0,0,0.50)
+	--color-default #f2f4f7
 	--color-paper-action aliceblue
 	--color-paper-border gainsboro
 	--color-paper-callout rgba(0,0,0,0.05)
@@ -27,18 +29,18 @@ html
 *:focus
 	outline-color gold
 .md
+	letter-spacing 0.025em
 	overflow-wrap anywhere
 
 // Body
 body
 	align-items center
-	background-color #343537
-	color #f2f4f7
+	background-color var(--color-background-default)
+	color var(--color-default)
 	display flex
 	flex-flow column nowrap
-	font 500 10pt/1.6 'Inter', sans-serif
+	font 500 10pt/1.5 'Inter', sans-serif
 	height 100vh
-	letter-spacing 0.01em
 	margin 0
 
 // Paragraphs
@@ -87,7 +89,7 @@ blockquote
 	padding-left 1em
 code
 pre
-	background var(--color-paper-callout)
+	border 1px dashed
 	font-family var(--typeface-mono)
 	font-size 12px
 code
@@ -95,17 +97,13 @@ code
 	overflow-wrap anywhere
 	white-space pre-wrap
 pre
-	background #333
-	overflow auto
+	border-radius 10px
+	overflow hidden
 	padding 1em
 	& code
-		background transparent
+		border none
 		padding 0
 		white-space pre
-	.comment-text &
-		max-width 433px
-	.post-selftext &
-		max-width 480px
 
 // Spoilers
 .md-spoiler-text

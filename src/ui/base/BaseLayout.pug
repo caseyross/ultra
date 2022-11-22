@@ -1,4 +1,6 @@
 script.
+	import { setContext } from 'svelte'
+	import { Color } from '../../lib/index.js'
 	import BaseListingContent from './BaseListingContent.pug'
 	import BaseNavigation from './BaseNavigation.pug'
 	import BasePageContent from './BasePageContent.pug'
@@ -7,7 +9,18 @@ script.
 	export page_data = null
 	export page_type = null
 
-main
+	background_color = 'var(--color-background-default)'
+	color = 'var(--color-default)'
+	set_theme_color = (css_color) ->
+		if css_color
+			background_color = css_color
+			color = new Color(css_color).asContrastHex()
+		else
+			background_color = 'var(--color-background-default)'
+			color = 'var(--color-default)'
+	setContext('set_theme_color', set_theme_color)
+
+main(style='background:{background_color};color:{color}')
 	BaseNavigation
 	BasePageContent(data={page_data} type={page_type})
 	BaseListingContent(data={{ ...page_data, ...listing_data }} listing_type={listing_type} page_type={page_type})
@@ -15,6 +28,6 @@ main
 style.
 	main
 		display grid
-		grid-template-columns 1fr 560px 1fr
+		grid-template-columns 1fr 720px 1fr
 		height 100vh
-		width 100vh
+		width 100vw

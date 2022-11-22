@@ -1,4 +1,5 @@
 script.
+	import Button from '../framework/Button.pug'
 	export base_path = '/'
 	export selection = 'all'
 	format_href = (range) ->
@@ -23,7 +24,7 @@ script.
 			value: 'year'
 		}
 		{
-			label: 'All time',
+			label: 'All',
 			value: 'all'
 		}
 	]
@@ -31,7 +32,7 @@ script.
 fieldset
 	legend Time range
 	{#each ranges.reverse() as range}
-		a.time-range-option(class='time-range-option-{range.value}' class:selected={selection === range.value} href={format_href(range.value)} title={range.label})
+		Button(activated={selection === range.value} link={format_href(range.value)}) {range.label}
 
 style.
 	fieldset
@@ -44,34 +45,3 @@ style.
 		font-size 10px
 		opacity 0.5
 		text-transform uppercase
-	.time-range-option
-		background rgba(0,0,0,0.05)
-		border-radius 1ch
-		color inherit
-		font-size 10px
-		height 20px
-	.time-range-option-day
-		width 8px
-		&.selected
-			background salmon
-			color white
-	.time-range-option-week
-		width 16px
-		&.selected
-			background salmon
-			color white
-	.time-range-option-month
-		width 24px
-		&.selected
-			background salmon
-			color white
-	.time-range-option-year
-		width 48px
-		&.selected
-			background salmon
-			color white
-	.time-range-option-all
-		width 96px
-		&.selected
-			background salmon
-			color white

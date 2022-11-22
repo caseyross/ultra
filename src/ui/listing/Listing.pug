@@ -113,7 +113,7 @@ nav.listing
 				ListingNameTag(link={base_path} text={display_name} type={type})
 		{#if sort_options}
 			menu
-				section(style='display: flex; gap: 2em')
+				section
 					ListingSort(base_path={base_path} selection={posts_sort.split('-')[0]} sort_options={sort_options})
 					{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
 						ListingTimeRange(base_path={base_path + '/' + posts_sort.split('-')[0]} selection={posts_sort.split('-')[1]})
@@ -127,7 +127,7 @@ nav.listing
 						{#if type.endsWith('multireddits')}
 							ListingNameTag(link="/m/{str.replace('-', '/')}" text={str} type='multireddit_posts')
 						{:else if type.endsWith('posts')}
-							ListingPost(link_params={listing_post_params} short_id={str} show_subreddit={type !== 'subreddit_posts'})
+							ListingPost(link_params={listing_post_params} selected={str == post_short_id} short_id={str} show_subreddit={type !== 'subreddit_posts'})
 						{:else if type.endsWith('subreddits')}
 							{#if str.startsWith('u_')}
 								ListingNameTag(link='/u/{str.slice(2)}' text={str.slice(2)} type='user_posts')
@@ -137,6 +137,7 @@ nav.listing
 					Button(action={() => load_page(pages.length)} text='More')
 style.
 	.listing
+		border-left 1px solid #666
 		display flex
 		flex-flow column nowrap
 		height 100vh

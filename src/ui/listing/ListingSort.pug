@@ -1,4 +1,5 @@
 script.
+	import Button from '../framework/Button.pug'
 	export base_path = '/'
 	export selection = 'hot'
 	export sort_options = []
@@ -44,7 +45,7 @@ script.
 fieldset
 	legend Sort by
 	{#each all_sort_options.filter(x => sort_options.includes(x.value)) as option}
-		a.sort-option(class='sort-option-{option.value}' class:selected={selection === option.value} href={format_href(option.value)} title={option.label})
+		Button(activated={selection === option.value} link={format_href(option.value)}) {option.label}
 
 style.
 	fieldset
@@ -57,33 +58,3 @@ style.
 		font-size 10px
 		opacity 0.5
 		text-transform uppercase
-	.sort-option
-		background rgba(0,0,0,0.05)
-		border-radius 1ch
-		color inherit
-		font-size 10px
-		padding 1em
-	.sort-option-best
-		&.selected
-			background pink
-			color white
-	.sort-option-controversial
-		&.selected
-			background powderblue
-			color white
-	.sort-option-hot
-		&.selected
-			background lightsalmon
-			color white
-	.sort-option-new
-		&.selected
-			background darkseagreen
-			color white
-	.sort-option-rising
-		&.selected
-			background wheat
-			color white
-	.sort-option-top
-		&.selected
-			background salmon
-			color white

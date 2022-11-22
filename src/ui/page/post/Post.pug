@@ -1,5 +1,5 @@
 script.
-	import { afterUpdate } from 'svelte';
+	import { afterUpdate, getContext } from 'svelte';
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -19,7 +19,6 @@ script.
 	import PostTag from './PostTag.pug'
 	
 	export short_id = null
-	
 	DOM =
 		post: null
 	error = null
@@ -28,6 +27,7 @@ script.
 	more_replies_loading = false
 	post = null
 	profile_data_loaded = false
+	set_theme_color = getContext('set_theme_color')
 	api.loadWatch(api.ID('post', short_id),
 		(x) ->
 			{ data: post, error, loading } = x
@@ -38,6 +38,10 @@ script.
 			if post?.more_replies
 				api.watch(post.more_replies_id,
 					(x) -> { loading: more_replies_loading } = x
+				)
+			if post?.subreddit
+				api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
+					set_theme_color(subreddit?.primary_color or subreddit?.key_color)
 				)
 	)
 	current_scroll = 0
@@ -74,6 +78,8 @@ svelte:head
 	{#key post}
 		article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
 			header.post-header
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 				h1.post-title {post.title}
 				.post-metadata
 					{#if post.distinguished}
@@ -81,8 +87,6 @@ svelte:head
 					UserAvatar(name={post.author})
 					PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 					time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
-					{#if post.link_flair_text}
-						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 					.post-tags
 						{#if post.archived}
 							PostTag(name='archived')
@@ -130,7 +134,7 @@ svelte:head
 					{:else}
 						{@const media = post.media[0]}
 							{#if media.video_url}
-								MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
+								MediaPlayer(audio_url={media.video_audio_url} dimensions={[640, 360]} mimic_gif={media.is_gif} video_url={media.video_url})
 							{:else if media.image_url}
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
@@ -176,16 +180,16 @@ svelte:head
 
 style.
 	.post
-		background #3f3f42
 		box-sizing content-box
 		height 100%
 		overflow auto
-		width 560px
+		width 720px
 		&::-webkit-scrollbar
 			display none
 	.post-content
 		border-bottom 1px solid #666
 		padding 20px 40px
+		padding-top 0
 	.post-comments
 		padding 20px 40px
 	.post-comments-actions
@@ -204,9 +208,9 @@ style.
 	.post-gallery
 		display flex
 		flex-flow row wrap
-		gap 20px
 	.post-gallery-image
-		width 100%
+		border-bottom 1px solid transparent
+		max-width 100%
 	.post-gallery-image-caption
 		color #aaa
 		text-align center
@@ -215,16 +219,12 @@ style.
 		flex-flow column nowrap
 		gap 0.5ch
 	.post-header
-		background inherit
-		border-bottom 1px solid #666
 		padding 20px 40px
-		position sticky
-		top 0
 	.post-iframe
 		aspect-ratio 16 / 9
 		width 100%
 	.post-image
-		width 100%
+		max-width 100%
 	.post-link-actions
 		display flex
 		gap 1em
@@ -255,3 +255,4 @@ style.
 		font-weight inherit
 		letter-spacing 0.025em
 		line-height 1.444
+		margin-top 0.5em

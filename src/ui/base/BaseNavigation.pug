@@ -3,8 +3,7 @@ script.
 
 nav.global-nav
 	section
-		a(href='/')
-			img.main-logo(alt='')
+		Button(key='Escape' link='/' text='Velocity')
 		br
 		Button(key='~' text='Replies')
 		Button(key='!' text='Messages')
@@ -16,15 +15,16 @@ nav.global-nav
 		Button(key='>' text='Feedback')
 
 style.
+	section
+		display flex
+		flex-flow column nowrap
+		width 127px
 	.global-nav
 		align-items flex-end
 		border-right 1px solid #666
+		box-sizing content-box
 		display flex
 		flex-flow column nowrap
 		justify-content space-between
+		justify-self flex-end
 		padding 10px
-	.main-logo
-		background white
-		border-radius 10px
-		height 40px
-		width 160px
