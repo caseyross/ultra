@@ -1,15 +1,18 @@
 export default class Color
 
-	constructor: (hex) ->
-		@hex = hex
+	constructor: ({ hex }) ->
+		switch
+			when hex
+				if hex.startsWith('#')
+					hex = hex[1..]
+				@r = (Number.parseInt(hex[0..1], 16) ? 255) / 255
+				@g = (Number.parseInt(hex[2..3], 16) ? 255) / 255
+				@b = (Number.parseInt(hex[4..5], 16) ? 255) / 255
+			else
+				@r = 1
+				@g = 1
+				@b = 1
+	
+	isDark: -> not @isLight()
 
-	asContrastHex: ->
-		if not (@hex and @hex.startsWith('#') and @hex.length is 7)
-			return 'currentcolor'
-		red = Number.parseInt(@hex[1..2], 16) / 255
-		green = Number.parseInt(@hex[3..4], 16) / 255
-		blue = Number.parseInt(@hex[5..6], 16) / 255
-		if (red / 3 + green + blue / 2) > 1
-			return '#000000'
-		else
-			return '#ffffff'
+	isLight: -> (@r / 3 + @g + @b / 2) > 1

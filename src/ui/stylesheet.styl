@@ -5,17 +5,26 @@
 	font-weight 100 900
 	src url('../vendor/inter_100_900.woff2')
 html
-	color-scheme dark
-	--color-background-default #343537
-	--color-control rgba(0,0,0,0.05)
-	--color-control-focused rgba(0,0,0,0.10)
-	--color-control-toggled rgba(0,0,0,0.50)
-	--color-default #f2f4f7
-	--color-paper-action aliceblue
 	--color-paper-border gainsboro
-	--color-paper-callout rgba(0,0,0,0.05)
 	--color-writing-action mediumslateblue
 	--typeface-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
+.color-strategy-light-background
+	color-scheme #f2f4f7
+	--c-back-default white
+	--c-con-weak rgba(255,255,255,0.05)
+	--c-con-norm rgba(255,255,255,0.10)
+	--c-con-strong rgba(255,255,255,0.50)
+	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong black
+.color-strategy-dark-background
+	color-scheme dark
+	--c-back-default #343537
+	--c-con-weak rgba(0,0,0,0.05)
+	--c-con-norm rgba(0,0,0,0.10)
+	--c-con-strong rgba(0,0,0,0.50)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong #f2f4f7
+
 
 // Single-direction margin
 *
@@ -35,8 +44,6 @@ html
 // Body
 body
 	align-items center
-	background-color var(--color-background-default)
-	color var(--color-default)
 	display flex
 	flex-flow column nowrap
 	font 500 10pt/1.5 'Inter', sans-serif
@@ -82,8 +89,8 @@ sup
 
 // Verbatim text
 blockquote
-	border-left 3px solid #666
-	color #ccc
+	border-left 3px solid var(--c-text-weak)
+	color var(--c-text-weak)
 	font-size 0.9em
 	margin 0.5em 0 0 2px
 	padding-left 1em
@@ -165,10 +172,9 @@ table
 	margin 0.5em 0 0 0
 	overflow-wrap normal
 tr:nth-child(odd)
-	background rgba(0,0,0,0.05)
+	background var(--c-con-weak)
 	thead &
-		background rgba(0,0,0,0.5)
-		color white
+		background var(--c-con-strong)
 td
 th
 	padding 0 3px

@@ -36,7 +36,7 @@ script.
 
 style.
 	.appearance-button
-		background var(--color-control)
+		background var(--c-con-weak)
 		border 1px solid transparent
 		border-radius 6px
 		display inline-flex
@@ -46,19 +46,19 @@ style.
 		&:disabled
 			opacity 0.5
 		&:hover
-			background var(--color-control-focused)
+			background var(--c-con-norm)
 			border-color wheat
 			color wheat
 		&.activated
-			background var(--color-control-toggled)
-			color white
+			background var(--c-con-strong)
+			color var(--c-text-strong)
 	.appearance-text
 		color var(--color-writing-action)
 		font-size 12px
 		font-weight bold
 	.badge
 		align-items center
-		background var(--color-control)
+		background var(--c-con-weak)
 		border-radius 3px
 		display inline-flex
 		font-size 0.75em

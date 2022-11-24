@@ -5,7 +5,7 @@ script.
 	export rich_text = null
 	export text = null
 
-span.post-flair(style="background-color: {color || 'white'}; color: {color ? (new Color(color)).asContrastHex() : 'black'}")
+span.post-flair(style="background-color: {color || 'white'}; color: {(new Color({ hex: color }))?.isDark() ? 'white' : 'black'}")
 	{#if rich_text && rich_text.length}
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}
