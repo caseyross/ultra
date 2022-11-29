@@ -187,6 +187,8 @@ export default (url) ->
 		when 'u', 'user'
 			user_name = path[2]
 			if not user_name then return ROUTE_INVALID
+			if user_name is 'me' # on official site, redirects to current user
+				return ROUTE_OFFICIALSITE(url) # TODO?
 			switch path[3]
 				when 'm', 'multi', 'multireddit'
 					multireddit_name = path[4]
