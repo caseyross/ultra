@@ -69,114 +69,126 @@ script.
 svelte:head
 	{#if post}
 		title r/{post.subreddit.toLowerCase()} - {post.title}
-{#if error}
-	{#if error instanceof api.errors.ServerError}
-		Base404(path='/{short_id}')
-{:else if loading}
-	p Loading...
-{:else if post}
-	{#key post}
-		article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
-			header.post-header
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-				h1.post-title {post.title}
-				.post-metadata
-					{#if post.distinguished}
-						UserDistinguish(type={post.distinguished})
-					UserAvatar(name={post.author})
-					PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-					time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
-					.post-tags
-						{#if post.archived}
-							PostTag(name='archived')
-						{#if post.spoiler}
-							PostTag(name='spoiler')
-						{#if post.locked}
-							PostTag(name='locked')
-						{#if post.quarantine}
-							PostTag(name='quarantined')
-						{#if post.over_18}
-							PostTag(name='nsfw')
-						{#if post.stickied}
-							PostTag(name='sticky')
-						{#if post.is_original_content}
-							PostTag(name='oc')
-			section.post-content
-				{#if post.format === 'self'}
-					{#if !post.selftext.length}
-						.post-selftext-empty
-				{:else if post.format === 'prediction'}
-					ol.post-predictions
-						{#each post.tournament_data.predictions as prediction}
-							h2.post-prediction-title {prediction.title}
-							dl.post-prediction-options
-								{#each prediction.options as option}
-									li
-										dt
-											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
-										dd {option.text}
-				{:else if post.format === 'media'}
-					{#if post.media.length > 1}
-						ol.post-gallery
-							{#each post.media as media, index}
-								figure.post-gallery-item
-									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-										picture
-											source(srcset={media.image_url_960})
-											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-									{#if media.caption_text || media.caption_url}
-										figcaption.post-gallery-image-caption
-											{#if media.caption_text}
-												p {media.caption_text}
-											{#if media.caption_url}
-												a(href={media.caption_url}) {media.caption_url}
-					{:else}
-						{@const media = post.media[0]}
-							{#if media.video_url}
-								MediaPlayer(audio_url={media.video_audio_url} dimensions={[640, 360]} mimic_gif={media.is_gif} video_url={media.video_url})
-							{:else if media.image_url}
+article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
+	{#if error}
+		.post-unavailable-reason
+			{#if error instanceof api.errors.ServerBadRequestError && error.code === 403}
+				| Post subreddit is not accessible (potentially banned).
+			{:else}
+				| Post unavailable for unknown reasons.
+	{:else if loading}
+		.post-loading-message Loading...
+	{:else if post}
+		{#if post.removed_by_category}
+			.post-unavailable-reason
+				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
+					| Deleted by author.
+				{:else if post.removed_by_category === 'moderator'}
+					| Removed by a moderator.
+				{:else if post.removed_by_category === 'reddit'}
+					| Removed by Reddit spam filter.
+				{:else if post.removed_by_category === 'copyright_takedown'}
+					| Removed by Reddit copyright compliance.
+		header.post-header
+			{#if post.link_flair_text}
+				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			h1.post-title {post.title}
+			.post-metadata
+				{#if post.distinguished}
+					UserDistinguish(type={post.distinguished})
+				UserAvatar(name={post.author})
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+				time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
+				.post-tags
+					{#if post.archived}
+						PostTag(name='archived')
+					{#if post.spoiler}
+						PostTag(name='spoiler')
+					{#if post.locked}
+						PostTag(name='locked')
+					{#if post.quarantine}
+						PostTag(name='quarantined')
+					{#if post.over_18}
+						PostTag(name='nsfw')
+					{#if post.stickied}
+						PostTag(name='sticky')
+					{#if post.is_original_content}
+						PostTag(name='oc')
+		section.post-content
+			{#if post.format === 'self'}
+				{#if !post.selftext.length}
+					.post-selftext-empty
+			{:else if post.format === 'prediction'}
+				ol.post-predictions
+					{#each post.tournament_data.predictions as prediction}
+						h2.post-prediction-title {prediction.title}
+						dl.post-prediction-options
+							{#each prediction.options as option}
+								li
+									dt
+										meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+									dd {option.text}
+			{:else if post.format === 'media'}
+				{#if post.media.length > 1}
+					ol.post-gallery
+						{#each post.media as media, index}
+							figure.post-gallery-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_960})
-										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-				{:else if post.format === 'embed'}
-					{#each post.media as media}
-						{#if media.iframe_url}
-							<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
-							<!-- svelte-ignore a11y-missing-attribute -->
-							iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
-						{:else if media.html}
-							{@html media.html}
-						menu.post-embed-actions
-							Button(action={() => window.open(post.url)} key='o' text='Open original')
-				{:else if post.format === 'link'}
-					{#if post.url}
-						.md.post-link
-							a(href={post.url} rel='external noopener preconnect') {post.url}
-						menu.post-link-actions
-							Button(action={() => window.open(post.url)} key='e' text='Open link')
-				{:else if post.format === 'crosspost'}
-					ListingPost(link_params={{ lt: 'r', ln: post.subreddit, ls: listing_sort }} short_id={post.crosspost_parent} show_subreddit={true})
-				{:else}
-					p [Error displaying post.]
-				{#if post.selftext_html}
-					.post-selftext
-						PostMarkupHTML(html={post.selftext_html})
-			section.post-comments
-				h1.post-comments-label Comments
-				{#if post.replies?.length && profile_data_loaded}
-					{#key post.replies}
-						ol.post-comments-list
-							{#each post.replies as reply_short_id}
-								PostComment(short_id={reply_short_id})
-							{#if post.more_replies}
-								.post-more-replies
-									Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
-				menu.post-comments-actions
-					Button(disabled={post.archived || post.locked} text='+ Add a comment...')
-			figure.post-minimap
-				Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
+										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+								{#if media.caption_text || media.caption_url}
+									figcaption.post-gallery-image-caption
+										{#if media.caption_text}
+											p {media.caption_text}
+										{#if media.caption_url}
+											a(href={media.caption_url}) {media.caption_url}
+				{:else if post.media.length === 1}
+					{@const media = post.media[0]}
+						{#if media.video_url}
+							MediaPlayer(audio_url={media.video_audio_url} dimensions={[640, 360]} mimic_gif={media.is_gif} video_url={media.video_url})
+						{:else if media.image_url}
+							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+								picture
+									source(srcset={media.image_url_960})
+									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+			{:else if post.format === 'embed'}
+				{#each post.media as media}
+					{#if media.iframe_url}
+						<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+						<!-- svelte-ignore a11y-missing-attribute -->
+						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
+					{:else if media.html}
+						{@html media.html}
+					menu.post-embed-actions
+						Button(action={() => window.open(post.url)} key='o' text='Open original')
+			{:else if post.format === 'link'}
+				{#if post.url}
+					.md.post-link
+						a(href={post.url} rel='external noopener preconnect') {post.url}
+					menu.post-link-actions
+						Button(action={() => window.open(post.url)} key='e' text='Open link')
+			{:else if post.format === 'crosspost'}
+				ListingPost(link_params={{ lt: 'r', ln: post.subreddit, ls: listing_sort }} short_id={post.crosspost_parent} show_subreddit={true})
+			{:else}
+				p [Error displaying post.]
+			{#if post.selftext_html && !post.removed_by_category}
+				.post-selftext
+					PostMarkupHTML(html={post.selftext_html})
+		section.post-comments
+			h1.post-comments-label Comments
+			{#if post.replies?.length && profile_data_loaded}
+				{#key post.replies}
+					ol.post-comments-list
+						{#each post.replies as reply_short_id}
+							PostComment(short_id={reply_short_id})
+						{#if post.more_replies}
+							.post-more-replies
+								Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
+			menu.post-comments-actions
+				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
+		figure.post-minimap
+			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
 
 style.
 	.post
@@ -229,6 +241,8 @@ style.
 		display flex
 		gap 1em
 		margin-top 1em
+	.post-loading-message
+		padding 10px
 	.post-metadata
 		align-items center
 		color var(--c-text-weak)
@@ -256,3 +270,7 @@ style.
 		letter-spacing 0.025em
 		line-height 1.444
 		margin-top 0.5em
+	.post-unavailable-reason
+		background salmon
+		color white
+		padding 10px
