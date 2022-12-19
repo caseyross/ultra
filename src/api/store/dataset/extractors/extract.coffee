@@ -1,6 +1,4 @@
 import ID from '../../../core/ID.coffee'
-import html_embeddable from './embeds/html_embeddable.coffee'
-import iframe_embeddable from './embeds/iframe_embeddable.coffee'
 
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.
@@ -77,8 +75,6 @@ export default extract = (rawData, sourceID) ->
 					'prediction'
 				when post.is_self
 					'self'
-				when html_embeddable(post) or iframe_embeddable(post.url)
-					'embed'
 				else
 					'link'
 			# Organize all the media we might need for the post.
@@ -143,10 +139,6 @@ export default extract = (rawData, sourceID) ->
 					source_width: video.width
 					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
 					video_url: video.fallback_url ? post.url
-			else if iframe_embeddable(post.url)
-				post.media[0] = iframe_embeddable(post.url)
-			else if html_embeddable(post)
-				post.media[0] = html_embeddable(post)
 			# Process crosspost source, if present.
 			if post.crosspost_parent_list?.length
 				crosspost_datasets = extract(

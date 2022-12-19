@@ -1,22 +1,33 @@
-// Type
+// Baseline resets
+*
+	box-sizing border-box
+	margin 0
+*:first-child
+	margin-top 0 !important
+*:focus
+	outline-color gold
+
+// Type and theme
 @font-face
 	font-family 'Inter'
 	font-style normal italic
 	font-weight 100 900
 	src url('../vendor/inter_100_900.woff2')
-html
+:root
+	font 400 14px/1.5 'Inter', sans-serif
+	letter-spacing 0.025em
 	--color-paper-border gainsboro
 	--color-writing-action mediumslateblue
 	--typeface-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
-.color-strategy-light-background
-	color-scheme #f2f4f7
+.color-strategy-black-text
+	color-scheme light
 	--c-back-default white
 	--c-con-weak rgba(255,255,255,0.05)
 	--c-con-norm rgba(255,255,255,0.10)
 	--c-con-strong rgba(255,255,255,0.50)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong black
-.color-strategy-dark-background
+.color-strategy-white-text
 	color-scheme dark
 	--c-back-default #343537
 	--c-con-weak rgba(0,0,0,0.05)
@@ -24,105 +35,23 @@ html
 	--c-con-strong rgba(0,0,0,0.50)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong #f2f4f7
+*::-webkit-scrollbar
+	background var(--c-con-weak)
+*::-webkit-scrollbar-thumb
+	background var(--c-con-norm)
+	border-radius 6px
 
-
-// Single-direction margin
-*
-	margin-bottom 0
-*:first-child
-	margin-top 0 !important
-
-// General
-*
-	box-sizing border-box
-*:focus
-	outline-color gold
-.md
-	letter-spacing 0.025em
-	overflow-wrap anywhere
-
-// Body
+// Layout sections
 body
 	align-items center
 	display flex
 	flex-flow column nowrap
-	font 500 10pt/1.5 'Inter', sans-serif
-	height 100vh
-	margin 0
-
-// Paragraphs
 p
-	margin 0.7em 0 0 0
+	margin 0.8em 0 0 0
+	max-width 440px
 hr
-	border 1px solid rgba(0,0,0,0.1)
-	margin 1em 0 0 0
-
-// Formatted text
-a
-	color inherit
-	text-decoration none
-.md
-	a
-		color lightskyblue
-		word-break break-all
-	a:not(:is([href^='/'], [href^='#']))::before
-		background lightskyblue
-		border-radius 999px
-		color white
-		content '→'
-		display inline
-		font-size 0.8em
-		height 1.25em
-		line-height 1.25
-		margin-left 0.2em
-		margin-right 0.4em
-		padding 0 0.125em
-	a[target='_blank']::before
-		display none !important
-address
-	font-style normal
-strong
-	letter-spacing 0
-sub
-sup
-	line-height 0
-
-// Verbatim text
-blockquote
-	border-left 3px solid var(--c-text-weak)
-	color var(--c-text-weak)
-	font-size 0.9em
-	margin 0.5em 0 0 2px
-	padding-left 1em
-code
-pre
-	border 1px dashed
-	font-family var(--typeface-mono)
-	font-size 12px
-code
-	padding 0 0.25em
-	overflow-wrap anywhere
-	white-space pre-wrap
-pre
-	border-radius 10px
-	overflow hidden
-	padding 1em
-	& code
-		border none
-		padding 0
-		white-space pre
-
-// Spoilers
-.md-spoiler-text
-	background black
-	color transparent
-	*
-		opacity 0
-	&:hover
-		background transparent
-		color inherit
-		*
-			opacity 1
+	border 1px solid var(--c-text-weak)
+	margin 0.8em 0 0 0
 
 // Lists
 menu
@@ -133,18 +62,19 @@ ul
 	padding 0
 .md ol
 .md ul
-	list-style initial
-	margin 0.5em 0 0 0
-	padding-inline-start 25px
+	list-style revert
+	margin 0.8em 0 0 0
+	padding-inline-start 3ch
 	& ul
 		list-style-type initial
 .md ol ol
 .md ol ul
 .md ul ol
 .md ul ul
-	margin 0.5em 0 0 0 !important
+	margin 0.2em 0 0 0
 .md li
-	margin-top 0.5em
+	margin 0.2em 0 0 0
+	max-width 320px
 
 // Headers
 h1
@@ -168,29 +98,84 @@ h6
 
 // Tables
 table
-	font-size 12px
+	border-collapse collapse
+	font-size 9pt
 	margin 0.5em 0 0 0
 	overflow-wrap normal
-tr:nth-child(odd)
-	background var(--c-con-weak)
-	thead &
-		background var(--c-con-strong)
 td
 th
-	padding 0 3px
-	vertical-align top
+	border 1px solid var(--c-con-strong)
+	padding 3px 6px
+	text-align left
+	vertical-align middle
+th
+	background var(--c-con-strong)
 
-// Media
-figure
-	margin 0
-iframe
-	border 0
-img
-	box-sizing content-box
-	display block
-video
-	box-sizing content-box
-	display block
+// Formatted text
+a
+	color inherit
+	text-decoration none
+address
+	font-style normal
+strong
+	letter-spacing 0
+sub
+sup
+	line-height 0
+.md
+	overflow-wrap anywhere
+	a
+		color lightskyblue
+		word-break break-all
+	a:not(:is([href^='/'], [href^='#']))::before
+		background lightskyblue
+		border-radius 999px
+		color white
+		content '→'
+		display inline
+		font-size 0.8em
+		height 1.25em
+		line-height 1.25
+		margin-left 0.2em
+		margin-right 0.4em
+		padding 0 0.125em
+	a[target='_blank']::before
+		display none !important
+
+// Verbatim text
+blockquote
+	border-left 3px solid var(--c-text-weak)
+	color var(--c-text-weak)
+	font-size 0.9em
+	margin 0.8em 0 0 2px
+	max-width 440px
+	padding-left 1em
+code
+pre
+	font-family var(--typeface-mono)
+	font-size 9pt
+	text-transform none
+code
+	padding 0 0.25em
+	overflow-wrap anywhere
+	white-space pre-wrap
+pre
+	border 1px dashed
+	border-radius 10px
+	overflow hidden
+	padding 1em
+
+// Spoilers
+.md-spoiler-text
+	background black
+	color transparent
+	*
+		opacity 0
+	&:hover
+		background transparent
+		color inherit
+		*
+			opacity 1
 
 // Interactive
 button
@@ -203,6 +188,17 @@ input
 	letter-spacing inherit
 	line-height inherit
 	padding 0
+	text-transform inherit
+	user-select all
 	word-spacing inherit
 details
 	cursor pointer
+
+// Media
+iframe
+	border 0
+img
+video
+	box-sizing content-box
+	display block
+	max-width 100%

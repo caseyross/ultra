@@ -1,56 +1,18 @@
 script.
 	import { getContext } from 'svelte'
-	import api from '../../../api/index.js'
-	import { StringMatch } from '../../../lib/index.js'
-	import BaseAccountMenu from '../../base/BaseAccountMenu.pug'
-	import Button from '../../framework/Button.pug'
-	num_unread_messages = 0
-	query = ''
-	if getContext('username')
-		subscriptions = localStorage['cache.subscriptions']?.split(' ')
-		api.loadWatch('current_user_subscribed_subreddits:100',
-			(x) ->
-				if x?.data?.length
-					subscriptions = x.data.filter((name) -> !name.startsWith('u_'))
-					localStorage['cache.subscriptions'] = subscriptions.join(' ')
-		)
-		api.loadWatch('current_user',
-			({ data }) ->
-				num_unread_messages = data?.inbox_count
-		)
-	else
-		popular = localStorage['cache.popular']?.split(' ')
-		api.loadWatch('subreddits_popular',
-			(x) ->
-				{ data: popular } = x
-				if popular then localStorage['cache.popular'] = popular.join(' ')
-		)
+	import BaseLoginButton from '../../base/BaseLoginButton.pug'
+	import BaseLogoutButton from '../../base/BaseLogoutButton.pug'
 
-
-main
-	section.search
-		<!-- svelte-ignore a11y-autofocus -->
-		input(autofocus={true} bind:value={query} type='search')
-		ol
-			{#if subscriptions?.length}
-				{#each StringMatch.match(subscriptions, query) as match, i}
-					Button(key={i === 0 ? 'Enter' : null} link='/r/{match.string}') {match.string} {match.score}
-			{:else if popular?.length}
-				{#each popular as subreddit_name, i}
-					Button(key={i === 0 ? 'Enter' : null} link='/r/{subreddit_name}') {subreddit_name}
-	section.account
-		BaseAccountMenu
-		Button(link='/messages/inbox') Mail ({num_unread_messages})
+.home
+	{#if !getContext('username')}
+		BaseLoginButton
+	{:else}
+		BaseLogoutButton
 
 style.
-	main
+	.home
 		align-items center
 		display flex
 		flex-flow column nowrap
 		height 100vh
 		justify-content center
-	.search
-		width 400px
-	input
-		border 1px solid
-		font-size 16pt

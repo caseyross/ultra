@@ -11,7 +11,7 @@ script.
 
 {#if img_url}
 	a(href='/u/{name}')
-		img.user-avatar(alt='' class='user-avatar-size-{size}' src={img_url})
+		img.user-avatar(alt='' class='user-avatar-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src={img_url})
 {:else if name != '[deleted]'}
 	a(href='/u/{name}')
 		.user-avatar.user-avatar-not-available(class='user-avatar-size-{size}')
@@ -24,9 +24,10 @@ style.
 		border 2px solid transparent
 		border-radius 999px
 		height 20px
+		user-select none
 		&:hover
 			border-color wheat
 	.user-avatar-not-available
-		border 4px dashed #666
+		border 4px dashed var(--c-con-norm)
 	.user-avatar-size-large
 		height 128px

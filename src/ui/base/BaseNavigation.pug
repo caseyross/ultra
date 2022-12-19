@@ -1,18 +1,38 @@
 script.
+	import { getContext } from 'svelte'
+	import api from '../../api/index.js';
 	import Button from '../framework/Button.pug'
+	import PopupWindow from '../framework/PopupWindow.pug'
+	show_feedback = false
+	show_help = false
+	show_settings = false
+	unread_mention_count = 0
+	unread_message_count = 0
+	unread_reply_count = 0
+	if getContext('username')
+		api.loadWatch('current_user_messages',
+			({ comment_replies, post_replies, private_messages, username_mentions }) ->
+				unread_mention_count = username_mentions?.length or 0
+				unread_message_count = private_messages?.length or 0
+				unread_reply_count = (post_replies?.length + comment_replies?.length) or 0
+		)
 
 nav.global-nav
 	section
 		Button(key='Escape' link='/' text='Velocity')
 		br
-		Button(key='~' text='Replies')
-		Button(key='!' text='Messages')
-		Button(key='@' text='Mentions')
+		{#if getContext('username')}
+			Button(badge={unread_reply_count || null} key='~' link='/mail/replies' text='Replies')
+			Button(badge={unread_message_count || null} key='!' link='/mail/messages' text='Messages')
+			Button(badge={unread_mention_count || null} key='@' link='/mail/mentions' text='Mentions')
 		Button(key='/' text='Go...')
 	section
-		Button(key='?' text='Help')
-		Button(key='*' text='Settings')
-		Button(key='>' text='Feedback')
+		Button(action={() => show_help = true} key='?' text='Help')
+		Button(action={() => show_settings = true} key='*' text='Settings')
+		Button(action={() => show_feedback = true} key='>' text='Feedback')
+PopupWindow(exit_action={() => show_help = false} title='Help' visible={show_help})
+PopupWindow(exit_action={() => show_settings = false} title='Settings' visible={show_settings})
+PopupWindow(exit_action={() => show_feedback = false} title='Feedback' visible={show_feedback})
 
 style.
 	section
@@ -21,10 +41,9 @@ style.
 		width 127px
 	.global-nav
 		align-items flex-end
-		border-right 1px solid #666
 		box-sizing content-box
 		display flex
 		flex-flow column nowrap
 		justify-content space-between
 		justify-self flex-end
-		padding 10px
+		padding 10px 0

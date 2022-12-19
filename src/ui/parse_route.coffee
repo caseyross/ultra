@@ -1,5 +1,5 @@
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']	
-KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'c', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
+KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'c', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
 LISTING_SORT_OPTIONS = ['controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all']
 SUBREDDIT_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising', 'search', 'search-hour', 'search-day', 'search-week', 'search-month', 'search-year', 'search-all']
 R_ALL_SORT_OPTIONS = SUBREDDIT_SORT_OPTIONS
@@ -190,6 +190,30 @@ export default (url) ->
 			if user_name is 'me' # on official site, redirects to current user
 				return ROUTE_OFFICIALSITE(url) # TODO?
 			switch path[3]
+				when 'comments', 'p', 'post'
+					post_short_id = path[4]
+					if not post_short_id then return ROUTE_INVALID
+					comments_sort = query.get('sort')
+					if comments_sort not in POST_COMMENTS_SORT_OPTIONS then comments_sort = 'best'
+					comment_short_id = path[6]
+					comment_context = query.get('context')
+					listing_type = switch query.get('lt')
+						when 'c' then 'collection_posts'
+						when 'm' then 'multireddit_posts'
+						when 'r' then 'subreddit_posts'
+						when 'u' then 'user_posts'
+						else null
+					collection_short_id = query.get('li')
+					multireddit_name = query.get('ln')
+					posts_sort = query.get('ls')
+					subreddit_name = query.get('ln') ? 'u_' + user_name
+					user_name = query.get('lu')
+					return {
+						page_type: 'post'
+						page_data: { comment_context, comment_short_id, comments_sort, post_short_id }
+						listing_type: listing_type
+						listing_data: { collection_short_id, multireddit_name, posts_sort, subreddit_name, user_name }
+					}
 				when 'm', 'multi', 'multireddit'
 					multireddit_name = path[4]
 					if not multireddit_name then return ROUTE_INVALID

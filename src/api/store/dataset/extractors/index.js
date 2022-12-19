@@ -4,9 +4,9 @@ import extract from './extract.coffee'
 import collection from './collection.coffee'
 import current_user from './current_user.coffee'
 import current_user_messages from './current_user_messages.coffee'
+import global_popular_subreddits from './global_popular_subreddits.coffee'
 import post from './post.coffee'
 import post_more_replies from './post_more_replies.coffee'
-import subreddits_popular from './subreddits_popular.coffee'
 import users from './users.coffee'
 import user_public_multireddits from './user_public_multireddits.coffee'
 
@@ -15,9 +15,9 @@ export default {
 	collection,
 	current_user,
 	current_user_messages,
+	global_popular_subreddits,
 	post,
 	post_more_replies,
-	subreddits_popular,
 	users,
 	user_public_multireddits,
 }

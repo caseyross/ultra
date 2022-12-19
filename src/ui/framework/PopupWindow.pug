@@ -1,0 +1,33 @@
+script.
+	import { afterUpdate } from 'svelte'
+	import Button from './Button.pug'
+	export exit_action = null
+	export title = ''
+	export visible = false
+	dialogElement = null
+	afterUpdate ->
+		if visible
+			dialogElement.showModal()
+		else
+			dialogElement.close()
+
+dialog(bind:this={dialogElement})
+	form(method='dialog')
+		header
+			h1 {title}
+			Button(action={exit_action} key={visible ? 'Escape' : null} text='✗')
+		slot
+
+style.
+	dialog
+		background inherit
+		border-radius 10px
+		bottom auto
+		top 80px
+		width 480px
+		&::backdrop
+			background var(--c-con-strong)
+	header
+		border-bottom 1px solid var(--c-con-weak)
+		display flex
+		justify-content space-between

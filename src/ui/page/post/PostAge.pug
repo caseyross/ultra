@@ -1,0 +1,17 @@
+script.
+	import { Time } from '../../../lib/index.js'
+	export created = null
+	export edited = null
+
+.post-age
+	time.post-created(datetime={created} title='{Time.sToAbsTimeStr(created)}') {Time.sToAbsRelTimeStr(created)}
+	{#if edited}
+		time.post-last-edited(datetime={edited} title='last edited {Time.sToAbsTimeStr(edited)}') ({Time.sToAbsRelTimeStr(edited)})
+
+style.
+	.post-age
+		cursor default
+		display inline-flex
+		font-size 8pt
+		opacity 0.5
+		user-select none

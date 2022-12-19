@@ -1,5 +1,6 @@
 script.
 	import api from '../../api/index.js'
+	import { StringMatch } from '../../lib/index.js'
 	import Button from '../framework/Button.pug'
 	import ListingNameTag from './ListingNameTag.pug'
 	import ListingPost from './ListingPost.pug'
@@ -15,6 +16,7 @@ script.
 
 	base_page_id = null
 	error = false
+	filter_text = ''
 	has_next_page = false
 	loading = false
 	page = null
@@ -38,6 +40,14 @@ script.
 					display_name = collection.title
 					pages[0] = collection.posts
 			)
+		when 'current_user_subscribed_subreddits'
+			base_page_id = api.ID('current_user_subscribed_subreddits', 100)
+			cache_key = 'cache.subscriptions'
+			filterable = true
+		when 'global_popular_subreddits'
+			base_page_id = api.ID('global_popular_subreddits', 100)
+			cache_key = 'cache.popular'
+			filterable = true
 		when 'multireddit_posts'
 			display_name = "#{user_name}/#{multireddit_name}"
 			base_path = "/m/#{user_name}/#{multireddit_name}"
@@ -78,6 +88,8 @@ script.
 				ls: posts_sort
 
 	load_page = (page_number) ->
+		if cache_key
+			pages[page_number] = localStorage[cache_key + '.' + page_number]?.split(' ') ? []
 		if page_number is 0
 			page_id = base_page_id
 		else
@@ -87,7 +99,8 @@ script.
 			if loading then pages_loading[page_number] = loading
 			if error then pages_error[page_number] = error
 			if page
-				is_last_page = page_number == pages.length
+				pages[page_number] = page
+				is_last_page = page_number == pages.length - 1
 				if is_last_page
 					if page_number is 0
 						if page.length >= page_size
@@ -95,7 +108,8 @@ script.
 					else
 						if page.length < page_size
 							has_next_page = false
-				pages[page_number] = page
+				if cache_key
+					localStorage[cache_key + '.' + page_number] = page.join(' ')
 		)
 
 	if base_page_id then load_page(0)
@@ -119,31 +133,31 @@ nav.listing
 						ListingTimeRange(base_path={base_path + '/' + posts_sort.split('-')[0]} selection={posts_sort.split('-')[1]})
 				{#if posts_sort.split('-')[0] === 'search'}
 					ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
+		{#if filterable}
+			<!-- svelte-ignore a11y-autofocus -->
+			input.listing-filter(autofocus={true} bind:value={filter_text} type='search')
 		hr
 		ol.listing-content
 			{#if pages.length}
 				{#each pages as page}
-					{#each page as str}
+					{#each StringMatch.match(page, filter_text) as { string }, i}
 						{#if type.endsWith('multireddits')}
-							ListingNameTag(link="/m/{str.replace('-', '/')}" text={str} type='multireddit_posts')
+							ListingNameTag(link="/m/{string.replace('-', '/')}" text={string} type='multireddit_posts')
 						{:else if type.endsWith('posts')}
-							ListingPost(link_params={listing_post_params} selected={str == post_short_id} short_id={str} show_subreddit={type !== 'subreddit_posts'})
+							ListingPost(list_index={i} link_params={listing_post_params} selected={string == post_short_id} short_id={string} show_subreddit={type !== 'subreddit_posts'})
 						{:else if type.endsWith('subreddits')}
-							{#if str.startsWith('u_')}
-								ListingNameTag(link='/u/{str.slice(2)}' text={str.slice(2)} type='user_posts')
+							{#if string.startsWith('u_')}
+								ListingNameTag(link='/u/{string.slice(2)}' text={string.slice(2)} type='user_posts')
 							{:else}
-								ListingNameTag(link='/r/{str}' text={str} type='subreddit_posts')
+								ListingNameTag(link='/r/{string}' text={string} type='subreddit_posts')
 				{#if has_next_page}
 					Button(action={() => load_page(pages.length)} text='More')
 style.
 	.listing
-		border-left 1px solid #666
 		display flex
 		flex-flow column nowrap
 		height 100vh
-		padding 20px
-		padding-bottom 0
-		width 400px
+		padding-top 10px
 		header
 			align-items baseline
 			display flex
@@ -155,5 +169,5 @@ style.
 		flex-flow column nowrap
 		gap 1ch
 		overflow-y auto
-		&::-webkit-scrollbar
-			display none
+	.listing-filter
+		border 1px solid

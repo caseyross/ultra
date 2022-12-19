@@ -9,7 +9,4 @@ script.
 		delete localStorage['cache.subscriptions']
 		location.reload()
 
-{#if api.getLoginStatus() === 'logged-in'}
-	Button(action={() => logout()} text='Log out')
-{:else}
-	Button(link={api.getLoginURL({ memoString: location.pathname })} text='Log in')
+Button(action={() => logout()} text='Logout')

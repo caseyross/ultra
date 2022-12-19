@@ -11,7 +11,7 @@ script.
 		if vote == 1 then upload_vote(0)
 		else upload_vote(1)
 
-button.post-score(class:downvoted={vote == -1} class:upvoted={vote == 1} on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }}) {controversiality > 0 ? '◆' : ''}
+button.post-score(class:post-score-downvoted={vote == -1} class:post-score-upvoted={vote == 1} on:click={() => toggle_upvote()} on:contextmenu={(e) => { e.preventDefault(); toggle_downvote() }}) {controversiality > 0 ? '◆' : ''}
 	span.post-score-votes
 		{#if Number.isFinite(value)}
 			{#if value < 0}
@@ -19,7 +19,7 @@ button.post-score(class:downvoted={vote == -1} class:upvoted={vote == 1} on:clic
 			{:else}
 				| {value}
 		{:else}
-			| *
+			| ?
 	{#if awards?.length}
 		span.post-score-awards(title={'awarded: ' + awards.map(award => award.name + ' (' + award.count + ')').join(', ')}) ★{awards.reduce((a, b) => a + b.count, 0)}
 
@@ -27,8 +27,14 @@ style.
 	.post-score
 		font-size 12px
 		font-weight bold
+		user-select none
 	.post-score-awards
 		color goldenrod
 	.post-score-votes
+		opacity 0.5
 		&:hover
-			color wheat
+			opacity 0.8
+		.post-score-downvoted > &
+			opacity 0.2
+		.post-score-upvoted > &
+			opacity 1

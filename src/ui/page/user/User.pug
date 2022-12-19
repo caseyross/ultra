@@ -13,14 +13,14 @@ script.
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
 
 svelte:head
-	title u/{name} - Profile
+	title u/{name.toLowerCase()}
 article.user
 	section.user-basic-info
 		div(style='text-align: center')
 			UserAvatar(name={name} size='large')
 			h1.user-name {user ? user.name : name}
 			{#if user}
-				time.user-age(title='account created {Time.sToAbsDateStr(user.created_utc)}') {Time.sToRelDateStr(user.created_utc)}
+				time.user-age(title='account created {Time.sToAbsTimeStr(user.created_utc)}') {Time.sToRelTimeStr(user.created_utc)}
 		div
 			{#if trophies}
 				ol.user-trophies
@@ -33,15 +33,6 @@ article.user
 				PostComment(short_id={short_id} out_of_context={true})
 
 style.
-	.user
-		background #444
-		box-sizing content-box
-		height calc(100% - 80px)
-		overflow auto
-		padding 40px
-		width 480px
-		&::-webkit-scrollbar
-			display none
 	.user-age
 		color var(--c-text-weak)
 		font-size 12pt

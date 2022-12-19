@@ -1,13 +1,3 @@
-# Formatter is expensive to create, so we just maintain a singleton instance
-abs_date_formatter = new Intl.DateTimeFormat('en-US', {
-	weekday: 'long',
-	year: 'numeric',
-	month: 'long',
-	day: 'numeric',
-	hour: 'numeric',
-	minute: 'numeric'
-})
-
 units =
 	year:
 		abbr: 'y'
@@ -91,25 +81,69 @@ Time = {
 			s = s - 60
 			m = m + 1
 		return "#{String(m).padStart(2, '0')}:#{String(s).padStart(2, '0')}"
+
+	msToAbsTimeStr: (ms) ->
+		date = new Date(ms)
+		return "#{String(date.getMonth() + 1).padStart(2, '0')}/#{String(date.getDate()).padStart(2, '0')}/#{String(date.getFullYear())[2..]} #{String(date.getHours()).padStart(2, '0')}:#{String(date.getMinutes()).padStart(2, '0')}"
 	
-	msToAbsDateStr: (ms) -> abs_date_formatter.format(new Date(ms))
-	
-	msToRelDateStr: (ms, opt = { abbr: true }) ->
+	msToAbsRelTimeStr: (ms) ->
+		# We want to account for day boundaries when counting relative days - i.e. treat days as midnight--midnight rather than just a particular number of milliseconds.
+		# The key thing to note is that because the naive duration is "floored" to an integer, there is a discontinuity at precisely the hours, minutes, and seconds value at which the naive duration was calculated.
+		# The effect of this is that past times later in the day than the calculation time are counted as 1 less day than we would expect, based on day boundaries.
+		#
+		#  MIDNIGHT  * -------------------------------------------------------------- 
+		#           / 
+		#          /    [ PAST HH:MM:SS EARLIER THAN CURRENT (CORRECT NAIVE DAY COUNT) ] 
+		#         /
+		#        / < HH:MM:SS FOR NAIVE CALCULATION
+		#       /
+		#      /    [ PAST HH:MM:SS LATER THAN CURRENT (NAIVE DAY COUNT OFF BY -1) ]
+		#     /
+		#    * NEXT DAY -------------------------------------------------------------
+		#
+		daysBack = 'MANY'
+		targetDate = new Date(ms)
+		currentDate = new Date()
 		duration = Time.msToTopDuration(Time.unixMs() - ms, { trunc: true })
+		switch duration.unit.name
+			when 'day'
+				HHMMSS = (date) ->
+					[date.getHours(), date.getMinutes(), date.getSeconds()].map((s) -> String(s).padStart(2, '0')).join(':')
+				daysBack = if HHMMSS(currentDate) > HHMMSS(targetDate) then duration.count else duration.count + 1 # string comparison
+			when 'hour'
+				daysBack = if duration.count > currentDate.getHours() then 1 else 0
+			when 'minute'
+				daysBack = if currentDate.getHours() is 0 and duration.count > currentDate.getMinutes() then 1 else 0
+			when 'second'
+				daysBack = if currentDate.getHours() is 0 and currentDate.getMinutes() is 0 and duration.count > currentDate.getSeconds() then 1 else 0
+			when 'millisecond'
+				daysBack = 0
+		if duration.count < 0
+			daysBack = 0
+		switch daysBack
+			when 0 then return "Today #{String(targetDate.getHours()).padStart(2, '0')}:#{String(targetDate.getMinutes()).padStart(2, '0')}"
+			when 1 then return 'Yesterday'
+			else
+				return "#{String(targetDate.getMonth() + 1).padStart(2, '0')}/#{String(targetDate.getDate()).padStart(2, '0')}/#{String(targetDate.getFullYear())[2..]}"
+	
+	msToRelTimeStr: (ms, { abbr = true, endMs = Time.unixMs() } = {}) ->
+		duration = Time.msToTopDuration(endMs - ms, { trunc: true })
 		if duration.unit.abbr != 'ms'
-			if opt.abbr
+			if abbr
 				return "#{duration.count}#{duration.unit.abbr}"
 			else
 				return "#{duration.count} #{duration.unit.name}#{if duration.count is 1 then '' else 's'}"
 		else
-			return '<1s'
+			return 'now'
 
 }
 
-Time.sToAbsDateStr = (s) ->
-	Time.msToAbsDateStr(Time.sToMs(s))
-Time.sToRelDateStr = (s, opt) ->
-	Time.msToRelDateStr(Time.sToMs(s), opt)
+Time.sToAbsTimeStr = (s) ->
+	Time.msToAbsTimeStr(Time.sToMs(s))
+Time.sToAbsRelTimeStr = (s) ->
+	Time.msToAbsRelTimeStr(Time.sToMs(s))
+Time.sToRelTimeStr = (s, { abbr, endS } = {}) ->
+	Time.msToRelTimeStr(Time.sToMs(s), { abbr, endMs: if endS then Time.sToMs(endS) })
 Time.sToMediaDurationStr = (s) ->
 	Time.msToMediaDurationStr(Time.sToMs(s))
 

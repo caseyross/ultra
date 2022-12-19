@@ -10,23 +10,24 @@ script.
 	export page_type = null
 
 	background_color = null
-	color_strategy = 'dark-background'
+	color_strategy = 'white-text'
 	set_theme_color = (css_color) ->
-		if css_color
-			background_color = css_color
-			color_strategy = if new Color({ hex: css_color }).isLight() then 'light-background' else 'dark-background'
+		if not css_color then css_color = '#343537'
+		background_color = css_color
+		color_strategy = if new Color({ hex: css_color }).isLight() then 'black-text' else 'white-text'
 	setContext('set_theme_color', set_theme_color)
 
-main(class='color-strategy-{color_strategy}' style='background:{background_color}')
+#layout(class='color-strategy-{color_strategy}' style='background:{background_color}')
 	BaseNavigation
 	BasePageContent(data={page_data} type={page_type})
 	BaseListingContent(data={{ ...page_data, ...listing_data }} listing_type={listing_type} page_type={page_type})
 
 style.
-	main
+	#layout
+		align-self stretch
 		background-color var(--c-back-default)
 		color var(--c-text-strong)
 		display grid
-		grid-template-columns 1fr 720px 1fr
-		height 100vh
-		width 100vw
+		grid-template-columns 160px 560px 220px
+		height 100dvh
+		justify-content center

@@ -20,7 +20,7 @@ script.
 	player = null
 	time = 0
 	video = null
-	volume = 0.25
+	volume = 0
 	wake_mouse = ->
 		mouse_idle = false
 		clearTimeout(mouse_idle_timer_id)
@@ -29,12 +29,16 @@ script.
 			200
 		)
 	onMount ->
+		audio.volume = volume
 		player.addEventListener('fullscreenchange', (e) ->
 			if document.fullscreenElement? and document.fullscreenElement is player
 				fullscreen = true
 				mouse_idle = true
 			else
 				fullscreen = false
+		)
+		video.addEventListener('ended', (e) ->
+			if fullscreen then document.exitFullscreen()
 		)
 		video.addEventListener('mousedown', (e) ->
 			if e.button is 0
@@ -77,7 +81,7 @@ script.
 		.media-volume
 			span.media-volume-region-mute M
 			span.media-volume-region-sound S
-			input.media-volume-input(bind:value={volume} max={1} min={-1} step={0.1} type='range' on:input={(e) => audio.volume = clamp(0, 1, e.target.value)})
+			input.media-volume-input(max={1} min={-1} step={0.1} type='range' on:input={e => audio.volume = clamp(0, 1, e.target.value)} value={volume})
 		Button(action={() => fullscreen ? document.exitFullscreen() : player.requestFullscreen()} key='f' text={fullscreen ? '→←' : '⟷'})
 
 style.
@@ -85,6 +89,7 @@ style.
 		display none
 	video
 		background black
+		border-radius 1ch
 		:fullscreen &
 			border-radius 0
 			height 100% !important

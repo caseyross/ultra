@@ -1,12 +1,13 @@
 script.
-	import { afterUpdate, getContext } from 'svelte';
+	import { getContext } from 'svelte';
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
-	import Base404 from '../../base/Base404.pug'
 	import Button from '../../framework/Button.pug'
 	import MediaPlayer from '../../framework/MediaPlayer.pug'
-	import Minimap from '../../framework/Minimap.pug'
+	import TextHTML from '../../framework/TextHTML.pug'
+	
+	import ListingNameTag from '../../listing/ListingNameTag.pug'
 	import ListingPost from '../../listing/ListingPost.pug'
 	
 	import UserAvatar from '../user/UserAvatar.pug'
@@ -14,14 +15,15 @@ script.
 	
 	import PostComment from './PostComment.pug'
 	import PostFlair from './PostFlair.pug'
-	import PostMarkupHTML from './PostMarkupHTML.pug'
 	import PostScore from './PostScore.pug'
 	import PostTag from './PostTag.pug'
+
+	import html_embeds from './embed/html_embeds.coffee'
+	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
 	export short_id = null
-	DOM =
-		post: null
 	error = null
+	gallery_expanded = false
 	listing_sort = 'hot'
 	loading = false
 	more_replies_loading = false
@@ -31,6 +33,10 @@ script.
 	api.loadWatch(api.ID('post', short_id),
 		(x) ->
 			{ data: post, error, loading } = x
+			if post?.subreddit
+				api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
+					set_theme_color(subreddit?.primary_color ? subreddit?.key_color)
+				)
 			if post?.contributors?.length
 				api.loadWatch(api.ID('users', post.contributors),
 					(x) -> if x.data or x.error then profile_data_loaded = true
@@ -39,37 +45,12 @@ script.
 				api.watch(post.more_replies_id,
 					(x) -> { loading: more_replies_loading } = x
 				)
-			if post?.subreddit
-				api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
-					set_theme_color(subreddit?.primary_color or subreddit?.key_color)
-				)
 	)
-	current_scroll = 0
-	line_height = 21
-	minimap_pattern = []
-	afterUpdate ->
-		content_pattern =
-			if node = document.querySelector('.post-content')
-				[{
-					color: 'rgba(0,0,0,0.5)'
-					height: Math.trunc(node.clientHeight / line_height),
-					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / line_height)
-				}]
-			else []
-		comments_pattern = Array.from(
-			document.querySelectorAll('.comment-body'),
-			(node) -> ({
-					color: 'rgba(0,0,0,0.5)'
-					height: Math.trunc(node.clientHeight / line_height),
-					start: Math.trunc((node.getBoundingClientRect().top - DOM.post.getBoundingClientRect().top) / line_height)
-			})
-		)
-		minimap_pattern = content_pattern.concat(comments_pattern)
 
 svelte:head
 	{#if post}
-		title r/{post.subreddit.toLowerCase()} - {post.title}
-article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.scrollTop})
+		title r/{post.subreddit} - {post.title} 
+article.post
 	{#if error}
 		.post-unavailable-reason
 			{#if error instanceof api.errors.ServerBadRequestError && error.code === 403}
@@ -90,6 +71,7 @@ article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.sc
 				{:else if post.removed_by_category === 'copyright_takedown'}
 					| Removed by Reddit copyright compliance.
 		header.post-header
+			PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 			{#if post.link_flair_text}
 				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 			h1.post-title {post.title}
@@ -97,8 +79,7 @@ article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.sc
 				{#if post.distinguished}
 					UserDistinguish(type={post.distinguished})
 				UserAvatar(name={post.author})
-				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-				time.post-create-date {Time.sToRelDateStr(post.created_utc, { abbr: false })} ago
+				time.post-create-date {Time.sToRelTimeStr(post.created_utc, { abbr: false })} ago
 				.post-tags
 					{#if post.archived}
 						PostTag(name='archived')
@@ -130,51 +111,55 @@ article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.sc
 									dd {option.text}
 			{:else if post.format === 'media'}
 				{#if post.media.length > 1}
+					menu.post-content-actions
+						Button(action={() => gallery_expanded = true} key='e' text='Expand all (+{post.media.length - 1})')
 					ol.post-gallery
 						{#each post.media as media, index}
-							figure.post-gallery-item
-								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-									picture
-										source(srcset={media.image_url_960})
-										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-								{#if media.caption_text || media.caption_url}
-									figcaption.post-gallery-image-caption
-										{#if media.caption_text}
-											p {media.caption_text}
-										{#if media.caption_url}
-											a(href={media.caption_url}) {media.caption_url}
+							{#if index < 1 || gallery_expanded}
+								figure.post-gallery-item
+									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+										picture
+											source(srcset={media.image_url_960})
+											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+									{#if media.caption_text || media.caption_url}
+										figcaption.post-gallery-image-caption
+											{#if media.caption_text}
+												p {media.caption_text}
+											{#if media.caption_url}
+												a(href={media.caption_url}) {media.caption_url}
 				{:else if post.media.length === 1}
 					{@const media = post.media[0]}
+						menu.post-content-actions
+							Button(action={() => window.open(media.image_url)} key='f' text='Full size')
 						{#if media.video_url}
-							MediaPlayer(audio_url={media.video_audio_url} dimensions={[640, 360]} mimic_gif={media.is_gif} video_url={media.video_url})
+							MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
 						{:else if media.image_url}
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 								picture
 									source(srcset={media.image_url_960})
 									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-			{:else if post.format === 'embed'}
-				{#each post.media as media}
-					{#if media.iframe_url}
-						<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
-						<!-- svelte-ignore a11y-missing-attribute -->
-						iframe.post-iframe(allow={media.iframe_allow} allowfullscreen='true' src={media.iframe_url})
-					{:else if media.html}
-						{@html media.html}
-					menu.post-embed-actions
-						Button(action={() => window.open(post.url)} key='o' text='Open original')
 			{:else if post.format === 'link'}
 				{#if post.url}
-					.md.post-link
-						a(href={post.url} rel='external noopener preconnect') {post.url}
-					menu.post-link-actions
+					menu.post-content-actions
 						Button(action={() => window.open(post.url)} key='e' text='Open link')
+					{#if html_embeds(post)}
+						{@const embed = html_embeds(post)}
+							{@html embed.html}
+					{:else if iframe_embeds(post.url)}
+						{@const embed = iframe_embeds(post.url)}
+							<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+							<!-- svelte-ignore a11y-missing-attribute -->
+							iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url})
+					{:else}
+						.md.post-link
+							a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'crosspost'}
 				ListingPost(link_params={{ lt: 'r', ln: post.subreddit, ls: listing_sort }} short_id={post.crosspost_parent} show_subreddit={true})
 			{:else}
 				p [Error displaying post.]
 			{#if post.selftext_html && !post.removed_by_category}
 				.post-selftext
-					PostMarkupHTML(html={post.selftext_html})
+					TextHTML(html={post.selftext_html})
 		section.post-comments
 			h1.post-comments-label Comments
 			{#if post.replies?.length && profile_data_loaded}
@@ -187,25 +172,16 @@ article.post(bind:this={DOM.post} on:scroll={(e) => current_scroll = e.target.sc
 								Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
 			menu.post-comments-actions
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
-		figure.post-minimap
-			Minimap(content_height={DOM.post?.scrollHeight} current_scroll={current_scroll} pattern={minimap_pattern} scroll={(y) => DOM.post.scrollTop = y} view_height={DOM.post?.offsetHeight})
 
 style.
 	.post
-		box-sizing content-box
-		height 100%
-		overflow auto
-		width 720px
-		&::-webkit-scrollbar
-			display none
+		width 480px
 	.post-content
-		border-bottom 1px solid #666
-		padding 20px 40px
-		padding-top 0
+		margin-top 20px
 	.post-comments
-		padding 20px 40px
+		margin-top 20px
 	.post-comments-actions
-		margin-top 1em
+		margin-top 3em
 	.post-comments-label
 		color var(--c-text-weak)
 		font-size 10px
@@ -213,34 +189,38 @@ style.
 		text-transform uppercase
 	.post-comments-list
 		margin-top 2em
-	.post-embed-actions
+	.post-content-actions
 		display flex
 		gap 1em
-		margin-top 1em
+		padding 10px 0
 	.post-gallery
+		counter-reset gallery-index
 		display flex
-		flex-flow row wrap
+		flex-flow column nowrap
+		gap 2px
 	.post-gallery-image
-		border-bottom 1px solid transparent
-		max-width 100%
+		width 100%
 	.post-gallery-image-caption
-		color #aaa
-		text-align center
+		color var(--c-text-weak)
+		left calc(100% + 1ch)
+		position absolute
+		width 108px
 	.post-gallery-item
 		display flex
 		flex-flow column nowrap
 		gap 0.5ch
-	.post-header
-		padding 20px 40px
+		position relative
+		&::before
+			content counter(gallery-index)
+			counter-increment gallery-index
+			position absolute
+			right calc(100% + 1ch)
 	.post-iframe
-		aspect-ratio 16 / 9
+		aspect-ratio 16/9
+		border-radius 1ch
 		width 100%
 	.post-image
-		max-width 100%
-	.post-link-actions
-		display flex
-		gap 1em
-		margin-top 1em
+		width 100%
 	.post-loading-message
 		padding 10px
 	.post-metadata
@@ -248,28 +228,22 @@ style.
 		color var(--c-text-weak)
 		display flex
 		gap 10px
+		height 24px
 		margin-top 1ch
-	.post-minimap
-		position fixed
-		right 0
-		top 6em
 	.post-more-replies
 		margin-top 2.25em
 	.post-prediction-options > li
 		display flex
 	.post-selftext
-		margin-top 0.7em
-		:global(& img)
-			width 100%
+		margin-top 20px
 	.post-tags
 		display flex
 		gap 3px
 	.post-title
-		font-size 12pt
+		font-size 14pt
 		font-weight inherit
-		letter-spacing 0.025em
-		line-height 1.444
-		margin-top 0.5em
+		line-height 1.4
+		margin-top 0.25em
 	.post-unavailable-reason
 		background salmon
 		color white

@@ -1,9 +1,9 @@
 script.
 	import api from '../../api/index.js'
-	import { Time } from '../../lib/index.js'
 
 	import Button from '../framework/Button.pug'
 	
+	import PostAge from '../page/post/PostAge.pug'
 	import PostFlair from '../page/post/PostFlair.pug'
 	import PostScore from '../page/post/PostScore.pug'
 	import PostTag from '../page/post/PostTag.pug'
@@ -11,8 +11,7 @@ script.
 	import ListingNameTag from './ListingNameTag.pug'
 	
 	export link_params = null
-	export is_next = false
-	export is_prev = false
+	export list_index = null
 	export selected = false
 	export short_id = null
 	export show_subreddit = false
@@ -25,17 +24,21 @@ script.
 	)
 
 {#if post}
-	Button(activated={selected} key={is_next ? 'f' : is_prev ? 'r' : ''} link="/r/{post.subreddit.toLowerCase()}/post/{short_id}{link_params ? '?' + new URLSearchParams(link_params) : ''}")
+	Button(activated={selected} key={String(list_index)} link="/r/{post.subreddit.toLowerCase()}/post/{short_id}{link_params ? '?' + new URLSearchParams(link_params) : ''}")
 		.listing-post
+			h1.listing-post-title
+				| {post.title}
+			.listing-post-stats
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+				PostAge(created={post.created_utc} edited={post.edited})
 			{#if show_subreddit}
-				ListingNameTag(link='/r/{post.subreddit}' text={post.subreddit} type='subreddit_posts')
-			{:else}
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				{#if post.subreddit.startsWith('u_')}
+					ListingNameTag(link='/u/{post.subreddit.slice(2)}' text={post.subreddit.slice(2)} type='user_posts')
+				{:else}
+					ListingNameTag(link='/r/{post.subreddit}' text={post.subreddit} type='subreddit_posts')
+			{:else if post.link_flair_text}
+				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 			.listing-post-metadata
-				.listing-post-stats
-					PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-					time.listing-post-age(datetime={post.created_utc} title={post.edited ? Time.sToAbsDateStr(post.created_utc) + ' (edited ' + Time.sToAbsDateStr(post.edited) + ')': Time.sToAbsDateStr(post.created_utc)}) {Time.sToRelDateStr(post.created_utc, { abbr: false })}
 				.listing-post-tags
 					{#if post.archived}
 						PostTag(name='archived')
@@ -51,30 +54,27 @@ script.
 						PostTag(name='sticky')
 					{#if post.is_original_content}
 						PostTag(name='oc')
-			h1.listing-post-title {post.title}
 
 style.
 	.listing-post
-		align-items baseline
-		display flex
-		flex-flow column nowrap
+		display grid
 		gap 5px
 	.listing-post-metadata
 		align-items center
-		color var(--c-text-weak)
 		display flex
 		justify-content space-between
 		width 100%
 	.listing-post-stats
 		align-items center
 		display flex
-		gap 10px
+		justify-content space-between
+		width 100%
 	.listing-post-tags
 		align-items center
 		display flex
 		gap 3px
 	.listing-post-title
-		font-size 10pt
+		font-size inherit
 		font-weight inherit
 		margin 0
 		overflow-wrap anywhere

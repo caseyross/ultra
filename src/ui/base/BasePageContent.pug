@@ -12,24 +12,33 @@ script.
 	export data = null
 	export type = null
 
-{#key data}
-	{#if type === 'collection'}
-		Collection(short_id={data.collection_short_id})
-	{:else if type === 'home'}
-		Home
-	{:else if type === 'message'}
-		Message(short_id={data.message_short_id})
-	{:else if type === 'multireddit'}
-		Multireddit(multireddit_name={data.multireddit_name} user_name={data.user_name})
-	{:else if type === 'multireddit_all'}
-		MultiredditAll(multireddit_name={data.multireddit_name} user_name={data.user_name})
-	{:else if type === 'multireddit_popular'}
-		MultiredditPopular(multireddit_name={data.multireddit_name} user_name={data.user_name})
-	{:else if type === 'post'}
-		Post(comment_short_id={data.comment_short_id} comments_sort={data.comments_sort} comment_context={data.comment_context} listing_sort={data.posts_sort} short_id={data.post_short_id})
-	{:else if type === 'subreddit'}
-		Subreddit(name={data.subreddit_name})
-	{:else if type === 'user'}
-		User(name={data.user_name})
-	{:else if type === 'wiki'}
-		Wiki(page_name={data.wiki_name} revision_id={data.wiki_revision_id} subreddit_name={data.subreddit_name})
+main#page-content
+	{#key data}
+		{#if type === 'collection'}
+			Collection(short_id={data.collection_short_id})
+		{:else if type === 'home'}
+			Home
+		{:else if type === 'message'}
+			Message(short_id={data.message_short_id})
+		{:else if type === 'multireddit'}
+			Multireddit(multireddit_name={data.multireddit_name} user_name={data.user_name})
+		{:else if type === 'multireddit_all'}
+			MultiredditAll(multireddit_name={data.multireddit_name} user_name={data.user_name})
+		{:else if type === 'multireddit_popular'}
+			MultiredditPopular(multireddit_name={data.multireddit_name} user_name={data.user_name})
+		{:else if type === 'post'}
+			Post(comment_short_id={data.comment_short_id} comments_sort={data.comments_sort} comment_context={data.comment_context} listing_sort={data.posts_sort} short_id={data.post_short_id})
+		{:else if type === 'subreddit'}
+			Subreddit(name={data.subreddit_name})
+		{:else if type === 'user'}
+			User(name={data.user_name})
+		{:else if type === 'wiki'}
+			Wiki(page_name={data.wiki_name} revision_id={data.wiki_revision_id} subreddit_name={data.subreddit_name})
+
+style.
+	#page-content
+		height 100%
+		overflow overlay
+		padding 40px
+		&::-webkit-scrollbar
+			display none

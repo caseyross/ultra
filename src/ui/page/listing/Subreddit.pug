@@ -7,7 +7,7 @@ script.
 	rules = null
 	set_theme_color = getContext('set_theme_color')
 	api.loadWatch(api.ID('subreddit', name), ({ data: info }) ->
-		set_theme_color(info?.primary_color or info?.key_color)
+		set_theme_color(info?.primary_color ? info?.key_color)
 	)
 	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
 
@@ -57,7 +57,7 @@ style.
 		letter-spacing 0.03em
 		padding 5px
 	.subreddit-rule-description
-		border-left 1px solid #666
+		border-left 1px solid var(--c-con-norm)
 		font-size 9pt
 		margin 1em
 		padding 0 3em

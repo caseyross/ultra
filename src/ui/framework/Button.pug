@@ -36,6 +36,7 @@ script.
 
 style.
 	.appearance-button
+		align-items flex-start
 		background var(--c-con-weak)
 		border 1px solid transparent
 		border-radius 6px
@@ -43,6 +44,7 @@ style.
 		gap 5px
 		line-height 18px
 		padding 4px 6px
+		user-select none
 		&:disabled
 			opacity 0.5
 		&:hover
@@ -57,13 +59,11 @@ style.
 		font-size 12px
 		font-weight bold
 	.badge
-		align-items center
-		background var(--c-con-weak)
-		border-radius 3px
-		display inline-flex
-		font-size 0.75em
-		height 100%
-		padding 0 3px
+		border-radius 10px
+		background var(--c-con-strong)
+		font-size 0.5em
+		font-weight bold
+		padding 0 1ch
 	.size-big
 		font-size 1.5em
 	.size-normal

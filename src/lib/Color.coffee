@@ -15,4 +15,4 @@ export default class Color
 	
 	isDark: -> not @isLight()
 
-	isLight: -> (@r / 3 + @g + @b / 2) > 1
+	isLight: -> (@r / 4 + @g + @b / 3) > 1

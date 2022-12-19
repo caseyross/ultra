@@ -1,4 +1,5 @@
 script.
+	import { getContext } from 'svelte'
 	import Listing from '../listing/Listing.pug'
 	export data = null
 	export listing_type = null
@@ -10,6 +11,11 @@ script.
 	{:else}
 		{#if page_type === 'collection'}
 			Listing(type='collection_posts' data={data})
+		{:else if page_type === 'home'}
+			{#if getContext('username')}
+				Listing(type='current_user_subscribed_subreddits' data={data})
+			{:else}
+				Listing(type='global_popular_subreddits' data={data})
 		{:else if page_type === 'message'}
 			Listing(type='current_user_messages' data={data})
 		{:else if page_type === 'multireddit'}
@@ -19,7 +25,10 @@ script.
 		{:else if page_type === 'multireddit_popular'}
 			Listing(type='multireddit_posts' data={{ ...data, multireddit_name: 'popular', user_name: 'r' }})
 		{:else if page_type === 'post'}
-			Listing(type='subreddit_posts' data={data})
+			{#if data?.subreddit_name.startsWith('u_')}
+				Listing(type='user_posts' data={{ ...data, user_name: data.subreddit_name.slice(2) }})
+			{:else}
+				Listing(type='subreddit_posts' data={data})
 		{:else if page_type === 'subreddit'}
 			Listing(type='subreddit_posts' data={data})
 		{:else if page_type === 'user'}
