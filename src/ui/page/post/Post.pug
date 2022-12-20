@@ -13,6 +13,7 @@ script.
 	import UserAvatar from '../user/UserAvatar.pug'
 	import UserDistinguish from '../user/UserDistinguish.pug'
 	
+	import PostAge from './PostAge.pug'
 	import PostComment from './PostComment.pug'
 	import PostFlair from './PostFlair.pug'
 	import PostScore from './PostScore.pug'
@@ -79,7 +80,7 @@ article.post
 				{#if post.distinguished}
 					UserDistinguish(type={post.distinguished})
 				UserAvatar(name={post.author})
-				time.post-create-date {Time.sToRelTimeStr(post.created_utc, { abbr: false })} ago
+				PostAge(created={post.created_utc} edited={post.edited} size='medium')
 				.post-tags
 					{#if post.archived}
 						PostTag(name='archived')
