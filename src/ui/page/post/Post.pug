@@ -84,8 +84,6 @@ article.post
 				.post-tags
 					{#if post.archived}
 						PostTag(name='archived')
-					{#if post.spoiler}
-						PostTag(name='spoiler')
 					{#if post.locked}
 						PostTag(name='locked')
 					{#if post.quarantine}
@@ -198,24 +196,30 @@ style.
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
-		gap 2px
+		gap 10px
 	.post-gallery-image
 		width 100%
 	.post-gallery-image-caption
 		color var(--c-text-weak)
-		left calc(100% + 1ch)
-		position absolute
-		width 108px
+		font-size 11px
+		padding-left 3ch
+		margin-top 5px
+		&::before
+			content ''
+			left 0
+			position absolute
 	.post-gallery-item
 		display flex
 		flex-flow column nowrap
-		gap 0.5ch
+		gap 3px
 		position relative
 		&::before
 			content counter(gallery-index)
 			counter-increment gallery-index
+			font-size 11px
+			line-height 1
 			position absolute
-			right calc(100% + 1ch)
+			right calc(100% + 5px)
 	.post-iframe
 		aspect-ratio 16/9
 		border-radius 1ch

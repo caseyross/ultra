@@ -6,14 +6,22 @@ script.
 		when 'nsfw' then 'This post is marked as Not Safe For Work.'
 		when 'oc' then 'This post is marked as Original Content.'
 		when 'quarantined' then 'This post is quarantined. The average user cannot view it.'
-		when 'spoiler' then 'This post is marked as containing spoilers.'
 		when 'sticky' then 'This post has been stickied by a moderator. It will remain here until unstickied.'
 		else ''
+	text = switch name
+		when 'archived' then '❖ archived'
+		when 'locked' then '∅ locked'
+		when 'nsfw' then '⚠ nsfw'
+		when 'oc' then '© original content'
+		when 'quarantined' then '∅ quarantined'
+		when 'sticky' then '★ pinned'
+		else name
 
-data.post-tag(class='post-tag-{name}' title={description}) {name}
+data.post-tag(class='post-tag-{name}' title={description}) {text}
 
 style.
 	.post-tag
+		border 1px solid
 		border-radius 0.25em
 		font-size 10px
 		font-feature-settings 'cpsp' 1
@@ -21,23 +29,14 @@ style.
 		text-transform uppercase
 		user-select none
 	.post-tag-archived
-		background tan
-		color white
+		color tan
 	.post-tag-locked
-		background darkgray
-		color white
+		color red
 	.post-tag-nsfw
-		background lightpink
-		color white
+		color indianred
 	.post-tag-oc
-		background deepskyblue
-		color white
+		color orange
 	.post-tag-quarantined
-		background darkkhaki
-		color white
-	.post-tag-spoiler
-		background gray
-		color white
+		color lime
 	.post-tag-sticky
-		background darkseagreen
-		color white
+		color darkseagreen

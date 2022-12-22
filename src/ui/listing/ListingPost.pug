@@ -24,13 +24,8 @@ script.
 	)
 
 {#if post}
-	Button(activated={selected} key={String(list_index)} link="/r/{post.subreddit.toLowerCase()}/post/{short_id}{link_params ? '?' + new URLSearchParams(link_params) : ''}")
+	Button(activated={selected} link="/r/{post.subreddit.toLowerCase()}/post/{short_id}{link_params ? '?' + new URLSearchParams(link_params) : ''}")
 		.listing-post
-			h1.listing-post-title
-				| {post.title}
-			.listing-post-stats
-				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-				PostAge(created={post.created_utc} edited={post.edited})
 			{#if show_subreddit}
 				{#if post.subreddit.startsWith('u_')}
 					ListingNameTag(link='/u/{post.subreddit.slice(2)}' text={post.subreddit.slice(2)} type='user_posts')
@@ -38,12 +33,14 @@ script.
 					ListingNameTag(link='/r/{post.subreddit}' text={post.subreddit} type='subreddit_posts')
 			{:else if post.link_flair_text}
 				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			h1.listing-post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			.listing-post-stats
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+				PostAge(created={post.created_utc} edited={post.edited})
 			.listing-post-metadata
 				.listing-post-tags
 					{#if post.archived}
 						PostTag(name='archived')
-					{#if post.spoiler}
-						PostTag(name='spoiler')
 					{#if post.locked}
 						PostTag(name='locked')
 					{#if post.quarantine}
