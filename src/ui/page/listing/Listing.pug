@@ -29,9 +29,6 @@ script.
 			display_name = collection_short_id
 			base_path = "/c/#{collection_short_id}"
 			official_path = "/collection/#{collection_short_id}"
-			listing_post_params =
-				lt: 'c'
-				li: collection_short_id
 			collection = null
 			api.loadWatch(api.ID('collection', collection_short_id), ({ data: collection, error, loading }) ->
 				if loading then pages_loading[0] = loading
@@ -60,11 +57,6 @@ script.
 					else
 						base_page_id = api.ID('search_posts_in_multireddit', user_name, multireddit_name, posts_sort.split('-')[1], search_text, page_size)
 			else base_page_id = api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
-			listing_post_params =
-				lt: 'm'
-				lu: user_name
-				ln: multireddit_name
-				ls: posts_sort
 		when 'subreddit_posts'
 			display_name = subreddit_name
 			base_path = "/r/#{subreddit_name}"
@@ -74,18 +66,12 @@ script.
 				if search_text
 					base_page_id = api.ID('search_posts_in_subreddit', subreddit_name, posts_sort.split('-')[1], search_text, page_size)
 			else base_page_id = api.ID('subreddit_posts', subreddit_name, posts_sort, page_size)
-			listing_post_params =
-				ls: posts_sort
 		when 'user_posts'
 			display_name = user_name
 			base_path = "/u/#{user_name}"
 			official_path = "/u/#{user_name}"
 			sort_options = ['new', 'hot', 'controversial', 'top']
 			base_page_id = api.ID('user_posts', user_name, posts_sort, page_size)
-			listing_post_params =
-				lt: 'u'
-				lu: user_name
-				ls: posts_sort
 
 	load_page = (page_number) ->
 		if cache_key
