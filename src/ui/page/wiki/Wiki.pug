@@ -37,6 +37,9 @@ svelte:head
 			TextHTML(html={page.content_html})
 
 style.
+	.wiki-page
+		padding-left 240px
+		width 960px
 	.wiki-page-body
 		margin-top 3em
 	.wiki-page-info
@@ -57,8 +60,9 @@ style.
 		overflow auto
 		padding 8em 0
 		position fixed
-		left 70vw
+		right calc(50% + 240px)
 		top 0
+		width 240px
 		&::-webkit-scrollbar
 			display none
 	:global(.wiki-page .toc > ul)

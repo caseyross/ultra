@@ -1,7 +1,7 @@
 script.
-	import api from '../../api/index.js'
-	import { StringMatch } from '../../lib/index.js'
-	import Button from '../framework/Button.pug'
+	import api from '../../../api/index.js'
+	import { StringMatch } from '../../../lib/index.js'
+	import Button from '../../framework/Button.pug'
 	import ListingNameTag from './ListingNameTag.pug'
 	import ListingPost from './ListingPost.pug'
 	import ListingSearchField from './ListingSearchField.pug'
@@ -114,6 +114,8 @@ script.
 
 	if base_page_id then load_page(0)
 
+svelte:head
+	title {base_path}
 nav.listing
 	{#if error}
 		{#if error instanceof api.errors.ServerError}
@@ -122,20 +124,24 @@ nav.listing
 	{:else if loading}
 		p Loading...
 	{:else}
-		header
-			{#if display_name}
-				ListingNameTag(link={base_path} text={display_name} type={type})
-		{#if sort_options}
-			menu
-				section
+		header.listing-info
+			h1
+				{#if type === 'multireddit_posts' || type === 'subreddit_posts'}
+					| Posts in
+				{:else if type === 'user_posts'}
+					| Posts by
+				{#if display_name}
+					ListingNameTag(link={base_path} text={display_name} type={type})
+			{#if sort_options}
+				menu
 					ListingSort(base_path={base_path} selection={posts_sort.split('-')[0]} sort_options={sort_options})
 					{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
 						ListingTimeRange(base_path={base_path + '/' + posts_sort.split('-')[0]} selection={posts_sort.split('-')[1]})
-				{#if posts_sort.split('-')[0] === 'search'}
-					ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
-		{#if filterable}
-			<!-- svelte-ignore a11y-autofocus -->
-			input.listing-filter(autofocus={true} bind:value={filter_text} type='search')
+					{#if posts_sort.split('-')[0] === 'search'}
+						ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
+			{#if filterable}
+				<!-- svelte-ignore a11y-autofocus -->
+				input.listing-filter(autofocus={true} bind:value={filter_text} type='search')
 		hr
 		ol.listing-content
 			{#if pages.length}
@@ -144,7 +150,7 @@ nav.listing
 						{#if type.endsWith('multireddits')}
 							ListingNameTag(link="/m/{string.replace('-', '/')}" text={string} type='multireddit_posts')
 						{:else if type.endsWith('posts')}
-							ListingPost(list_index={i} link_params={listing_post_params} selected={string == post_short_id} short_id={string} show_subreddit={type !== 'subreddit_posts'})
+							ListingPost(short_id={string})
 						{:else if type.endsWith('subreddits')}
 							{#if string.startsWith('u_')}
 								ListingNameTag(link='/u/{string.slice(2)}' text={string.slice(2)} type='user_posts')
@@ -157,12 +163,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		height 100vh
-		padding-top 10px
-		header
-			align-items baseline
-			display flex
-			gap 1em
-			margin-bottom 1em
+		width 480px
 	.listing-content
 		display flex
 		flex 1
@@ -171,3 +172,9 @@ style.
 		overflow-y auto
 	.listing-filter
 		border 1px solid
+	.listing-info
+		padding 10px
+		h1
+			font inherit
+		menu
+			margin-top 1em

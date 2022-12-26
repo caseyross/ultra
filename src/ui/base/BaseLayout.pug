@@ -1,11 +1,10 @@
 script.
 	import { setContext } from 'svelte'
 	import { Color } from '../../lib/index.js'
-	import BaseListingContent from './BaseListingContent.pug'
+	
 	import BaseNavigation from './BaseNavigation.pug'
 	import BasePageContent from './BasePageContent.pug'
-	export listing_data = null
-	export listing_type = null
+
 	export page_data = null
 	export page_type = null
 
@@ -20,14 +19,16 @@ script.
 #layout(class='color-strategy-{color_strategy}' style='background:{background_color}')
 	BaseNavigation
 	BasePageContent(data={page_data} type={page_type})
-	BaseListingContent(data={{ ...page_data, ...listing_data }} listing_type={listing_type} page_type={page_type})
 
 style.
 	#layout
-		align-self stretch
+		align-items center
 		background-color var(--c-back-default)
 		color var(--c-text-strong)
-		display grid
-		grid-template-columns 160px 560px 220px
+		display flex
+		flex-flow column nowrap
+		overflow overlay
 		height 100dvh
-		justify-content center
+		width 100dvw
+		&::-webkit-scrollbar
+			display none

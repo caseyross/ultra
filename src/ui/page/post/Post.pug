@@ -7,8 +7,8 @@ script.
 	import MediaPlayer from '../../framework/MediaPlayer.pug'
 	import TextHTML from '../../framework/TextHTML.pug'
 	
-	import ListingNameTag from '../../listing/ListingNameTag.pug'
-	import ListingPost from '../../listing/ListingPost.pug'
+	import ListingNameTag from '../listing/ListingNameTag.pug'
+	import ListingPost from '../listing/ListingPost.pug'
 	
 	import UserAvatar from '../user/UserAvatar.pug'
 	import UserDistinguish from '../user/UserDistinguish.pug'
@@ -25,7 +25,6 @@ script.
 	export short_id = null
 	error = null
 	gallery_expanded = false
-	listing_sort = 'hot'
 	loading = false
 	more_replies_loading = false
 	post = null
@@ -50,7 +49,7 @@ script.
 
 svelte:head
 	{#if post}
-		title r/{post.subreddit} - {post.title} 
+		title r/{post.subreddit} - {post.title}
 article.post
 	{#if error}
 		.post-unavailable-reason
@@ -69,8 +68,13 @@ article.post
 					| Removed by a moderator.
 				{:else if post.removed_by_category === 'reddit'}
 					| Removed by Reddit spam filter.
+				{:else if post.removed_by_category === 'content_takedown'}
+					| Removed by Reddit due to violating
+					a(href='https://www.redditinc.com/policies/content-policy') site policy.
 				{:else if post.removed_by_category === 'copyright_takedown'}
-					| Removed by Reddit copyright compliance.
+					| Removed by Reddit due to a copyright notice.
+				{:else}
+					| Removed by Reddit, reason not specified.
 		header.post-header
 			PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 			{#if post.link_flair_text}
@@ -128,11 +132,11 @@ article.post
 												a(href={media.caption_url}) {media.caption_url}
 				{:else if post.media.length === 1}
 					{@const media = post.media[0]}
-						menu.post-content-actions
-							Button(action={() => window.open(media.image_url)} key='f' text='Full size')
 						{#if media.video_url}
 							MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
 						{:else if media.image_url}
+							menu.post-content-actions
+								Button(action={() => window.open(media.image_url)} key='f' text='Full size')
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 								picture
 									source(srcset={media.image_url_960})
@@ -153,7 +157,7 @@ article.post
 						.md.post-link
 							a(href={post.url} rel='external noopener preconnect') {post.url}
 			{:else if post.format === 'crosspost'}
-				ListingPost(link_params={{ lt: 'r', ln: post.subreddit, ls: listing_sort }} short_id={post.crosspost_parent} show_subreddit={true})
+				ListingPost(short_id={post.crosspost_parent})
 			{:else}
 				p [Error displaying post.]
 			{#if post.selftext_html && !post.removed_by_category}
@@ -171,8 +175,15 @@ article.post
 								Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
 			menu.post-comments-actions
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
+		.post-exit-button
+			Button(action={() => history.back()} disabled={history.length < 2} key='Escape' text='')
+		a.post-exit-button(href='/{(new URLSearchParams(location.search)).get("from") || post.subreddit}' style='left:25vw;height:90vh;width:12vw')
 
 style.
+	.post-exit-button
+		position fixed
+		right 30vw
+		top 60px
 	.post
 		width 480px
 	.post-content

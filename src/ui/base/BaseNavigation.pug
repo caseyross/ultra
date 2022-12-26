@@ -19,7 +19,7 @@ script.
 
 nav.global-nav
 	section
-		Button(key='Escape' link='/' text='Velocity')
+		Button(key='h' link='/' text='Home')
 		br
 		{#if getContext('username')}
 			Button(badge={unread_reply_count || null} key='~' link='/mail/replies' text='Replies')
@@ -46,4 +46,7 @@ style.
 		flex-flow column nowrap
 		justify-content space-between
 		justify-self flex-end
+		left 0
+		height 100%
 		padding 10px 0
+		position fixed

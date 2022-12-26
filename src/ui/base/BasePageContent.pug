@@ -1,44 +1,42 @@
 script.
-	import Collection from '../page/listing/Collection.pug'
-	import Home from '../page/home/Home.pug'
+	import { getContext } from 'svelte'
+	import Listing from '../page/listing/Listing.pug'
 	import Message from '../page/message/Message.pug'
-	import Multireddit from '../page/listing/Multireddit.pug'
-	import MultiredditAll from '../page/listing/MultiredditAll.pug'
-	import MultiredditPopular from '../page/listing/MultiredditPopular.pug'
 	import Post from '../page/post/Post.pug'
-	import Subreddit from '../page/listing/Subreddit.pug'
 	import User from '../page/user/User.pug'
 	import Wiki from '../page/wiki/Wiki.pug'
 	export data = null
 	export type = null
 
-main#page-content
-	{#key data}
+{#key data}
+	main#page-content
 		{#if type === 'collection'}
-			Collection(short_id={data.collection_short_id})
+			Listing(type='collection_posts' data={data})
 		{:else if type === 'home'}
-			Home
+			{#if getContext('username')}
+				Listing(type='current_user_subscribed_subreddits' data={data})
+			{:else}
+				Listing(type='global_popular_subreddits' data={data})
+		{:else if type === 'inbox'}
+			Listing(type='current_user_messages' data={data})
 		{:else if type === 'message'}
 			Message(short_id={data.message_short_id})
 		{:else if type === 'multireddit'}
-			Multireddit(multireddit_name={data.multireddit_name} user_name={data.user_name})
+			Listing(type='multireddit_posts' data={data})
 		{:else if type === 'multireddit_all'}
-			MultiredditAll(multireddit_name={data.multireddit_name} user_name={data.user_name})
+			Listing(type='multireddit_posts' data={{ ...data, multireddit_name: 'all', user_name: 'r' }})
 		{:else if type === 'multireddit_popular'}
-			MultiredditPopular(multireddit_name={data.multireddit_name} user_name={data.user_name})
+			Listing(type='multireddit_posts' data={{ ...data, multireddit_name: 'popular', user_name: 'r' }})
+		{:else if type === 'subreddit'}
+			Listing(type='subreddit_posts' data={data})
 		{:else if type === 'post'}
 			Post(comment_short_id={data.comment_short_id} comments_sort={data.comments_sort} comment_context={data.comment_context} listing_sort={data.posts_sort} short_id={data.post_short_id})
-		{:else if type === 'subreddit'}
-			Subreddit(name={data.subreddit_name})
 		{:else if type === 'user'}
 			User(name={data.user_name})
+			Listing(type='user_posts' data={data})
 		{:else if type === 'wiki'}
 			Wiki(page_name={data.wiki_name} revision_id={data.wiki_revision_id} subreddit_name={data.subreddit_name})
 
 style.
 	#page-content
-		height 100%
-		overflow overlay
 		padding 40px
-		&::-webkit-scrollbar
-			display none

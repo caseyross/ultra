@@ -1,0 +1,51 @@
+script.
+	import api from '../../../api/index.js'
+
+	import Button from '../../framework/Button.pug'
+	import PostTag from '../post/PostTag.pug'
+	
+	export short_id = null
+	
+	post = null
+	api.loadWatch(api.ID('post', short_id),
+		(x) ->
+			{ data: post } = x
+			if post?.contributors?.length then api.load(api.ID('users', post.contributors))
+	)
+
+{#if post}
+	Button(link="/r/{post.subreddit.toLowerCase()}/post/{short_id}")
+		.listing-post
+			.listing-post-tags
+				{#if post.archived}
+					PostTag(name='archived')
+				{#if post.locked}
+					PostTag(name='locked')
+				{#if post.quarantine}
+					PostTag(name='quarantined')
+				{#if post.over_18}
+					PostTag(name='nsfw')
+				{#if post.stickied}
+					PostTag(name='sticky')
+				{#if post.is_original_content}
+					PostTag(name='oc')
+			h1.listing-post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+
+style.
+	.listing-post
+		display grid
+		gap 5px
+		padding 10px
+	.listing-post-tags
+		align-items center
+		display flex
+		gap 3px
+	.listing-post-title
+		font-size inherit
+		font-weight inherit
+		margin 0
+		overflow-wrap anywhere
+		font-size 14pt
+		font-weight inherit
+		line-height 1.4
+		margin-top 0.25em
