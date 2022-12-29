@@ -59,6 +59,9 @@ script.
 					if is_same_path(link) and not is_same_hash(link) then return
 					event.preventDefault()
 					internal_navigate(link)
+				else
+					if is_external_new_tab_intent(link) then external_navigate_new_tab(link)
+					else external_navigate(link)
 	)
 
 	window.addEventListener('popstate', (event) ->

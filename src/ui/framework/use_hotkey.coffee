@@ -1,7 +1,7 @@
 handlers = {}
 
 document.addEventListener('keydown', (e) ->
-	if e.isTrusted and not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey) and handlers[e.key]
+	if e.isTrusted and handlers[e.key]
 		handlers[e.key]()
 )
 
