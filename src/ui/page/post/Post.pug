@@ -45,6 +45,8 @@ script.
 				api.watch(post.more_replies_id,
 					(x) -> { loading: more_replies_loading } = x
 				)
+			if post?.num_comments? and post?.score?
+				localStorage['visited.' + short_id] = "#{Time.unixMs()} #{post.num_comments} #{post.score}"
 	)
 
 svelte:head
@@ -76,9 +78,10 @@ article.post
 				{:else}
 					| Removed by Reddit, reason not specified.
 		header.post-header
-			PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-			{#if post.link_flair_text}
-				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			.post-metadata
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 			h1.post-title {post.title}
 			.post-metadata
 				{#if post.distinguished}
@@ -114,8 +117,6 @@ article.post
 									dd {option.text}
 			{:else if post.format === 'media'}
 				{#if post.media.length > 1}
-					menu.post-content-actions
-						Button(action={() => gallery_expanded = true} key='e' text='Expand all (+{post.media.length - 1})')
 					ol.post-gallery
 						{#each post.media as media, index}
 							{#if index < 1 || gallery_expanded}
@@ -130,21 +131,22 @@ article.post
 												p {media.caption_text}
 											{#if media.caption_url}
 												a(href={media.caption_url}) {media.caption_url}
+					{#if !gallery_expanded}
+						menu.post-content-actions
+							Button(action={() => gallery_expanded = true} key='e' text='Expand all (+{post.media.length - 1})')
 				{:else if post.media.length === 1}
 					{@const media = post.media[0]}
 						{#if media.video_url}
 							MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 270]} mimic_gif={media.is_gif} video_url={media.video_url})
 						{:else if media.image_url}
-							menu.post-content-actions
-								Button(action={() => window.open(media.image_url)} key='f' text='Full size')
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 								picture
 									source(srcset={media.image_url_960})
 									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+							menu.post-content-actions
+								Button(action={() => window.open(media.image_url)} key='f' text='Full size')
 			{:else if post.format === 'link'}
 				{#if post.url}
-					menu.post-content-actions
-						Button(action={() => window.open(post.url)} key='e' text='Open link')
 					{#if html_embeds(post)}
 						{@const embed = html_embeds(post)}
 							{@html embed.html}
@@ -156,6 +158,8 @@ article.post
 					{:else}
 						.md.post-link
 							a(href={post.url} rel='external noopener preconnect') {post.url}
+					menu.post-content-actions
+						Button(action={() => window.open(post.url)} key='e' text='Open link')
 			{:else if post.format === 'crosspost'}
 				ListingPost(short_id={post.crosspost_parent})
 			{:else}
@@ -175,21 +179,17 @@ article.post
 								Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
 			menu.post-comments-actions
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
-		.post-exit-button
+		nav.post-exit-button
 			Button(action={() => history.back()} disabled={history.length < 2} key='Escape' text='')
 		a.post-exit-button(href='/{(new URLSearchParams(location.search)).get("from") || post.subreddit}' style='left:25vw;height:90vh;width:12vw')
 
 style.
-	.post-exit-button
-		position fixed
-		right 30vw
-		top 60px
 	.post
 		width 480px
 	.post-content
-		margin-top 20px
+		margin-top 30px
 	.post-comments
-		margin-top 20px
+		margin-top 30px
 	.post-comments-actions
 		margin-top 3em
 	.post-comments-label
@@ -203,6 +203,10 @@ style.
 		display flex
 		gap 1em
 		padding 10px 0
+	.post-exit-button
+		position fixed
+		left calc(50% + 320px)
+		top 60px
 	.post-gallery
 		counter-reset gallery-index
 		display flex
@@ -241,7 +245,6 @@ style.
 		padding 10px
 	.post-metadata
 		align-items center
-		color var(--c-text-weak)
 		display flex
 		gap 10px
 		height 24px
@@ -256,10 +259,10 @@ style.
 		display flex
 		gap 3px
 	.post-title
-		font-size 14pt
+		font-size 20px
 		font-weight inherit
 		line-height 1.4
-		margin-top 0.25em
+		margin-top 1ch
 	.post-unavailable-reason
 		background salmon
 		color white

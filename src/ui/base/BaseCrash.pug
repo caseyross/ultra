@@ -1,7 +1,7 @@
 script.
 	export error = null
 
-.crash
+#crash
 	h1 Whoops!
 	p There was an error. We didn't expect this.
 	{#if error}
@@ -9,10 +9,10 @@ script.
 		pre {error.stack || error}
 
 style.
-	.crash
+	#crash
 		align-items center
 		display flex
 		flex-flow column nowrap
-		height 100%
+		height 100dvw
 		justify-content center
-		width 100%
+		width 100dvh

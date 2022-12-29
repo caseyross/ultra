@@ -14,28 +14,29 @@ script.
 	)
 
 {#if post}
-	Button(link="/r/{post.subreddit.toLowerCase()}/post/{short_id}")
-		.listing-post
-			.listing-post-tags
-				{#if post.archived}
-					PostTag(name='archived')
-				{#if post.locked}
-					PostTag(name='locked')
-				{#if post.quarantine}
-					PostTag(name='quarantined')
-				{#if post.over_18}
-					PostTag(name='nsfw')
-				{#if post.stickied}
-					PostTag(name='sticky')
-				{#if post.is_original_content}
-					PostTag(name='oc')
-			h1.listing-post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+	a.listing-post(class:listing-post-visited={localStorage['visited.' + short_id]} href='/r/{post.subreddit.toLowerCase()}/post/{short_id}')
+		.listing-post-tags
+			{#if post.archived}
+				PostTag(name='archived')
+			{#if post.locked}
+				PostTag(name='locked')
+			{#if post.quarantine}
+				PostTag(name='quarantined')
+			{#if post.over_18}
+				PostTag(name='nsfw')
+			{#if post.stickied}
+				PostTag(name='sticky')
+			{#if post.is_original_content}
+				PostTag(name='oc')
+		h1.listing-post-title(class:md-spoiler-text={post.spoiler}) {post.title}
 
 style.
 	.listing-post
 		display grid
 		gap 5px
 		padding 10px
+		&.listing-post-visited
+			color var(--c-text-weak)
 	.listing-post-tags
 		align-items center
 		display flex
@@ -44,8 +45,6 @@ style.
 		font-size inherit
 		font-weight inherit
 		margin 0
-		overflow-wrap anywhere
-		font-size 14pt
+		font-size 20px
 		font-weight inherit
 		line-height 1.4
-		margin-top 0.25em
