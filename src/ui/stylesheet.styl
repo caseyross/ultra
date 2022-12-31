@@ -47,7 +47,6 @@ strong
 // Layout sections
 p
 	margin 0.8em 0 0 0
-	max-width 440px
 hr
 	border 1px solid var(--c-text-weak)
 	margin 0.8em 0 0 0
@@ -73,7 +72,6 @@ ul
 	margin 0.2em 0 0 0
 .md li
 	margin 0.2em 0 0 0
-	max-width 320px
 
 // Headers
 h1
@@ -82,18 +80,26 @@ h3
 h4
 h5
 h6
-	line-height 1.25
-	margin 1em 0 0 0
-h1
-	font-size 1.5em
-h2
-	font-size 1.35em
-h3
-	font-size 1.2em
-h4
-h5
-h6
-	font-size 1em
+	margin 0
+.md
+	h1
+	h2
+	h3
+	h4
+	h5
+	h6
+		line-height 1.25
+		margin 1em 0 0 0
+	h1
+		font-size 1.5em
+	h2
+		font-size 1.35em
+	h3
+		font-size 1.2em
+	h4
+	h5
+	h6
+		font-size 1em
 
 // Tables
 table
@@ -145,7 +151,6 @@ blockquote
 	color var(--c-text-weak)
 	font-size 0.9em
 	margin 0.8em 0 0 2px
-	max-width 440px
 	padding-left 1em
 code
 pre
@@ -159,6 +164,7 @@ code
 pre
 	border 1px dashed
 	border-radius 10px
+	margin 0.8em 0 0 0
 	overflow hidden
 	padding 1em
 

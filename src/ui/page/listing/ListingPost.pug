@@ -29,6 +29,12 @@ script.
 			{#if post.is_original_content}
 				PostTag(name='oc')
 		h1.listing-post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+		.listing-post-stats
+			.listing-post-comment-count {post.num_comments} comments
+				{#if localStorage['visited.' + short_id]}
+					{@const num_new_comments = post.num_comments - localStorage['visited.' + short_id].split(' ')[1]}
+						{#if num_new_comments > 0}
+							| ({num_new_comments} new)
 
 style.
 	.listing-post
@@ -37,14 +43,13 @@ style.
 		padding 10px
 		&.listing-post-visited
 			color var(--c-text-weak)
+	.listing-post-stats
+		color var(--c-text-weak)
 	.listing-post-tags
 		align-items center
 		display flex
 		gap 3px
 	.listing-post-title
-		font-size inherit
-		font-weight inherit
-		margin 0
-		font-size 20px
+		font-size 19px
 		font-weight inherit
 		line-height 1.4

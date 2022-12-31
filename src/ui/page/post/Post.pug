@@ -24,7 +24,6 @@ script.
 	
 	export short_id = null
 	error = null
-	gallery_expanded = false
 	loading = false
 	more_replies_loading = false
 	post = null
@@ -78,12 +77,12 @@ article.post
 				{:else}
 					| Removed by Reddit, reason not specified.
 		header.post-header
-			.post-metadata
+			.post-header-top-row
 				{#if post.link_flair_text}
 					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 			h1.post-title {post.title}
-			.post-metadata
+			.post-header-bottom-row
 				{#if post.distinguished}
 					UserDistinguish(type={post.distinguished})
 				UserAvatar(name={post.author})
@@ -119,21 +118,17 @@ article.post
 				{#if post.media.length > 1}
 					ol.post-gallery
 						{#each post.media as media, index}
-							{#if index < 1 || gallery_expanded}
-								figure.post-gallery-item
-									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-										picture
-											source(srcset={media.image_url_960})
-											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-									{#if media.caption_text || media.caption_url}
-										figcaption.post-gallery-image-caption
-											{#if media.caption_text}
-												p {media.caption_text}
-											{#if media.caption_url}
-												a(href={media.caption_url}) {media.caption_url}
-					{#if !gallery_expanded}
-						menu.post-content-actions
-							Button(action={() => gallery_expanded = true} key='e' text='Expand all (+{post.media.length - 1})')
+							figure.post-gallery-item
+								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+									picture
+										source(srcset={media.image_url_960})
+										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+								{#if media.caption_text || media.caption_url}
+									figcaption.post-gallery-image-caption
+										{#if media.caption_text}
+											p {media.caption_text}
+										{#if media.caption_url}
+											a(href={media.caption_url}) {media.caption_url}
 				{:else if post.media.length === 1}
 					{@const media = post.media[0]}
 						{#if media.video_url}
@@ -144,7 +139,7 @@ article.post
 									source(srcset={media.image_url_960})
 									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 							menu.post-content-actions
-								Button(action={() => window.open(media.image_url)} key='f' text='Full size')
+								Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
 			{:else if post.format === 'link'}
 				{#if post.url}
 					{#if html_embeds(post)}
@@ -181,13 +176,12 @@ article.post
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
 		nav.post-exit-button
 			Button(action={() => history.back()} disabled={history.length < 2} key='Escape' text='')
-		a.post-exit-button(href='/{(new URLSearchParams(location.search)).get("from") || post.subreddit}' style='left:25vw;height:90vh;width:12vw')
 
 style.
 	.post
 		width 480px
 	.post-content
-		margin-top 30px
+		margin-top 20px
 	.post-comments
 		margin-top 30px
 	.post-comments-actions
@@ -235,6 +229,19 @@ style.
 			line-height 1
 			position absolute
 			right calc(100% + 5px)
+	.post-header
+		display flex
+		flex-flow column nowrap
+		gap 1ch
+	.post-header-bottom-row
+		align-items center
+		display flex
+		gap 10px
+		height 24px
+	.post-header-top-row
+		align-items center
+		display flex
+		gap 6px
 	.post-iframe
 		aspect-ratio 16/9
 		border-radius 1ch
@@ -243,12 +250,6 @@ style.
 		width 100%
 	.post-loading-message
 		padding 10px
-	.post-metadata
-		align-items center
-		display flex
-		gap 10px
-		height 24px
-		margin-top 1ch
 	.post-more-replies
 		margin-top 2.25em
 	.post-prediction-options > li
@@ -259,10 +260,9 @@ style.
 		display flex
 		gap 3px
 	.post-title
-		font-size 20px
+		font-size 19px
 		font-weight inherit
 		line-height 1.4
-		margin-top 1ch
 	.post-unavailable-reason
 		background salmon
 		color white
