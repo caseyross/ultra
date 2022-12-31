@@ -130,8 +130,8 @@ export default (url) ->
 							else if posts_sort not in R_ALL_SORT_OPTIONS then posts_sort = 'hot'
 							search_text = query.get('q')
 							return {
-								page_type: 'multireddit_all'
-								page_data: { posts_sort, search_text }
+								page_type: 'multireddit'
+								page_data: { multireddit_name: 'all', posts_sort, search_text, user_name: 'r' }
 							}
 						when 'mod' then return ROUTE_OFFICIALSITE(url) # TODO
 						when 'popular'
@@ -142,8 +142,8 @@ export default (url) ->
 								else posts_sort = posts_sort + '-all'
 							else if posts_sort not in R_POPULAR_SORT_OPTIONS then posts_sort = 'hot'
 							return {
-								page_type: 'multireddit_popular'
-								page_data: { posts_sort }
+								page_type: 'multireddit'
+								page_data: { multireddit_name: 'popular', posts_sort, user_name: 'r' }
 							}
 						else
 							posts_sort = path[3] ? query.get('sort')
