@@ -1,5 +1,5 @@
 COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']	
-KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'c', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
+KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'c', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 'subscriptions', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
 LISTING_SORT_OPTIONS = ['controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all']
 SUBREDDIT_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising', 'search', 'search-hour', 'search-day', 'search-week', 'search-month', 'search-year', 'search-all']
 R_ALL_SORT_OPTIONS = SUBREDDIT_SORT_OPTIONS
@@ -158,6 +158,35 @@ export default (url) ->
 								page_data: { posts_sort, search_text, subreddit_name }
 							}
 		when 's', 'search' then return ROUTE_OFFICIALSITE(url) # TODO
+		when 'subreddits'
+			switch path[2]
+				when 'mine'
+					switch path[3]
+						when 'contributor'
+							subreddits_filter = 'approved-user'
+						when 'moderator'
+							subreddits_filter = 'moderator'
+						else
+							subreddits_filter = 'subscriber'
+				when 'approved', 'contributor'
+					subreddits_filter = 'approved-user'
+				when 'moderated', 'moderating', 'moderator'
+					subreddits_filter = 'moderator'
+				when 'new'
+					subreddits_filter = 'global-new'
+				when 'subscribed', 'subscriber', 'subscriptions'
+					subreddits_filter = 'subscriber'
+				else
+					subreddits_filter = 'global-popular'
+			return {
+				page_type: 'subreddits'
+				page_data: { subreddits_filter }
+			}
+		when 'subscriptions'
+			return {
+				page_type: 'subreddits'
+				page_data: { subreddits_filter: 'subscriber' }
+			}
 		when 'u', 'user'
 			user_name = path[2]
 			if not user_name then return ROUTE_INVALID

@@ -13,10 +13,7 @@ script.
 		{#if type === 'collection'}
 			Listing(type='collection_posts' data={data})
 		{:else if type === 'home'}
-			{#if getContext('username')}
-				Listing(type='current_user_subscribed_subreddits' data={data})
-			{:else}
-				Listing(type='global_popular_subreddits' data={data})
+			
 		{:else if type === 'inbox'}
 			Listing(type='current_user_messages' data={data})
 		{:else if type === 'message'}
@@ -29,6 +26,8 @@ script.
 			Listing(type='multireddit_posts' data={{ ...data, multireddit_name: 'popular', user_name: 'r' }})
 		{:else if type === 'subreddit'}
 			Listing(type='subreddit_posts' data={data})
+		{:else if type === 'subreddits'}
+			Listing(type='subreddits' data={data})
 		{:else if type === 'post'}
 			Post(comment_short_id={data.comment_short_id} comments_sort={data.comments_sort} comment_context={data.comment_context} listing_sort={data.posts_sort} short_id={data.post_short_id})
 		{:else if type === 'user'}

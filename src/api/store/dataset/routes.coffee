@@ -37,9 +37,20 @@ export default {
 			t: posts_sort.split('-')[1]
 			type: 'links'
 		})
-	current_user_subscribed_subreddits: (max_subreddits, after_subreddit_short_id) ->
+	current_user_subreddits_approved_to_submit: (max_subreddits) ->
+		get("/subreddits/mine/contributor", {
+			limit: max_subreddits
+			show: 'all'
+			sr_detail: true
+		})
+	current_user_subreddits_moderated: (max_subreddits) ->
+		get("/subreddits/mine/moderator", {
+			limit: max_subreddits
+			show: 'all'
+			sr_detail: true
+		})
+	current_user_subreddits_subscribed: (max_subreddits) ->
 		get("/subreddits/mine/subscriber", {
-			after: after_subreddit_short_id and "t5_#{after_subreddit_short_id}"
 			limit: max_subreddits
 			show: 'all'
 			sr_detail: true
@@ -48,9 +59,17 @@ export default {
 		get("/api/info", {
 			id: "t1_#{comment_short_id}"
 		})
-	global_popular_subreddits: (max_subreddits) ->
+	global_subreddits_new: (max_subreddits) ->
+		get("/subreddits/new", {
+			limit: max_subreddits
+			show: 'all'
+			sr_detail: true
+		})
+	global_subreddits_popular: (max_subreddits) ->
 		get("/subreddits/popular", {
 			limit: Number(max_subreddits) + 1 # first result is always r/home
+			show: 'all'
+			sr_detail: true
 		})
 	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve(null)

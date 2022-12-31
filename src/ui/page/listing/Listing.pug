@@ -10,7 +10,7 @@ script.
 	export data = null
 	export type = null
 
-	{ collection_short_id, multireddit_name, page_size, post_short_id, posts_sort, search_text, subreddit_name, user_name, wiki_name, wiki_revision_id } = data
+	{ collection_short_id, multireddit_name, page_size, post_short_id, posts_sort, search_text, subreddits_filter, subreddit_name, user_name, wiki_name, wiki_revision_id } = data
 	if !page_size then page_size = 10
 	if !posts_sort then posts_sort = 'hot'
 
@@ -37,14 +37,6 @@ script.
 					display_name = collection.title
 					pages[0] = collection.posts
 			)
-		when 'current_user_subscribed_subreddits'
-			base_page_id = api.ID('current_user_subscribed_subreddits', 100)
-			cache_key = 'cache.subscriptions'
-			filterable = true
-		when 'global_popular_subreddits'
-			base_page_id = api.ID('global_popular_subreddits', 100)
-			cache_key = 'cache.popular'
-			filterable = true
 		when 'multireddit_posts'
 			display_name = "#{user_name}/#{multireddit_name}"
 			base_path = "/m/#{user_name}/#{multireddit_name}"
@@ -66,6 +58,24 @@ script.
 				if search_text
 					base_page_id = api.ID('search_posts_in_subreddit', subreddit_name, posts_sort.split('-')[1], search_text, page_size)
 			else base_page_id = api.ID('subreddit_posts', subreddit_name, posts_sort, page_size)
+		when 'subreddits'
+			switch subreddits_filter
+				when 'approved-user'
+					base_page_id = api.ID('current_user_subreddits_approved_to_submit', 100)
+					cache_key = 'cache.subreddits.approved'
+				when 'global-new'
+					base_page_id = api.ID('global_subreddits_new', 100)
+					cache_key = 'cache.subreddits.global_new'
+				when 'global-popular'
+					base_page_id = api.ID('global_subreddits_popular', 100)
+					cache_key = 'cache.subreddits.global_popular'
+				when 'moderator'
+					base_page_id = api.ID('current_user_subreddits_moderated', 100)
+					cache_key = 'cache.subreddits.moderated'
+				when 'subscriber'
+					base_page_id = api.ID('current_user_subreddits_subscribed', 100)
+					cache_key = 'cache.subreddits.subscribed'
+			filterable = true
 		when 'user_posts'
 			display_name = user_name
 			base_path = "/u/#{user_name}"
