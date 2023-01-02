@@ -34,7 +34,7 @@ nav#global-nav
 		{#if getContext('username')}
 			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} key='&' text='Unlink Reddit Account')
 		{:else}
-			Button(key='&' link={api.getLoginURL({ memoString: location.pathname })} text='Link Reddit Account')
+			Button(key='&' link={api.getLoginURL({ memoString: location.pathname })} text='Login with Reddit Account...')
 PopupWindow(exit_action={() => show_help = false} title='Help' visible={show_help})
 PopupWindow(exit_action={() => show_settings = false} title='Settings' visible={show_settings})
 PopupWindow(exit_action={() => show_feedback = false} title='Feedback' visible={show_feedback})
@@ -51,3 +51,4 @@ style.
 		height 100%
 		padding 10px 0
 		position fixed
+		display none
