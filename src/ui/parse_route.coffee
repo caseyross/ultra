@@ -58,8 +58,8 @@ export default (url) ->
 			if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 				time_range = query.get('t')
 				if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-				else posts_sort = posts_sort + '-all'
-			else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+				else posts_sort = posts_sort + '-day'
+			else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
 			search_text = query.get('q')
 			return {
 				page_type: 'multireddit'
@@ -121,42 +121,33 @@ export default (url) ->
 					subreddit_name = path[2]
 					if not subreddit_name or subreddit_name.length < 2 then return ROUTE_INVALID
 					switch subreddit_name
-						when 'all'
-							posts_sort = path[3] ? query.get('sort')
-							if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
-								time_range = query.get('t')
-								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-all'
-							else if posts_sort not in R_ALL_SORT_OPTIONS then posts_sort = 'hot'
-							search_text = query.get('q')
-							return {
-								page_type: 'multireddit'
-								page_data: { multireddit_name: 'all', posts_sort, search_text, user_name: 'r' }
-							}
 						when 'mod' then return ROUTE_OFFICIALSITE(url) # TODO
-						when 'popular'
-							posts_sort = path[3] ? query.get('sort')
-							if posts_sort is 'controversial' or posts_sort is 'top'
-								time_range = query.get('t')
-								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-all'
-							else if posts_sort not in R_POPULAR_SORT_OPTIONS then posts_sort = 'hot'
-							return {
-								page_type: 'multireddit'
-								page_data: { multireddit_name: 'popular', posts_sort, user_name: 'r' }
-							}
 						else
 							posts_sort = path[3] ? query.get('sort')
 							if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 								time_range = query.get('t')
 								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-all'
-							else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+								else posts_sort = posts_sort + '-day'
+							else if subreddit_name is 'all' and posts_sort not in R_ALL_SORT_OPTIONS then posts_sort = 'top-day'
+							else if subreddit_name is 'popular' and posts_sort not in R_POPULAR_SORT_OPTIONS then posts_sort = 'top-day'
+							else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
 							search_text = query.get('q')
-							return {
-								page_type: 'subreddit'
-								page_data: { posts_sort, search_text, subreddit_name }
-							}
+							switch subreddit_name
+								when 'all'
+									return {
+										page_type: 'multireddit'
+										page_data: { multireddit_name: 'all', posts_sort, search_text, user_name: 'r' }
+									}
+								when 'popular'
+									return {
+										page_type: 'multireddit'
+										page_data: { multireddit_name: 'popular', posts_sort, user_name: 'r' }
+									}
+								else
+									return {
+										page_type: 'subreddit'
+										page_data: { posts_sort, search_text, subreddit_name }
+									}
 		when 's', 'search' then return ROUTE_OFFICIALSITE(url) # TODO
 		when 'subreddits'
 			switch path[2]
@@ -211,8 +202,8 @@ export default (url) ->
 					if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
 						time_range = query.get('t')
 						if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-						else posts_sort = posts_sort + '-all'
-					else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+						else posts_sort = posts_sort + '-day'
+					else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
 					search_text = query.get('q')
 					return {
 						page_type: 'multireddit'
@@ -223,8 +214,8 @@ export default (url) ->
 					if posts_sort is 'controversial' or posts_sort is 'top'
 						time_range = query.get('t')
 						if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-						else posts_sort = posts_sort + '-all'
-					else if posts_sort not in LISTING_SORT_OPTIONS then posts_sort = 'new'
+						else posts_sort = posts_sort + '-day'
+					else if posts_sort not in LISTING_SORT_OPTIONS then posts_sort = 'top-day'
 					return {
 						page_type: 'user'
 						page_data: { posts_sort, user_name }

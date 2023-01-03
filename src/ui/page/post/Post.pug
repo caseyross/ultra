@@ -4,6 +4,7 @@ script.
 	import { Time } from '../../../lib/index.js'
 
 	import Button from '../../framework/Button.pug'
+	import ButtonGroup from '../../framework/ButtonGroup.pug'
 	import MediaPlayer from '../../framework/MediaPlayer.pug'
 	import TextHTML from '../../framework/TextHTML.pug'
 	
@@ -22,14 +23,41 @@ script.
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
+	export comments_sort = 'best'
 	export short_id = null
+	comments_sort_options = [
+		{
+			label: 'Best'
+			value: 'best'
+		}
+		{
+			label: 'Top'
+			value: 'top'
+		}
+		{
+			label: 'Q&A'
+			value: 'qa'
+		}
+		{
+			label: 'Old'
+			value: 'old'
+		}
+		{
+			label: 'New'
+			value: 'new'
+		}
+		{
+			label: 'Controversial'
+			value: 'controversial'
+		}
+	]
 	error = null
 	loading = false
 	more_replies_loading = false
 	post = null
 	profile_data_loaded = false
 	set_theme_color = getContext('set_theme_color')
-	api.loadWatch(api.ID('post', short_id),
+	api.loadWatch(api.ID('post', short_id, comments_sort),
 		(x) ->
 			{ data: post, error, loading } = x
 			if post?.subreddit
@@ -164,6 +192,7 @@ article.post
 					TextHTML(html={post.selftext_html})
 		section.post-comments
 			h1.post-comments-label Comments
+			ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
 			{#if post.replies?.length && profile_data_loaded}
 				{#key post.replies}
 					ol.post-comments-list
