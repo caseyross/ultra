@@ -1,12 +1,28 @@
-COUNTRY_SEO_PREFIXES = ['de', 'es', 'fr', 'it', 'pt']	
-KNOWN_TOP_LEVEL_PATHS = [undefined, 'about', 'best', 'c', 'channel', 'chat', 'collection', 'comments', 'controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 'subscriptions', 'tb', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all', 'u', 'user', 'w', 'wiki', 'video']
-LISTING_SORT_OPTIONS = ['controversial', 'controversial-hour', 'controversial-day', 'controversial-week', 'controversial-month', 'controversial-year', 'controversial-all', 'hot', 'new', 'top', 'top-hour', 'top-day', 'top-week', 'top-month', 'top-year', 'top-all']
-SUBREDDIT_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising', 'search', 'search-hour', 'search-day', 'search-week', 'search-month', 'search-year', 'search-all']
-R_ALL_SORT_OPTIONS = SUBREDDIT_SORT_OPTIONS
-R_POPULAR_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising']
-FRONTPAGE_SORT_OPTIONS = [...LISTING_SORT_OPTIONS, 'rising', 'best']
-POST_COMMENTS_SORT_OPTIONS = ['best', 'controversial', 'new', 'old', 'qa', 'top']
-SORT_OPTION_TIME_RANGES = ['hour', 'day', 'week', 'month', 'year', 'all']
+COUNTRY_SEO_PREFIXES = [
+	'de', 'es', 'fr', 'it', 'pt'
+]	
+KNOWN_TOP_LEVEL_PATHS = [
+	undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video'
+]
+
+SORT_OPTION_TIME_RANGES = [
+	'all', 'day', 'hour', 'month', 'week', 'year'
+]
+LISTING_SORT_OPTIONS = [
+	'controversial-all', 'controversial-day', 'controversial-hour', 'controversial-month', 'controversial-week', 'controversial-year', 'hot', 'new', 'top-all', 'top-day', 'top-hour', 'top-month', 'top-week', 'top-year'
+]
+POPULAR_SORT_OPTIONS = [
+	...LISTING_SORT_OPTIONS, 'rising'
+]
+FRONTPAGE_SORT_OPTIONS = [
+	...LISTING_SORT_OPTIONS, 'best', 'rising'
+]
+SUBREDDIT_SORT_OPTIONS = [
+	...LISTING_SORT_OPTIONS, 'rising', 'search-all', 'search-day', 'search-hour', 'search-month', 'search-week', 'search-year'
+]
+POST_COMMENTS_SORT_OPTIONS = [
+	'best', 'controversial', 'new', 'old', 'qa', 'top'
+]
 
 ROUTE_INVALID = {
 	page_type: 'invalid'
@@ -128,8 +144,8 @@ export default (url) ->
 								time_range = query.get('t')
 								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
 								else posts_sort = posts_sort + '-day'
-							else if subreddit_name is 'all' and posts_sort not in R_ALL_SORT_OPTIONS then posts_sort = 'top-day'
-							else if subreddit_name is 'popular' and posts_sort not in R_POPULAR_SORT_OPTIONS then posts_sort = 'top-day'
+							else if subreddit_name is 'all' and posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
+							else if subreddit_name is 'popular' and posts_sort not in POPULAR_SORT_OPTIONS then posts_sort = 'top-day'
 							else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
 							search_text = query.get('q')
 							switch subreddit_name
@@ -172,11 +188,6 @@ export default (url) ->
 			return {
 				page_type: 'subreddits'
 				page_data: { subreddits_filter }
-			}
-		when 'subscriptions'
-			return {
-				page_type: 'subreddits'
-				page_data: { subreddits_filter: 'subscriber' }
 			}
 		when 'u', 'user'
 			user_name = path[2]
