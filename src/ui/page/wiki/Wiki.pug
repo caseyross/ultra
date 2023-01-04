@@ -12,11 +12,7 @@ script.
 	error = null
 	loading = false
 	page = null
-	api.loadWatch(
-		(if revision_id
-			api.ID('wiki', subreddit_name, page_name, revision_id)
-		else
-			api.ID('wiki', subreddit_name, page_name)),
+	api.loadWatch(api.ID('wiki', subreddit_name, page_name, revision_id),
 		(x) ->
 			{ data: page, error, loading } = x
 	)

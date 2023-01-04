@@ -61,11 +61,7 @@ script.
 	set_theme_color = getContext('set_theme_color')
 	if focus_comment_short_id
 		setContext('focus_comment_short_id', focus_comment_short_id)
-	api.loadWatch(
-		(if focus_comment_short_id
-			api.ID('post', short_id, comments_sort, 200, focus_comment_short_id, focus_comment_context_level ? 1)
-		else
-			api.ID('post', short_id, comments_sort, 200)),
+	api.loadWatch(api.ID('post', short_id, comments_sort, 200, focus_comment_short_id, focus_comment_context_level),
 		(x) ->
 			{ data: post, error, loading } = x
 			if post?.subreddit
