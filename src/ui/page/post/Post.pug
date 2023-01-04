@@ -1,5 +1,5 @@
 script.
-	import { getContext } from 'svelte';
+	import { getContext, setContext } from 'svelte';
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -24,6 +24,8 @@ script.
 	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
 	export comments_sort = 'best'
+	export focus_comment_context_level = null
+	export focus_comment_short_id = null
 	export short_id = null
 	comments_sort_options = [
 		{
@@ -57,7 +59,13 @@ script.
 	post = null
 	profile_data_loaded = false
 	set_theme_color = getContext('set_theme_color')
-	api.loadWatch(api.ID('post', short_id, comments_sort),
+	if focus_comment_short_id
+		setContext('focus_comment_short_id', focus_comment_short_id)
+	api.loadWatch(
+		(if focus_comment_short_id
+			api.ID('post', short_id, comments_sort, 200, focus_comment_short_id, focus_comment_context_level ? 1)
+		else
+			api.ID('post', short_id, comments_sort, 200)),
 		(x) ->
 			{ data: post, error, loading } = x
 			if post?.subreddit
@@ -128,71 +136,77 @@ article.post
 						PostTag(name='sticky')
 					{#if post.is_original_content}
 						PostTag(name='oc')
-		section.post-content
-			{#if post.format === 'self'}
-				{#if !post.selftext.length}
-					.post-selftext-empty
-			{:else if post.format === 'prediction'}
-				ol.post-predictions
-					{#each post.tournament_data.predictions as prediction}
-						h2.post-prediction-title {prediction.title}
-						dl.post-prediction-options
-							{#each prediction.options as option}
-								li
-									dt
-										meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
-									dd {option.text}
-			{:else if post.format === 'media'}
-				{#if post.media.length > 1}
-					ol.post-gallery
-						{#each post.media as media, index}
-							figure.post-gallery-item
+		{#if focus_comment_short_id}
+			section.post-content-incomplete
+				| Viewing a single comment thread.
+				Button(link='/r/{post.subreddit}/post/{short_id}' text='View complete post')
+		{:else}
+			section.post-content
+				{#if post.format === 'self'}
+					{#if !post.selftext.length}
+						.post-selftext-empty
+				{:else if post.format === 'prediction'}
+					ol.post-predictions
+						{#each post.tournament_data.predictions as prediction}
+							h2.post-prediction-title {prediction.title}
+							dl.post-prediction-options
+								{#each prediction.options as option}
+									li
+										dt
+											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+										dd {option.text}
+				{:else if post.format === 'media'}
+					{#if post.media.length > 1}
+						ol.post-gallery
+							{#each post.media as media, index}
+								figure.post-gallery-item
+									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+										picture
+											source(srcset={media.image_url_960})
+											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+									{#if media.caption_text || media.caption_url}
+										figcaption.post-gallery-image-caption
+											{#if media.caption_text}
+												p {media.caption_text}
+											{#if media.caption_url}
+												a(href={media.caption_url}) {media.caption_url}
+					{:else if post.media.length === 1}
+						{@const media = post.media[0]}
+							{#if media.video_url}
+								MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.is_gif} video_url={media.video_url})
+							{:else if media.image_url}
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_960})
-										img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-								{#if media.caption_text || media.caption_url}
-									figcaption.post-gallery-image-caption
-										{#if media.caption_text}
-											p {media.caption_text}
-										{#if media.caption_url}
-											a(href={media.caption_url}) {media.caption_url}
-				{:else if post.media.length === 1}
-					{@const media = post.media[0]}
-						{#if media.video_url}
-							MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.is_gif} video_url={media.video_url})
-						{:else if media.image_url}
-							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-								picture
-									source(srcset={media.image_url_960})
-									img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-							menu.post-content-actions
-								Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
-			{:else if post.format === 'link'}
-				{#if post.url}
-					{#if html_embeds(post)}
-						{@const embed = html_embeds(post)}
-							{@html embed.html}
-					{:else if iframe_embeds(post.url)}
-						{@const embed = iframe_embeds(post.url)}
-							<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
-							<!-- svelte-ignore a11y-missing-attribute -->
-							iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url})
-					{:else}
-						.md.post-link
-							a(href={post.url} rel='external noopener preconnect') {post.url}
-					menu.post-content-actions
-						Button(action={() => window.open(post.url)} key='e' text='Open link')
-			{:else if post.format === 'crosspost'}
-				ListingPost(short_id={post.crosspost_parent})
-			{:else}
-				p [Error displaying post.]
-			{#if post.selftext_html && !post.removed_by_category}
-				.post-selftext
-					TextHTML(html={post.selftext_html})
+										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+								menu.post-content-actions
+									Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
+				{:else if post.format === 'link'}
+					{#if post.url}
+						{#if html_embeds(post)}
+							{@const embed = html_embeds(post)}
+								{@html embed.html}
+						{:else if iframe_embeds(post.url)}
+							{@const embed = iframe_embeds(post.url)}
+								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+								<!-- svelte-ignore a11y-missing-attribute -->
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url})
+						{:else}
+							.md.post-link
+								a(href={post.url} rel='external noopener preconnect') {post.url}
+						menu.post-content-actions
+							Button(action={() => window.open(post.url)} key='e' text='Open link')
+				{:else if post.format === 'crosspost'}
+					ListingPost(short_id={post.crosspost_parent})
+				{:else}
+					p [Error displaying post.]
+				{#if post.selftext_html && !post.removed_by_category}
+					.post-selftext
+						TextHTML(html={post.selftext_html})
 		section.post-comments
-			h1.post-comments-label Comments
-			ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
+			{#if !focus_comment_short_id}
+				h1.post-comments-label Comments
+				ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
 			{#if post.replies?.length && profile_data_loaded}
 				{#key post.replies}
 					ol.post-comments-list
@@ -209,12 +223,10 @@ article.post
 style.
 	.post
 		width 480px
-	.post-content
-		margin-top 20px
 	.post-comments
 		margin-top 30px
 	.post-comments-actions
-		margin-top 3em
+		margin-top 2em
 	.post-comments-label
 		color var(--c-text-weak)
 		font-size 10px
@@ -222,10 +234,21 @@ style.
 		text-transform uppercase
 	.post-comments-list
 		margin-top 2em
+	.post-content
+		margin-top 20px
 	.post-content-actions
 		display flex
 		gap 1em
 		padding 10px 0
+	.post-content-incomplete
+		align-items center
+		background darkkhaki
+		border-radius 10px
+		color white
+		display flex
+		justify-content space-between
+		margin-top 30px
+		padding 10px
 	.post-exit-button
 		position fixed
 		left calc(50% + 320px)
@@ -279,8 +302,6 @@ style.
 		width 100%
 	.post-loading-message
 		padding 10px
-	.post-more-replies
-		margin-top 2.25em
 	.post-prediction-options > li
 		display flex
 	.post-selftext

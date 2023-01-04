@@ -1,4 +1,5 @@
 script.
+	import { getContext } from 'svelte'
 	import api from '../../../api/index.js'
 	
 	import Button from '../../framework/Button.pug'
@@ -14,6 +15,7 @@ script.
 	export short_id = null
 	
 	comment = null
+	focus_comment_short_id = getContext('focus_comment_short_id')
 	more_replies_loading = false
 	api.loadWatch(api.ID('comment', short_id),
 		(x) ->
@@ -36,6 +38,8 @@ script.
 		article.comment(role='comment')
 			section.comment-body
 				TextHTML(html={comment.body_html})
+				{#if short_id === focus_comment_short_id}
+					.comment-focus-marker(title='Highlighted comment') ★
 				.comment-author
 					UserAvatar(name={comment.author})
 			header
@@ -91,8 +95,21 @@ style.
 		background #494949
 		border-radius 10px
 		padding 1ch
+	.comment-focus-marker
+		align-items center
+		border 2px solid
+		border-radius 50%
+		cursor default
+		display flex
+		font-size 12px
+		height 22px
+		justify-content center
+		left -10px
+		position absolute
+		top -8px
+		width 22px
 	.comment-more-replies
-		margin-top 20px
+		margin-bottom 20px
 	.comment-replies
 		margin-top 10px
 		padding-left 30px

@@ -28,7 +28,7 @@ script.
 		{:else if type === 'subreddits'}
 			Listing(type='subreddits' data={data})
 		{:else if type === 'post'}
-			Post(comment_short_id={data.comment_short_id} comments_sort={data.comments_sort} comment_context={data.comment_context} listing_sort={data.posts_sort} short_id={data.post_short_id})
+			Post(comments_sort={data.comments_sort} focus_comment_context_level={data.comment_context} focus_comment_short_id={data.comment_short_id} short_id={data.post_short_id})
 		{:else if type === 'user'}
 			User(name={data.user_name})
 			Listing(type='user_posts' data={data})
