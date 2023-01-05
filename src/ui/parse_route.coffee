@@ -2,7 +2,7 @@ COUNTRY_SEO_PREFIXES = [
 	'de', 'es', 'fr', 'it', 'pt'
 ]	
 KNOWN_TOP_LEVEL_PATHS = [
-	undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video'
+	undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'mail', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'reddits', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video'
 ]
 
 SORT_OPTION_TIME_RANGES = [
@@ -164,8 +164,7 @@ export default (url) ->
 										page_type: 'subreddit'
 										page_data: { posts_sort, search_text, subreddit_name }
 									}
-		when 's', 'search' then return ROUTE_OFFICIALSITE(url) # TODO
-		when 'subreddits'
+		when 'reddits', 'subreddits'
 			switch path[2]
 				when 'mine'
 					switch path[3]
@@ -189,6 +188,7 @@ export default (url) ->
 				page_type: 'subreddits'
 				page_data: { subreddits_filter }
 			}
+		when 's', 'search' then return ROUTE_OFFICIALSITE(url) # TODO
 		when 'u', 'user'
 			user_name = path[2]
 			if not user_name then return ROUTE_INVALID

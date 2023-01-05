@@ -1,5 +1,5 @@
 script.
-	import { getContext, setContext } from 'svelte';
+	import { getContext } from 'svelte';
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -15,7 +15,7 @@ script.
 	import UserDistinguish from '../user/UserDistinguish.pug'
 	
 	import PostAge from './PostAge.pug'
-	import PostComment from './PostComment.pug'
+	import PostCommentList from './PostCommentList.pug'
 	import PostFlair from './PostFlair.pug'
 	import PostScore from './PostScore.pug'
 	import PostTag from './PostTag.pug'
@@ -55,26 +55,14 @@ script.
 	]
 	error = null
 	loading = false
-	more_replies_loading = false
 	post = null
-	profile_data_loaded = false
 	set_theme_color = getContext('set_theme_color')
-	if focus_comment_short_id
-		setContext('focus_comment_short_id', focus_comment_short_id)
-	api.loadWatch(api.ID('post', short_id, comments_sort, 200, focus_comment_short_id, focus_comment_context_level),
+	api.loadWatch(api.ID('post', short_id),
 		(x) ->
 			{ data: post, error, loading } = x
 			if post?.subreddit
 				api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
 					set_theme_color(subreddit?.primary_color ? subreddit?.key_color)
-				)
-			if post?.contributors?.length
-				api.loadWatch(api.ID('users', post.contributors),
-					(x) -> if x.data or x.error then profile_data_loaded = true
-				)
-			if post?.more_replies
-				api.watch(post.more_replies_id,
-					(x) -> { loading: more_replies_loading } = x
 				)
 			if post?.num_comments? and post?.score?
 				localStorage['visited.' + short_id] = "#{Time.unixMs()} #{post.num_comments} #{post.score}"
@@ -87,7 +75,7 @@ article.post
 	{#if error}
 		.post-unavailable-reason
 			{#if error instanceof api.errors.ServerBadRequestError && error.code === 403}
-				| Post subreddit is not accessible (potentially banned).
+				| Post subreddit is not accessible (likely private or banned).
 			{:else}
 				| Post unavailable for unknown reasons.
 	{:else if loading}
@@ -203,14 +191,8 @@ article.post
 			{#if !focus_comment_short_id}
 				h1.post-comments-label Comments
 				ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
-			{#if post.replies?.length && profile_data_loaded}
-				{#key post.replies}
-					ol.post-comments-list
-						{#each post.replies as reply_short_id}
-							PostComment(short_id={reply_short_id})
-						{#if post.more_replies}
-							.post-more-replies
-								Button(action={() => api.load(post.more_replies_id)} appearance='text' loading={more_replies_loading} text="+ {post.num_more_replies} more {post.num_more_replies === 1 ? 'reply' : 'replies'}...")
+			{#key comments_sort}
+				PostCommentList(focus_comment_context_level={focus_comment_context_level} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 			menu.post-comments-actions
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
 		nav.post-exit-button
@@ -228,8 +210,6 @@ style.
 		font-size 10px
 		font-feature-settings 'cpsp'
 		text-transform uppercase
-	.post-comments-list
-		margin-top 2em
 	.post-content
 		margin-top 20px
 	.post-content-actions
@@ -281,6 +261,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1ch
+		margin-top 60px
 	.post-header-bottom-row
 		align-items center
 		display flex
@@ -311,5 +292,6 @@ style.
 		line-height 1.4
 	.post-unavailable-reason
 		background salmon
+		border-radius 10px
 		color white
 		padding 10px

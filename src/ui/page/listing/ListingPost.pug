@@ -7,7 +7,7 @@ script.
 	export short_id = null
 	
 	post = null
-	api.loadWatch(api.ID('post', short_id, 'best', 200),
+	api.loadWatch(api.ID('post', short_id),
 		(x) ->
 			{ data: post } = x
 			if post?.contributors?.length then api.load(api.ID('users', post.contributors))
