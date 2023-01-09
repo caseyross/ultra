@@ -28,6 +28,7 @@ strong
 	--c-con-weak rgba(255,255,255,0.05)
 	--c-con-norm rgba(255,255,255,0.10)
 	--c-con-strong rgba(255,255,255,0.50)
+	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong black
 .color-strategy-white-text
@@ -37,6 +38,7 @@ strong
 	--c-con-weak rgba(0,0,0,0.05)
 	--c-con-norm rgba(0,0,0,0.10)
 	--c-con-strong rgba(0,0,0,0.50)
+	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong #f2f4f7
 *::-webkit-scrollbar
@@ -47,10 +49,10 @@ strong
 
 // Layout sections
 p
-	margin 0.8em 0 0 0
+	margin 1.2em 0 0 0
 hr
 	border 1px solid var(--c-text-weak)
-	margin 0.8em 0 0 0
+	margin 1.2em 0 0 0
 
 // Lists
 menu
@@ -62,7 +64,7 @@ ul
 .md ol
 .md ul
 	list-style revert
-	margin 0.8em 0 0 0
+	margin 1.2em 0 0 0
 	padding-inline-start 3ch
 	& ul
 		list-style-type initial
@@ -104,18 +106,16 @@ h6
 
 // Tables
 table
-	border-collapse collapse
+	background var(--c-con-norm)
+	border-radius 6px
 	font-size 11px
 	margin 0.5em 0 0 0
 	overflow-wrap normal
+	padding 1em
 td
 th
 	padding 1px 0
 	padding-right 3ch
-	text-align left
-	vertical-align top
-th
-	background var(--c-con-strong)
 
 // Formatted text
 a
@@ -123,6 +123,7 @@ a
 	text-decoration none
 	&:empty
 		background var(--c-text-strong)
+		border-radius 10px
 		display inline-block
 		height 1em
 		width 4em
@@ -142,7 +143,7 @@ sup
 		color white
 		content '→'
 		display inline
-		font-size 0.8em
+		font-size 0.9em
 		height 1.25em
 		line-height 1.25
 		margin-left 0.2em
@@ -155,29 +156,32 @@ sup
 blockquote
 	border-left 3px solid var(--c-text-weak)
 	color var(--c-text-weak)
-	font-size 0.9em
-	margin 0.8em 0 0 2px
+	font-size 12px
+	margin 1.4em 0 0 2px
 	padding-left 1em
 code
 pre
 	font-family var(--typeface-mono)
-	font-size 9pt
-	text-transform none
+	font-size 12px
+	letter-spacing 0
 code
-	padding 0 0.25em
-	overflow-wrap anywhere
-	white-space pre-wrap
+	background var(--c-con-norm)
+	border-radius 2px
+	padding 1px 2px
+	word-break break-all
 pre
-	border 1px dashed
-	border-radius 10px
-	margin 0.8em 0 0 0
-	overflow hidden
+	background var(--c-con-norm)
+	border-radius 6px
+	margin 1.2em 0 0 0
 	padding 1em
 
 // Spoilers
 .md-spoiler-text
 	background black
+	border-radius 3px
 	color transparent
+	cursor default
+	transition all 0.125s
 	*
 		opacity 0
 	&:hover

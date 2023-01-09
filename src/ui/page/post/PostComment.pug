@@ -36,17 +36,18 @@ script.
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
 		article.comment(role='comment')
-			section.comment-body
-				TextHTML(html={comment.body_html})
-				{#if short_id === focus_comment_short_id}
-					.comment-focus-marker(title='Highlighted comment') ★
-				.comment-author
-					UserAvatar(name={comment.author})
+			{#if short_id === focus_comment_short_id}
+				.comment-focus-marker(title='Highlighted comment') ★
+			UserAvatar(name={comment.author})
 			header
 				{#if comment.distinguished || comment.is_submitter}
 					UserDistinguish(type={comment.distinguished || 'submitter'})
+				span.comment-author {comment.author}
+				{#if comment.author_flair_text}
+					span.comment-author-flair {comment.author_flair_text}
+			TextHTML(html={comment.body_html})
+			footer(style='display:none')
 				PostAge(created={comment.created_utc} edited={comment.edited})
-			footer(style='visibility:hidden')
 				PostScore(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
 		{#if !out_of_context}
 			ol.comment-replies
@@ -65,32 +66,35 @@ style.
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 5px
-	.comment > footer
-		align-items center
-		align-self stretch
-		display flex
-		gap 1ch
-		justify-content flex-end
-		padding 0 1ch
+		margin 25px 0
+		position relative
 	.comment > header
 		align-items center
+		color var(--c-text-weak)
+		cursor default
 		display flex
-		gap 1ch
-	.comment-author
-		bottom -11px
-		position absolute
-		right -16px
-	.comment-body
+		font-size 11px
+		gap 10px
+		user-select none
+		white-space pre
+		width 400px
+	:global(.comment > .md)
 		background rgba(255,255,255,0.1)
 		border-radius 10px
+		margin-top 2px
 		padding 10px
-		position relative
-	:global(.comment-body img)
-		border-radius 9px
-		margin 1px
-		max-height 9em
+		width 400px
+	:global(.comment > .md img)
+		border 1px solid transparent
+		border-radius 6px
+		max-height 60px
 		width auto
+	:global(.comment > .md img:hover)
+		border-color inherit
+	:global(.comment .user-avatar)
+		left -43px
+		position absolute
+		top 17px
 	.comment-clip
 		background #494949
 		border-radius 10px
@@ -109,7 +113,7 @@ style.
 		top -8px
 		width 22px
 	.comment-more-replies
-		margin-bottom 20px
+		margin 25px 0
 	.comment-replies
-		margin-top 10px
+		border-left 1px solid var(--c-text-faint)
 		padding-left 30px
