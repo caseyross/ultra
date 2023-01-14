@@ -2,8 +2,8 @@ script.
 	import { getContext } from 'svelte'
 	import api from '../../../api/index.js'
 	
-	import Button from '../../framework/Button.pug'
-	import TextHTML from '../../framework/TextHTML.pug'
+	import Button from '../../common/Button.pug'
+	import TextHTML from '../../common/TextHTML.pug'
 
 	import UserAvatar from '../user/UserAvatar.pug'
 	import UserDistinguish from '../user/UserDistinguish.pug'
@@ -75,15 +75,16 @@ style.
 		display flex
 		font-size 11px
 		gap 10px
+		letter-spacing 0.5px
 		user-select none
 		white-space pre
-		width 400px
+		width 440px
 	:global(.comment > .md)
 		background rgba(255,255,255,0.1)
 		border-radius 10px
 		margin-top 2px
 		padding 10px
-		width 400px
+		max-width 440px
 	:global(.comment > .md img)
 		border 1px solid transparent
 		border-radius 6px

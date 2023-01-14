@@ -12,10 +12,10 @@ const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-
 module.exports = {
 	entry: {
 		preboot: {
-			import: './src/ui/preboot.coffee',
+			import: './src/ui/app/preboot.coffee',
 		},
 		boot: {
-			import: './src/ui/boot.coffee',
+			import: './src/ui/app/boot.coffee',
 			dependOn: 'preboot',
 		}
 	},
@@ -79,10 +79,10 @@ module.exports = {
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
-			favicon: './src/ui/favicon_16.png',
+			favicon: './src/ui/app/icon/favicon_16.png',
 			inject: false, // manual script placement in template
 			publicPath: '/',
-			template: './src/ui/index.html',
+			template: './src/ui/app/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
 			scriptMatchPattern: [/^runtime/, /^preboot/] // avoid add'l network roundtrip on critical path

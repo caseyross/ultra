@@ -2,8 +2,8 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
-	import Base404 from '../../base/Base404.pug'
-	import TextHTML from '../../framework/TextHTML.pug'
+	import Error404 from '../../common/Error404.pug'
+	import TextHTML from '../../common/TextHTML.pug'
 	
 	export page_name = null
 	export revision_id = null
@@ -21,7 +21,7 @@ svelte:head
 	title  r/{subreddit_name} - Wiki - {page_name}
 {#if error}
 	{#if error instanceof api.errors.ServerError}
-		Base404(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")
+		Error404(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")
 {:else if loading}
 	p Loading...
 {:else if page}

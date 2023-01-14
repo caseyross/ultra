@@ -1,7 +1,7 @@
 script.
 	import { getContext } from 'svelte'
 	import api from '../../../api/index.js'
-	import TextHTML from '../../framework/TextHTML.pug'
+	import TextHTML from '../../common/TextHTML.pug'
 	export name = null
 	info = null
 	rules = null
@@ -36,11 +36,6 @@ article.subreddit
 							p [No description provided.]
 
 style.
-	.subreddit
-		display flex
-		flex-flow column nowrap
-		height 100vh
-		padding 40px
 	.subreddit-description
 		padding 10px
 	.subreddit-icon

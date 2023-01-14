@@ -12,7 +12,7 @@
 	font-family 'Inter'
 	font-style normal italic
 	font-weight 100 900
-	src url('../vendor/inter_100_900.woff2')
+	src url('../../vendor/inter_100_900.woff2')
 :root
 	font 400 14px/1.5 'Inter', sans-serif
 	letter-spacing 0.025em
@@ -64,7 +64,7 @@ ul
 .md ol
 .md ul
 	list-style revert
-	margin 1.2em 0 0 0
+	margin 0.8em 0 0 0
 	padding-inline-start 3ch
 	& ul
 		list-style-type initial
@@ -72,9 +72,9 @@ ul
 .md ol ul
 .md ul ol
 .md ul ul
-	margin 0.2em 0 0 0
+	margin 0.5em 0 0 0
 .md li
-	margin 0.2em 0 0 0
+	margin 0.5em 0 0 0
 
 // Headers
 h1
@@ -83,6 +83,7 @@ h3
 h4
 h5
 h6
+	font-weight inherit
 	margin 0
 .md
 	h1
@@ -107,26 +108,26 @@ h6
 // Tables
 table
 	background var(--c-con-norm)
-	border-radius 6px
+	border-radius 1ch
+	font-family var(--typeface-mono)
 	font-size 11px
+	letter-spacing 0.5px
 	margin 0.5em 0 0 0
 	overflow-wrap normal
 	padding 1em
-td
+	overflow auto
 th
-	padding 1px 0
-	padding-right 3ch
+td
+	padding-right 10px
+	padding-top 6px
+	vertical-align top
+th
+	font-weight inherit
 
 // Formatted text
 a
 	color inherit
 	text-decoration none
-	&:empty
-		background var(--c-text-strong)
-		border-radius 10px
-		display inline-block
-		height 1em
-		width 4em
 address
 	font-style normal
 sub
@@ -151,6 +152,12 @@ sup
 		padding 0 0.125em
 	a[target='_blank']::before
 		display none !important
+	a:empty
+		aspect-ratio 1
+		border 1px solid
+		border-radius 10px
+		display block
+		height 32px
 
 // Verbatim text
 blockquote
@@ -174,6 +181,7 @@ pre
 	border-radius 6px
 	margin 1.2em 0 0 0
 	padding 1em
+	overflow auto
 
 // Spoilers
 .md-spoiler-text

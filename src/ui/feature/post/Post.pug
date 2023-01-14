@@ -3,22 +3,15 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
-	import Button from '../../framework/Button.pug'
-	import ButtonGroup from '../../framework/ButtonGroup.pug'
-	import MediaPlayer from '../../framework/MediaPlayer.pug'
-	import TextHTML from '../../framework/TextHTML.pug'
+	import Button from '../../common/Button.pug'
+	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import MediaPlayer from '../../common/MediaPlayer.pug'
+	import TextHTML from '../../common/TextHTML.pug'
 	
 	import ListingNameTag from '../listing/ListingNameTag.pug'
-	import ListingPost from '../listing/ListingPost.pug'
 	
-	import UserAvatar from '../user/UserAvatar.pug'
-	import UserDistinguish from '../user/UserDistinguish.pug'
-	
-	import PostAge from './PostAge.pug'
 	import PostCommentList from './PostCommentList.pug'
-	import PostFlair from './PostFlair.pug'
-	import PostScore from './PostScore.pug'
-	import PostTag from './PostTag.pug'
+	import PostHeadline from './PostHeadline.pug'
 
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
@@ -96,30 +89,6 @@ article.post
 					| Removed by Reddit due to a copyright notice.
 				{:else}
 					| Removed by Reddit, reason not specified.
-		header.post-header
-			.post-header-top-row
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-			h1.post-title {post.title}
-			.post-header-bottom-row
-				{#if post.distinguished}
-					UserDistinguish(type={post.distinguished})
-				UserAvatar(name={post.author})
-				PostAge(created={post.created_utc} edited={post.edited} size='medium')
-				.post-tags
-					{#if post.archived}
-						PostTag(name='archived')
-					{#if post.locked}
-						PostTag(name='locked')
-					{#if post.quarantine}
-						PostTag(name='quarantined')
-					{#if post.over_18}
-						PostTag(name='nsfw')
-					{#if post.stickied}
-						PostTag(name='sticky')
-					{#if post.is_original_content}
-						PostTag(name='oc')
 		{#if focus_comment_short_id}
 			section.post-content-incomplete
 				| Viewing a single comment thread.
@@ -147,7 +116,7 @@ article.post
 									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 										picture
 											source(srcset={media.image_url_960})
-											img.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+											img.post-image.post-gallery-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {480 * Math.sqrt(media.aspect_ratio)}px")
 									{#if media.caption_text || media.caption_url}
 										figcaption.post-gallery-image-caption
 											{#if media.caption_text}
@@ -162,7 +131,7 @@ article.post
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										source(srcset={media.image_url_960})
-										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {480 * Math.sqrt(media.aspect_ratio)}px")
 								menu.post-content-actions
 									Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
 				{:else if post.format === 'link'}
@@ -181,7 +150,7 @@ article.post
 						menu.post-content-actions
 							Button(action={() => window.open(post.url)} key='e' text='Open link')
 				{:else if post.format === 'crosspost'}
-					ListingPost(short_id={post.crosspost_parent})
+					PostHeadline(link={true} post_short_id={post.crosspost_parent})
 				{:else}
 					p [Error displaying post.]
 				{#if post.selftext_html && !post.removed_by_category}
@@ -190,7 +159,10 @@ article.post
 		section.post-comments
 			{#if !focus_comment_short_id}
 				h1.post-comments-label Comments
-				ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
+				{#if post.contest_mode}
+					.post-contest-mode-notification Post is in contest mode. Comments are sorted randomly.
+				{:else}
+					ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
 			{#key comments_sort}
 				PostCommentList(focus_comment_context_level={focus_comment_context_level} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 			menu.post-comments-actions
@@ -199,8 +171,6 @@ article.post
 			Button(action={() => history.back()} disabled={history.length < 2} key='Escape' text='')
 
 style.
-	.post
-		width 480px
 	.post-comments
 		margin-top 30px
 	.post-comments-actions
@@ -211,7 +181,10 @@ style.
 		font-feature-settings 'cpsp'
 		text-transform uppercase
 	.post-content
-		margin-top 20px
+		align-items flex-start
+		display flex
+		flex-flow column nowrap
+		max-width 100%
 	.post-content-actions
 		display flex
 		gap 1em
@@ -223,8 +196,13 @@ style.
 		color white
 		display flex
 		justify-content space-between
-		margin-top 30px
 		padding 10px
+	.post-contest-mode-notification
+		background darkkhaki
+		border-radius 10px
+		color white
+		padding 10px
+		width 440px
 	.post-exit-button
 		position fixed
 		left calc(50% + 320px)
@@ -233,9 +211,7 @@ style.
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
-		gap 10px
-	.post-gallery-image
-		width 100%
+		gap 1px
 	.post-gallery-image-caption
 		color var(--c-text-weak)
 		font-size 11px
@@ -257,26 +233,13 @@ style.
 			line-height 1
 			position absolute
 			right calc(100% + 5px)
-	.post-header
-		display flex
-		flex-flow column nowrap
-		gap 1ch
-		margin-top 60px
-	.post-header-bottom-row
-		align-items center
-		display flex
-		gap 10px
-		height 24px
-	.post-header-top-row
-		align-items center
-		display flex
-		gap 6px
 	.post-iframe
 		aspect-ratio 16/9
 		border-radius 1ch
-		width 100%
+		width 510px
 	.post-image
-		width 100%
+		border-radius 1ch
+		min-width 480px
 	.post-loading-message
 		padding 10px
 	.post-prediction-options > li
@@ -285,15 +248,8 @@ style.
 		background rgba(255,255,255,0.1)
 		border-radius 10px
 		margin-top 20px
+		max-width 660px
 		padding 10px
-		width 400px
-	.post-tags
-		display flex
-		gap 3px
-	.post-title
-		font-size 19px
-		font-weight inherit
-		line-height 1.4
 	.post-unavailable-reason
 		background salmon
 		border-radius 10px

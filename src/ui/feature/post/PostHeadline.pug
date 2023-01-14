@@ -1,0 +1,67 @@
+script.
+	import api from '../../../api/index.js'
+	
+	import UserAvatar from '../user/UserAvatar.pug'
+	import UserDistinguish from '../user/UserDistinguish.pug'
+	
+	import PostAge from './PostAge.pug'
+	import PostFlair from './PostFlair.pug'
+	import PostScore from './PostScore.pug'
+	import PostTag from './PostTag.pug'
+
+	export post_short_id = null
+	
+	post = null
+	api.loadWatch(api.ID('post', post_short_id),
+		(x) ->
+			{ data: post } = x
+			if post?.contributors?.length then api.load(api.ID('users', post.contributors))
+	)
+
+{#if post}
+	a(href='/{post.subreddit}/{post_short_id}')
+		header.post-header(class:post-read={localStorage['visited.' + post_short_id] || false})
+			.post-header-top-row
+				{#if post.distinguished}
+					UserDistinguish(type={post.distinguished})
+				UserAvatar(name={post.author})
+				PostAge(created={post.created_utc} edited={post.edited} size='medium')
+				.post-tags
+					{#if post.archived}
+						PostTag(name='archived')
+					{#if post.locked}
+						PostTag(name='locked')
+					{#if post.quarantine}
+						PostTag(name='quarantined')
+					{#if post.over_18}
+						PostTag(name='nsfw')
+					{#if post.stickied}
+						PostTag(name='sticky')
+					{#if post.is_original_content}
+						PostTag(name='oc')
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+			h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			.post-header-bottom-row
+
+style.
+	.post-header
+		display flex
+		flex-flow column nowrap
+		gap 1ch
+		margin-top 60px
+	.post-header-top-row
+		align-items center
+		display flex
+		gap 6px
+	.post-tags
+		display flex
+		gap 3px
+	.post-title
+		font-size 18px
+		font-weight 800
+		line-height 1.4
+		text-decoration underline
+	:global(.post-read .post-title)
+		text-decoration line-through

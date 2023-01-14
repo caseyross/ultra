@@ -1,5 +1,5 @@
 script.
-	import hotkey from './use_hotkey.coffee'
+	import hotkey from './actions/use_hotkey.coffee'
 	import HotkeyLabel from './HotkeyLabel.pug'
 	export action = null
 	export activated = false
@@ -13,7 +13,7 @@ script.
 	export text = ''
 
 {#if link}
-	a(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled} href={link} use:hotkey={key})
+	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		slot
@@ -22,7 +22,7 @@ script.
 		{#if badge}
 			span.badge {badge}
 {:else}
-	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={action} use:hotkey={key})
+	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} use:hotkey={key})
 		{#if loading}
 			| loading...
 		{:else}
@@ -44,13 +44,15 @@ style.
 		gap 5px
 		line-height 18px
 		padding 4px 6px
+		text-align left
 		user-select none
-		&:disabled
-			opacity 0.5
-		&:hover
+		&:hover:not(:disabled):not(.disabled)
 			background var(--c-con-norm)
 			border-color wheat
 			color wheat
+		&:disabled
+		&.disabled
+			opacity 0.5
 		&.activated
 			background var(--c-con-strong)
 			color var(--c-text-strong)

@@ -75,7 +75,7 @@ export default (url) ->
 				time_range = query.get('t')
 				if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
 				else posts_sort = posts_sort + '-day'
-			else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
+			else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
 			search_text = query.get('q')
 			return {
 				page_type: 'multireddit'
@@ -99,6 +99,37 @@ export default (url) ->
 			}
 		when 'r', 'subreddit'
 			switch path[3]
+				when undefined
+					subreddit_name = path[2]
+					if not subreddit_name or subreddit_name.length < 2 then return ROUTE_INVALID
+					switch subreddit_name
+						when 'mod' then return ROUTE_OFFICIALSITE(url) # TODO
+						else
+							posts_sort = path[3] ? query.get('sort')
+							if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
+								time_range = query.get('t')
+								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
+								else posts_sort = posts_sort + '-day'
+							else if subreddit_name is 'all' and posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+							else if subreddit_name is 'popular' and posts_sort not in POPULAR_SORT_OPTIONS then posts_sort = 'hot'
+							else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
+							search_text = query.get('q')
+							switch subreddit_name
+								when 'all'
+									return {
+										page_type: 'multireddit'
+										page_data: { multireddit_name: 'all', posts_sort, search_text, user_name: 'r' }
+									}
+								when 'popular'
+									return {
+										page_type: 'multireddit'
+										page_data: { multireddit_name: 'popular', posts_sort, user_name: 'r' }
+									}
+								else
+									return {
+										page_type: 'subreddit'
+										page_data: { posts_sort, search_text, subreddit_name }
+									}
 				when 'about' then return ROUTE_OFFICIALSITE(url)
 				when 'collection'
 					collection_short_id = path[4]
@@ -107,6 +138,7 @@ export default (url) ->
 						page_data: { collection_short_id }
 					}
 				when 'comments', 'p', 'post'
+					subreddit_name = path[2]
 					post_short_id = path[4]
 					if not post_short_id then return ROUTE_INVALID
 					comments_sort = query.get('sort')
@@ -115,7 +147,7 @@ export default (url) ->
 					comment_context = query.get('context')
 					return {
 						page_type: 'post'
-						page_data: { comment_context, comment_short_id, comments_sort, post_short_id }
+						page_data: { comment_context, comment_short_id, comments_sort, post_short_id, subreddit_name }
 					}
 				when 'submit' then return ROUTE_OFFICIALSITE(url)
 				when 'w', 'wiki'
@@ -135,35 +167,16 @@ export default (url) ->
 					}
 				else
 					subreddit_name = path[2]
-					if not subreddit_name or subreddit_name.length < 2 then return ROUTE_INVALID
-					switch subreddit_name
-						when 'mod' then return ROUTE_OFFICIALSITE(url) # TODO
-						else
-							posts_sort = path[3] ? query.get('sort')
-							if posts_sort is 'controversial' or posts_sort is 'search' or posts_sort is 'top'
-								time_range = query.get('t')
-								if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
-								else posts_sort = posts_sort + '-day'
-							else if subreddit_name is 'all' and posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
-							else if subreddit_name is 'popular' and posts_sort not in POPULAR_SORT_OPTIONS then posts_sort = 'top-day'
-							else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
-							search_text = query.get('q')
-							switch subreddit_name
-								when 'all'
-									return {
-										page_type: 'multireddit'
-										page_data: { multireddit_name: 'all', posts_sort, search_text, user_name: 'r' }
-									}
-								when 'popular'
-									return {
-										page_type: 'multireddit'
-										page_data: { multireddit_name: 'popular', posts_sort, user_name: 'r' }
-									}
-								else
-									return {
-										page_type: 'subreddit'
-										page_data: { posts_sort, search_text, subreddit_name }
-									}
+					post_short_id = path[3]
+					if not post_short_id then return ROUTE_INVALID
+					comments_sort = query.get('sort')
+					if comments_sort not in POST_COMMENTS_SORT_OPTIONS then comments_sort = 'best'
+					comment_short_id = path[4]
+					comment_context = query.get('context')
+					return {
+						page_type: 'post'
+						page_data: { comment_context, comment_short_id, comments_sort, post_short_id, subreddit_name }
+					}
 		when 'reddits', 'subreddits'
 			switch path[2]
 				when 'mine'
@@ -196,6 +209,7 @@ export default (url) ->
 				return ROUTE_OFFICIALSITE(url) # TODO?
 			switch path[3]
 				when 'comments', 'p', 'post'
+					subreddit_name = 'u_' + user_name
 					post_short_id = path[4]
 					if not post_short_id then return ROUTE_INVALID
 					comments_sort = query.get('sort')
@@ -204,7 +218,7 @@ export default (url) ->
 					comment_context = query.get('context')
 					return {
 						page_type: 'post'
-						page_data: { comment_context, comment_short_id, comments_sort, post_short_id }
+						page_data: { comment_context, comment_short_id, comments_sort, post_short_id, subreddit_name }
 					}
 				when 'm', 'multi', 'multireddit'
 					multireddit_name = path[4]
@@ -214,7 +228,7 @@ export default (url) ->
 						time_range = query.get('t')
 						if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
 						else posts_sort = posts_sort + '-day'
-					else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'top-day'
+					else if posts_sort not in SUBREDDIT_SORT_OPTIONS then posts_sort = 'hot'
 					search_text = query.get('q')
 					return {
 						page_type: 'multireddit'
@@ -226,7 +240,7 @@ export default (url) ->
 						time_range = query.get('t')
 						if time_range in SORT_OPTION_TIME_RANGES then posts_sort = posts_sort + '-' + time_range
 						else posts_sort = posts_sort + '-day'
-					else if posts_sort not in LISTING_SORT_OPTIONS then posts_sort = 'top-day'
+					else if posts_sort not in LISTING_SORT_OPTIONS then posts_sort = 'hot'
 					return {
 						page_type: 'user'
 						page_data: { posts_sort, user_name }

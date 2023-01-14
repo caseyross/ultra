@@ -1,10 +1,10 @@
 script.
 	import api from '../../../api/index.js'
 	import { StringMatch } from '../../../lib/index.js'
-	import Button from '../../framework/Button.pug'
-	import ButtonGroup from '../../framework/ButtonGroup.pug'
+	import Button from '../../common/Button.pug'
+	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import PostHeadline from '../post/PostHeadline.pug'
 	import ListingNameTag from './ListingNameTag.pug'
-	import ListingPost from './ListingPost.pug'
 	import ListingSearchField from './ListingSearchField.pug'
 	export data = null
 	export type = null
@@ -81,12 +81,16 @@ script.
 	
 	sort_options = [
 		{
-			label: 'Top',
-			value: 'top'
-		}
-		{
 			label: 'New',
 			value: 'new'
+		}
+		{
+			label: 'Hot',
+			value: 'hot'
+		}
+		{
+			label: 'Top',
+			value: 'top'
 		}
 		{
 			label: 'Controversial',
@@ -175,7 +179,6 @@ nav.listing
 			{#if filterable}
 				<!-- svelte-ignore a11y-autofocus -->
 				input.listing-filter(autofocus={true} bind:value={filter_text} type='search')
-		hr
 		ol.listing-content
 			{#if pages.length}
 				{#each pages as page}
@@ -183,7 +186,8 @@ nav.listing
 						{#if type.endsWith('multireddits')}
 							ListingNameTag(link="/m/{string.replace('-', '/')}" text={string} type='multireddit_posts')
 						{:else if type.endsWith('posts')}
-							ListingPost(short_id={string})
+							Button
+								PostHeadline(post_short_id={string})
 						{:else if type.endsWith('subreddits')}
 							{#if string.startsWith('u_')}
 								ListingNameTag(link='/u/{string.slice(2)}' text={string.slice(2)} type='user_posts')
@@ -192,20 +196,13 @@ nav.listing
 				{#if has_next_page}
 					Button(action={() => load_page(pages.length)} text='More')
 style.
-	.listing
-		width 560px
 	.listing-content
 		display flex
 		flex-flow column nowrap
-		gap 1ch
+		gap 40px
+		margin-top 40px
 	.listing-filter
 		border 1px solid
-	.listing-info
-		padding 10px
-		position sticky
-		top 0
-		h1
-			font inherit
 	.listing-sort-options
 		display flex
 		flex-flow row wrap
