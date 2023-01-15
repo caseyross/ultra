@@ -1,15 +1,15 @@
 script.
 	export type = null
 	text = switch type
-		when 'admin' then 'adm'
-		when 'moderator' then 'mod'
+		when 'admin' then 'a'
+		when 'moderator' then 'm'
 		when 'submitter' then 'op'
-		when 'vip' then 'vip'
+		when 'vip' then 'v'
 	description = switch type
-		when 'admin' then 'This user is speaking on behalf of Reddit Inc.'
-		when 'moderator' then 'This user is speaking as a moderator in this subreddit.'
-		when 'submitter' then 'This user is the Original Poster.'
-		when 'vip' then 'This user is a VIP.'
+		when 'admin' then 'Reddit Admin'
+		when 'moderator' then 'Subreddit Moderator'
+		when 'submitter' then 'Original Poster'
+		when 'vip' then 'Reddit VIP'
 
 data.user-distinguish(class='user-distinguish-{type}' title={description}) {text}
 

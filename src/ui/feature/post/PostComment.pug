@@ -28,28 +28,22 @@ script.
 
 {#if comment}
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
-		{#if out_of_context}
-			.comment-context
-				a(href='/r/{comment.subreddit}') {comment.subreddit}
-				span :
-				a(href='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}') {comment.link_title}
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(role='comment')
-			{#if short_id === focus_comment_short_id}
-				.comment-focus-marker(title='Highlighted comment') ★
-			UserAvatar(name={comment.author})
-			header
+		article.comment(class:comment-deleted={comment.author === '[deleted]'} class:comment-highlighted={short_id === focus_comment_short_id} role='comment')
+			aside.comment-sidebar
+				UserAvatar(name={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
 					UserDistinguish(type={comment.distinguished || 'submitter'})
-				span.comment-author {comment.author}
-				{#if comment.author_flair_text}
-					span.comment-author-flair {comment.author_flair_text}
 			TextHTML(html={comment.body_html})
 			footer(style='display:none')
-				PostAge(created={comment.created_utc} edited={comment.edited})
 				PostScore(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
-		{#if !out_of_context}
+				PostAge(created={comment.created_utc} edited={comment.edited})
+		{#if out_of_context}
+			.comment-context
+				a(href='/r/{comment.subreddit}') in r/{comment.subreddit}
+				a(href='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}?context=4') {comment.link_title}
+		{:else}
 			ol.comment-replies
 				{#if comment.replies.length > 0}
 					{#each comment.replies as reply_short_id}
@@ -66,25 +60,14 @@ style.
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		margin 25px 0
+		margin 1em 0
 		position relative
-	.comment > header
-		align-items center
-		color var(--c-text-weak)
-		cursor default
-		display flex
-		font-size 11px
-		gap 10px
-		letter-spacing 0.5px
-		user-select none
-		white-space pre
-		width 440px
 	:global(.comment > .md)
 		background rgba(255,255,255,0.1)
 		border-radius 10px
 		margin-top 2px
 		padding 10px
-		max-width 440px
+		max-width 420px
 	:global(.comment > .md img)
 		border 1px solid transparent
 		border-radius 6px
@@ -92,29 +75,29 @@ style.
 		width auto
 	:global(.comment > .md img:hover)
 		border-color inherit
-	:global(.comment .user-avatar)
-		left -43px
-		position absolute
-		top 17px
+	:global(.comment-deleted > .md)
+		opacity 0.5
+		pointer-events none
+	:global(.comment-highlighted > .md)
+		border 1px solid
 	.comment-clip
-		background #494949
-		border-radius 10px
-		padding 1ch
-	.comment-focus-marker
-		align-items center
-		border 2px solid
-		border-radius 50%
-		cursor default
 		display flex
-		font-size 12px
-		height 22px
-		justify-content center
-		left -10px
-		position absolute
-		top -8px
-		width 22px
+	.comment-context
+		display flex
+		flex-flow column nowrap
+		padding 10px
 	.comment-more-replies
-		margin 25px 0
+		margin 1em 0
 	.comment-replies
 		border-left 1px solid var(--c-text-faint)
-		padding-left 30px
+		list-style none
+		padding-left 36px
+	.comment-sidebar
+		align-items center
+		display flex
+		flex-flow column nowrap
+		height 100%
+		left -30px
+		padding 10px 0
+		position absolute
+		top 0

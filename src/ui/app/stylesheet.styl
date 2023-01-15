@@ -2,10 +2,10 @@
 *
 	box-sizing border-box
 	margin 0
-*:first-child
-	margin-top 0 !important
 *:focus
 	outline-color gold
+*:last-child
+	margin-bottom 0
 
 // Type and theme
 @font-face
@@ -49,32 +49,27 @@ strong
 
 // Layout sections
 p
-	margin 1.2em 0 0 0
+	margin 0 0 1em
 hr
 	border 1px solid var(--c-text-weak)
-	margin 1.2em 0 0 0
+	margin 0 0 1em
 
 // Lists
-menu
 ol
 ul
-	list-style none
-	margin 0
-	padding 0
-.md ol
-.md ul
-	list-style revert
-	margin 0.8em 0 0 0
+	margin 0 0 1em
 	padding-inline-start 3ch
 	& ul
 		list-style-type initial
-.md ol ol
-.md ol ul
-.md ul ol
-.md ul ul
-	margin 0.5em 0 0 0
-.md li
-	margin 0.5em 0 0 0
+ol ol
+ol ul
+ul ol
+ul ul
+	margin 0 0 0.25em
+li
+	margin 0 0 0.25em
+menu
+	padding 0
 
 // Headers
 h1
@@ -84,35 +79,29 @@ h4
 h5
 h6
 	font-weight inherit
-	margin 0
-.md
-	h1
-	h2
-	h3
-	h4
-	h5
-	h6
-		line-height 1.25
-		margin 1em 0 0 0
-	h1
-		font-size 1.5em
-	h2
-		font-size 1.35em
-	h3
-		font-size 1.2em
-	h4
-	h5
-	h6
-		font-size 1em
+	line-height 1.25
+	margin 1.5em 0 0.5em
+	&:first-child
+		margin-top 0
+h1
+	font-size 1.5em
+h2
+	font-size 1.35em
+h3
+	font-size 1.2em
+h4
+h5
+h6
+	font-size 1em
 
 // Tables
 table
 	background var(--c-con-norm)
-	border-radius 1ch
+	border-radius 6px
 	font-family var(--typeface-mono)
 	font-size 11px
 	letter-spacing 0.5px
-	margin 0.5em 0 0 0
+	margin 0 0 1em
 	overflow-wrap normal
 	padding 1em
 	overflow auto
@@ -164,7 +153,7 @@ blockquote
 	border-left 3px solid var(--c-text-weak)
 	color var(--c-text-weak)
 	font-size 12px
-	margin 1.4em 0 0 2px
+	margin 0 0 0.5em 2px
 	padding-left 1em
 code
 pre
@@ -179,7 +168,7 @@ code
 pre
 	background var(--c-con-norm)
 	border-radius 6px
-	margin 1.2em 0 0 0
+	margin 0 0 1em
 	padding 1em
 	overflow auto
 
