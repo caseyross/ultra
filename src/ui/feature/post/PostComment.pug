@@ -30,7 +30,7 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={comment.author === '[deleted]'} class:comment-highlighted={short_id === focus_comment_short_id} role='comment')
+		article.comment(class:comment-deleted={comment.author === '[deleted]'} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} role='comment')
 			aside.comment-sidebar
 				UserAvatar(name={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
@@ -76,10 +76,12 @@ style.
 	:global(.comment > .md img:hover)
 		border-color inherit
 	:global(.comment-deleted > .md)
-		opacity 0.5
+		opacity 0.33
 		pointer-events none
 	:global(.comment-highlighted > .md)
 		border 1px solid
+	:global(.comment-with-low-score:not(.comment-deleted) > .md)
+		opacity 0.67
 	.comment-clip
 		display flex
 	.comment-context
