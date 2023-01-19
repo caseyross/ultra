@@ -1,28 +1,59 @@
 script.
 	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
 	export name = null
 	export size = 'normal'
-	img_url = null
+	user = null
 	if name != '[deleted]'
-		api.loadWatch(api.ID('user', name), ({ data: user }) ->
-			if user
-				img_url = user.profile_img
+		api.loadWatch(api.ID('user', name), ({ data }) ->
+			user = data
 		)
 
-{#if img_url}
-	a(href='/u/{name}')
-		img.user-avatar(alt='' class='user-avatar-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src={img_url})
-{:else}
-	.user-avatar.user-avatar-not-available(class='user-avatar-size-{size}')
+{#if user}
+	a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
+		{#if user.profile_img}
+			img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
+		{#if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
+			span.user-avatar-badge.user-avatar-badge-new-user(title='New user')
+				span.user-avatar-badge-backdrop ✗
+				span.user-avatar-badge-text ✗
+		{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
+			span.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
+				span.user-avatar-badge-backdrop ⌃
+				span.user-avatar-badge-text ⌃
 
 style.
 	.user-avatar
 		aspect-ratio 1
-		border 2px solid transparent
-		border-radius 999px
-		height 20px
+		height 24px
+		position relative
 		user-select none
-		&:hover:not(.user-avatar-not-available)
+	.user-avatar-badge
+		bottom -9px
+		font-size 18px
+		font-weight 900
+		line-height 1
+		position absolute
+		right -4px
+	.user-avatar-badge-backdrop
+		color black
+	.user-avatar-badge-new-user
+		color darkseagreen
+	.user-avatar-badge-veteran-user
+		bottom -12px
+		color gold
+		right -3px
+	.user-avatar-badge-text
+		left 2px
+		font-weight 500
+		font-size 14px
+		position absolute
+		top 2px
+	.user-avatar-image
+		border 2px solid transparent
+		border-radius 50%
+		box-sizing border-box
+		&:hover
 			border-color wheat
 	.user-avatar-size-large
-		height 128px
+		height 132px

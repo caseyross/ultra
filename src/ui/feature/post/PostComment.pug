@@ -30,7 +30,7 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={comment.author === '[deleted]'} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} role='comment')
+		article.comment(class:comment-deleted={(comment.author === '[deleted]') || comment.removal_reason} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} role='comment')
 			aside.comment-sidebar
 				UserAvatar(name={comment.author})
 				{#if comment.distinguished || comment.is_submitter}

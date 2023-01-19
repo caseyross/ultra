@@ -138,6 +138,8 @@ Time = {
 
 }
 
+Time.unixS = ->
+	Time.msToS(Time.unixMs(), { trunc: true })
 Time.sToAbsTimeStr = (s) ->
 	Time.msToAbsTimeStr(Time.sToMs(s))
 Time.sToAbsRelTimeStr = (s) ->
