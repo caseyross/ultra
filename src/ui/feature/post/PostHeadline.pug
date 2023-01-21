@@ -20,12 +20,9 @@ script.
 
 {#if post}
 	a(href='/{post.subreddit}/{post_short_id}')
-		header.post-header(class:post-read={localStorage['visited.' + post_short_id] || false})
-			.post-header-top-row
-				{#if post.distinguished}
-					UserDistinguish(type={post.distinguished})
-				UserAvatar(name={post.author})
-				PostAge(created={post.created_utc} edited={post.edited} size='medium')
+		.post-headline(class:post-read={localStorage['visited.' + post_short_id] || false})
+			div
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 				.post-tags
 					{#if post.archived}
 						PostTag(name='archived')
@@ -39,18 +36,32 @@ script.
 						PostTag(name='sticky')
 					{#if post.is_original_content}
 						PostTag(name='oc')
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-			h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
-			.post-header-bottom-row
+			{#if post.link_flair_text}
+				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			strong.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			.post-metadata
+				.post-metadata-users
+					UserAvatar(name={post.author})
+					{#if post.distinguished}
+						UserDistinguish(type={post.distinguished})
+					{#if post.contributors}
+						span.post-commenter-count + {post.contributors.length - 1} users
+				PostAge(created={post.created_utc} edited={post.edited} size='medium')
 
 style.
-	.post-header
+	.post-headline
+		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 1ch
-	.post-header-top-row
+	.post-metadata
+		align-items center
+		align-self stretch
+		color var(--c-text-weak)
+		display flex
+		gap 6px
+		justify-content space-between
+	.post-metadata-users
 		align-items center
 		display flex
 		gap 6px
@@ -58,9 +69,8 @@ style.
 		display flex
 		gap 3px
 	.post-title
-		font-size 18px
-		font-weight 800
-		line-height 1.4
-		text-decoration underline
+		font-size 16px
+		letter-spacing 0
+		line-height 1.25
 	:global(.post-read .post-title)
 		text-decoration line-through

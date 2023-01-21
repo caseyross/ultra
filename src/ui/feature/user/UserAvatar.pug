@@ -9,7 +9,9 @@ script.
 			user = data
 		)
 
-{#if user}
+{#if name === '[deleted]'}
+	span.user-avatar.user-avatar-deleted-user(title='Deleted user') ―
+{:else if user}
 	a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
 		{#if user.profile_img}
 			img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
@@ -49,6 +51,10 @@ style.
 		font-size 14px
 		position absolute
 		top 2px
+	.user-avatar-deleted-user
+		color var(--c-text-weak)
+		font-size 24px
+		line-height 1
 	.user-avatar-image
 		border 2px solid transparent
 		border-radius 50%

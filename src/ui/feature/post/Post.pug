@@ -167,8 +167,6 @@ article.post
 				PostCommentList(focus_comment_context_level={focus_comment_context_level} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 			menu.post-comments-actions
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
-		nav.post-exit-button
-			Button(action={() => history.back()} disabled={history.length < 2} key='Escape' text='')
 
 style.
 	.post-comments-actions
@@ -202,10 +200,6 @@ style.
 		color white
 		padding 10px
 		width 440px
-	.post-exit-button
-		position fixed
-		left calc(50% + 320px)
-		top 60px
 	.post-gallery
 		counter-reset gallery-index
 		display flex

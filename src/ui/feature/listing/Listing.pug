@@ -81,16 +81,16 @@ script.
 	
 	sort_options = [
 		{
-			label: 'New',
-			value: 'new'
-		}
-		{
 			label: 'Hot',
 			value: 'hot'
 		}
 		{
 			label: 'Top',
 			value: 'top'
+		}
+		{
+			label: 'New',
+			value: 'new'
 		}
 		{
 			label: 'Controversial',
@@ -103,24 +103,24 @@ script.
 	]
 	time_range_options = [
 		{
-			label: 'Day',
-			value: 'day'
-		}
-		{
-			label: 'Week',
-			value: 'week'
-		}
-		{
-			label: 'Month',
-			value: 'month'
+			label: 'All',
+			value: 'all'
 		}
 		{
 			label: 'Year',
 			value: 'year'
 		}
 		{
-			label: 'All',
-			value: 'all'
+			label: 'Month',
+			value: 'month'
+		}
+		{
+			label: 'Week',
+			value: 'week'
+		}
+		{
+			label: 'Day',
+			value: 'day'
 		}
 	]
 
@@ -171,9 +171,9 @@ nav.listing
 					ListingNameTag(link={base_path} text={display_name} type={type})
 			{#if sort_options}
 				menu.listing-sort-options
-					ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Sort')
+					ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
 					{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
-						ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]} title='Time range')
+						ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]})
 					{#if posts_sort.split('-')[0] === 'search'}
 						ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
 			{#if filterable}
@@ -199,7 +199,7 @@ style.
 	.listing-content
 		display flex
 		flex-flow column nowrap
-		gap 40px
+		gap 10px
 		margin-top 40px
 	.listing-filter
 		border 1px solid
