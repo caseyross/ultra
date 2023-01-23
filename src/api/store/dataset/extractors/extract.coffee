@@ -69,10 +69,12 @@ export default extract = (rawData, sourceID) ->
 			post.format = switch
 				when post.crosspost_parent_list
 					'crosspost'
-				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url?.hostname == 'i.redd.it'
-					'media'
+				when post.live_audio
+					'talk'
 				when post.tournament_data
 					'prediction'
+				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url?.hostname == 'i.redd.it'
+					'media'
 				when post.is_self
 					'self'
 				else

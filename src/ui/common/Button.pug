@@ -9,11 +9,12 @@ script.
 	export key = null
 	export link = null
 	export loading = false
+	export new_tab = false
 	export size = 'normal'
 	export text = ''
 
 {#if link}
-	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} use:hotkey={key})
+	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		slot

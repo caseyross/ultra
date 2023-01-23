@@ -133,7 +133,7 @@ article.post
 										source(srcset={media.image_url_640})
 										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 								menu.post-content-actions
-									Button(action={() => window.open(media.image_url)} key='e' text='Enlarge')
+									Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -148,9 +148,14 @@ article.post
 							.md.post-link
 								a(href={post.url} rel='external noopener preconnect') {post.url}
 						menu.post-content-actions
-							Button(action={() => window.open(post.url)} key='e' text='Open link')
+							Button(key='e' link={post.url} new_tab={true} text='Open link')
 				{:else if post.format === 'crosspost'}
 					PostHeadline(link={true} post_short_id={post.crosspost_parent})
+				{:else if post.format === 'talk'}
+					.post-content-unavailable
+						| Reddit Talks are only available on the official app.
+					menu.post-content-actions
+						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else}
 					p [Error displaying post.]
 				{#if post.selftext_html && !post.removed_by_category}
@@ -189,6 +194,14 @@ style.
 	.post-content-incomplete
 		align-items center
 		background darkkhaki
+		border-radius 10px
+		color white
+		display flex
+		justify-content space-between
+		padding 10px
+	.post-content-unavailable
+		align-items center
+		background salmon
 		border-radius 10px
 		color white
 		display flex
