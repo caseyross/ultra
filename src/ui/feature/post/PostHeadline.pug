@@ -10,6 +10,7 @@ script.
 	import PostTag from './PostTag.pug'
 
 	export post_short_id = null
+	export selected = false
 	
 	post = null
 	api.loadWatch(api.ID('post', post_short_id),
@@ -19,41 +20,48 @@ script.
 	)
 
 {#if post}
-	a(href='/{post.subreddit}/{post_short_id}')
-		.post-headline(class:post-read={localStorage['visited.' + post_short_id] || false})
-			div
-				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
-				.post-tags
-					{#if post.archived}
-						PostTag(name='archived')
-					{#if post.locked}
-						PostTag(name='locked')
-					{#if post.quarantine}
-						PostTag(name='quarantined')
-					{#if post.over_18}
-						PostTag(name='nsfw')
-					{#if post.stickied}
-						PostTag(name='sticky')
-					{#if post.is_original_content}
-						PostTag(name='oc')
-			{#if post.link_flair_text}
-				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-			strong.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
-			.post-metadata
-				.post-metadata-users
-					UserAvatar(name={post.author})
-					{#if post.distinguished}
-						UserDistinguish(type={post.distinguished})
-					{#if post.contributors}
-						span.post-commenter-count + {post.contributors.length - 1} users
-				PostAge(created={post.created_utc} edited={post.edited} size='medium')
+	a.post-headline(class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} href='/{post.subreddit}/{post_short_id}')
+		{#if post.thumbnail}
+			img.post-thumbnail-image(src={post.thumbnail})
+		div(style='display:none')
+			PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+		.post-tags(style='display:none')
+			{#if post.archived}
+				PostTag(name='archived')
+			{#if post.locked}
+				PostTag(name='locked')
+			{#if post.quarantine}
+				PostTag(name='quarantined')
+			{#if post.over_18}
+				PostTag(name='nsfw')
+			{#if post.stickied}
+				PostTag(name='sticky')
+			{#if post.is_original_content}
+				PostTag(name='oc')
+		{#if post.link_flair_text}
+			PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+		strong.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+		.post-metadata
+			.post-metadata-users
+				UserAvatar(name={post.author})
+				{#if post.distinguished}
+					UserDistinguish(type={post.distinguished})
+				{#if post.contributors}
+					span.post-commenter-count + {post.contributors.length - 1} users
+			PostAge(created={post.created_utc} edited={post.edited} size='medium')
 
 style.
 	.post-headline
 		align-items flex-start
+		border 1px solid transparent
+		border-radius 6px
 		display flex
 		flex-flow column nowrap
 		gap 1ch
+		padding 6px
+		width 100%
+	:global(.post-headline.post-selected)
+		border-color transparent
 	.post-metadata
 		align-items center
 		align-self stretch
@@ -72,5 +80,9 @@ style.
 		font-size 16px
 		letter-spacing 0
 		line-height 1.25
+	.post-thumbnail-image
+		height 1em
+		object-fit cover
+		width 100%
 	:global(.post-read .post-title)
 		text-decoration line-through

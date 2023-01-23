@@ -186,8 +186,7 @@ nav.listing
 						{#if type.endsWith('multireddits')}
 							ListingNameTag(link="/m/{string.replace('-', '/')}" text={string} type='multireddit_posts')
 						{:else if type.endsWith('posts')}
-							Button
-								PostHeadline(post_short_id={string})
+							PostHeadline(post_short_id={string} selected={string === post_short_id})
 						{:else if type.endsWith('subreddits')}
 							{#if string.startsWith('u_')}
 								ListingNameTag(link='/u/{string.slice(2)}' text={string.slice(2)} type='user_posts')
@@ -197,10 +196,12 @@ nav.listing
 					Button(action={() => load_page(pages.length)} text='More')
 style.
 	.listing-content
+		align-items flex-end
 		display flex
 		flex-flow column nowrap
 		gap 10px
 		margin-top 40px
+		padding-left 79px
 	.listing-filter
 		border 1px solid
 	.listing-sort-options
