@@ -73,8 +73,10 @@ export default extract = (rawData, sourceID) ->
 					'talk'
 				when post.tournament_data
 					'prediction'
-				when post.media?.reddit_video or post.is_gallery or post.post_hint == 'image' or post.url?.hostname == 'i.redd.it'
-					'media'
+				when post.media?.reddit_video
+					'video'
+				when post.is_gallery or post.post_hint == 'image' or post.url?.hostname == 'i.redd.it'
+					'image'
 				when post.is_self
 					'self'
 				else

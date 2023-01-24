@@ -95,45 +95,26 @@ article.post
 				Button(link='/r/{post.subreddit}/post/{short_id}' text='View complete post')
 		{:else}
 			section.post-content
-				{#if post.format === 'self'}
-					{#if !post.selftext.length}
-						.post-selftext-empty
-				{:else if post.format === 'prediction'}
-					ol.post-predictions
-						{#each post.tournament_data.predictions as prediction}
-							h2.post-prediction-title {prediction.title}
-							dl.post-prediction-options
-								{#each prediction.options as option}
-									li
-										dt
-											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
-										dd {option.text}
-				{:else if post.format === 'media'}
-					{#if post.media.length > 1}
-						ol.post-gallery
-							{#each post.media as media, index}
-								figure.post-gallery-item
-									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-										picture
-											source(srcset={media.image_url_640})
-											img.post-image(alt='image {index + 1} of {post.media.length} in gallery' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
-									{#if media.caption_text || media.caption_url}
-										figcaption.post-gallery-image-caption
-											{#if media.caption_text}
-												p {media.caption_text}
-											{#if media.caption_url}
-												a(href={media.caption_url}) {media.caption_url}
-					{:else if post.media.length === 1}
-						{@const media = post.media[0]}
-							{#if media.video_url}
-								MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.is_gif} video_url={media.video_url})
-							{:else if media.image_url}
+				{#if post.format === 'crosspost'}
+					PostHeadline(link={true} post_short_id={post.crosspost_parent})
+				{:else if post.format === 'image'}
+					ol.post-images
+						{#each post.media as media, index}
+							figure.post-image-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
-										source(srcset={media.image_url_640})
-										img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
-								menu.post-content-actions
-									Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
+										source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
+								{#if media.caption_text || media.caption_url}
+									figcaption.post-image-caption
+										{#if media.caption_text}
+											p {media.caption_text}
+										{#if media.caption_url}
+											a(href={media.caption_url}) {media.caption_url}
+					{#if post.media.length === 1}
+						{@const media = post.media[0]}
+							menu.post-content-actions
+								Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -149,13 +130,27 @@ article.post
 								a(href={post.url} rel='external noopener preconnect') {post.url}
 						menu.post-content-actions
 							Button(key='e' link={post.url} new_tab={true} text='Open link')
-				{:else if post.format === 'crosspost'}
-					PostHeadline(link={true} post_short_id={post.crosspost_parent})
+				{:else if post.format === 'prediction'}
+					ol.post-predictions
+						{#each post.tournament_data.predictions as prediction}
+							h2.post-prediction-title {prediction.title}
+							dl.post-prediction-options
+								{#each prediction.options as option}
+									li
+										dt
+											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
+										dd {option.text}
+				{:else if post.format === 'self'}
+					{#if !post.selftext.length}
+						.post-selftext-empty
 				{:else if post.format === 'talk'}
 					.post-content-unavailable
 						| Reddit Talks are only available on the official app.
 					menu.post-content-actions
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
+				{:else if post.format === 'video'}
+					{@const media = post.media[0]}
+						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.is_gif} video_url={media.video_url})
 				{:else}
 					p [Error displaying post.]
 				{#if post.selftext_html && !post.removed_by_category}
@@ -213,16 +208,16 @@ style.
 		color white
 		padding 10px
 		width 440px
-	.post-gallery
-		counter-reset gallery-index
-		display flex
-		flex-flow column nowrap
-		gap 2em
-		padding 0
-	.post-gallery-image-caption
+	.post-iframe
+		aspect-ratio 16/9
+		border-radius 6px
+		width 560px
+	.post-image
+		border-radius 6px
+	.post-image-caption
 		color var(--c-text-weak)
 		font-size 11px
-	.post-gallery-item
+	.post-image-item
 		display flex
 		flex-flow column nowrap
 		gap 6px
@@ -234,12 +229,15 @@ style.
 			line-height 1
 			position absolute
 			right calc(100% + 1em)
-	.post-iframe
-		aspect-ratio 16/9
-		border-radius 6px
-		width 560px
-	.post-image
-		border-radius 6px
+		&:only-child::before
+			content none
+	.post-images
+		counter-reset gallery-index
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		margin 0
+		padding 0
 	.post-loading-message
 		padding 10px
 	.post-prediction-options > li
