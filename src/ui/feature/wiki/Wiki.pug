@@ -47,8 +47,6 @@ style.
 		opacity 0.5
 	.wiki-page-name
 		font-size 2em
-	:global(.wiki-page img)
-		max-width 100%
 	:global(.wiki-page .toc)
 		font-size 12px
 		line-height 1
@@ -65,15 +63,14 @@ style.
 		padding 2.25em 1.5em !important
 		position relative
 		&::before
-			background rgba(0,0,0,0.1)
+			color var(--c-text-weak)
 			content 'Table of Contents'
 			line-height 2
-			opacity 0.5
-			padding 0 0.25em
 			position absolute
 			text-transform uppercase
 			top -1em
 	:global(.wiki-page .toc li)
+		list-style none
 		margin-top 1em
 	:global(.wiki-page .toc ol)
 	:global(.wiki-page .toc ul)
@@ -82,5 +79,7 @@ style.
 	:global(.wiki-page .toc ol ul)
 	:global(.wiki-page .toc ul ol)
 	:global(.wiki-page .toc ul ul)
-		border-left 1px solid rgba(0,0,0,0.1)
+		border-left 1px solid var(--c-text-faint)
 		padding-left 1em
+	:global(.wiki-page .toc + *)
+		margin-top 0

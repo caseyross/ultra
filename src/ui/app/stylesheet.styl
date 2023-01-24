@@ -127,7 +127,10 @@ sub
 sup
 	line-height 0
 .md
+	background rgba(255,255,255,0.1)
+	border-radius 10px
 	overflow-wrap anywhere
+	padding 10px
 	a
 		color lightskyblue
 		word-break break-all
@@ -151,6 +154,11 @@ sup
 		border-radius 10px
 		display block
 		height 32px
+	img
+		border 1px solid transparent
+		border-radius 6px
+		&:hover
+			border-color inherit
 
 // Verbatim text
 blockquote
