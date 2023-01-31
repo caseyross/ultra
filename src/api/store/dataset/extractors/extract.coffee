@@ -45,19 +45,20 @@ export default extract = (rawData, sourceID) ->
 			result.sub = repliesListingDatasets.sub
 		when 't2'
 			user = rawData.data
-			user.profile_color = user.subreddit.icon_color
 			user.profile_img = user.icon_img
 			delete user.icon_img
-			user.profile_over_18 = user.subreddit.over_18
+			if user.subreddit
+				user.profile_color = user.subreddit.icon_color
+				user.profile_over_18 = user.subreddit.over_18
+				result.sub.push({
+					id: ID('subreddit', user.subreddit.display_name)
+					data: user.subreddit
+					partial: true # Marks objects known to be an incomplete version of data from another API route.
+				})
+				delete user.subreddit
 			result.main =
 				id: ID('user', user.name)
 				data: user
-			result.sub.push({
-				id: ID('subreddit', user.subreddit.display_name)
-				data: user.subreddit
-				partial: true # Marks objects known to be an incomplete version of data from another API route.
-			})
-			delete user.subreddit
 		when 't3'
 			post = rawData.data
 			# Normalize the URL - sometimes it is only given as a relative path.

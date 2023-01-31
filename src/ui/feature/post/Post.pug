@@ -95,6 +95,9 @@ article.post
 				Button(link='/r/{post.subreddit}/post/{short_id}' text='View complete post')
 		{:else}
 			section.post-content
+				{#if post.selftext_html && !post.removed_by_category}
+					.post-selftext
+						TextHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					PostHeadline(link={true} post_short_id={post.crosspost_parent})
 				{:else if post.format === 'image'}
@@ -153,9 +156,6 @@ article.post
 						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.is_gif} video_url={media.video_url})
 				{:else}
 					p [Error displaying post.]
-				{#if post.selftext_html && !post.removed_by_category}
-					.post-selftext
-						TextHTML(html={post.selftext_html})
 		section.post-comments
 			{#if !focus_comment_short_id}
 				h1.post-comments-label Comments
@@ -243,6 +243,7 @@ style.
 	.post-prediction-options > li
 		display flex
 	.post-selftext
+		margin-bottom 1em
 		max-width 660px
 	.post-unavailable-reason
 		background salmon

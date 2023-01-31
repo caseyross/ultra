@@ -5,7 +5,6 @@ script.
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import PostHeadline from '../post/PostHeadline.pug'
 	import ListingNameTag from './ListingNameTag.pug'
-	import ListingSearchField from './ListingSearchField.pug'
 	export data = null
 	export type = null
 
@@ -96,10 +95,6 @@ script.
 			label: 'Controversial',
 			value: 'controversial'
 		}
-		{
-			label: 'Search',
-			value: 'search'
-		}
 	]
 	time_range_options = [
 		{
@@ -170,12 +165,10 @@ nav.listing
 				{#if display_name}
 					ListingNameTag(link={base_path} text={display_name} type={type})
 			{#if sort_options}
-				menu.listing-sort-options
-					ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
-					{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
-						ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]})
-					{#if posts_sort.split('-')[0] === 'search'}
-						ListingSearchField(base_path={base_path + '/' + posts_sort} initial_query={search_text})
+				ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
+				{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
+					ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]})
+				input(bind:value={search_text} on:change={() => console.log(search_text)} placeholder='Search subreddit...' type='text')
 			{#if filterable}
 				<!-- svelte-ignore a11y-autofocus -->
 				input.listing-filter(autofocus={true} bind:value={filter_text} type='search')
@@ -192,20 +185,25 @@ nav.listing
 								ListingNameTag(link='/u/{string.slice(2)}' text={string.slice(2)} type='user_posts')
 							{:else}
 								ListingNameTag(link='/r/{string}' text={string} type='subreddit_posts')
-				{#if has_next_page}
-					Button(action={() => load_page(pages.length)} text='More')
+		menu.listing-actions
+			{#if has_next_page}
+				Button(action={() => load_page(pages.length)} text='Load next page')
 style.
-	.listing-content
-		align-items flex-end
+	.listing
 		display flex
 		flex-flow column nowrap
-		gap 10px
-		margin-top 40px
-		padding-left 79px
+		gap 2em
+		height 100%
+		width 300px
+	.listing-actions
+		display flex
+	.listing-content
+		background rgba(255,255,255,0.1)
+		border-radius 10px
+		flex 1
+		overflow auto
+		padding 0
 	.listing-filter
 		border 1px solid
-	.listing-sort-options
-		display flex
-		flex-flow row wrap
-		gap 10px
-		margin-top 20px
+	.listing-info
+		flex 0 0 auto

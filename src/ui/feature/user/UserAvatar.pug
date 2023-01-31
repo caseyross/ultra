@@ -10,26 +10,40 @@ script.
 		)
 
 {#if name === '[deleted]'}
-	span.user-avatar.user-avatar-deleted-user(title='Deleted user') ―
+	span.user-avatar.user-avatar-account-unavailable(title='User or comment is deleted') ✗
 {:else if user}
-	a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
-		{#if user.profile_img}
-			img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
-		{#if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
-			span.user-avatar-badge.user-avatar-badge-new-user(title='New user')
-				span.user-avatar-badge-backdrop ✗
-				span.user-avatar-badge-text ✗
-		{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
-			span.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
-				span.user-avatar-badge-backdrop ⌃
-				span.user-avatar-badge-text ⌃
+	{#if user.is_suspended}
+		span.user-avatar.user-avatar-account-suspended(title='User is suspended') ✗
+	{:else}
+		a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
+			{#if user.profile_img}
+				img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
+			{#if user.comment_karma + user.link_karma < 0}
+				span.user-avatar-badge.user-avatar-badge-negative-karma-user(title='User has negative karma')
+					span.user-avatar-badge-backdrop −
+					span.user-avatar-badge-text −
+			{:else if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
+				span.user-avatar-badge.user-avatar-badge-new-user(title='User account is less than a year old')
+					span.user-avatar-badge-backdrop ✗
+					span.user-avatar-badge-text ✗
+			{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
+				span.user-avatar-badge.user-avatar-badge-veteran-user(title='User account is over 10 years old')
+					span.user-avatar-badge-backdrop ⌃
+					span.user-avatar-badge-text ⌃
 
 style.
 	.user-avatar
 		aspect-ratio 1
+		display inline-block
 		height 24px
 		position relative
 		user-select none
+	.user-avatar-account-suspended
+	.user-avatar-account-unavailable
+		color var(--c-text-faint)
+		font-size 30px
+		line-height 24px
+		text-align center
 	.user-avatar-badge
 		bottom -9px
 		font-size 18px
@@ -39,6 +53,8 @@ style.
 		right -4px
 	.user-avatar-badge-backdrop
 		color black
+	.user-avatar-badge-negative-karma-user
+		color red
 	.user-avatar-badge-new-user
 		color darkseagreen
 	.user-avatar-badge-veteran-user
@@ -51,10 +67,6 @@ style.
 		font-size 14px
 		position absolute
 		top 2px
-	.user-avatar-deleted-user
-		color var(--c-text-weak)
-		font-size 24px
-		line-height 1
 	.user-avatar-image
 		border 2px solid transparent
 		border-radius 50%

@@ -79,7 +79,7 @@ style.
 		background-color var(--c-back-default)
 		color var(--c-text-strong)
 		display grid
-		grid-template-columns calc(50% - 80px) calc(50% + 80px)
+		grid-template-columns calc(50% - 120px) calc(50% + 120px)
 		height 100dvh
 		width 100dvw
 	#page-content-centered
@@ -92,14 +92,17 @@ style.
 		overflow auto
 		width 100%
 	#page-content-left
+		align-items flex-end
+		display flex
+		flex-flow column nowrap
 		height 100%
 		padding 40px
-		padding-left calc(100% - 400px)
+		padding-right 0
 		overflow auto
 		width 100%
 	#page-content-right
 		height 100%
 		overflow auto
 		padding 40px
-		padding-left 80px
+		padding-left 120px
 		width 100%
