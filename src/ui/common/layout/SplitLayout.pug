@@ -1,0 +1,29 @@
+script.
+
+main
+	#layout-content-left
+		slot(name='left')
+	#layout-content-right
+		slot(name='right')
+
+style.
+	main
+		display grid
+		grid-template-columns calc(50% - 120px) calc(50% + 120px)
+		height 100dvh
+		width 100dvw
+	#layout-content-left
+		align-items flex-end
+		display flex
+		flex-flow column nowrap
+		height 100%
+		padding 40px
+		padding-right 0
+		overflow auto
+		width 100%
+	#layout-content-right
+		height 100%
+		overflow auto
+		padding 40px
+		padding-left 120px
+		width 100%

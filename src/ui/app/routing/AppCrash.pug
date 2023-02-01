@@ -1,0 +1,9 @@
+script.
+	export error = null
+
+#crash
+	h1 Whoops!
+	p There was an error. We didn't expect this.
+	{#if error}
+		p Technical details:
+		pre {error.stack || error}

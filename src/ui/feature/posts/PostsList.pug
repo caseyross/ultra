@@ -1,0 +1,171 @@
+script.
+	import api from '../../../api/index.js'
+	import Button from '../../common/Button.pug'
+	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import PostInfoCard from '../post/PostInfoCard.pug'
+
+	export type = null
+
+	export collection_short_id = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export user_name = null
+
+	export page_size = 10
+	export posts_sort = 'hot'
+	
+	export selected_post_short_id = null
+	
+	sort_options = [
+		{
+			label: 'Hot',
+			value: 'hot'
+		}
+		{
+			label: 'Top',
+			value: 'top'
+		}
+		{
+			label: 'New',
+			value: 'new'
+		}
+		{
+			label: 'Controversial',
+			value: 'controversial'
+		}
+	]
+	time_range_options = [
+		{
+			label: 'All',
+			value: 'all'
+		}
+		{
+			label: 'Year',
+			value: 'year'
+		}
+		{
+			label: 'Month',
+			value: 'month'
+		}
+		{
+			label: 'Week',
+			value: 'week'
+		}
+		{
+			label: 'Day',
+			value: 'day'
+		}
+	]
+
+	base_page_id = null
+	error = false
+	has_next_page = false
+	loading = false
+	page = null
+	pages = []
+	pages_error = []
+	pages_loading = []
+
+	if posts_sort.split('-')[0] is 'search'
+		search_time_range = posts_sort.split('-')[1]
+		search_text = posts_sort.split('-')[2]
+	
+	switch type
+		when 'collection'
+			base_path = "/c/#{collection_short_id}"
+			official_path = "/collection/#{collection_short_id}"
+			collection = null
+			api.loadWatch(api.ID('collection', collection_short_id), ({ data: collection, error, loading }) ->
+				if loading then pages_loading[0] = loading
+				if error then pages_error[0] = error
+				if collection
+					pages[0] = collection.posts
+			)
+		when 'multireddit'
+			base_path = "/m/#{user_name}/#{multireddit_name}"
+			official_path = "/user/#{user_name}/m/#{multireddit_name}"
+			base_page_id =
+				if search_text
+					if user_name is 'r'
+						api.ID('search_posts', search_time_range, search_text, page_size)
+					else
+						api.ID('search_posts_in_multireddit', user_name, multireddit_name, search_time_range, search_text, page_size)
+				else
+					api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
+		when 'subreddit'
+			base_path = "/#{subreddit_name}"
+			official_path = "/r/#{subreddit_name}"
+			base_page_id =
+				if search_text
+					api.ID('search_posts_in_subreddit', subreddit_name, search_time_range, search_text, page_size)
+				else
+					api.ID('subreddit_posts', subreddit_name, posts_sort, page_size)
+		when 'user'
+			base_path = "/u/#{user_name}"
+			official_path = "/user/#{user_name}"
+			base_page_id = api.ID('user_posts', user_name, posts_sort, page_size)
+
+	load_page = (page_number) ->
+		if page_number is 0
+			page_id = base_page_id
+		else
+			after_short_id = pages[page_number - 1].at(-1)
+			page_id = api.ID(base_page_id, after_short_id)
+		api.loadWatch(page_id, ({ data: page, error, loading }) ->
+			if loading then pages_loading[page_number] = loading
+			if error then pages_error[page_number] = error
+			if page
+				pages[page_number] = page
+				is_last_page = page_number == pages.length - 1
+				if is_last_page
+					if page_number is 0
+						if page.length >= page_size
+							has_next_page = true
+					else
+						if page.length < page_size
+							has_next_page = false
+		)
+
+	if base_page_id then load_page(0)
+
+svelte:head
+	title {base_path}
+nav.listing
+	{#if error}
+		{#if error instanceof api.errors.ServerError}
+			p Content unavailable.
+			a(href='https://www.reddit.com{official_path}') Visit Reddit to see why.
+	{:else if loading}
+		p Loading...
+	{:else}
+		header.listing-info
+			{#if sort_options}
+				ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
+				{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
+					ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]})
+				input(bind:value={search_text} on:change={() => console.log(search_text)} placeholder='Search subreddit...' type='text')
+		ol.listing-content
+			{#if pages.length}
+				{#each pages as page}
+					{#each page as post_short_id}
+						PostInfoCard(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id})
+		menu.listing-actions
+			{#if has_next_page}
+				Button(action={() => load_page(pages.length)} text='Load next page')
+style.
+	.listing
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		height 100%
+		width 300px
+	.listing-actions
+		display flex
+	.listing-content
+		background var(--c-tint-normal)
+		border-radius 10px
+		flex 1
+		overflow auto
+		padding 0
+	.listing-info
+		flex 0 0 auto

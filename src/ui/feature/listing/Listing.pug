@@ -3,7 +3,7 @@ script.
 	import { StringMatch } from '../../../lib/index.js'
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
-	import PostHeadline from '../post/PostHeadline.pug'
+	import PostInfoCard from '../post/PostInfoCard.pug'
 	import ListingNameTag from './ListingNameTag.pug'
 	export data = null
 	export type = null
@@ -24,7 +24,6 @@ script.
 	
 	switch type
 		when 'collection_posts'
-			display_name = collection_short_id
 			base_path = "/c/#{collection_short_id}"
 			official_path = "/collection/#{collection_short_id}"
 			collection = null
@@ -32,11 +31,9 @@ script.
 				if loading then pages_loading[0] = loading
 				if error then pages_error[0] = error
 				if collection
-					display_name = collection.title
 					pages[0] = collection.posts
 			)
 		when 'multireddit_posts'
-			display_name = "#{user_name}/#{multireddit_name}"
 			base_path = "/m/#{user_name}/#{multireddit_name}"
 			official_path = "/user/#{user_name}/m/#{multireddit_name}"
 			if posts_sort.split('-')[0] is 'search'
@@ -47,7 +44,6 @@ script.
 						base_page_id = api.ID('search_posts_in_multireddit', user_name, multireddit_name, posts_sort.split('-')[1], search_text, page_size)
 			else base_page_id = api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
 		when 'subreddit_posts'
-			display_name = subreddit_name
 			base_path = "/r/#{subreddit_name}"
 			official_path = "/r/#{subreddit_name}"
 			if posts_sort.split('-')[0] is 'search'
@@ -73,7 +69,6 @@ script.
 					cache_key = 'cache.subreddits.subscribed'
 			filterable = true
 		when 'user_posts'
-			display_name = user_name
 			base_path = "/u/#{user_name}"
 			official_path = "/u/#{user_name}"
 			base_page_id = api.ID('user_posts', user_name, posts_sort, page_size)
@@ -157,13 +152,6 @@ nav.listing
 		p Loading...
 	{:else}
 		header.listing-info
-			h1
-				{#if type === 'multireddit_posts' || type === 'subreddit_posts'}
-					| Posts in
-				{:else if type === 'user_posts'}
-					| Posts by
-				{#if display_name}
-					ListingNameTag(link={base_path} text={display_name} type={type})
 			{#if sort_options}
 				ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
 				{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
@@ -179,7 +167,7 @@ nav.listing
 						{#if type.endsWith('multireddits')}
 							ListingNameTag(link="/m/{string.replace('-', '/')}" text={string} type='multireddit_posts')
 						{:else if type.endsWith('posts')}
-							PostHeadline(post_short_id={string} selected={string === post_short_id})
+							PostInfoCard(post_short_id={string} selected={string === post_short_id})
 						{:else if type.endsWith('subreddits')}
 							{#if string.startsWith('u_')}
 								ListingNameTag(link='/u/{string.slice(2)}' text={string.slice(2)} type='user_posts')
@@ -198,7 +186,7 @@ style.
 	.listing-actions
 		display flex
 	.listing-content
-		background rgba(255,255,255,0.1)
+		background var(--c-tint-normal)
 		border-radius 10px
 		flex 1
 		overflow auto

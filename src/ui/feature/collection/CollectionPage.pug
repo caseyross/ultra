@@ -1,0 +1,25 @@
+script.
+	import SplitLayout from '../../common/layout/SplitLayout.pug'
+	import Post from '../post/Post.pug'
+	import PostsList from '../posts/PostsList.pug'
+	import PostsListInfo from '../posts/PostsListInfo.pug'
+
+	export collection_short_id = null
+	
+	export post_short_id = null
+	export comment_context = null
+	export comment_short_id = null
+	export comments_sort = null
+
+SplitLayout
+	svelte:fragment(slot='left')
+		PostsListInfo(type='collection' collection_short_id={collection_short_id})
+		PostsList(type='collection' collection_short_id={collection_short_id} selected_post_short_id={post_short_id})
+	svelte:fragment(slot='right')
+		{#if post_short_id}
+			{#key post_short_id}
+				Post(short_id={post_short_id} focus_comment_context_level={comment_context} focus_comment_short_id={comment_short_id} comments_sort={comments_sort})
+		{:else}
+			p [Collection info goes here.]
+
+style.

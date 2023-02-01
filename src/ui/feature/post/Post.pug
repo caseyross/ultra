@@ -11,7 +11,7 @@ script.
 	import ListingNameTag from '../listing/ListingNameTag.pug'
 	
 	import PostCommentList from './PostCommentList.pug'
-	import PostHeadline from './PostHeadline.pug'
+	import PostInfoCard from './PostInfoCard.pug'
 
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
@@ -99,7 +99,7 @@ article.post
 					.post-selftext
 						TextHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
-					PostHeadline(link={true} post_short_id={post.crosspost_parent})
+					PostInfoCard(link={true} post_short_id={post.crosspost_parent})
 				{:else if post.format === 'image'}
 					ol.post-images
 						{#each post.media as media, index}

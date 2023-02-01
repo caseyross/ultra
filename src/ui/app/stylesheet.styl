@@ -2,55 +2,62 @@
 *
 	box-sizing border-box
 	margin 0
-*:focus
-	outline-color gold
-*:last-child
-	margin-bottom 0
+	&:focus
+		outline-color gold
+	&:last-child
+		margin-bottom 0
 
-// Type and theme
+// Type
 @font-face
 	font-family 'Inter'
 	font-style normal italic
 	font-weight 100 900
 	src url('../../vendor/inter_100_900.woff2')
 :root
-	font 400 14px/1.5 'Inter', sans-serif
+	--f-type-prop 'Inter', sans-serif
+	--f-type-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
+	font-family var(--f-type-prop)
+	font-size 14px
+	font-weight var(--f-wght-normal)
 	letter-spacing 0.025em
-	--color-paper-border gainsboro
-	--color-writing-action mediumslateblue
-	--typeface-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
+	line-height 1.5
 b
 strong
+	font-weight var(--f-wght-strong)
 	letter-spacing 0.015em
+
+// Theme
+:root
+	--c-tint-normal rgba(255,255,255,0.10)
+#color-strategy
+	background var(--c-back-default)
+	color var(--c-text-strong)
 .color-strategy-black-text
-	color-scheme light
 	--c-back-default white
 	--c-con-weak rgba(255,255,255,0.05)
-	--c-con-norm rgba(255,255,255,0.10)
+	--c-con-normal rgba(255,255,255,0.10)
 	--c-con-strong rgba(255,255,255,0.50)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong black
-	b
-	strong
-		font-weight 640
+	--f-wght-normal 400
+	--f-wght-strong 640
+	color-scheme light
 .color-strategy-white-text
-	color-scheme dark
-	font-weight 340
 	--c-back-default #343537
 	--c-con-weak rgba(0,0,0,0.05)
-	--c-con-norm rgba(0,0,0,0.10)
+	--c-con-normal rgba(0,0,0,0.10)
 	--c-con-strong rgba(0,0,0,0.50)
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong #f2f4f7
-	b
-	strong
-		font-weight 580
+	--f-wght-normal 340
+	--f-wght-strong 580
+	color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-con-weak)
 *::-webkit-scrollbar-thumb
-	background var(--c-con-norm)
+	background var(--c-con-normal)
 	border-radius 6px
 
 // Layout sections
@@ -100,9 +107,9 @@ h6
 
 // Tables
 table
-	background var(--c-con-norm)
+	background var(--c-con-normal)
 	border-radius 6px
-	font-family var(--typeface-mono)
+	font-family var(--f-type-mono)
 	font-size 11px
 	letter-spacing 0.5px
 	margin 0 0 1em
@@ -127,7 +134,7 @@ sub
 sup
 	line-height 0
 .md
-	background rgba(255,255,255,0.1)
+	background var(--c-tint-normal)
 	border-radius 10px
 	overflow-wrap anywhere
 	padding 10px
@@ -169,16 +176,16 @@ blockquote
 	padding-left 1em
 code
 pre
-	font-family var(--typeface-mono)
+	font-family var(--f-type-mono)
 	font-size 12px
 	letter-spacing 0
 code
-	background var(--c-con-norm)
+	background var(--c-con-normal)
 	border-radius 2px
 	padding 1px 2px
 	word-break break-all
 pre
-	background var(--c-con-norm)
+	background var(--c-con-normal)
 	border-radius 6px
 	margin 0 0 1em
 	padding 1em

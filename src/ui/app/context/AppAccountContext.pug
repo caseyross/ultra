@@ -1,6 +1,6 @@
 script.
 	import { setContext } from 'svelte'
-	import api from '../../api/index.js'
+	import api from '../../../api/index.js'
 	context_set = false
 	status = api.getLoginStatus()
 	if status is 'logged-in'
