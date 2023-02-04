@@ -183,10 +183,10 @@ export default {
 		get("/api/v1/#{subreddit_name}/post_requirements")
 	subreddit_rules: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about/rules")
-	subreddit_widgets: (subreddit_name) ->
-		get("/r/#{subreddit_name}/api/widgets")
 	subreddit_user_flairs: (subreddit_name) ->
 		get("/r/#{subreddit_name}/api/user_flair_v2")
+	subreddit_widgets: (subreddit_name) ->
+		get("/r/#{subreddit_name}/api/widgets")
 	user: (user_name) ->
 		get("/user/#{user_name}/about", {
 			sr_detail: true

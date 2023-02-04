@@ -3,7 +3,7 @@ import sanitize_route from './sanitize_route.coffee'
 COUNTRY_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 RECOGNIZED_TOP_LEVEL_PATHS =
-	[undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'reddits', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video']
+	[undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'help', 'hot', 'm', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'reddits', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video']
 
 export default (url) ->
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
@@ -34,7 +34,7 @@ export default (url) ->
 				subreddit_name: null
 				post_short_id: path[2]
 				comment_context: query.get('context')
-				comment_short_id: path[3] ? path[4]
+				comment_short_id: path[3] or path[4]
 				comments_sort: query.get('sort')
 			)
 		when 'm', 'multi', 'multireddit'
@@ -42,7 +42,7 @@ export default (url) ->
 				format: 'multireddit'
 				user_name: path[2]
 				multireddit_name: path[3]
-				posts_sort_base: path[4] ? query.get('sort')
+				posts_sort_base: path[4] or query.get('sort')
 				posts_sort_range: query.get('t')
 				posts_search_text: query.get('q')
 				after_post_short_id: query.get('after')
@@ -70,7 +70,7 @@ export default (url) ->
 								format: 'multireddit'
 								user_name: 'r'
 								multireddit_name: subreddit_name
-								posts_sort_base: path[3] ? query.get('sort')
+								posts_sort_base: path[3] or query.get('sort')
 								posts_sort_range: query.get('t')
 								posts_search_text: query.get('q')
 								after_post_short_id: query.get('after')
@@ -79,7 +79,7 @@ export default (url) ->
 							return sanitize_route(
 								format: 'subreddit'
 								subreddit_name: subreddit_name
-								posts_sort_base: path[3] ? query.get('sort')
+								posts_sort_base: path[3] or query.get('sort')
 								posts_sort_range: query.get('t')
 								posts_search_text: query.get('q')
 								after_post_short_id: query.get('after')
@@ -117,7 +117,7 @@ export default (url) ->
 					return sanitize_route(
 						format: 'wiki'
 						subreddit_name: path[2]
-						wikipage_name: path[4..]?.join('/') ? 'index' # wiki pages can be nested
+						wikipage_name: path[4..]?.join('/') or 'index' # wiki pages can be nested
 						wikipage_revision_id: query.get('v')
 					)
 				else
@@ -168,7 +168,7 @@ export default (url) ->
 					return sanitize_route(
 						format: 'user'
 						user_name: user_name
-						posts_sort_base: path[3] ? query.get('sort')
+						posts_sort_base: path[3] or query.get('sort')
 						posts_sort_range: query.get('t')
 						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
@@ -182,7 +182,7 @@ export default (url) ->
 						format: 'multireddit'
 						user_name: user_name
 						multireddit_name: path[4]
-						posts_sort_base: path[5] ? query.get('sort')
+						posts_sort_base: path[5] or query.get('sort')
 						posts_sort_range: query.get('t')
 						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
@@ -191,7 +191,7 @@ export default (url) ->
 					return sanitize_route(
 						format: 'user'
 						user_name: user_name
-						posts_sort_base: path[3] ? query.get('sort')
+						posts_sort_base: path[3] or query.get('sort')
 						posts_sort_range: query.get('t')
 						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
@@ -200,7 +200,7 @@ export default (url) ->
 			return sanitize_route(
 				format: 'wiki'
 				subreddit_name: path[2]
-				wikipage_name: path[3..]?.join('/') ? 'index' # wiki pages can be nested
+				wikipage_name: path[3..]?.join('/') or 'index' # wiki pages can be nested
 				wikipage_revision_id: query.get('v')
 			)
 	return sanitize_route(

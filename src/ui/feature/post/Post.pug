@@ -1,5 +1,4 @@
 script.
-	import { getContext } from 'svelte';
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -49,14 +48,9 @@ script.
 	error = null
 	loading = false
 	post = null
-	set_theme_color = getContext('set_theme_color')
 	api.loadWatch(api.ID('post', short_id),
 		(x) ->
 			{ data: post, error, loading } = x
-			if post?.subreddit
-				api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
-					set_theme_color(subreddit?.primary_color ? subreddit?.key_color)
-				)
 			if post?.num_comments? and post?.score?
 				localStorage['visited.' + short_id] = "#{Time.unixMs()} #{post.num_comments} #{post.score}"
 	)
@@ -153,7 +147,7 @@ article.post
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.is_gif} video_url={media.video_url})
+						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.video_is_gif} video_url={media.video_url})
 				{:else}
 					p [Error displaying post.]
 		section.post-comments
@@ -207,7 +201,7 @@ style.
 		border-radius 10px
 		color white
 		padding 10px
-		width 440px
+		width 420px
 	.post-iframe
 		aspect-ratio 16/9
 		border-radius 6px
@@ -217,6 +211,7 @@ style.
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 11px
+		max-width 420px
 	.post-image-item
 		display flex
 		flex-flow column nowrap
@@ -243,8 +238,8 @@ style.
 	.post-prediction-options > li
 		display flex
 	.post-selftext
-		margin-bottom 1em
-		max-width 660px
+		margin-bottom 2em
+		max-width 420px
 	.post-unavailable-reason
 		background salmon
 		border-radius 10px

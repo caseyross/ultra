@@ -2,6 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
+	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	import Error404 from '../../common/Error404.pug'
 	import TextHTML from '../../common/TextHTML.pug'
 	
@@ -18,19 +19,20 @@ script.
 	)
 
 svelte:head
-	title  r/{subreddit_name} - Wiki - {page_name}
-{#if error}
-	{#if error instanceof api.errors.ServerError}
-		Error404(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")
-{:else if loading}
-	p Loading...
-{:else if page}
-	article.wiki-page
-		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
-		.wiki-page-info
-			.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
-		article.wiki-page-body
-			TextHTML(html={page.content_html})
+	title r/{subreddit_name} - Wiki - {page_name}
+CenterLayout
+	{#if error}
+		{#if error instanceof api.errors.ServerError}
+			Error404(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")
+	{:else if loading}
+		p Loading...
+	{:else if page}
+		article.wiki-page
+			h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
+			section.wiki-page-info
+				.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
+			section.wiki-page-body
+				TextHTML(html={page.content_html})
 
 style.
 	.wiki-page

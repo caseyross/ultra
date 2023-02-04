@@ -138,12 +138,13 @@ export default extract = (rawData, sourceID) ->
 					is_gif: post.url.pathname.endsWith('gif')
 			if hosted_video_data
 				video = hosted_video_data
-				post.media[0] =
-					aspect_ratio: video.width / video.height
-					is_gif: video.is_gif
-					source_width: video.width
-					video_audio_url: if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
-					video_url: video.fallback_url ? post.url
+				if !post.media[0]
+					post.media[0] = {}
+				post.media[0].video_aspect_ratio = video.width / video.height
+				post.media[0].video_is_gif = video.is_gif
+				post.media[0].video_source_width = video.width
+				post.media[0].video_audio_url = if video.fallback_url and !video.is_gif then video.fallback_url.replaceAll(/DASH_[0-9]+/g, 'DASH_audio') else null
+				post.media[0].video_url = video.fallback_url ? post.url
 			# Process crosspost source, if present.
 			if post.crosspost_parent_list?.length
 				crosspost_datasets = extract(

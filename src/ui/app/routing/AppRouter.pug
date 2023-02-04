@@ -94,4 +94,5 @@ script.
 			{:else if route.format === 'user'}
 				UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
 			{:else if route.format === 'wiki'}
-				WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})
+				{#key route.selection.wikipage_name}
+					WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})

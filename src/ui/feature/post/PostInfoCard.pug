@@ -20,38 +20,59 @@ script.
 
 {#if post}
 	a.post-info-card(class:post-read={localStorage['visited.' + post_short_id] || false} href='/{post.subreddit}/{post_short_id}')
-		div(style='display:none')
-			PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
 		{#if post.link_flair_text}
+			div
 			PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-		.post-tags(style='display:none')
-			{#if post.archived}
-				PostTag(name='archived')
-			{#if post.locked}
-				PostTag(name='locked')
-			{#if post.quarantine}
-				PostTag(name='quarantined')
-			{#if post.over_18}
-				PostTag(name='nsfw')
-			{#if post.stickied}
-				PostTag(name='sticky')
-			{#if post.is_original_content}
-				PostTag(name='oc')
-		strong.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
-		.post-metadata
-			.post-metadata-users
-				UserAvatar(name={post.author})
-				{#if post.distinguished}
-					UserDistinguish(type={post.distinguished})
-				PostAge(created={post.created_utc} edited={post.edited} size='medium')
+		figure.post-thumbnail
+			{#if post.media.length > 0}
+				{@const media = post.media[0]}
+					{#if media.image_url}
+						picture
+							source(srcset={media.image_url_320})
+							img.post-thumbnail-image(alt='' src={media.image_url})
+		section
+			div(style='display:none')
+				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})
+			.post-tags(style='display:none')
+				{#if post.archived}
+					PostTag(name='archived')
+				{#if post.locked}
+					PostTag(name='locked')
+				{#if post.quarantine}
+					PostTag(name='quarantined')
+				{#if post.over_18}
+					PostTag(name='nsfw')
+				{#if post.stickied}
+					PostTag(name='sticky')
+				{#if post.is_original_content}
+					PostTag(name='oc')
+			strong.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			.post-metadata
+				.post-metadata-users
+					UserAvatar(name={post.author})
+					{#if post.distinguished}
+						UserDistinguish(type={post.distinguished})
+					PostAge(created={post.created_utc} edited={post.edited} size='medium')
 
 style.
-	.post-info-card
+	section
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		padding 30px
+	.post-thumbnail-image
+		aspect-ratio 1
+		border-radius 6px
+		object-fit cover
+	.post-info-card
+		background var(--c-tint-normal)
+		border-radius 10px
+		display grid
+		grid-template-columns 80px 1fr
+		gap 10px 20px
+		justify-items flex-start
+		padding 20px
+		width 360px
 		&:hover
 			background var(--c-con-normal)
 	.post-metadata
@@ -72,5 +93,6 @@ style.
 		font-size 16px
 		letter-spacing 0
 		line-height 1.25
+		overflow-wrap anywhere
 	:global(.post-read .post-title)
 		text-decoration line-through

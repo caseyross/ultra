@@ -1,0 +1,97 @@
+script.
+	import api from '../../../api/index.js'
+	import Button from '../../common/Button.pug'
+
+	import SubredditInfo from '../subreddit/SubredditInfo.pug'
+	import SubredditRules from '../subreddit/SubredditRules.pug'
+	
+	export type = null
+	
+	export collection_short_id = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export user_name = null
+	
+	error = null
+	info = null
+	switch type
+		when 'collection'
+			api.loadWatch(api.ID('collection', collection_short_id), (x) ->
+				{ data: info, error } = x
+			)
+		when 'multireddit'
+			api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) ->
+				{ data: info, error } = x
+			)
+		when 'subreddit'
+			api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
+				{ data: info, error } = x
+			)
+		when 'user'
+			api.loadWatch(api.ID('user', user_name), (x) ->
+				{ data: info, error } = x
+			)
+
+{#if error}
+	.list-info-card.list-info-card-unavailable
+{:else if info}
+	{#if type === 'collection'}
+		a.list-info-card(href='/c/{collection_short_id}')
+			img.list-info-card-avatar-image(alt='')
+			section.list-info-card-data
+				span.list-info-card-type Collection
+				strong {info.title}
+	{:else if type === 'multireddit'}
+		a.list-info-card(href='/m/{user_name}/{multireddit_name}')
+			img.list-info-card-avatar-image(alt='' src={info.icon_img || info.community_icon})
+			section.list-info-card-data
+				span.list-info-card-type Multireddit
+				strong {user_name}/{multireddit_name}
+	{:else if type === 'subreddit'}
+		a.list-info-card(href='/{subreddit_name}')
+			section.list-info-card-core
+				img.list-info-card-avatar-image(alt='' src={info.community_icon || info.icon_img})
+				section.list-info-card-data
+					span.list-info-card-type Subreddit
+					strong.list-info-card-list-name {info.display_name}
+		{#if info.header_title}
+			span.list-info-card-type "{info.header_title}"
+		Button(popup={true} text='About')
+			SubredditInfo(name={subreddit_name})
+		Button(popup={true} text='Rules')
+			SubredditRules(name={subreddit_name})
+		{#if info.wiki_enabled}
+			Button(link='/r/{subreddit_name}/wiki/index' text='Wiki')
+	{:else if type === 'user'}
+		a.list-info-card(href='/u/{user_name}')
+			section.list-info-card-core
+				img.list-info-card-avatar-image(alt='' src={info.profile_img})
+				section.list-info-card-data
+					span.list-info-card-type User
+					strong {user_name}
+
+style.
+	.list-info-card
+		align-items flex-start
+		border-radius 1em
+		display flex
+		flex-flow column nowrap
+		gap 10px
+		padding 20px
+		width 400px
+	.list-info-card-avatar-image
+		aspect-ratio 1
+		border-radius 50%
+		width 64px
+		object-fit cover
+	.list-info-card-core
+		align-items center
+		display flex
+		gap 10px
+	.list-info-card-data
+		display flex
+		flex-flow column nowrap
+	.list-info-card-list-name
+		font-size 1.5em
+	.list-info-card-type
+		color var(--c-text-weak)

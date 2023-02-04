@@ -2,10 +2,6 @@ script.
 	import { getContext } from 'svelte'
 	import api from '../../api/index.js';
 	import Button from '../common/Button.pug'
-	import PopupWindow from '../common/PopupWindow.pug'
-	show_feedback = false
-	show_help = false
-	show_settings = false
 	unread_mention_count = 0
 	unread_message_count = 0
 	unread_reply_count = 0
@@ -27,17 +23,14 @@ nav#global-nav
 			Button(badge={unread_mention_count || null} key='@' link='/mail/mentions' text='Mentions')
 		Button(key='/' text='Go...')
 	section
-		Button(action={() => show_help = true} key='?' text='Help')
-		Button(action={() => show_settings = true} key='*' text='Settings')
-		Button(action={() => show_feedback = true} key='>' text='Feedback')
+		Button(key='?' popup={true} text='Help')
+		Button(key='*' popup={true} text='Settings')
+		Button(key='>' popup={true} text='Feedback')
 		br
 		{#if getContext('username')}
 			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} key='&' text='Unlink Reddit Account')
 		{:else}
 			Button(key='&' link={api.getLoginURL({ memoString: location.pathname })} text='Login with Reddit Account...')
-PopupWindow(exit_action={() => show_help = false} title='Help' visible={show_help})
-PopupWindow(exit_action={() => show_settings = false} title='Settings' visible={show_settings})
-PopupWindow(exit_action={() => show_feedback = false} title='Feedback' visible={show_feedback})
 
 style.
 	section

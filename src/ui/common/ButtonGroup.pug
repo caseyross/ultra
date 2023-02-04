@@ -9,7 +9,7 @@ fieldset
 	{#if title}
 		legend {title}
 	{#each options as option}
-		Button(action={option.action} activated={selected === option.value} disabled={option.disabled} link={option.link || (baselink + option.value)}) {option.label}
+		Button(action={option.action} activated={selected === option.value} disabled={option.disabled} link={option.link || (baselink + option.value)} text={option.label})
 
 style.
 	fieldset

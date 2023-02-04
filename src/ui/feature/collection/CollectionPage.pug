@@ -11,6 +11,8 @@ script.
 	export comment_short_id = null
 	export comments_sort = null
 
+svelte:head
+	title collection {collection_short_id}
 SplitLayout
 	svelte:fragment(slot='left')
 		PostsListInfo(type='collection' collection_short_id={collection_short_id})

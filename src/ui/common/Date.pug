@@ -1,0 +1,24 @@
+script.
+	import { Time } from '../../lib/index.js'
+	export created = null
+	export edited = null
+	export format = 'relabs'
+	export size = 'medium'
+
+.date(class='size-{size}')
+	time(datetime={created} title='{Time.sToAbsTimeStr(created)}') {format === 'rel' ? Time.sToRelTimeStr(created) + ' ago' : Time.sToAbsRelTimeStr(created)}
+	{#if edited}
+		| /
+		time.post-last-edited(datetime={edited} title='{Time.sToAbsTimeStr(edited)}') {format === 'rel' ? Time.sToRelTimeStr(edited) + ' ago' : Time.sToAbsRelTimeStr(edited)}
+
+style.
+	.date
+		color var(--c-text-weak)
+		cursor default
+		display inline-flex
+		gap 1ch
+		user-select none
+	.size-small
+		font-size 11px
+	.size-medium
+		font-size 14px

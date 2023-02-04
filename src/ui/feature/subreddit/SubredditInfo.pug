@@ -1,0 +1,26 @@
+script.
+	import api from '../../../api/index.js'
+	import Date from '../../common/Date.pug'
+	import TextHTML from '../../common/TextHTML.pug'
+	export name = null
+	info = null
+	widgets = null
+	api.loadWatch(api.ID('subreddit', name), (x) -> { data: info } = x)
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) -> { data: widgets } = x)
+
+{#if info}
+	.subreddit-info
+		{#if info.banner_background_image}
+			img.subreddit-banner-image(alt='' src={info.banner_background_image})
+		p.subreddit-create-date
+			| Created
+			Date(created={info.created_utc})
+		p.subreddit-subscriber-count {info.subscribers} subscribers
+		p.subreddit-current-user-count {info.active_user_count} users active (last 15min)
+		TextHTML(html={info.public_description_html})
+
+style.
+	.subreddit-banner-image
+		aspect-ratio 8
+		border-radius 10px
+		object-fit cover

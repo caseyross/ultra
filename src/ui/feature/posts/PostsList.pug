@@ -3,6 +3,7 @@ script.
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import PostInfoCard from '../post/PostInfoCard.pug'
+	import PostHeadline from '../post/PostHeadline.pug'
 
 	export type = null
 
@@ -128,44 +129,45 @@ script.
 
 	if base_page_id then load_page(0)
 
-svelte:head
-	title {base_path}
-nav.listing
-	{#if error}
-		{#if error instanceof api.errors.ServerError}
-			p Content unavailable.
-			a(href='https://www.reddit.com{official_path}') Visit Reddit to see why.
-	{:else if loading}
-		p Loading...
-	{:else}
-		header.listing-info
-			{#if sort_options}
-				ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
-				{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
-					ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]})
-				input(bind:value={search_text} on:change={() => console.log(search_text)} placeholder='Search subreddit...' type='text')
-		ol.listing-content
-			{#if pages.length}
-				{#each pages as page}
-					{#each page as post_short_id}
-						PostInfoCard(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id})
-		menu.listing-actions
-			{#if has_next_page}
-				Button(action={() => load_page(pages.length)} text='Load next page')
+nav.posts-list
+	menu.posts-list-sorting
+		{#if sort_options}
+			ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
+			{#if ['top', 'controversial', 'search'].includes(posts_sort.split('-')[0])}
+				ButtonGroup(baselink={base_path + '/' + posts_sort.split('-')[0] + '-'} options={time_range_options} selected={posts_sort.split('-')[1]})
+	ol.posts-list-content
+		{#if error}
+			{#if error instanceof api.errors.ServerError}
+				p Content unavailable.
+				a(href='https://www.reddit.com{official_path}') Visit Reddit to see why.
+		{:else if loading}
+			p Loading...
+		{:else if pages.length}
+			{#each pages as page}
+				{#each page as post_short_id}
+					PostHeadline(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id})
+	menu.posts-list-actions
+		section
+		{#if has_next_page}
+			Button(action={() => load_page(pages.length)} text='Next page')
 style.
-	.listing
+	.posts-list
 		display flex
 		flex-flow column nowrap
-		gap 2em
-		height 100%
-		width 300px
-	.listing-actions
+		gap 1em
+		overflow auto
+		padding-left 20px
+	.posts-list-actions
 		display flex
-	.listing-content
-		background var(--c-tint-normal)
-		border-radius 10px
+		flex 0 0 auto
+		justify-content space-between
+	.posts-list-content
+		display flex
 		flex 1
+		flex-flow column nowrap
+		gap 1em
+		margin 0
 		overflow auto
 		padding 0
-	.listing-info
+	.posts-list-sorting
 		flex 0 0 auto

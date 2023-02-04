@@ -1,6 +1,8 @@
 script.
 	import hotkey from './actions/use_hotkey.coffee'
 	import HotkeyLabel from './HotkeyLabel.pug'
+	import Popup from './Popup.pug'
+	
 	export action = null
 	export activated = false
 	export appearance = 'button'
@@ -10,14 +12,18 @@ script.
 	export link = null
 	export loading = false
 	export new_tab = false
+	export popup = false
 	export size = 'normal'
 	export text = ''
+
+	popup_open = false
+	if popup
+		action = -> popup_open = true
 
 {#if link}
 	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
-		slot
 		{#if text}
 			| {text}
 		{#if badge}
@@ -29,11 +35,14 @@ script.
 		{:else}
 			{#if key}
 				HotkeyLabel(key={key})
-			slot
 			{#if text}
 				| {text}
 			{#if badge}
 				span.badge {badge}
+{#if popup}
+	Popup(on:close={() => popup_open = false} open={popup_open} title={text})
+		slot
+
 
 style.
 	.appearance-button

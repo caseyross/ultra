@@ -2,7 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 	export name = null
-	export size = 'normal'
+	export size = 'small'
 	user = null
 	if name != '[deleted]'
 		api.loadWatch(api.ID('user', name), ({ data }) ->
@@ -35,7 +35,6 @@ style.
 	.user-avatar
 		aspect-ratio 1
 		display inline-block
-		height 24px
 		position relative
 		user-select none
 	.user-avatar-account-suspended
@@ -73,5 +72,9 @@ style.
 		box-sizing border-box
 		&:hover
 			border-color wheat
+	.user-avatar-size-small
+		height 24px
+	.user-avatar-size-medium
+		height 36px
 	.user-avatar-size-large
 		height 132px

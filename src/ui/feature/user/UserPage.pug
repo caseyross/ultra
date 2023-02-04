@@ -14,6 +14,8 @@ script.
 	export comment_short_id = null
 	export comments_sort = null
 
+svelte:head
+	title u/{user_name}
 SplitLayout
 	svelte:fragment(slot='left')
 		PostsListInfo(type='user' user_name={user_name})

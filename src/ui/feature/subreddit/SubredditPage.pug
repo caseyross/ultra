@@ -1,8 +1,14 @@
 script.
+	import { getContext } from 'svelte'
+	import api from '../../../api/index.js'
+
 	import SplitLayout from '../../common/layout/SplitLayout.pug'
 	import Post from '../post/Post.pug'
 	import PostsList from '../posts/PostsList.pug'
 	import PostsListInfo from '../posts/PostsListInfo.pug'
+	import SubredditInfo from './SubredditInfo.pug'
+	import SubredditRules from './SubredditRules.pug'
+	import SubredditModerators from './SubredditModerators.pug'
 
 	export subreddit_name = null
 
@@ -13,6 +19,15 @@ script.
 	export comment_short_id = null
 	export comments_sort = null
 
+	subreddit = null
+	set_theme_color = getContext('set_theme_color')
+	api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
+		{ data: subreddit } = x
+		set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+	)
+
+svelte:head
+	title r/{subreddit ? subreddit.display_name : subreddit_name}
 SplitLayout
 	svelte:fragment(slot='left')
 		PostsListInfo(type='subreddit' subreddit_name={subreddit_name})
@@ -22,6 +37,4 @@ SplitLayout
 			{#key post_short_id}
 				Post(short_id={post_short_id} focus_comment_context_level={comment_context} focus_comment_short_id={comment_short_id} comments_sort={comments_sort})
 		{:else}
-			p [Subreddit info goes here.]
-
-style.
+			SubredditInfo(name={subreddit_name})

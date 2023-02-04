@@ -1,52 +1,25 @@
 script.
-	import { getContext } from 'svelte'
 	import api from '../../../api/index.js'
 	import TextHTML from '../../common/TextHTML.pug'
 	export name = null
-	info = null
 	rules = null
-	set_theme_color = getContext('set_theme_color')
-	api.loadWatch(api.ID('subreddit', name), ({ data: info }) ->
-		set_theme_color(info?.primary_color ? info?.key_color)
-	)
 	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
 
-svelte:head
-	title r/{name.toLowerCase()} - Index
-article.subreddit
-	header
-		{#if info}
-			img.subreddit-icon(alt='' src={info.community_icon || info.icon_img})
-		h1.subreddit-name {name}
-	{#if info}
-		section.subreddit-description
-			TextHTML(html={info.public_description_html})
-	{#if rules}
-		p Rules
-		ol.subreddit-rules
-			{#each rules.rules as rule}
-				details.subreddit-rule
-					summary.subreddit-rule-summary
-						data.subreddit-rule-number {String(rule.priority + 1).padStart(2, '0')}
-						span.subreddit-rule-name {rule.short_name}
-					.subreddit-rule-description
-						{#if rule.description_html}
-							TextHTML(html={rule.description_html})
-						{:else}
-							p [No description provided.]
+{#if rules}
+	p Rules
+	ol.subreddit-rules
+		{#each rules.rules as rule}
+			details.subreddit-rule
+				summary.subreddit-rule-summary
+					data.subreddit-rule-number {String(rule.priority + 1).padStart(2, '0')}
+					span.subreddit-rule-name {rule.short_name}
+				.subreddit-rule-description
+					{#if rule.description_html}
+						TextHTML(html={rule.description_html})
+					{:else}
+						p [No description provided.]
 
 style.
-	.subreddit-description
-		padding 10px
-	.subreddit-icon
-		border-radius 999px
-		height 256px
-		margin 0 auto
-		width 256px
-	.subreddit-name
-		font-size 3em
-	.subreddit-rules
-		padding 10px
 	.subreddit-rule
 		font-size 9pt
 		letter-spacing 0.03em

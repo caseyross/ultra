@@ -12,8 +12,6 @@ script.
 	api.loadWatch(api.ID('user_comments', name, 'new', 50), (x) -> { data: comment_short_ids } = x)
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
 
-svelte:head
-	title u/{name.toLowerCase()}
 article.user
 	section.user-basic-info
 		div(style='text-align: center')
