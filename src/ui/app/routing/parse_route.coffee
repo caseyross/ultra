@@ -61,78 +61,65 @@ export default (url) ->
 						url: url
 					)
 		when 'r', 'subreddit'
-			subreddit_name = path[2]
-			switch path[3]
-				when undefined
-					switch subreddit_name
-						when 'all', 'popular', 'subscriptions'
+			switch path[2]
+				when 'all', 'popular', 'subscriptions'
+					return sanitize_route(
+						format: 'multireddit'
+						user_name: 'r'
+						multireddit_name: path[2]
+						posts_sort_base: path[3] or query.get('sort')
+						posts_sort_range: query.get('t')
+						posts_search_text: query.get('q')
+						after_post_short_id: query.get('after')
+					)
+				else
+					switch path[3]?.split('-')[0]
+						when 'c', 'collection'
 							return sanitize_route(
-								format: 'multireddit'
-								user_name: 'r'
-								multireddit_name: subreddit_name
-								posts_sort_base: path[3] or query.get('sort')
+								format: 'collection'
+								collection_short_id: path[4]
+							)
+						when 'controversial', 'hot', 'new', 'rising', 'search', 'top'
+							return sanitize_route(
+								format: 'subreddit'
+								subreddit_name: path[2]
+								posts_sort_base: path[3]
 								posts_sort_range: query.get('t')
 								posts_search_text: query.get('q')
 								after_post_short_id: query.get('after')
+							)
+						when 'comments', 'p', 'post'
+							return sanitize_route(
+								format: 'subreddit'
+								subreddit_name: path[2]
+								after_post_short_id: query.get('after')
+								post_short_id: path[4]
+								comment_context: query.get('context')
+								comment_short_id: path[6]
+								comments_sort: query.get('sort')
+							)
+						when 'submit'
+							return sanitize_route(
+								format: 'official_site'
+								url: url
+							)
+						when 'w', 'wiki'
+							return sanitize_route(
+								format: 'wiki'
+								subreddit_name: path[2]
+								wikipage_name: path[4..]?.join('/') or 'index' # wiki pages can be nested
+								wikipage_revision_id: query.get('v')
 							)
 						else
 							return sanitize_route(
 								format: 'subreddit'
-								subreddit_name: subreddit_name
-								posts_sort_base: path[3] or query.get('sort')
-								posts_sort_range: query.get('t')
-								posts_search_text: query.get('q')
+								subreddit_name: path[2]
 								after_post_short_id: query.get('after')
+								post_short_id: path[3]
+								comment_context: query.get('context')
+								comment_short_id: path[4]
+								comments_sort: query.get('sort')
 							)
-				when 'about'
-					# TODO?
-					return sanitize_route(
-						format: 'official_site'
-						url: url
-					)
-				when 'collection'
-					return sanitize_route(
-						format: 'collection'
-						collection_short_id: path[4]
-					)
-				when 'comments', 'p', 'post'
-					return sanitize_route(
-						format: 'subreddit'
-						subreddit_name: path[2]
-						posts_sort_base: query.get('sort')
-						posts_sort_range: query.get('t')
-						posts_search_text: query.get('q')
-						after_post_short_id: query.get('after')
-						post_short_id: path[4]
-						comment_context: query.get('context')
-						comment_short_id: path[6]
-						comments_sort: query.get('sort')
-					)
-				when 'submit'
-					return sanitize_route(
-						format: 'official_site'
-						url: url
-					)
-				when 'w', 'wiki'
-					return sanitize_route(
-						format: 'wiki'
-						subreddit_name: path[2]
-						wikipage_name: path[4..]?.join('/') or 'index' # wiki pages can be nested
-						wikipage_revision_id: query.get('v')
-					)
-				else
-					return sanitize_route(
-						format: 'subreddit'
-						subreddit_name: path[2]
-						posts_sort_base: query.get('sort')
-						posts_sort_range: query.get('t')
-						posts_search_text: query.get('q')
-						after_post_short_id: query.get('after')
-						post_short_id: path[3]
-						comment_context: query.get('context')
-						comment_short_id: path[4]
-						comments_sort: query.get('sort')
-					)
 		when 'reddits', 'subreddits'
 			subreddits_filter = switch path[2]
 				when 'mine'
@@ -168,9 +155,6 @@ export default (url) ->
 					return sanitize_route(
 						format: 'user'
 						user_name: user_name
-						posts_sort_base: path[3] or query.get('sort')
-						posts_sort_range: query.get('t')
-						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
 						post_short_id: path[4]
 						comment_context: query.get('context')

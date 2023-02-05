@@ -52,30 +52,28 @@ export default ({
 		comments_sort = 'best'
 	switch posts_sort_base
 		when 'controversial', 'search', 'top'
-			if posts_sort_range in POSTS_SORT_RANGES
-				posts_sort = posts_sort + '-' + time_range
-			else
-				posts_sort = posts_sort + '-all'
+			posts_sort = posts_sort_base + '-' + (posts_sort_range or 'all')
 		else
-			switch format
-				when 'multireddit'
-					if user_name is 'r'
-						switch multireddit_name
-							when 'all', 'popular'
-								if posts_sort not in POSTS_SORT_OPTIONS_POPULAR
-									posts_sort = 'hot'
-							when 'subscriptions'
-								if posts_sort not in POSTS_SORT_OPTIONS_SUBSCRIPTIONS
-									posts_sort = 'best'
-					else
-						if posts_sort not in POSTS_SORT_OPTIONS_GENERAL
+			posts_sort = posts_sort_base
+	switch format
+		when 'multireddit'
+			if user_name is 'r'
+				switch multireddit_name
+					when 'all', 'popular'
+						if posts_sort not in POSTS_SORT_OPTIONS_ALL_POPULAR
 							posts_sort = 'hot'
-				when 'subreddit'
-					if posts_sort not in POSTS_SORT_OPTIONS_GENERAL
-						posts_sort = 'hot'
-				when 'user'
-					if posts_sort not in POSTS_SORT_OPTIONS_USER
-						posts_sort = 'hot'
+					when 'subscriptions'
+						if posts_sort not in POSTS_SORT_OPTIONS_SUBSCRIPTIONS
+							posts_sort = 'best'
+			else
+				if posts_sort not in POSTS_SORT_OPTIONS_GENERAL
+					posts_sort = 'hot'
+		when 'subreddit'
+			if posts_sort not in POSTS_SORT_OPTIONS_GENERAL
+				posts_sort = 'hot'
+		when 'user'
+			if posts_sort not in POSTS_SORT_OPTIONS_USER
+				posts_sort = 'hot'
 	if posts_search_text and posts_sort.split('-')[0] is 'search'
 		posts_sort = posts_sort + '-' + posts_search_text
 	# Save URL path if provided.

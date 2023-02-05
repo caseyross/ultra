@@ -15,7 +15,7 @@ script.
 	export comments_sort = null
 
 svelte:head
-	title {multireddit_name}/{user_name}
+	title {user_name}/{multireddit_name}
 SplitLayout
 	svelte:fragment(slot='left')
 		PostsListInfo(type='multireddit' multireddit_name={multireddit_name} user_name={user_name})

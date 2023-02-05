@@ -17,7 +17,8 @@ script.
 			Date(created={info.created_utc})
 		p.subreddit-subscriber-count {info.subscribers} subscribers
 		p.subreddit-current-user-count {info.active_user_count} users active (last 15min)
-		TextHTML(html={info.public_description_html})
+		{#if info.public_description_html}
+			TextHTML(html={info.public_description_html})
 
 style.
 	.subreddit-banner-image

@@ -139,21 +139,22 @@ sup
 	overflow-wrap anywhere
 	padding 10px
 	a
-		color lightskyblue
+		text-decoration underline
 		word-break break-all
-	a:not(:is([href^='/'], [href^='#']))::before
-		background lightskyblue
-		border-radius 999px
-		color white
+	a[href^='/']::before
+	a[href^='#']::before
+		background white
+		border-radius 50%
+		color var(--c-theme)
 		content '→'
 		display inline
 		font-size 0.9em
-		height 1.25em
+		font-weight 900
 		line-height 1.25
 		margin-left 0.2em
 		margin-right 0.4em
 		padding 0 0.125em
-	a[target='_blank']::before
+	a:empty::before
 		display none !important
 	img
 		border 1px solid transparent
