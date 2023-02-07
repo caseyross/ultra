@@ -16,7 +16,8 @@ script.
 	.subreddit-info
 		{#if info.banner_background_image}
 			p
-				img.subreddit-info-banner-image(alt='' src={info.banner_background_image})
+				a(href={info.banner_background_image})
+					img.subreddit-info-banner-image(alt='' src={info.banner_background_image})
 		table.subreddit-info-stats
 			thead
 				tr
