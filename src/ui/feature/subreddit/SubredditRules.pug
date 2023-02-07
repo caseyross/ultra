@@ -6,35 +6,41 @@ script.
 	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
 
 {#if rules}
-	p Rules
-	ol.subreddit-rules
-		{#each rules.rules as rule}
-			details.subreddit-rule
-				summary.subreddit-rule-summary
-					data.subreddit-rule-number {String(rule.priority + 1).padStart(2, '0')}
-					span.subreddit-rule-name {rule.short_name}
-				.subreddit-rule-description
-					{#if rule.description_html}
-						TextHTML(html={rule.description_html})
-					{:else}
-						p [No description provided.]
+	{#if rules.rules.length > 0}
+		ol.subreddit-rules
+			{#each rules.rules as rule}
+				details.subreddit-rule(open={true})
+					summary.subreddit-rule-summary
+						data.subreddit-rule-number {rule.priority + 1}
+						.subreddit-rule-name {rule.short_name}
+					.subreddit-rule-description
+						{#if rule.description_html}
+							TextHTML(html={rule.description_html})
+						{:else}
+							p [No description provided.]
+	{:else}
+		p This subreddit does not have any rules on record.
 
 style.
 	.subreddit-rule
-		font-size 9pt
-		letter-spacing 0.03em
 		padding 5px
 	.subreddit-rule-description
-		border-left 1px solid var(--c-con-normal)
-		font-size 9pt
-		margin 1em
+		border-left 1px solid var(--c-text-weak)
+		font-size 12px
+		letter-spacing 0.03em
+		margin 1em 22px
 		padding 0 3em
-	.subreddit-rule-name
-		text-decoration underline
 	.subreddit-rule-number
-		font-feature-settings 'tnum'
-		font-weight bold
-		letter-spacing 0
+		color var(--c-text-weak)
+		font-size 2.5em
+		line-height 1
+		text-align right
 	.subreddit-rule-summary
+		align-items flex-end
 		display grid
-		grid-template-columns 48px 1fr
+		gap 30px
+		grid-template-columns 30px 1fr
+	.subreddit-rule-name
+		font-size 1.25em
+	.subreddit-rules
+		padding 0

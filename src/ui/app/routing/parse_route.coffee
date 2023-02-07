@@ -21,7 +21,8 @@ export default (url) ->
 	switch path[1]
 		when undefined
 			return sanitize_route(
-				format: 'subscriptions'
+				format: 'subreddits'
+
 			)
 		when 'c', 'collection'
 			return sanitize_route(
@@ -133,7 +134,7 @@ export default (url) ->
 				when 'subscribed', 'subscriber', 'subscriptions' then 'subscriber'
 				else 'global-popular'
 			return sanitize_route(
-				format: 'subreddit_list'
+				format: 'subreddits'
 				subreddits_filter: subreddits_filter
 			)
 		when 's', 'search'

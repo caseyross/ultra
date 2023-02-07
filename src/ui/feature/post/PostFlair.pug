@@ -20,15 +20,17 @@ span.post-flair(style="background-color: {color || 'white'}; color: {(new Color(
 
 style.
 	.post-flair
-		align-items center
-		border-radius 1em
-		display inline-flex
+		border-radius 10px
+		display inline-block
 		font-size 13px
-		gap 3px
 		max-width 100%
 		overflow hidden
-		padding 1px 1ch
+		padding 2px 1em
+		text-overflow ellipsis
 		user-select none
 		white-space pre
 	.post-flair-emoji
+		display inline-block
 		height 16px
+		margin-inline-end 4px
+		vertical-align middle

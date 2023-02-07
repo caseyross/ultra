@@ -1,27 +1,52 @@
 script.
 	import api from '../../../api/index.js'
+	
+	import Button from '../../common/Button.pug'
 	import Date from '../../common/Date.pug'
 	import TextHTML from '../../common/TextHTML.pug'
+	
+	import SubredditModerators from './SubredditModerators.pug'
+
 	export name = null
+	
 	info = null
-	widgets = null
 	api.loadWatch(api.ID('subreddit', name), (x) -> { data: info } = x)
-	api.loadWatch(api.ID('subreddit_widgets', name), (x) -> { data: widgets } = x)
 
 {#if info}
 	.subreddit-info
 		{#if info.banner_background_image}
-			img.subreddit-banner-image(alt='' src={info.banner_background_image})
-		p.subreddit-create-date
-			| Created
-			Date(created={info.created_utc})
-		p.subreddit-subscriber-count {info.subscribers} subscribers
-		p.subreddit-current-user-count {info.active_user_count} users active (last 15min)
+			p
+				img.subreddit-info-banner-image(alt='' src={info.banner_background_image})
+		table.subreddit-info-stats
+			thead
+				tr
+					th.subreddit-info-stats-label(align='left') Created
+					th.subreddit-info-stats-label(align='right') Subscribers
+			tbody
+				tr
+					td.subreddit-info-stats-value(align='left')
+						Date(unix_s={info.created_utc})
+					td.subreddit-info-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
 		{#if info.public_description_html}
 			TextHTML(html={info.public_description_html})
+		menu.subreddit-info-additional-options
+			Button(popup={true} text='Moderators')
+				SubredditModerators(name={name})
 
 style.
-	.subreddit-banner-image
+	.subreddit-info-additional-options
+		display flex
+		gap 10px
+		padding 10px 0
+		justify-content flex-end
+	.subreddit-info-banner-image
 		aspect-ratio 8
 		border-radius 10px
 		object-fit cover
+	.subreddit-info-stats
+		margin-bottom 10px
+		width 100%
+	.subreddit-info-stats-label
+		color var(--c-text-weak)
+	.subreddit-info-stats-value
+		font-size 2em

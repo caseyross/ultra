@@ -6,7 +6,6 @@ script.
 	api.loadWatch(api.ID('subreddit_moderators', name), (x) -> { data: moderators } = x)
 
 {#if moderators}
-	p Moderators
 	ol.subreddit-moderators
 		{#each moderators as moderator}
 			UserAvatar(name={moderator.name} size='medium')
@@ -17,4 +16,4 @@ style.
 		display flex
 		flex-flow row wrap
 		gap 10px
-		width 480px
+		padding 0
