@@ -1,9 +1,10 @@
 script.
 	import api from '../../../api/index.js'
-	import Button from '../../common/Button.pug'
 
 	import SubredditInfo from '../subreddit/SubredditInfo.pug'
 	import SubredditRules from '../subreddit/SubredditRules.pug'
+	
+	import UserAvatar from '../user/UserAvatar.pug'
 	
 	export type = null
 	
@@ -37,61 +38,60 @@ script.
 {:else if info}
 	{#if type === 'collection'}
 		a.list-info-card(href='/c/{collection_short_id}')
-			img.list-info-card-avatar-image(alt='')
+			section.list-info-card-avatar
+				img.list-info-card-avatar-image(alt='')
+				.list-info-card-avatar-owner-image
+					UserAvatar(name={info.author_name})
 			section.list-info-card-data
-				span.list-info-card-type Collection
-				strong {info.title}
+				span.list-info-card-list-type Collection
+				strong.list-info-card-list-name {info.title}
 	{:else if type === 'multireddit'}
 		a.list-info-card(href='/m/{user_name}/{multireddit_name}')
-			img.list-info-card-avatar-image(alt='' src={info.icon_img || info.community_icon})
+			section.list-info-card-avatar
 			section.list-info-card-data
-				span.list-info-card-type Multireddit
-				strong {user_name}/{multireddit_name}
+				span.list-info-card-list-type Multireddit
+				strong.list-info-card-list-name {user_name}/{multireddit_name}
 	{:else if type === 'subreddit'}
 		a.list-info-card(href='/{subreddit_name}')
-			section.list-info-card-core
-				img.list-info-card-avatar-image(alt='' src={info.community_icon || info.icon_img})
-				section.list-info-card-data
-					span.list-info-card-type Subreddit
-					strong.list-info-card-list-name {info.display_name}
-		{#if info.header_title}
-			span.list-info-card-type "{info.header_title}"
-		Button(popup={true} text='About')
-			SubredditInfo(name={subreddit_name})
-		Button(popup={true} text='Rules')
-			SubredditRules(name={subreddit_name})
-		{#if info.wiki_enabled}
-			Button(link='/r/{subreddit_name}/wiki/index' text='Wiki')
+			section.list-info-card-avatar
+				{#if info.community_icon || info.icon_img}
+					img.list-info-card-avatar-image(alt='' src={info.community_icon || info.icon_img})
+			section.list-info-card-data
+				span.list-info-card-list-type Subreddit
+				strong.list-info-card-list-name(title={info.display_name}) {info.display_name}
 	{:else if type === 'user'}
 		a.list-info-card(href='/u/{user_name}')
-			section.list-info-card-core
-				img.list-info-card-avatar-image(alt='' src={info.profile_img})
-				section.list-info-card-data
-					span.list-info-card-type User
-					strong {user_name}
+			section.list-info-card-avatar
+				{#if info.profile_img}
+					img.list-info-card-avatar-image(alt='' src={info.profile_img})
+			section.list-info-card-data
+				span.list-info-card-list-type User
+				strong.list-info-card-list-name {user_name}
 
 style.
 	.list-info-card
-		align-items flex-start
+		align-items center
 		border-radius 1em
-		display flex
-		flex-flow column nowrap
+		display grid
 		gap 10px
+		grid-template-columns 64px 216px
 		padding 20px
-		width 400px
+	.list-info-card-avatar
+		position relative
+		width 64px
 	.list-info-card-avatar-image
 		aspect-ratio 1
 		border-radius 50%
-		width 64px
 		object-fit cover
-	.list-info-card-core
-		align-items center
-		display flex
-		gap 10px
+		width 100%
+	.list-info-card-avatar-owner-image
+		bottom -10px
+		position absolute
+		right 0
 	.list-info-card-data
 		display flex
 		flex-flow column nowrap
 	.list-info-card-list-name
 		font-size 1.5em
-	.list-info-card-type
+	.list-info-card-list-type
 		color var(--c-text-weak)

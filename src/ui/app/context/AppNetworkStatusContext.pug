@@ -1,0 +1,36 @@
+script.
+	import { setContext } from 'svelte'
+	import api from '../../../api/index.js'
+
+	offline = false
+	ratelimit_low = false
+
+	setInterval(
+		->
+			if navigator.onLine is false
+				offline = true
+			else
+				offline = false
+			{ estimatedMaxRequests, remainingRequests } = api.getRatelimitStatus()
+			if remainingRequests / estimatedMaxRequests < 0.2
+				ratelimit_low = true
+			else
+				ratelimit_low = false
+		5000
+	)
+
+slot
+{#if offline}
+	.network-status-warning Offline
+{:else if ratelimit_low}
+	.network-status-warning Ratelimit low
+
+style.
+	.network-status-warning
+		color salmon
+		font-weight var(--f-wght-strong)
+		left 0
+		padding 10px
+		position fixed
+		text-transform uppercase
+		top 0

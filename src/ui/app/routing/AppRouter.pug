@@ -2,6 +2,7 @@ script.
 	import AppRedirect from './AppRedirect.pug'
 
 	import AppAccountContext from '../context/AppAccountContext.pug'
+	import AppNetworkStatusContext from '../context/AppNetworkStatusContext.pug'
 	import AppThemeColorContext from '../context/AppThemeColorContext.pug'
 
 	import CollectionPage from '../../feature/collection/CollectionPage.pug'
@@ -85,14 +86,15 @@ script.
 {:else}
 	AppAccountContext
 		AppThemeColorContext
-			{#if route.format === 'collection'}
-				CollectionPage(collection_short_id={route.listing.collection_short_id} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-			{:else if route.format === 'multireddit'}
-				MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-			{:else if route.format === 'subreddit'}
-				SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-			{:else if route.format === 'user'}
-				UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-			{:else if route.format === 'wiki'}
-				{#key route.selection.wikipage_name}
-					WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})
+			AppNetworkStatusContext
+				{#if route.format === 'collection'}
+					CollectionPage(collection_short_id={route.listing.collection_short_id} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+				{:else if route.format === 'multireddit'}
+					MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+				{:else if route.format === 'subreddit'}
+					SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+				{:else if route.format === 'user'}
+					UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+				{:else if route.format === 'wiki'}
+					{#key route.selection.wikipage_name}
+						WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})

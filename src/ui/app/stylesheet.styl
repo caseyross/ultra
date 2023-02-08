@@ -29,6 +29,7 @@ strong
 
 // Theme
 :root
+	--c-hint-normal wheat
 	--c-tint-normal rgba(255,255,255,0.10)
 #color-strategy
 	background var(--c-back-default)
@@ -91,7 +92,7 @@ h5
 h6
 	font-weight inherit
 	line-height 1.25
-	margin 1.5em 0 0.5em
+	margin 1.5em 0 0.75em
 	&:first-child
 		margin-top 0
 h1
@@ -111,6 +112,7 @@ th
 .md
 	table
 		background var(--c-con-normal)
+		border 1px solid transparent
 		border-radius 6px
 		display block
 		font-family var(--f-type-mono)
@@ -120,6 +122,9 @@ th
 		overflow-wrap normal
 		padding 1em
 		overflow auto
+		&:hover
+			border-color var(--c-hint-normal)
+			cursor pointer
 	th
 	td
 		padding-right 10px
@@ -162,7 +167,7 @@ sup
 		border 1px solid transparent
 		border-radius 6px
 		&:hover
-			border-color inherit
+			border-color var(--c-hint-normal)
 
 // Verbatim text
 blockquote
@@ -183,10 +188,14 @@ code
 	word-break break-all
 pre
 	background var(--c-con-normal)
+	border 1px solid transparent
 	border-radius 6px
 	margin 0 0 1em
 	padding 1em
 	overflow auto
+	&:hover
+		border-color var(--c-hint-normal)
+		cursor pointer
 
 // Spoilers
 .md-spoiler-text

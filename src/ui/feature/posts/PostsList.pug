@@ -2,7 +2,6 @@ script.
 	import api from '../../../api/index.js'
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
-	import PostInfoCard from '../post/PostInfoCard.pug'
 	import PostHeadline from '../post/PostHeadline.pug'
 
 	export type = null
@@ -149,9 +148,10 @@ nav.posts-list
 	menu.posts-list-actions
 		section
 		{#if has_next_page}
-			Button(action={() => load_page(pages.length)} text='Next page')
+			Button(action={() => load_page(pages.length)} text='Load more')
 style.
 	.posts-list
+		align-items flex-end
 		display flex
 		flex-flow column nowrap
 		gap 1em

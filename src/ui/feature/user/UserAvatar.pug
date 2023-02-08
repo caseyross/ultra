@@ -10,24 +10,24 @@ script.
 		)
 
 {#if name === '[deleted]'}
-	span.user-avatar.user-avatar-account-unavailable(title='User or comment is deleted') ✗
+	span.user-avatar.user-avatar-account-unavailable(title='Deleted or unknown user') ✗
 {:else if user}
 	{#if user.is_suspended}
-		span.user-avatar.user-avatar-account-suspended(title='User is suspended') ✗
+		span.user-avatar.user-avatar-account-suspended(title='Suspended user') ✗
 	{:else}
 		a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
 			{#if user.profile_img}
 				img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
 			{#if user.comment_karma + user.link_karma < 0}
-				span.user-avatar-badge.user-avatar-badge-negative-karma-user(title='User has negative karma')
+				span.user-avatar-badge.user-avatar-badge-negative-karma-user(title='Low karma user')
 					span.user-avatar-badge-backdrop −
 					span.user-avatar-badge-text −
 			{:else if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
-				span.user-avatar-badge.user-avatar-badge-new-user(title='User account is less than a year old')
+				span.user-avatar-badge.user-avatar-badge-new-user(title='New user')
 					span.user-avatar-badge-backdrop ✗
 					span.user-avatar-badge-text ✗
 			{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
-				span.user-avatar-badge.user-avatar-badge-veteran-user(title='User account is over 10 years old')
+				span.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
 					span.user-avatar-badge-backdrop ⌃
 					span.user-avatar-badge-text ⌃
 
@@ -71,7 +71,7 @@ style.
 		border-radius 50%
 		box-sizing border-box
 		&:hover
-			border-color wheat
+			border-color var(--c-hint-normal)
 	.user-avatar-size-small
 		height 24px
 	.user-avatar-size-medium
