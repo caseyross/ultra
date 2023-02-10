@@ -2,7 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
-	import PostHeadline from '../post/PostHeadline.pug'
+	import PostInfoCard from '../post/PostInfoCard.pug'
 
 	export type = null
 
@@ -144,7 +144,7 @@ nav.posts-list
 		{:else if pages.length}
 			{#each pages as page}
 				{#each page as post_short_id}
-					PostHeadline(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id})
+					PostInfoCard(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id})
 	menu.posts-list-actions
 		section
 		{#if has_next_page}
@@ -162,10 +162,11 @@ style.
 		flex 0 0 auto
 		justify-content space-between
 	.posts-list-content
+		background var(--c-con-weak)
+		border-radius 10px
 		display flex
 		flex 1
 		flex-flow column nowrap
-		gap 1em
 		margin 0
 		overflow auto
 		padding 0

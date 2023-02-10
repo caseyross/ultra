@@ -5,11 +5,11 @@ script.
 	theme_color = null
 	color_strategy = null
 	set_theme_color = (css_color) ->
-		if not css_color then css_color = '#808080'
+		if not css_color then css_color = '#343537'
 		theme_color = css_color
 		color_strategy = if new Color({ hex: css_color }).isLight() then 'black-text' else 'white-text'
 	
-	set_theme_color('#808080')
+	set_theme_color()
 	setContext('set_theme_color', set_theme_color)
 
 #color-strategy(class='color-strategy-{color_strategy}' style='--c-theme: {theme_color}; background: var(--c-theme)')

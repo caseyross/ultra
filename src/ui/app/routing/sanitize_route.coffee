@@ -28,6 +28,7 @@ export default ({
 	comments_sort
 	wikipage_name
 	wikipage_revision_id
+	listings_type
 	url
 }) ->
 	# Check for missing critical data.
@@ -90,6 +91,7 @@ export default ({
 			subreddit_name
 			user_name
 		}
+		listings_type
 		path
 		selection: {
 			comment_context

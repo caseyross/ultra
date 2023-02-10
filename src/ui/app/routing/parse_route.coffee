@@ -21,8 +21,8 @@ export default (url) ->
 	switch path[1]
 		when undefined
 			return sanitize_route(
-				format: 'subreddits'
-
+				format: 'listings'
+				listings_type: 'subscriber'
 			)
 		when 'c', 'collection'
 			return sanitize_route(
@@ -122,7 +122,7 @@ export default (url) ->
 								comments_sort: query.get('sort')
 							)
 		when 'reddits', 'subreddits'
-			subreddits_filter = switch path[2]
+			listings_type = switch path[2]
 				when 'mine'
 					switch path[3]
 						when 'contributor' then 'approved-user'
@@ -134,8 +134,8 @@ export default (url) ->
 				when 'subscribed', 'subscriber', 'subscriptions' then 'subscriber'
 				else 'global-popular'
 			return sanitize_route(
-				format: 'subreddits'
-				subreddits_filter: subreddits_filter
+				format: 'listings'
+				listings_type: listings_type
 			)
 		when 's', 'search'
 			# TODO
