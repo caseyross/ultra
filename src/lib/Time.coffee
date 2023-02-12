@@ -84,7 +84,8 @@ Time = {
 
 	msToAbsTimeStr: (ms) ->
 		date = new Date(ms)
-		return "#{String(date.getMonth() + 1).padStart(2, '0')}/#{String(date.getDate()).padStart(2, '0')}/#{String(date.getFullYear())[2..]} #{String(date.getHours()).padStart(2, '0')}:#{String(date.getMinutes()).padStart(2, '0')}"
+		hour = date.getHours()
+		return date.getFullYear() + '/' + String(date.getMonth() + 1).padStart(2, '0')  + '/' + String(date.getDate()).padStart(2, '0') + ' ' + String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0')
 	
 	msToAbsRelTimeStr: (ms) ->
 		# We want to account for day boundaries when counting relative days - i.e. treat days as midnight--midnight rather than just a particular number of milliseconds.
@@ -111,7 +112,7 @@ Time = {
 					[date.getHours(), date.getMinutes(), date.getSeconds()].map((s) -> String(s).padStart(2, '0')).join(':')
 				daysBack = if HHMMSS(currentDate) > HHMMSS(targetDate) then duration.count else duration.count + 1 # string comparison
 			when 'hour'
-				daysBack = if duration.count > currentDate.getHours() then 1 else 0
+				daysBack = if duration.count >= currentDate.getHours() then 1 else 0
 			when 'minute'
 				daysBack = if currentDate.getHours() is 0 and duration.count > currentDate.getMinutes() then 1 else 0
 			when 'second'
@@ -121,12 +122,12 @@ Time = {
 		if duration.count < 0
 			daysBack = 0
 		switch daysBack
-			when 0 then return "Today #{String(targetDate.getHours()).padStart(2, '0')}:#{String(targetDate.getMinutes()).padStart(2, '0')}"
+			when 0 then return 'Today ' + String(targetDate.getHours()).padStart(2, '0') + ':' + String(targetDate.getMinutes()).padStart(2, '0')
 			when 1 then return 'Yesterday'
 			else
-				return "#{String(targetDate.getMonth() + 1).padStart(2, '0')}/#{String(targetDate.getDate()).padStart(2, '0')}/#{String(targetDate.getFullYear())[2..]}"
+				return targetDate.getFullYear()+ '/' + String(targetDate.getMonth() + 1).padStart(2, '0')  + '/' + String(targetDate.getDate()).padStart(2, '0')
 	
-	msToRelTimeStr: (ms, { abbr = true, endMs = Time.unixMs() } = {}) ->
+	msToRelTimeStr: (ms, { abbr = false, endMs = Time.unixMs() } = {}) ->
 		duration = Time.msToTopDuration(endMs - ms, { trunc: true })
 		if duration.unit.abbr != 'ms'
 			if abbr

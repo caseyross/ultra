@@ -52,11 +52,11 @@ script.
 				span.list-info-card-list-type Multireddit
 				strong.list-info-card-list-name {user_name}/{multireddit_name}
 	{:else if type === 'subreddit'}
-		a.list-info-card(href='/{subreddit_name}')
+		a.list-info-card(href='/{subreddit_name}' style='display:flex')
 			section.list-info-card-avatar
 				{#if info.community_icon || info.icon_img}
 					img.list-info-card-avatar-image(alt='' src={info.community_icon || info.icon_img})
-			section.list-info-card-data
+			section.list-info-card-data(style='display:none')
 				span.list-info-card-list-type Subreddit
 				strong.list-info-card-list-name(title={info.display_name}) {info.display_name}
 	{:else if type === 'user'}
@@ -75,7 +75,6 @@ style.
 		display grid
 		gap 10px
 		grid-template-columns 64px 216px
-		padding 20px
 	.list-info-card-avatar
 		position relative
 		width 64px

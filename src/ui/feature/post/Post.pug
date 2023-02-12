@@ -68,6 +68,8 @@ article.post
 	{:else if loading}
 		.post-loading-message Loading...
 	{:else if post}
+		PostInfoCard(post_short_id={short_id})
+		br
 		{#if post.removed_by_category}
 			.post-unavailable-reason
 				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
@@ -100,8 +102,8 @@ article.post
 							figure.post-image-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
-										source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
-										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
+										source(srcset={media.aspect_ratio > 1.777 ? media.image_url_960 : media.aspect_ratio > 0.444 ? media.image_url_640 : media.image_url_320})
+										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {480 * Math.sqrt(media.aspect_ratio)}px")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -201,18 +203,19 @@ style.
 		border-radius 10px
 		color white
 		padding 10px
-		width 400px
+		width 480px
 	.post-iframe
 		aspect-ratio 16/9
 		border-radius 6px
 		width 560px
 	.post-image
 		border-radius 6px
+		width 480px
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 11px
 		letter-spacing 0.04em
-		max-width 400px
+		max-width 480px
 	.post-image-item
 		display flex
 		flex-flow column nowrap
@@ -240,10 +243,10 @@ style.
 		display flex
 	.post-selftext
 		margin-bottom 2em
-		max-width 400px
+		max-width 480px
 	.post-unavailable-reason
 		background salmon
 		border-radius 10px
 		color white
 		padding 10px
-		width 400px
+		width 480px

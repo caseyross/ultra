@@ -134,7 +134,7 @@ export default extract = (rawData, sourceID) ->
 				)
 			else if post.url?.hostname == 'i.redd.it'
 				post.media[0] =
-					image_url: post.url
+					image_url: post.url.toString()
 					is_gif: post.url.pathname.endsWith('gif')
 			if hosted_video_data
 				video = hosted_video_data

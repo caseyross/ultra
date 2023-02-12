@@ -3,7 +3,7 @@ import sanitize_route from './sanitize_route.coffee'
 COUNTRY_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 RECOGNIZED_TOP_LEVEL_PATHS =
-	[undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'hot', 'm', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'reddits', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video']
+	[undefined, 'about', 'best', 'c', 'chat', 'collection', 'comments', 'controversial', 'dev', 'domain', 'gallery', 'hot', 'm', 'message', 'messages', 'multi', 'multireddit', 'new', 'p', 'poll', 'post', 'r', 'reddits', 'report', 'rising', 's', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'top', 'u', 'user', 'w', 'wiki', 'video']
 
 export default (url) ->
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
@@ -47,6 +47,12 @@ export default (url) ->
 				posts_sort_range: query.get('t')
 				posts_search_text: query.get('q')
 				after_post_short_id: query.get('after')
+			)
+		when 'message'
+			# TODO
+			return sanitize_route(
+				format: 'official_site'
+				url: url
 			)
 		when 'messages'
 			switch path[3]

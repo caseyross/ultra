@@ -1,5 +1,5 @@
 script.
-	import { tick } from 'svelte'
+	import { getContext, tick } from 'svelte'
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -23,6 +23,13 @@ script.
 				# it's not worth it to support this handling for other views, but this is a special case
 				await tick()
 				document.getElementById(location.hash[1..])?.scrollIntoView()
+	)
+	
+	set_theme_color = getContext('set_theme_color')
+	api.loadWatch(api.ID('subreddit', subreddit_name),
+		(x) ->
+			{ data: subreddit } = x
+			set_theme_color(subreddit?.primary_color || subreddit?.key_color)
 	)
 
 svelte:head
@@ -50,7 +57,6 @@ style.
 		margin-top 3em
 	:global(.wiki-page-body > .md)
 		background none
-		font-size 16px
 		padding 0
 	.wiki-page-info
 		align-items center

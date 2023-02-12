@@ -3,7 +3,7 @@ script.
 	import api from '../../../api/index.js'
 
 	import Button from '../../common/Button.pug'
-	import SplitLayout from '../../common/layout/SplitLayout.pug'
+	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	import Post from '../post/Post.pug'
 	import PostsList from '../posts/PostsList.pug'
 	import PostsListInfo from '../posts/PostsListInfo.pug'
@@ -29,12 +29,12 @@ script.
 
 svelte:head
 	title r/{subreddit ? subreddit.display_name : subreddit_name}
-SplitLayout
-	svelte:fragment(slot='left')
+CenterLayout
+	.subreddit
 		nav.subreddit-nav
 			PostsListInfo(type='subreddit' subreddit_name={subreddit_name})
 			{#if subreddit}
-				menu.subreddit-options
+				menu.subreddit-options(style='display:none')
 					Button(popup={true} text='About')
 						SubredditInfo(name={subreddit_name})
 					Button(popup={true} text='Rules')
@@ -42,9 +42,10 @@ SplitLayout
 					{#if subreddit.wiki_enabled}
 						Button(link='/r/{subreddit_name}/wiki/index' text='Wiki')
 		{#if subreddit?.header_title}
-			span(style='color:var(--c-text-weak)') "{subreddit.header_title}"
-		PostsList(type='subreddit' subreddit_name={subreddit_name} posts_sort={posts_sort} selected_post_short_id={post_short_id})
-	svelte:fragment(slot='right')
+			span(style='color:var(--c-text-weak);display:none') "{subreddit.header_title}"
+		nav.subreddit-posts
+			{#key posts_sort}
+				PostsList(type='subreddit' subreddit_name={subreddit_name} posts_sort={posts_sort} selected_post_short_id={post_short_id})
 		{#if post_short_id}
 			{#key post_short_id}
 				Post(short_id={post_short_id} focus_comment_context_level={comment_context} focus_comment_short_id={comment_short_id} comments_sort={comments_sort})
@@ -52,11 +53,26 @@ SplitLayout
 			SubredditInfo(name={subreddit_name})
 
 style.
+	.subreddit
+		align-self flex-start
+		margin-left calc(33% + 108px)
+		width 560px
 	.subreddit-nav
-		display flex
+		left 33%
+		position fixed
 	.subreddit-options
 		align-items flex-end
 		display flex
 		flex-flow column nowrap
 		gap 3px
 		padding 20px 0
+	.subreddit-posts
+		height 100dvh
+		left 75%
+		overflow-y auto
+		padding 40px 0
+		position fixed
+		top 0
+		width 320px
+		&::-webkit-scrollbar
+			display none
