@@ -9,8 +9,9 @@ script.
 
 	import SubredditAvatar from './SubredditAvatar.pug'
 	import SubredditInfo from './SubredditInfo.pug'
-	import SubredditRules from './SubredditRules.pug'
 	import SubredditModerators from './SubredditModerators.pug'
+	import SubredditRules from './SubredditRules.pug'
+	import SubredditWidget from './SubredditWidget.pug'
 
 	export subreddit_name = null
 
@@ -26,6 +27,10 @@ script.
 	api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
 		{ data: subreddit } = x
 		set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+	)
+	widgets = null
+	api.loadWatch(api.ID('subreddit_widgets', subreddit_name), (x) ->
+		{ data: widgets } = x
 	)
 
 svelte:head
@@ -52,6 +57,10 @@ CenterLayout
 				Post(short_id={post_short_id} focus_comment_context_level={comment_context} focus_comment_short_id={comment_short_id} comments_sort={comments_sort})
 		{:else}
 			SubredditInfo(name={subreddit_name})
+			{#if widgets}
+				ol.subreddit-widgets
+					{#each widgets.sidebar as widget}
+						SubredditWidget(widget={widget})
 
 style.
 	.subreddit
@@ -76,3 +85,8 @@ style.
 		width 320px
 		&::-webkit-scrollbar
 			display none
+	.subreddit-widgets
+		display flex
+		flex-flow column nowrap
+		gap 3em
+		padding 0

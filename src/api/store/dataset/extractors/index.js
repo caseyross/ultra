@@ -7,6 +7,7 @@ import current_user_messages from './current_user_messages.coffee'
 import global_subreddits_popular from './global_subreddits_popular.coffee'
 import post from './post.coffee'
 import post_more_replies from './post_more_replies.coffee'
+import subreddit_widgets from './subreddit_widgets.coffee'
 import users from './users.coffee'
 import user_public_multireddits from './user_public_multireddits.coffee'
 
@@ -18,6 +19,7 @@ export default {
 	global_subreddits_popular,
 	post,
 	post_more_replies,
+	subreddit_widgets,
 	users,
 	user_public_multireddits,
 }

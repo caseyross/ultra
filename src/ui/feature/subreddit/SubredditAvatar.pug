@@ -1,17 +1,19 @@
 script.
 	import api from '../../../api/index.js'
 	
+	export icon_url = null
 	export name = null
-	export size = 'small'
+	export size = 'medium'
 
-	subreddit = null
-	api.loadWatch(api.ID('subreddit', name), (x) ->
-		{ data: subreddit } = x
-	)
+	if !icon_url
+		subreddit = null
+		api.loadWatch(api.ID('subreddit', name), (x) ->
+			{ data: subreddit } = x
+		)
 
 a.subreddit-avatar(class='subreddit-avatar-size-{size}' href='/{name}')
-	{#if subreddit?.community_icon || subreddit?.icon_img}
-		img.subreddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={subreddit.community_icon || subreddit.icon_img})
+	{#if icon_url || subreddit?.community_icon || subreddit?.icon_img}
+		img.subreddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={icon_url || subreddit?.community_icon || subreddit?.icon_img})
 	{:else}
 		.subreddit-avatar-image.subreddit-avatar-image-not-available
 
