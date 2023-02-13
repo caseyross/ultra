@@ -6,7 +6,8 @@ script.
 	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	import Post from '../post/Post.pug'
 	import PostsList from '../posts/PostsList.pug'
-	import PostsListInfo from '../posts/PostsListInfo.pug'
+
+	import SubredditAvatar from './SubredditAvatar.pug'
 	import SubredditInfo from './SubredditInfo.pug'
 	import SubredditRules from './SubredditRules.pug'
 	import SubredditModerators from './SubredditModerators.pug'
@@ -32,7 +33,7 @@ svelte:head
 CenterLayout
 	.subreddit
 		nav.subreddit-nav
-			PostsListInfo(type='subreddit' subreddit_name={subreddit_name})
+			SubredditAvatar(name={subreddit_name} size='large')
 			{#if subreddit}
 				menu.subreddit-options(style='display:none')
 					Button(popup={true} text='About')

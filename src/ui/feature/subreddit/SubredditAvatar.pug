@@ -1,0 +1,34 @@
+script.
+	import api from '../../../api/index.js'
+	
+	export name = null
+	export size = 'small'
+
+	subreddit = null
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit } = x
+	)
+
+a.subreddit-avatar(class='subreddit-avatar-size-{size}' href='/{name}')
+	{#if subreddit?.community_icon || subreddit?.icon_img}
+		img.subreddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={subreddit.community_icon || subreddit.icon_img})
+	{:else}
+		.subreddit-avatar-image.subreddit-avatar-image-not-available
+
+style.
+	.subreddit-avatar
+		aspect-ratio 1
+		display inline-block
+		user-select none
+	.subreddit-avatar-image
+		border-radius 50%
+	.subreddit-avatar-image-not-available
+		background var(--c-text-faint)
+		border-radius 50%
+		height 100%
+	.subreddit-avatar-size-small
+		height 16px
+	.subreddit-avatar-size-medium
+		height 32px
+	.subreddit-avatar-size-large
+		height 64px
