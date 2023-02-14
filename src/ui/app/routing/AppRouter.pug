@@ -105,7 +105,8 @@ script.
 				{:else if route.format === 'multireddit'}
 					MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
 				{:else if route.format === 'subreddit'}
-					SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+					{#key route.listing.subreddit_name}
+						SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
 				{:else if route.format === 'user'}
 					UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_context={route.selection.comment_context} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
 				{:else if route.format === 'wiki'}
