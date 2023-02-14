@@ -1,11 +1,14 @@
 script.
 	import { onMount } from 'svelte'
 	import { Time } from '../../lib/index.js'
+	
 	import Button from './Button.pug'
+	
 	export audio_url = null
 	export dimensions = [480, 480]
 	export mimic_gif = false
 	export video_url = null
+
 	audio = null
 	buffer_regions = []
 	clamp = (min, max, value) ->
@@ -14,13 +17,27 @@ script.
 		return value
 	duration = 0
 	fullscreen = false
+	height = dimensions[1]
 	mouse_idle = false
 	mouse_idle_timer_id = null
 	paused = true
+	play_pause = ->
+		if paused
+			video.play()
+		else
+			video.pause()
 	player = null
+	set_volume = (value) ->
+		audio.volume = clamp(0, 1, value)
+		localStorage['media.volume'] = audio.volume
 	time = 0
+	toggle_fullscreen = ->
+		if fullscreen
+			document.exitFullscreen()
+		else
+			player.requestFullscreen()
 	video = null
-	volume = 0
+	volume = Number(localStorage['media.volume']) or 0
 	wake_mouse = ->
 		mouse_idle = false
 		clearTimeout(mouse_idle_timer_id)
@@ -28,6 +45,8 @@ script.
 			-> mouse_idle = true
 			200
 		)
+	width = dimensions[0]
+
 	onMount ->
 		audio.volume = volume
 		player.addEventListener('fullscreenchange', (e) ->
@@ -38,51 +57,52 @@ script.
 				fullscreen = false
 		)
 		video.addEventListener('ended', (e) ->
-			if fullscreen then document.exitFullscreen()
+			if fullscreen
+				document.exitFullscreen()
 		)
 		video.addEventListener('mousedown', (e) ->
 			if e.button is 0
 				if fullscreen
-					if paused then video.play() else video.pause()
+					play_pause()
 					wake_mouse()
 				else
 					player.requestFullscreen()
 					video.play()
 		)
 		video.addEventListener('mousemove', (e) ->
-			if fullscreen then wake_mouse()
+			if fullscreen
+				wake_mouse()
 		)
 		video.addEventListener('pause', (e) ->
-			audio.pause()
+			audio?.pause()
 		)
 		video.addEventListener('playing', (e) ->
-			audio.currentTime = video.currentTime
-			audio.play().catch(() -> null) # ignore useless errors from bad API design
+			audio?.currentTime = video.currentTime
+			audio?.play().catch(-> null) # ignore useless errors from bad API design
 		)
 		video.addEventListener('waiting', (e) ->
-			audio.pause()
+			audio?.pause()
 		)
 
-.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width:{dimensions[0]}px')
+.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px')
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
-	<!-- in general, videos never have captions -->
 	<!-- svelte-ignore a11y-media-has-caption -->
-	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height:{dimensions[1]}px;width:{dimensions[0]}px')
+	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
-	figure.media-player-video-hint-overlay(style='height:{dimensions[1]}px;width:{dimensions[0]}px') ▶ Play in fullscreen
+	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={() => paused ? video.play() : video.pause()} key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(time > 0 ? time : duration)}")
+		Button(action={play_pause} key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(time > 0 ? time : duration)}")
 		.media-scrobbler
 			figure.media-scrobbler-graphics
 				{#each buffer_regions as region}
-					span.media-scrobbler-buffer-region(style='left:{region.start/duration*100}%;width:{(region.end-region.start)/duration*100}%')
+					span.media-scrobbler-buffer-region(style='left: {region.start/duration*100}%; width: {(region.end-region.start)/duration*100}%')
 			input.media-scrobbler-input(bind:value={time} max={duration} min={0} step={1/30} type='range')
 		.media-volume
 			span.media-volume-region-mute M
 			span.media-volume-region-sound S
-			input.media-volume-input(max={1} min={-1} step={0.1} type='range' on:input={e => audio.volume = clamp(0, 1, e.target.value)} value={volume})
-		Button(action={() => fullscreen ? document.exitFullscreen() : player.requestFullscreen()} key='f' text={fullscreen ? '→←' : '⟷'})
+			input.media-volume-input(max={1} min={-1} step={0.1} type='range' on:input={e => set_volume(e.target.value)} value={volume})
+		Button(action={toggle_fullscreen} key='f' text={fullscreen ? '→←' : '⟷'})
 
 style.
 	audio
