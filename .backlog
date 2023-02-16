@@ -2,7 +2,6 @@ H  Listings: properly show to r/popular (or something else?) when not logged in
 
 M	General: compatibility with Firefox and Safari (scrollbar/video/input styling, general functionality)
 M	Posts: rewrite reddit.com paths in link posts & image gallery captions
-M	Videos: figure out issue with video player freezing video in certain situations
 M	Videos: UI improvements (fullscreen control colors, volume input, ended indicator)
 
 L	General: contingency for localStorage absence (e.g. when cookies are disabled)

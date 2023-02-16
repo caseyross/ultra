@@ -30,6 +30,7 @@ script.
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
 		localStorage['media.volume'] = audio.volume
+	scrobbler = null
 	time = 0
 	toggle_fullscreen = ->
 		if fullscreen
@@ -38,6 +39,7 @@ script.
 			player.requestFullscreen()
 	video = null
 	volume = Number(localStorage['media.volume']) or 0
+	waiting_for_seek = false
 	wake_mouse = ->
 		mouse_idle = false
 		clearTimeout(mouse_idle_timer_id)
@@ -80,6 +82,15 @@ script.
 			audio?.currentTime = video.currentTime
 			audio?.play().catch(-> null) # ignore useless errors from bad API design
 		)
+		video.addEventListener('seeking', (e) ->
+			waiting_for_seek = true
+		)
+		video.addEventListener('seeked', (e) ->
+			waiting_for_seek = false
+		)
+		video.addEventListener('timeupdate', (e) ->
+			scrobbler.value = time
+		)
 		video.addEventListener('waiting', (e) ->
 			audio?.pause()
 		)
@@ -88,7 +99,7 @@ script.
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	<!-- svelte-ignore a11y-media-has-caption -->
-	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:currentTime={time} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
+	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:currentTime={time} bind:duration={duration} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
@@ -97,7 +108,7 @@ script.
 			figure.media-scrobbler-graphics
 				{#each buffer_regions as region}
 					span.media-scrobbler-buffer-region(style='left: {region.start/duration*100}%; width: {(region.end-region.start)/duration*100}%')
-			input.media-scrobbler-input(bind:value={time} max={duration} min={0} step={1/30} type='range')
+			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => waiting_for_seek ? null : time = e.target.value} max={duration} min={0} step={1/1000} type='range')
 		.media-volume
 			span.media-volume-region-mute M
 			span.media-volume-region-sound S
