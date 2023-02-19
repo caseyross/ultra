@@ -38,7 +38,6 @@ script.
 		else
 			player.requestFullscreen()
 	video = null
-	volume = Number(localStorage['media.volume']) or 0
 	waiting_for_seek = false
 	wake_mouse = ->
 		mouse_idle = false
@@ -50,7 +49,7 @@ script.
 	width = dimensions[0]
 
 	onMount ->
-		audio.volume = volume
+		audio.volume = Number(localStorage['media.volume']) or 0
 		player.addEventListener('fullscreenchange', (e) ->
 			if document.fullscreenElement? and document.fullscreenElement is player
 				fullscreen = true
@@ -110,9 +109,10 @@ script.
 					span.media-scrobbler-buffer-region(style='left: {region.start/duration*100}%; width: {(region.end-region.start)/duration*100}%')
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => waiting_for_seek ? null : time = e.target.value} max={duration} min={0} step={1/1000} type='range')
 		.media-volume
-			span.media-volume-region-mute M
-			span.media-volume-region-sound S
-			input.media-volume-input(max={1} min={-1} step={0.1} type='range' on:input={e => set_volume(e.target.value)} value={volume})
+			figure.media-volume-graphics
+				{#each [0, 0.25, 0.5, 0.75, 1] as value}
+					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
+			input.media-volume-input(max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
 		Button(action={toggle_fullscreen} key='f' text={fullscreen ? '→←' : '⟷'})
 
 style.
@@ -121,19 +121,14 @@ style.
 	video
 		background black
 		border-radius 6px
+		&::-webkit-media-controls
+			display none
 		:fullscreen &
 			border-radius 0
 			height 100% !important
 			width 100% !important
 		.media-player-controls-hidden &
 			cursor none
-	::-webkit-media-controls
-		display none
-	::-webkit-slider-thumb
-		appearance none
-		background black
-		height 2em
-		width 3px
 	.media-player
 		position relative
 		&:fullscreen
@@ -188,35 +183,37 @@ style.
 		position absolute
 		top 0
 		width 100%
+		&::-webkit-slider-thumb
+			appearance none
+			background black
+			height 2em
+			width 3px
 	.media-volume
-		align-items center
 		background var(--c-con-weak)
 		border-radius 6px
-		display flex
+		padding 0 9px
 		position relative
-		width 60px
-		::-webkit-slider-thumb
-			height 1em
-			width 2px
+	.media-volume-bar
+		background var(--c-text-faint)
+		border-radius 3px
+		width 6px
+	.media-volume-bar-filled
+		background var(--c-text-strong)
+	.media-volume-graphics
+		align-items flex-end
+		display flex
+		gap 3px
+		height 100%
+		padding 4px 0
 	.media-volume-input
 		appearance none
 		background transparent
 		left 0
 		height 100%
 		margin 0
+		padding 0 4px
 		position absolute
 		top 0
 		width 100%
-	.media-volume-region-mute
-		align-items center
-		border-right 1px solid
-		display flex
-		flex 1
-		height 100%
-		justify-content center
-	.media-volume-region-sound
-		align-items center
-		display flex
-		flex 1
-		height 100%
-		justify-content center
+		&::-webkit-slider-thumb
+			visibility hidden
