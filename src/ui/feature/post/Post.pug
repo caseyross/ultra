@@ -101,9 +101,14 @@ article.post
 						{#each post.media as media, index}
 							figure.post-image-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-									picture
-										source(srcset={media.aspect_ratio > 1.777 ? media.image_url_960 : media.aspect_ratio > 0.444 ? media.image_url_640 : media.image_url_320})
-										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {480 * Math.sqrt(media.aspect_ratio)}px")
+									{#if post.media.length > 1}
+										picture
+											source(srcset={media.aspect_ratio > 4 ? media.image_url_960 : media.aspect_ratio > 1 ? media.image_url_640 : media.image_url_320})
+											img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {320 * Math.sqrt(media.aspect_ratio)}px")
+									{:else}
+										picture
+											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+											img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -123,7 +128,7 @@ article.post
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
-								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url})
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {420 * Math.sqrt(embed.iframe_aspect_ratio)}px")
 						{:else}
 							.md.post-link
 								a(href={post.url} rel='external noopener preconnect') {post.url}
@@ -205,9 +210,7 @@ style.
 		padding 10px
 		width 480px
 	.post-iframe
-		aspect-ratio 16/9
 		border-radius 6px
-		width 560px
 	.post-image
 		border-radius 6px
 		width 480px
@@ -234,7 +237,7 @@ style.
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
-		gap 2em
+		gap 1em
 		margin 0
 		padding 0
 	.post-loading-message

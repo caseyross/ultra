@@ -1,5 +1,5 @@
 script.
-	import hotkey from './actions/use_hotkey.coffee'
+	import { hotkey } from './actions/hotkeys.coffee'
 	import HotkeyLabel from './HotkeyLabel.pug'
 	import Popup from './Popup.pug'
 	
@@ -7,6 +7,7 @@ script.
 	export activated = false
 	export appearance = 'button'
 	export badge = null
+	export description = ''
 	export disabled = false
 	export key = null
 	export link = null
@@ -21,7 +22,7 @@ script.
 		action = -> popup_open = true
 
 {#if link}
-	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} use:hotkey={key})
+	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		{#if text}
@@ -29,7 +30,7 @@ script.
 		{#if badge}
 			span.badge {badge}
 {:else}
-	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} use:hotkey={key})
+	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
 		{#if loading}
 			| loading...
 		{:else}

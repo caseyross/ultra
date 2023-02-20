@@ -2,6 +2,7 @@ script.
 	import { onMount } from 'svelte'
 	import { Time } from '../../lib/index.js'
 	
+	import { virtual_hotkeys } from './actions/hotkeys.coffee'
 	import Button from './Button.pug'
 	
 	export audio_url = null
@@ -9,7 +10,35 @@ script.
 	export mimic_gif = false
 	export video_url = null
 
+	additional_hotkeys =
+		ArrowDown: ->
+			set_volume(audio.volume - 0.25)
+		ArrowLeft: ->
+			set_time(video.currentTime - 15)
+		ArrowRight: ->
+			set_time(video.currentTime + 15)
+		ArrowUp: ->
+			set_volume(audio.volume + 0.25)
+		j: ->
+			set_time(video.currentTime - 15)
+		k: ->
+			play_pause()
+		l: ->
+			set_time(video.currentTime + 15)
+		m: ->
+			if audio.volume > 0
+				localStorage['media.premute_volume'] = audio.volume
+				set_volume(0)
+			else
+				set_volume(Number(localStorage['media.premute_volume']) or 1)
 	audio = null
+	buffer_gradient_params = (buffer_regions) ->
+		params = 'transparent 0%,'
+		for region in buffer_regions
+			start = (region.start / duration * 100) + '%'
+			end = (region.end / duration * 100) + '%'
+			params += " transparent #{start}, var(--c-text-faint) #{start}, var(--c-text-faint) #{end}, transparent #{end},"
+		params = params + ' transparent 100%'
 	buffer_regions = []
 	clamp = (min, max, value) ->
 		if value < min then return min
@@ -27,11 +56,13 @@ script.
 		else
 			video.pause()
 	player = null
+	set_time = (value) ->
+		if !waiting_for_seek
+			video.currentTime = clamp(0, duration, value)
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
 		localStorage['media.volume'] = audio.volume
 	scrobbler = null
-	time = 0
 	toggle_fullscreen = ->
 		if fullscreen
 			document.exitFullscreen()
@@ -88,32 +119,31 @@ script.
 			waiting_for_seek = false
 		)
 		video.addEventListener('timeupdate', (e) ->
-			scrobbler.value = time
+			scrobbler.value = video.currentTime
 		)
 		video.addEventListener('waiting', (e) ->
 			audio?.pause()
 		)
 
-.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px')
+.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' use:virtual_hotkeys={additional_hotkeys})
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	<!-- svelte-ignore a11y-media-has-caption -->
-	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:currentTime={time} bind:duration={duration} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
+	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(time > 0 ? time : duration)}")
-		.media-scrobbler
-			figure.media-scrobbler-graphics
-				{#each buffer_regions as region}
-					span.media-scrobbler-buffer-region(style='left: {region.start/duration*100}%; width: {(region.end-region.start)/duration*100}%')
-			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => waiting_for_seek ? null : time = e.target.value} max={duration} min={0} step={1/1000} type='range')
-		.media-volume
+		Button(action={play_pause} description='Play / pause' key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(video?.currentTime > 0 ? video?.currentTime : duration)}")
+		.media-scrobbler(title='Drag left or right to change playback position')
+			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
+			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
+		.media-volume(title='Drag left or right to change volume')
 			figure.media-volume-graphics
-				{#each [0, 0.25, 0.5, 0.75, 1] as value}
+				span.media-volume-bar(class:media-volume-bar-filled={audio?.volume == 0} style='align-self: flex-start; height: 6px')
+				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
 			input.media-volume-input(max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
-		Button(action={toggle_fullscreen} key='f' text={fullscreen ? '→←' : '⟷'})
+		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text={fullscreen ? '→←' : '⟷'})
 
 style.
 	audio
@@ -136,6 +166,7 @@ style.
 			width 100%
 	.media-player-controls
 		display flex
+		font-feature-settings 'tnum'
 		gap 1em
 		margin-top 1em
 		:fullscreen &
@@ -166,13 +197,8 @@ style.
 		border-radius 6px
 		flex 1
 		position relative
-	.media-scrobbler-buffer-region
-		background lightgray
-		height 10px
-		position absolute
 	.media-scrobbler-graphics
-		align-items center
-		display flex
+		border-radius inherit
 		height 100%
 	.media-scrobbler-input
 		appearance none
@@ -185,7 +211,8 @@ style.
 		width 100%
 		&::-webkit-slider-thumb
 			appearance none
-			background black
+			background var(--c-text-strong)
+			border-radius 3px
 			height 2em
 			width 3px
 	.media-volume
