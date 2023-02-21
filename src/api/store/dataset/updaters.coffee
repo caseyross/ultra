@@ -7,7 +7,7 @@ export default {
 			if parent_comment_short_id
 				ID('comment', parent_comment_short_id)
 			else
-				ID('post', post_short_id)
+				ID('post', post_short_id, comments_sort)
 		modify: (target, { more_replies, more_replies_id, num_more_replies, replies }) ->
 			delete target.more_replies
 			delete target.more_replies_id
