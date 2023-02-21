@@ -23,7 +23,6 @@ export default ({
 	posts_search_text
 	after_post_short_id
 	post_short_id
-	comment_context
 	comment_short_id
 	comments_sort
 	wikipage_name
@@ -50,7 +49,7 @@ export default ({
 				return INVALID
 	# Reify sort options.
 	if comments_sort not in COMMENTS_SORT_OPTIONS_GENERAL
-		comments_sort = 'best'
+		comments_sort = 'confidence'
 	switch posts_sort_base
 		when 'controversial', 'search', 'top'
 			posts_sort = posts_sort_base + '-' + (posts_sort_range or 'all')
@@ -94,7 +93,6 @@ export default ({
 		listings_type
 		path
 		selection: {
-			comment_context
 			comment_short_id
 			comments_sort
 			post_short_id

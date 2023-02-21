@@ -15,14 +15,14 @@ script.
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
-	export comments_sort = 'best'
-	export focus_comment_context_level = null
+	export comments_sort = 'confidence'
 	export focus_comment_short_id = null
 	export short_id = null
+
 	comments_sort_options = [
 		{
 			label: 'Best'
-			value: 'best'
+			value: 'confidence'
 		}
 		{
 			label: 'Top'
@@ -165,7 +165,7 @@ article.post
 				{:else}
 					ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
 			{#key comments_sort}
-				PostCommentList(focus_comment_context_level={focus_comment_context_level} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
+				PostCommentList(focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 			menu.post-comments-actions
 				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
 
@@ -237,7 +237,7 @@ style.
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
-		gap 1em
+		gap 6px
 		margin 0
 		padding 0
 	.post-loading-message

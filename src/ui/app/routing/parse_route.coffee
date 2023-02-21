@@ -34,7 +34,6 @@ export default (url) ->
 				format: 'subreddit'
 				subreddit_name: null
 				post_short_id: path[2]
-				comment_context: query.get('context')
 				comment_short_id: path[3] or path[4]
 				comments_sort: query.get('sort')
 			)
@@ -101,7 +100,6 @@ export default (url) ->
 								subreddit_name: path[2]
 								after_post_short_id: query.get('after')
 								post_short_id: path[4]
-								comment_context: query.get('context')
 								comment_short_id: path[6]
 								comments_sort: query.get('sort')
 							)
@@ -123,7 +121,6 @@ export default (url) ->
 								subreddit_name: path[2]
 								after_post_short_id: query.get('after')
 								post_short_id: path[3]
-								comment_context: query.get('context')
 								comment_short_id: path[4]
 								comments_sort: query.get('sort')
 							)
@@ -164,7 +161,6 @@ export default (url) ->
 						user_name: user_name
 						after_post_short_id: query.get('after')
 						post_short_id: path[4]
-						comment_context: query.get('context')
 						comment_short_id: path[6]
 						comments_sort: query.get('sort')
 					)

@@ -38,6 +38,8 @@ export load = (id) ->
 	else if cache[id].partial
 		reload(id)
 		return true
+	else
+		return false
 
 export loadWatch = (id, callback) ->
 	load(id)
@@ -70,10 +72,10 @@ reload = (id) ->
 			details: datasets.main.data,
 			message: "#{Time.msToS(Time.unixMs() - startTime).toFixed(1)}s",
 		})
-		setData(id, datasets.main.data, datasets.main.partial)
 		for dataset in datasets.sub
 			if !cache[dataset.id] or (cache[dataset.id].partial is true) or !dataset.partial
 				setData(dataset.id, dataset.data, dataset.partial)
+		setData(id, datasets.main.data, datasets.main.partial)
 		updater = datasetUpdaters[ID.type(id)]
 		if updater
 			targetID = updater.targetID(...ID.varArray(id)[1..])

@@ -1,16 +1,27 @@
 script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
+	
+	export batch_id = null
 	export name = null
 	export size = 'small'
+	
 	user = null
 	if name != '[deleted]'
-		api.loadWatch(api.ID('user', name), ({ data }) ->
-			user = data
-		)
+		if batch_id
+			api.loadWatch(batch_id, (x) ->
+				if x?.data or x?.error
+					api.loadWatch(api.ID('user', name), (y) ->
+						user = y?.data
+					)
+			)
+		else
+			api.loadWatch(api.ID('user', name), (x) ->
+				user = x?.data
+			)
 
 {#if name === '[deleted]'}
-	span.user-avatar.user-avatar-account-unavailable(title='Deleted or unknown user') ✗
+	span.user-avatar.user-avatar-account-unavailable(title='Unknown user (possibly deleted)') ✗
 {:else if user}
 	{#if user.is_suspended}
 		span.user-avatar.user-avatar-account-suspended(title='Suspended user') ✗

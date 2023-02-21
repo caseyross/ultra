@@ -164,11 +164,12 @@ export default extract = (rawData, sourceID) ->
 					partial: true
 				})
 				delete post.sr_detail
+			# Setup contributors list.
+			post.contributors = if post.author_fullname? then [post.author_fullname[3..]] else []
 			# Done.
 			result.main =
 				id: ID('post', rawData.data.id)
 				data: post
-				partial: true
 		when 't4'
 			result.main =
 				id: ID('private_message', rawData.data.id)

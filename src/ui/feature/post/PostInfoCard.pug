@@ -16,7 +16,11 @@ script.
 	api.loadWatch(api.ID('post', post_short_id),
 		(x) ->
 			{ data: post } = x
-			if post?.contributors?.length then api.load(api.ID('users', post.contributors))
+			if post?
+				api.preload(api.ID('post', post_short_id, 'confidence'))
+				api.watch(api.ID('post', post_short_id, 'confidence'), (x) ->
+					if x?.data?.contributors.length then api.preload(api.ID('users', x.data.contributors))
+				)
 	)
 
 {#if post}

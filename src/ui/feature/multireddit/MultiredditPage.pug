@@ -10,7 +10,6 @@ script.
 	export posts_sort = null
 	
 	export post_short_id = null
-	export comment_context = null
 	export comment_short_id = null
 	export comments_sort = null
 
@@ -23,7 +22,7 @@ SplitLayout
 	svelte:fragment(slot='right')
 		{#if post_short_id}
 			{#key post_short_id}
-				Post(short_id={post_short_id} focus_comment_context_level={comment_context} focus_comment_short_id={comment_short_id} comments_sort={comments_sort})
+				Post(comments_sort={comments_sort} focus_comment_short_id={comment_short_id} short_id={post_short_id})
 		{:else}
 			p [Multireddit info goes here.]
 

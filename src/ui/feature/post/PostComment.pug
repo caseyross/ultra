@@ -13,6 +13,7 @@ script.
 	
 	export out_of_context = false
 	export short_id = null
+	export user_batch_id = null
 	
 	comment = null
 	focus_comment_short_id = getContext('focus_comment_short_id')
@@ -32,7 +33,7 @@ script.
 		<!-- svelte-ignore a11y-unknown-role -->
 		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} role='comment')
 			aside.comment-sidebar
-				UserAvatar(name={comment.author})
+				UserAvatar(batch_id={user_batch_id} name={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
 					UserDistinguish(type={comment.distinguished || 'submitter'})
 			TextHTML(html={comment.body_html})
@@ -42,12 +43,12 @@ script.
 		{#if out_of_context}
 			.comment-context
 				a(href='/r/{comment.subreddit}') in r/{comment.subreddit}
-				a(href='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}?context=4') {comment.link_title}
+				a(href='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}') {comment.link_title}
 		{:else}
 			ol.comment-replies
 				{#if comment.replies.length > 0}
 					{#each comment.replies as reply_short_id}
-						svelte:self(short_id={reply_short_id})
+						svelte:self(short_id={reply_short_id} user_batch_id={user_batch_id})
 				{#if comment.num_more_replies > 0}
 					.comment-more-replies
 						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="{comment.num_more_replies} {comment.num_more_replies === 1 ? 'reply' : 'replies'}")

@@ -88,10 +88,10 @@ export default {
 				t: posts_sort.split('-')[1]
 			}
 		)
-	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id, focus_comment_context_level) ->
+	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id) ->
 		get("/comments/#{post_short_id}", {
 			comment: focus_comment_short_id
-			context: focus_comment_context_level
+			context: 8
 			limit: max_comments
 			showedits: true
 			showmedia: true
