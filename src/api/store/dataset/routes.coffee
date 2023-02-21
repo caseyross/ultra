@@ -104,10 +104,10 @@ export default {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
 		})
-	post_more_replies: (post_short_id, parent_comment_short_id, comments_sort, ...comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
+	post_more_replies: (post_short_id, comments_sort, parent_comment_short_id, comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
 		post("/api/morechildren", {
 			api_type: 'json'
-			children: comment_short_ids.join(',')
+			children: comment_short_ids
 			link_id: "t3_#{post_short_id}"
 			sort: comments_sort
 		})

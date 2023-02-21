@@ -3,7 +3,7 @@ import ID from '../../core/ID.coffee'
 export default {
 
 	post_more_replies:
-		targetID: (post_short_id, parent_comment_short_id) ->
+		targetID: (post_short_id, comments_sort, parent_comment_short_id) ->
 			if parent_comment_short_id
 				ID('comment', parent_comment_short_id)
 			else

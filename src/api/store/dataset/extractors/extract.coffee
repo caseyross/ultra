@@ -26,14 +26,14 @@ export default extract = (rawData, sourceID) ->
 					more_replies_sort =
 						switch ID.type(sourceID)
 							when 'post' then ID.var(sourceID, 2) ? 'confidence'
-							when 'post_more_replies' then ID.var(sourceID, 3)
+							when 'post_more_replies' then ID.var(sourceID, 2)
 							else 'confidence'
 					comment.more_replies_id = ID(
 						'post_more_replies',
 						comment.link_id[3..],
-						comment.id,
 						more_replies_sort,
-						...comment.more_replies
+						comment.id,
+						comment.more_replies.join(',')
 					)
 			# Recursively extract all comments in this comment's reply tree.
 			repliesListingDatasets = extract(comment.replies or [], sourceID) # Sometimes Reddit sends an empty string instead of an empty array.

@@ -18,7 +18,7 @@ export default (rawData, sourceID) ->
 				mores.push(thing.data)
 			else if thing.kind is 't1'
 				comments[thing.data.id] = extract(thing, sourceID).main
-		source_comment_short_id = ID.var(sourceID, 2)
+		source_comment_short_id = ID.var(sourceID, 3)
 		# Link up child comments onto their parents.
 		for comment_short_id, comment of comments
 			parent = switch
@@ -28,7 +28,7 @@ export default (rawData, sourceID) ->
 					else comments[comment.data.parent_id[3..]].data
 			parent.replies.push(comment_short_id)
 		# Record "more children" properties for comments.
-		for more of mores
+		for more in mores
 			if more.count
 				parent = switch
 					when more.parent_id.startsWith('t3_') then result.main.data
@@ -40,9 +40,9 @@ export default (rawData, sourceID) ->
 				parent.more_replies_id = ID(
 					'post_more_replies',
 					ID.var(sourceID, 1),
-					parent.id ? ID.var(sourceID, 2),
-					ID.var(sourceID, 3),
-					...parent.more_replies
+					ID.var(sourceID, 2),
+					parent.id ? source_comment_short_id,
+					parent.more_replies.join(',')
 				)
 		result.sub = Object.values(comments)
 	return result
