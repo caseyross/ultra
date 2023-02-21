@@ -56,6 +56,7 @@ script.
 		else
 			video.pause()
 	player = null
+	reactive_time = 0
 	set_time = (value) ->
 		if !waiting_for_seek
 			video.currentTime = clamp(0, duration, value)
@@ -120,6 +121,7 @@ script.
 		)
 		video.addEventListener('timeupdate', (e) ->
 			scrobbler.value = video.currentTime
+			reactive_time = video.currentTime
 		)
 		video.addEventListener('waiting', (e) ->
 			audio?.pause()
@@ -133,7 +135,7 @@ script.
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} description='Play / pause' key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(video?.currentTime > 0 ? video?.currentTime : duration)}")
+		Button(action={play_pause} description='Play / pause' key='p' text="{paused ? '▶' : '■'} {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
 			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
