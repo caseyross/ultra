@@ -13,14 +13,14 @@
 	font-style normal italic
 	font-weight 100 900
 	src url('../../vendor/inter_100_900.woff2')
-:root
+body
 	--f-type-prop 'Inter', sans-serif
 	--f-type-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
 	font-family var(--f-type-prop)
 	font-feature-settings 'cv11'
 	font-size 14px
 	font-weight var(--f-wght-normal)
-	letter-spacing 0.02em
+	letter-spacing 0.025em
 	line-height 1.5
 b
 strong
@@ -28,32 +28,32 @@ strong
 	letter-spacing 0.015em
 
 // Theme
-:root
+body
 	--c-hint-normal wheat
+	--c-theme-default #343537
 	--c-tint-normal rgba(255,255,255,0.10)
-#color-strategy
-	background var(--c-back-default)
+	background: var(--c-theme)
 	color var(--c-text-strong)
-.color-strategy-black-text
-	--c-con-weak rgba(255,255,255,0.05)
-	--c-con-normal rgba(255,255,255,0.10)
-	--c-con-strong rgba(255,255,255,0.50)
-	--c-text-faint rgba(0,0,0,0.25)
-	--c-text-weak rgba(0,0,0,0.50)
-	--c-text-strong black
-	--f-wght-normal 400
-	--f-wght-strong 640
-	color-scheme light
-.color-strategy-white-text
-	--c-con-weak rgba(0,0,0,0.05)
-	--c-con-normal rgba(0,0,0,0.10)
-	--c-con-strong rgba(0,0,0,0.50)
-	--c-text-faint rgba(255,255,255,0.25)
-	--c-text-weak rgba(255,255,255,0.50)
-	--c-text-strong #f2f4f7
-	--f-wght-normal 340
-	--f-wght-strong 580
-	color-scheme dark
+	&.color-strategy-black-text
+		--c-con-weak rgba(255,255,255,0.05)
+		--c-con-normal rgba(255,255,255,0.10)
+		--c-con-strong rgba(255,255,255,0.50)
+		--c-text-faint rgba(0,0,0,0.25)
+		--c-text-weak rgba(0,0,0,0.50)
+		--c-text-strong black
+		--f-wght-normal 400
+		--f-wght-strong 640
+		color-scheme light
+	&.color-strategy-white-text
+		--c-con-weak rgba(0,0,0,0.05)
+		--c-con-normal rgba(0,0,0,0.10)
+		--c-con-strong rgba(0,0,0,0.50)
+		--c-text-faint rgba(255,255,255,0.25)
+		--c-text-weak rgba(255,255,255,0.50)
+		--c-text-strong #f2f4f7
+		--f-wght-normal 340
+		--f-wght-strong 580
+		color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-con-weak)
 *::-webkit-scrollbar-thumb
