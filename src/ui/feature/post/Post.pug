@@ -97,9 +97,9 @@ article.post
 				{#if post.format === 'crosspost'}
 					PostInfoCard(link={true} post_short_id={post.crosspost_parent})
 				{:else if post.format === 'image'}
-					ol.post-images
+					ol.post-gallery
 						{#each post.media as media, index}
-							figure.post-image-item
+							figure.post-gallery-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									{#if post.media.length > 1}
 										picture
@@ -209,17 +209,14 @@ style.
 		color white
 		padding 10px
 		width 480px
-	.post-iframe
-		border-radius 6px
-	.post-image
-		border-radius 6px
-		width 480px
-	.post-image-caption
-		color var(--c-text-weak)
-		font-size 11px
-		letter-spacing 0.04em
-		max-width 480px
-	.post-image-item
+	.post-gallery
+		counter-reset gallery-index
+		display flex
+		flex-flow column nowrap
+		gap 6px
+		margin 0
+		padding 0
+	.post-gallery-item
 		display flex
 		flex-flow column nowrap
 		gap 6px
@@ -233,13 +230,16 @@ style.
 			right calc(100% + 1em)
 		&:only-child::before
 			content none
-	.post-images
-		counter-reset gallery-index
-		display flex
-		flex-flow column nowrap
-		gap 6px
-		margin 0
-		padding 0
+	.post-iframe
+		border-radius 6px
+	.post-image
+		border-radius 6px
+		width 480px
+	.post-image-caption
+		color var(--c-text-weak)
+		font-size 11px
+		letter-spacing 0.04em
+		max-width 480px
 	.post-loading-message
 		padding 10px
 	.post-prediction-options > li
