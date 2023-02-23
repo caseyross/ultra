@@ -30,11 +30,11 @@ strong
 // Theme
 body
 	--c-hint-normal wheat
-	--c-theme-default #343537
-	--c-tint-normal rgba(255,255,255,0.10)
+	--c-theme-default #ffffff
 	background: var(--c-theme)
 	color var(--c-text-strong)
 	&.color-strategy-black-text
+		--c-blend-normal rgba(0,0,0,0.10)
 		--c-con-weak rgba(255,255,255,0.05)
 		--c-con-normal rgba(255,255,255,0.10)
 		--c-con-strong rgba(255,255,255,0.50)
@@ -45,6 +45,7 @@ body
 		--f-wght-strong 640
 		color-scheme light
 	&.color-strategy-white-text
+		--c-blend-normal rgba(255,255,255,0.10)
 		--c-con-weak rgba(0,0,0,0.05)
 		--c-con-normal rgba(0,0,0,0.10)
 		--c-con-strong rgba(0,0,0,0.50)
@@ -144,7 +145,7 @@ sub
 sup
 	line-height 0
 .md
-	background var(--c-tint-normal)
+	background var(--c-blend-normal)
 	border-radius 10px
 	overflow-wrap anywhere
 	padding 1em
