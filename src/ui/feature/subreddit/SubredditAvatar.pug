@@ -11,26 +11,25 @@ script.
 			{ data: subreddit } = x
 		)
 
-a.subreddit-avatar(class='subreddit-avatar-size-{size}' href='/{name}')
+a.subreddit-avatar(href='/{name}')
 	{#if icon_url || subreddit?.community_icon || subreddit?.icon_img}
-		img.subreddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={icon_url || subreddit?.community_icon || subreddit?.icon_img})
+		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src={icon_url || subreddit?.community_icon || subreddit?.icon_img} style='border-color: {subreddit?.primary_color || subreddit?.key_color || "var(--c-text-strong)"}')
 	{:else}
-		.subreddit-avatar-image.subreddit-avatar-image-not-available
+		.subreddit-avatar-image.subreddit-avatar-image-not-available(class='subreddit-avatar-image-size-{size}')
 
 style.
 	.subreddit-avatar
-		aspect-ratio 1
 		display inline-block
 		user-select none
 	.subreddit-avatar-image
+		aspect-ratio 1
+		border 1px solid
 		border-radius 50%
 	.subreddit-avatar-image-not-available
-		background var(--c-text-faint)
-		border-radius 50%
-		height 100%
-	.subreddit-avatar-size-small
-		height 16px
-	.subreddit-avatar-size-medium
-		height 32px
-	.subreddit-avatar-size-large
+		background var(--c-text-weak)
+	.subreddit-avatar-image-size-large
 		height 64px
+	.subreddit-avatar-image-size-medium
+		height 32px
+	.subreddit-avatar-image-size-small
+		height 16px

@@ -3,6 +3,7 @@ script.
 
 	import Date from '../../common/Date.pug'
 	
+	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import UserAvatar from '../user/UserAvatar.pug'
 	import UserDistinguish from '../user/UserDistinguish.pug'
 	
@@ -11,6 +12,7 @@ script.
 	import PostTag from './PostTag.pug'
 
 	export post_short_id = null
+	export show_subreddit = false
 	
 	post = null
 	api.loadWatch(api.ID('post', post_short_id),
@@ -25,8 +27,11 @@ script.
 
 {#if post}
 	a.post-info-card(class:post-read={localStorage['visited.' + post_short_id] || false} class:post-stickied={post.stickied} data-nohistory={true} href='/{post.subreddit}/{post_short_id}')
-		{#if post.link_flair_text}
-			PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+		.meta
+			{#if show_subreddit}
+				SubredditTag(name={post.subreddit})
+			{#if post.link_flair_text}
+				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 		section
 			div(style='display:none')
 				PostScore(awards={post.all_awardings} controversiality={post.upvote_ratio > 0.33 && post.upvote_ratio < 0.67 ? 1 : 0} upload_vote={(vote) => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: vote })} value={!post.hide_score && post.score} vote={post.likes == null ? 0 : post.likes ? 1 : -1})

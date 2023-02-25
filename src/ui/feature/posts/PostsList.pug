@@ -144,7 +144,7 @@ nav.posts-list
 		{:else if pages.length}
 			{#each pages as page}
 				{#each page as post_short_id}
-					PostInfoCard(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id})
+					PostInfoCard(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id} show_subreddit={type !== 'subreddit'})
 	menu.posts-list-actions
 		section
 		{#if has_next_page}

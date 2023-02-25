@@ -1,0 +1,25 @@
+script.
+	import api from '../../../api/index.js'
+	import SubredditAvatar from './SubredditAvatar.pug'
+
+	export name = null
+	export size = 'medium'
+
+	subreddit = null
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit } = x
+	)
+
+a.subreddit-tag(href='/{name}' style='background: {subreddit?.primary_color || subreddit?.key_color || "var(--c-text-strong)"}')
+	SubredditAvatar(name={name} size={size})
+	span {name}
+
+style.
+	.subreddit-tag
+		align-items center
+		align-self self-start
+		border 1px solid
+		border-radius 99px
+		display inline-flex
+		gap 1ch
+		padding-right 1em
