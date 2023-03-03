@@ -3,6 +3,7 @@ script.
 
 	import AppAccountContext from '../context/AppAccountContext.pug'
 	import AppNetworkStatusContext from '../context/AppNetworkStatusContext.pug'
+	import AppRadialMenuContext from '../context/AppRadialMenuContext.pug'
 	import AppThemeColorContext from '../context/AppThemeColorContext.pug'
 
 	import CollectionPage from '../../feature/collection/CollectionPage.pug'
@@ -24,10 +25,6 @@ script.
 	internal_navigate =
 		(link) ->
 			history.pushState(null, null, new URL(link.href))
-			set_route()
-	internal_navigate_no_history =
-		(link) ->
-			history.replaceState(null, null, new URL(link.href))
 			set_route()
 
 	is_external_new_tab_intent =
@@ -52,10 +49,7 @@ script.
 				if link and link.href
 					if is_same_origin(link)
 						if is_same_path(link) and not is_same_hash(link) then return # allow hash change scrolling behavior
-						if link.dataset.nohistory
-							internal_navigate_no_history(link)
-						else
-							internal_navigate(link)
+						internal_navigate(link)
 					else
 						if is_external_new_tab_intent(link) then external_navigate_new_tab(link)
 						else external_navigate(link)
@@ -76,10 +70,7 @@ script.
 				link = event.target
 				if is_same_origin(link)
 					if is_same_path(link) and not is_same_hash(link) then return
-					if link.dataset.nohistory
-						internal_navigate_no_history(link)
-					else
-						internal_navigate(link)
+					internal_navigate(link)
 				else
 					if is_external_new_tab_intent(link) then external_navigate_new_tab(link)
 					else external_navigate(link)
@@ -98,19 +89,20 @@ script.
 	AppAccountContext
 		AppThemeColorContext
 			AppNetworkStatusContext
-				{#if route.format === 'collection'}
-					CollectionPage(collection_short_id={route.listing.collection_short_id} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-				{:else if route.format === 'listings'}
-					ListingsPage(type={route.listings_type})
-				{:else if route.format === 'multireddit'}
-					MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-				{:else if route.format === 'subreddit'}
-					{#key route.listing.subreddit_name}
-						SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-				{:else if route.format === 'user'}
-					UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-				{:else if route.format === 'wiki'}
-					{#key route.listing.subreddit_name}
-						{#key route.selection.wikipage_name}
-							{#key route.selection.wikipage_revision_id}
-								WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})
+				AppRadialMenuContext
+					{#if route.format === 'collection'}
+						CollectionPage(collection_short_id={route.listing.collection_short_id} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+					{:else if route.format === 'listings'}
+						ListingsPage(type={route.listings_type})
+					{:else if route.format === 'multireddit'}
+						MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+					{:else if route.format === 'subreddit'}
+						{#key route.listing.subreddit_name}
+							SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+					{:else if route.format === 'user'}
+						UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+					{:else if route.format === 'wiki'}
+						{#key route.listing.subreddit_name}
+							{#key route.selection.wikipage_name}
+								{#key route.selection.wikipage_revision_id}
+									WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})

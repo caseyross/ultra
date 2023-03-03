@@ -2,6 +2,10 @@ script.
 	export html = null
 	# Replace hardcoded "reddit.com" links with relative links --- if someone is using our client, they surely want Reddit links to open in our client as well.
 	# Display pictures instead of links where New Reddit does so.
-	formatted = html.replace(/<a href="https?:\/\/[^.]+.reddit.com\/(?<path>[^"]*)"[^>]*>/g, '<a href="/$<path>">').replace(/<a href="https:\/\/preview.redd.it\/(?<filepath>[^"]+)">(?<linktext>[^<]*)<\/a>/g, '<a href="https://preview.redd.it/$<filepath>" target="_blank"><img src="https://preview.redd.it/$<filepath>"></a>')
+	formatted =
+		html
+			.replace(/<a href="https?:\/\/redd\.it\/(?<path>[^"]*)"[^>]*>/g, '<a href="/p/$<path>">')
+			.replace(/<a href="https?:\/\/(?:[A-Za-z]+\.)?reddit\.com\/(?<path>[^"]*)"[^>]*>/g, '<a href="/$<path>">')
+			.replace(/<a href="https:\/\/preview\.redd\.it\/(?<filepath>[^"]+)">(?<linktext>[^<]*)<\/a>/g, '<a href="https://preview.redd.it/$<filepath>" target="_blank"><img src="https://preview.redd.it/$<filepath>"></a>')
 
 {@html formatted}

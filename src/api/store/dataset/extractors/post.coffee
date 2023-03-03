@@ -22,7 +22,7 @@ export default (rawData, sourceID) ->
 		if more.count
 			post.num_more_replies = more.count
 			post.more_replies = if more.children.length then more.children else [more.id]
-			post.more_replies_id = ID('post_more_replies', post.id, ID.var(sourceID, 2) ? 'confidence', '', post.more_replies.join(','))
+			post.more_replies_id = ID('post_more_replies', post.id, ID.var(sourceID, 2) ? 'confidence', ID.var(sourceID, 3), '', post.more_replies.join(','))
 	# 2. Extract the comments from the listing.
 	{ main: { data: direct_reply_short_ids }, sub: commentDatasets } = extract(rawData[1], sourceID)
 	# 3. Link the top-level comments via their IDs.

@@ -84,14 +84,7 @@ script.
 		when 'multireddit'
 			base_path = "/m/#{user_name}/#{multireddit_name}"
 			official_path = "/user/#{user_name}/m/#{multireddit_name}"
-			base_page_id =
-				if search_text
-					if user_name is 'r'
-						api.ID('search_posts', search_time_range, search_text, page_size)
-					else
-						api.ID('search_posts_in_multireddit', user_name, multireddit_name, search_time_range, search_text, page_size)
-				else
-					api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
+			base_page_id = api.ID('multireddit_posts', user_name, multireddit_name, posts_sort, page_size)
 		when 'subreddit'
 			base_path = "/#{subreddit_name}"
 			official_path = "/r/#{subreddit_name}"
@@ -156,7 +149,7 @@ style.
 		flex-flow column nowrap
 		gap 1em
 		overflow auto
-		padding-left 20px
+		width 320px
 	.posts-list-actions
 		display flex
 		flex 0 0 auto
@@ -167,8 +160,6 @@ style.
 		display flex
 		flex 1
 		flex-flow column nowrap
-		margin 0
 		overflow auto
-		padding 0
 	.posts-list-sorting
 		flex 0 0 auto

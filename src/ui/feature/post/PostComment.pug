@@ -31,15 +31,12 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} role='comment')
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} class:comment-upvoted={comment.likes === true} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.score_hidden ? 'score hidden' : comment.score + ' point' + (Math.abs(comment.score) === 1 ? '' : 's')})
 			aside.comment-sidebar
 				UserAvatar(batch_id={user_batch_id} name={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
 					UserDistinguish(type={comment.distinguished || 'submitter'})
 			TextHTML(html={comment.body_html})
-			footer(style='display:none')
-				PostScore(awards={comment.all_awardings} controversiality={comment.controversiality} upload_vote={(vote) => api.submit(api.ID('comment_vote', short_id), { numerical_vote: vote })} value={!comment.score_hidden && comment.score} vote={comment.likes == null ? 0 : comment.likes ? 1 : -1})
-				PostAge(created={comment.created_utc} edited={comment.edited})
 		{#if out_of_context}
 			.comment-context
 				a(href='/r/{comment.subreddit}') in r/{comment.subreddit}
@@ -47,7 +44,7 @@ script.
 		{:else}
 			ol.comment-replies
 				{#if comment.replies.length > 0}
-					{#each comment.replies as reply_short_id}
+					{#each comment.replies as reply_short_id (reply_short_id)}
 						svelte:self(short_id={reply_short_id} user_batch_id={user_batch_id})
 				{#if comment.num_more_replies > 0}
 					.comment-more-replies
@@ -57,12 +54,8 @@ script.
 						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}' text='Continue thread...')
 
 style.
-	:global(.comment-tree)
-		margin-bottom 0.5em
 	.comment
-		align-items flex-start
-		display flex
-		flex-flow column nowrap
+		display inline-block
 		margin 0.5em 0
 		position relative
 	:global(.comment > .md)
@@ -74,10 +67,16 @@ style.
 	:global(.comment-deleted > .md)
 		opacity 0.25
 		pointer-events none
+	:global(.comment-downvoted > .md)
+		background cornflowerblue
+		color white
 	:global(.comment-highlighted > .md)
 		border 1px solid
 	:global(.comment-with-low-score:not(.comment-deleted) > .md)
 		opacity 0.5
+	:global(.comment-upvoted > .md)
+		background orangered
+		color white
 	.comment-clip
 		display flex
 	.comment-context
@@ -85,10 +84,9 @@ style.
 		flex-flow column nowrap
 		padding 10px
 	.comment-more-replies
-		margin 1em 0
+		padding 0.5em 0
 	.comment-replies
 		border-left 1px solid var(--c-text-faint)
-		list-style none
 		padding-left 41px
 	.comment-sidebar
 		align-items center

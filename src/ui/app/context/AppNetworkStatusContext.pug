@@ -3,6 +3,7 @@ script.
 	import api from '../../../api/index.js'
 
 	offline = false
+	ratelimit_exhausted = false
 	ratelimit_low = false
 
 	setInterval(
@@ -12,6 +13,10 @@ script.
 			else
 				offline = false
 			{ estimatedMaxRequests, remainingRequests } = api.getRatelimitStatus()
+			if remainingRequests < 1
+				ratelimit_exhausted = true
+			else
+				ratelimit_exhausted = false
 			if remainingRequests / estimatedMaxRequests < 0.2
 				ratelimit_low = true
 			else
@@ -22,6 +27,8 @@ script.
 slot
 {#if offline}
 	.network-status-warning Offline
+{:else if ratelimit_exhausted}
+	.network-status-warning Ratelimit exhausted
 {:else if ratelimit_low}
 	.network-status-warning Ratelimit low
 

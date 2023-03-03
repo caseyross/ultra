@@ -1,16 +1,20 @@
 script.
 	import api from '../../../api/index.js'
+	import { Color } from '../../../lib/index.js'
 	import SubredditAvatar from './SubredditAvatar.pug'
 
 	export name = null
 	export size = 'medium'
 
-	subreddit = null
-	api.loadWatch(api.ID('subreddit', name), (x) ->
-		{ data: subreddit } = x
+	color = 'var(--c-text-strong)'
+	text_color = 'var(--c-text-reverse)'
+	api.loadWatch(api.ID('subreddit', name), ({ data: subreddit }) ->
+		if subreddit?.primary_color or subreddit?.key_color
+			color = subreddit?.primary_color or subreddit.key_color
+			text_color = if (new Color({ hex: color })).isLight() then 'black' else 'white'
 	)
 
-a.subreddit-tag(href='/{name}' style='background: {subreddit?.primary_color || subreddit?.key_color || "var(--c-text-strong)"}')
+a.subreddit-tag(href='/{name}' style='background: {color}; color: {text_color}')
 	SubredditAvatar(name={name} size={size})
 	span {name}
 
@@ -18,7 +22,6 @@ style.
 	.subreddit-tag
 		align-items center
 		align-self self-start
-		border 1px solid
 		border-radius 99px
 		display inline-flex
 		gap 1ch

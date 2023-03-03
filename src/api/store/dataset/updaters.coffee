@@ -3,11 +3,11 @@ import ID from '../../core/ID.coffee'
 export default {
 
 	post_more_replies:
-		targetID: (post_short_id, comments_sort, parent_comment_short_id) ->
+		targetID: (post_short_id, post_comments_sort, post_max_comments, parent_comment_short_id) ->
 			if parent_comment_short_id
 				ID('comment', parent_comment_short_id)
 			else
-				ID('post', post_short_id, comments_sort)
+				ID('post', post_short_id, post_comments_sort, post_max_comments)
 		modify: (target, { more_replies, more_replies_id, num_more_replies, replies }) ->
 			delete target.more_replies
 			delete target.more_replies_id

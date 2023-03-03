@@ -1,0 +1,93 @@
+script.
+	import radial_menu_choices from './radial_menu_choices.coffee'
+
+	choice = null
+	dataset = null
+	position = null
+
+	is_unmodified_event =
+		(event) -> not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
+	is_unmodified_right_click =
+		(event) -> is_unmodified_event(event) and event.button is 2 and event.detail > 0
+
+	document.addEventListener('contextmenu',
+		(event) ->
+			if dataset and position
+				event.preventDefault()
+				radial_menu_choices[dataset.radialMenu][choice](dataset)
+				choice = null
+				dataset = null
+				position = null
+	)
+
+	document.addEventListener('mousedown',
+		(event) ->
+			if is_unmodified_right_click(event)
+				element = event.target.closest("[data-radial-menu]")
+				if element
+					choice = 0
+					dataset = element.dataset
+					position = [event.x, event.y]
+	)
+
+	document.addEventListener('mousemove',
+		(event) ->
+			if dataset and position
+				delta_x = event.x - position[0]
+				delta_y = event.y - position[1]
+				if Math.abs(delta_x) < 10 and Math.abs(delta_y) < 10
+					choice = 0
+				else
+					if Math.abs(delta_x) > Math.abs(delta_y)
+						if delta_x > 0
+							choice = 1
+						else
+							choice = 4
+					else
+						if delta_y > 0
+							choice = 3
+						else
+							choice = 2
+	)
+
+slot
+{#if dataset && position}
+	menu.radial-menu(style='left: {position[0] - 10}px; top: {position[1] - 10}px') ・
+		figure.radial-menu-arrow.radial-menu-arrow-east(class:radial-menu-arrow-selected={choice === 1}) ›
+		figure.radial-menu-arrow.radial-menu-arrow-north(class:radial-menu-arrow-selected={choice === 2}) ‹
+		figure.radial-menu-arrow.radial-menu-arrow-south(class:radial-menu-arrow-selected={choice === 3}) ›
+		figure.radial-menu-arrow.radial-menu-arrow-west(class:radial-menu-arrow-selected={choice === 4}) ‹
+
+style.
+	.radial-menu
+		align-items center
+		cursor default
+		display flex
+		font-size 2em
+		justify-content center
+		height 0.75em
+		position fixed
+		width 0.75em
+	.radial-menu-arrow
+		align-items center
+		display flex
+		justify-content center
+		height 100%
+		position absolute
+		width 100%
+		&.radial-menu-arrow-selected
+			color orangered
+	.radial-menu-arrow-east
+		left 100%
+		padding-bottom 0.1em
+	.radial-menu-arrow-north
+		bottom 100%
+		padding-left 0.1em
+		writing-mode vertical-rl
+	.radial-menu-arrow-south
+		top 100%
+		padding-left 0.1em
+		writing-mode vertical-lr
+	.radial-menu-arrow-west
+		right 100%
+		padding-bottom 0.1em

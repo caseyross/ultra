@@ -5,7 +5,7 @@
 	&:focus
 		outline-color gold
 	&:last-child
-		margin-bottom 0
+		margin-bottom 0 !important
 
 // Type
 @font-face
@@ -41,6 +41,7 @@ body
 		--c-text-faint rgba(0,0,0,0.25)
 		--c-text-weak rgba(0,0,0,0.50)
 		--c-text-strong black
+		--c-text-reverse white
 		--f-wght-normal 400
 		--f-wght-strong 640
 		color-scheme light
@@ -52,6 +53,7 @@ body
 		--c-text-faint rgba(255,255,255,0.25)
 		--c-text-weak rgba(255,255,255,0.50)
 		--c-text-strong #f2f4f7
+		--c-text-reverse black
 		--f-wght-normal 340
 		--f-wght-strong 580
 		color-scheme dark
@@ -71,16 +73,21 @@ hr
 // Lists
 ol
 ul
-	margin 0 0 1em
-	padding-inline-start 3ch
-	& ul
+	list-style none
+	margin 0
+	padding 0
+.md
+	ol
+	ul
 		list-style-type initial
-	p + &
-		margin-top -0.25em
-li
-	margin 0.75em 0
-	&:first-child
-		margin-top 0
+		margin 0 0 1em
+		padding-inline-start 3ch
+		p + &
+			margin-top -0.25em
+	li
+		margin 0.75em 0
+		&:first-child
+			margin-top 0
 menu
 	padding 0
 

@@ -60,6 +60,7 @@ script.
 	set_time = (value) ->
 		if !waiting_for_seek
 			video.currentTime = clamp(0, duration, value)
+			audio?.currentTime = video.currentTime
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
 		localStorage['media.volume'] = audio.volume
@@ -110,7 +111,6 @@ script.
 			audio?.pause()
 		)
 		video.addEventListener('playing', (e) ->
-			audio?.currentTime = video.currentTime
 			audio?.play().catch(-> null) # ignore useless errors from bad API design
 		)
 		video.addEventListener('seeking', (e) ->

@@ -46,8 +46,6 @@ CenterLayout
 						SubredditRules(name={subreddit_name})
 					{#if subreddit.wiki_enabled}
 						Button(link='/r/{subreddit_name}/wiki/index' text='Wiki')
-		{#if subreddit?.header_title}
-			span(style='color:var(--c-text-weak);display:none') "{subreddit.header_title}"
 		nav.subreddit-posts
 			{#key posts_sort}
 				PostsList(type='subreddit' subreddit_name={subreddit_name} posts_sort={posts_sort} selected_post_short_id={post_short_id})
@@ -60,14 +58,17 @@ CenterLayout
 				ol.subreddit-widgets
 					{#each widgets.sidebar as widget}
 						SubredditWidget(widget={widget})
+			{#if subreddit?.header_title}
+				br
+				br
+				span(style='color:var(--c-text-weak)') "{subreddit.header_title}"
 
 style.
 	.subreddit
-		margin-left 156px
 		width 560px
 	.subreddit-nav
-		left calc(50% - 326px)
 		position fixed
+		right calc(50% + 336px)
 	.subreddit-options
 		align-items flex-end
 		display flex
@@ -76,16 +77,14 @@ style.
 		padding 20px 0
 	.subreddit-posts
 		height 100dvh
-		left 75%
+		left calc(50% + 336px)
 		overflow-y auto
 		padding 40px 0
 		position fixed
 		top 0
-		width 320px
 		&::-webkit-scrollbar
 			display none
 	.subreddit-widgets
 		display flex
 		flex-flow column nowrap
-		gap 3em
-		padding 0
+		gap 1em

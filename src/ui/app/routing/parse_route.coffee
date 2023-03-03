@@ -44,7 +44,6 @@ export default (url) ->
 				multireddit_name: path[3]
 				posts_sort_base: path[4] or query.get('sort')
 				posts_sort_range: query.get('t')
-				posts_search_text: query.get('q')
 				after_post_short_id: query.get('after')
 			)
 		when 'message'
@@ -75,7 +74,6 @@ export default (url) ->
 						multireddit_name: path[2]
 						posts_sort_base: path[3] or query.get('sort')
 						posts_sort_range: query.get('t')
-						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
 					)
 				else
@@ -140,12 +138,6 @@ export default (url) ->
 				format: 'listings'
 				listings_type: listings_type
 			)
-		when 's', 'search'
-			# TODO
-			return sanitize_route(
-				format: 'official_site'
-				url: url
-			)
 		when 'u', 'user'
 			user_name = path[2]
 			if user_name is 'me'
@@ -171,7 +163,6 @@ export default (url) ->
 						multireddit_name: path[4]
 						posts_sort_base: path[5] or query.get('sort')
 						posts_sort_range: query.get('t')
-						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
 					)
 				else
@@ -180,7 +171,6 @@ export default (url) ->
 						user_name: user_name
 						posts_sort_base: path[3] or query.get('sort')
 						posts_sort_range: query.get('t')
-						posts_search_text: query.get('q')
 						after_post_short_id: query.get('after')
 					)
 		when 'w', 'wiki'

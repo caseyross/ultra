@@ -104,33 +104,12 @@ export default {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
 		})
-	post_more_replies: (post_short_id, comments_sort, parent_comment_short_id, comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
+	post_more_replies: (post_short_id, post_comments_sort, post_max_comments, parent_comment_short_id, comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
 		post("/api/morechildren", {
 			api_type: 'json'
 			children: comment_short_ids
 			link_id: "t3_#{post_short_id}"
-			sort: comments_sort
-		})
-	search_posts: (time_range, search_text, max_posts, after_post_short_id) ->
-		get("/search", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
-			limit: max_posts
-			q: search_text
-			restrict_sr: false
-			show: 'all'
-			sort: 'relevance'
-			t: time_range
-		})
-	search_posts_in_multireddit: (user_name, multireddit_name, time_range, search_text, max_posts, after_post_short_id) ->
-		get("/user/#{user_name}/m/#{multireddit_name}/search", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
-			limit: max_posts
-			is_multi: 1
-			q: search_text
-			restrict_sr: true
-			show: 'all'
-			sort: 'relevance'
-			t: time_range
+			sort: post_comments_sort
 		})
 	search_posts_in_subreddit: (subreddit_name, time_range, search_text, max_posts, after_post_short_id) ->
 		get("/r/#{subreddit_name}/search", {

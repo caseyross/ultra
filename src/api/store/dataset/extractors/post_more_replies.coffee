@@ -18,7 +18,7 @@ export default (rawData, sourceID) ->
 				mores.push(thing.data)
 			else if thing.kind is 't1'
 				comments[thing.data.id] = extract(thing, sourceID).main
-		source_comment_short_id = ID.var(sourceID, 3)
+		source_comment_short_id = ID.var(sourceID, 4)
 		# Link up child comments onto their parents.
 		for comment_short_id, comment of comments
 			parent = switch
@@ -41,6 +41,7 @@ export default (rawData, sourceID) ->
 					'post_more_replies',
 					ID.var(sourceID, 1),
 					ID.var(sourceID, 2),
+					ID.var(sourceID, 3),
 					parent.id ? source_comment_short_id,
 					parent.more_replies.join(',')
 				)

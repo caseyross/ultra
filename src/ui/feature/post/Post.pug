@@ -2,12 +2,12 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
+	import { relativize_url } from '../../app/routing/AppURL.coffee'
+
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import TextHTML from '../../common/TextHTML.pug'
-	
-	import ListingNameTag from '../listing/ListingNameTag.pug'
 	
 	import PostCommentList from './PostCommentList.pug'
 	import PostInfoCard from './PostInfoCard.pug'
@@ -101,20 +101,15 @@ article.post
 						{#each post.media as media, index}
 							figure.post-gallery-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-									{#if post.media.length > 1}
-										picture
-											source(srcset={media.aspect_ratio > 4 ? media.image_url_960 : media.aspect_ratio > 1 ? media.image_url_640 : media.image_url_320})
-											img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {320 * Math.sqrt(media.aspect_ratio)}px")
-									{:else}
-										picture
-											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
-											img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
+									picture
+										source(srcset={media.image_url_640})
+										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
 											p {media.caption_text}
 										{#if media.caption_url}
-											a(href={media.caption_url}) {media.caption_url}
+											a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
 					{#if post.media.length === 1}
 						{@const media = post.media[0]}
 							menu.post-content-actions
@@ -131,9 +126,9 @@ article.post
 								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {420 * Math.sqrt(embed.iframe_aspect_ratio)}px")
 						{:else}
 							.md.post-link
-								a(href={post.url} rel='external noopener preconnect') {post.url}
+								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
 						menu.post-content-actions
-							Button(key='e' link={post.url} new_tab={true} text='Open link')
+							Button(key='e' link={relativize_url(post.url)} new_tab={true} text='Open link')
 				{:else if post.format === 'prediction'}
 					ol.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -160,8 +155,10 @@ article.post
 		section.post-comments
 			{#if !focus_comment_short_id}
 				h1.post-comments-label Comments
+				{#if post.discussion_type === 'CHAT'}
+					.post-comments-alternate-mode-notification Chat post. Expect lower quality comments.
 				{#if post.contest_mode}
-					.post-contest-mode-notification Post is in contest mode. Comments are sorted randomly.
+					.post-comments-alternate-mode-notification Post is in contest mode. Comments are sorted randomly.
 				{:else}
 					ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
 			{#key comments_sort}
@@ -172,6 +169,11 @@ article.post
 style.
 	.post-comments-actions
 		margin-top 2em
+	.post-comments-alternate-mode-notification
+		background darkkhaki
+		border-radius 10px
+		color white
+		padding 10px
 	.post-comments-label
 		color var(--c-text-weak)
 		font-size 10px
@@ -203,19 +205,11 @@ style.
 		display flex
 		justify-content space-between
 		padding 10px
-	.post-contest-mode-notification
-		background darkkhaki
-		border-radius 10px
-		color white
-		padding 10px
-		width 480px
 	.post-gallery
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		margin 0
-		padding 0
 	.post-gallery-item
 		display flex
 		flex-flow column nowrap
@@ -234,22 +228,19 @@ style.
 		border-radius 6px
 	.post-image
 		border-radius 6px
-		width 480px
+		width 100%
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 11px
 		letter-spacing 0.04em
-		max-width 480px
 	.post-loading-message
 		padding 10px
 	.post-prediction-options > li
 		display flex
 	.post-selftext
 		margin-bottom 2em
-		max-width 480px
 	.post-unavailable-reason
 		background salmon
 		border-radius 10px
 		color white
 		padding 10px
-		width 480px

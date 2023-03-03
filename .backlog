@@ -1,7 +1,6 @@
 H  Listings: properly show to r/popular (or something else?) when not logged in
 
 M	General: compatibility with Firefox and Safari (scrollbar/video/input styling, general functionality)
-M	Posts: rewrite reddit.com paths in link posts & image gallery captions
 
 L	General: contingency for localStorage absence (e.g. when cookies are disabled)
 L	General: more descriptive error messages when Reddit data is unavailable

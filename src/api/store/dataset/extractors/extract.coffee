@@ -32,6 +32,7 @@ export default extract = (rawData, sourceID) ->
 						'post_more_replies',
 						comment.link_id[3..],
 						more_replies_sort,
+						ID.var(sourceID, 3),
 						comment.id,
 						comment.more_replies.join(',')
 					)

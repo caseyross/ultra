@@ -15,7 +15,7 @@ script.
 	user_batch_id = null
 	if focus_comment_short_id
 		setContext('focus_comment_short_id', focus_comment_short_id)
-	api.loadWatch(api.ID('post', post_short_id, sort, focus_comment_short_id), (x) ->
+	api.loadWatch(api.ID('post', post_short_id, sort, 25, focus_comment_short_id), (x) ->
 		{ data: post } = x
 		if post?.contributors.length
 			user_batch_id = api.ID('users', post.contributors)
@@ -33,8 +33,3 @@ ol.post-comments-list
 		{#if post.num_more_replies > 0}
 			.post-more-replies
 				Button(action={() => api.load(post.more_replies_id)} loading={more_replies_loading} text="{post.num_more_replies} {post.num_more_replies === 1 ? 'reply' : 'replies'}")
-
-style.
-	.post-comments-list
-		list-style none
-		padding 0

@@ -19,14 +19,14 @@ script.
 		(x) ->
 			{ data: post } = x
 			if post?
-				api.preload(api.ID('post', post_short_id, 'confidence'))
-				api.watch(api.ID('post', post_short_id, 'confidence'), (x) ->
+				api.preload(api.ID('post', post_short_id, post.suggested_sort or 'confidence', 25))
+				api.watch(api.ID('post', post_short_id, post.suggested_sort or 'confidence', 25), (x) ->
 					if x?.data?.contributors.length then api.preload(api.ID('users', x.data.contributors))
 				)
 	)
 
 {#if post}
-	a.post-info-card(class:post-read={localStorage['visited.' + post_short_id] || false} class:post-stickied={post.stickied} data-nohistory={true} href='/{post.subreddit}/{post_short_id}')
+	a.post-info-card(class:post-read={localStorage['visited.' + post_short_id] || false} class:post-stickied={post.stickied} href='/{post.subreddit}/{post_short_id}')
 		.meta
 			{#if show_subreddit}
 				SubredditTag(name={post.subreddit})
