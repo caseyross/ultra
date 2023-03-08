@@ -1,11 +1,10 @@
 script.
-	import { getContext } from 'svelte'
-	import api from '../../api/index.js';
 	import Button from '../common/Button.pug'
+	
 	unread_mention_count = 0
 	unread_message_count = 0
 	unread_reply_count = 0
-	if getContext('username')
+	if api.isLoggedIn()
 		api.loadWatch('current_user_messages',
 			({ comment_replies, post_replies, private_messages, username_mentions }) ->
 				unread_mention_count = username_mentions?.length or 0
@@ -17,7 +16,7 @@ nav#global-nav
 	section
 		Button(key='h' link='/' text='Home')
 		br
-		{#if getContext('username')}
+		{#if api.isLoggedIn()}
 			Button(badge={unread_reply_count || null} key='~' link='/mail/replies' text='Replies')
 			Button(badge={unread_message_count || null} key='!' link='/mail/messages' text='Messages')
 			Button(badge={unread_mention_count || null} key='@' link='/mail/mentions' text='Mentions')
@@ -26,11 +25,6 @@ nav#global-nav
 		Button(key='?' popup={true} text='Help')
 		Button(key='*' popup={true} text='Settings')
 		Button(key='>' popup={true} text='Feedback')
-		br
-		{#if getContext('username')}
-			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} key='&' text='Unlink Reddit Account')
-		{:else}
-			Button(key='&' link={api.getLoginURL({ memoString: location.pathname })} text='Login with Reddit Account...')
 
 style.
 	section

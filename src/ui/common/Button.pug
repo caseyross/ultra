@@ -10,6 +10,7 @@ script.
 	export description = ''
 	export disabled = false
 	export key = null
+	export icon_plus = null
 	export link = null
 	export loading = false
 	export new_tab = false
@@ -22,7 +23,7 @@ script.
 		action = -> popup_open = true
 
 {#if link}
-	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
+	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} class:with-icon-plus={icon_plus} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		{#if text}
@@ -30,7 +31,7 @@ script.
 		{#if badge}
 			span.badge {badge}
 {:else}
-	button(class:activated={activated} class='appearance-{appearance} size-{size}' disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
+	button(class:activated={activated} class='appearance-{appearance} size-{size}' class:with-icon-plus={icon_plus} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
 		{#if loading}
 			| loading...
 		{:else}
@@ -48,13 +49,14 @@ script.
 style.
 	.appearance-button
 		align-items flex-start
-		background var(--c-con-weak)
+		background var(--c-blend-normal)
 		border 1px solid transparent
 		border-radius 6px
 		display inline-flex
 		gap 5px
 		line-height 18px
 		padding 4px 6px
+		position relative
 		text-align left
 		user-select none
 		&:hover:not(:disabled):not(.disabled)
@@ -66,8 +68,13 @@ style.
 			cursor not-allowed
 			opacity 0.5
 		&.activated
-			background var(--c-con-strong)
-			color var(--c-text-strong)
+			background var(--c-text-strong)
+			color var(--c-text-reverse)
+		&.with-icon-plus::before
+			color var(--c-text-weak)
+			content '+'
+			left -17px
+			position absolute
 	.appearance-text
 		color var(--color-writing-action)
 		font-size 12px

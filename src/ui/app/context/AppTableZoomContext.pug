@@ -1,0 +1,15 @@
+script.
+	is_unmodified_event =
+		(event) -> not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
+	is_unmodified_left_click =
+		(event) -> is_unmodified_event(event) and event.button is 0 and event.detail > 0
+
+	document.addEventListener('mousedown',
+		(event) ->
+			if is_unmodified_left_click(event)
+				element = event.target.closest("pre, table") 
+				if element
+					element.requestFullscreen()
+	)
+
+slot

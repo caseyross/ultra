@@ -1,7 +1,7 @@
 import configure from './core/configure.coffee'
 import errors from './core/errors.coffee'
 import ID from './core/ID.coffee'
-import { getLoginStatus, getLoginURL, finishPendingLogin, logout } from './net/account.coffee'
+import { finishPendingLogin, getLoginStatus, getLoginURL, getUser, hasPendingLogin, isLoggedIn, logout, setUser } from './net/account.coffee'
 import { getRatelimitStatus } from './net/ratelimit.coffee'
 import { load, loadWatch, preload, submit, watch } from './store/store.coffee'
 
@@ -11,10 +11,14 @@ export default {
 	errors,
 	ID,
 	
+	finishPendingLogin,
 	getLoginStatus,
 	getLoginURL,
-	finishPendingLogin,
+	getUser,
+	hasPendingLogin,
+	isLoggedIn,
 	logout,
+	setUser,
 	
 	getRatelimitStatus,
 

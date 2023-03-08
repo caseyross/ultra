@@ -2,7 +2,8 @@ script.
 
 main
 	section#layout-content-left
-		slot(name='left')
+		#layout-content-left-inner
+			slot(name='left')
 	section#layout-content-right
 		slot(name='right')
 
@@ -12,16 +13,22 @@ style.
 		grid-template-columns calc(50dvw - 80px) calc(50dvw + 80px)
 		grid-template-rows 100dvh
 	#layout-content-left
-		align-items flex-end
-		display flex
-		flex-flow column nowrap
+		direction rtl
 		height 100%
+		overflow auto
 		padding 40px
 		padding-right 0
+		scrollbar-gutter stable
 		width 100%
+	#layout-content-left-inner
+		align-items flex-end
+		direction ltr
+		display flex
+		flex-flow column nowrap
 	#layout-content-right
 		height 100%
 		overflow auto
 		padding 40px
 		padding-left 80px
+		scrollbar-gutter stable
 		width 100%

@@ -68,7 +68,7 @@ article.post
 	{:else if loading}
 		.post-loading-message Loading...
 	{:else if post}
-		PostInfoCard(post_short_id={short_id})
+		PostInfoCard(post_short_id={short_id} selected={true})
 		br
 		{#if post.removed_by_category}
 			.post-unavailable-reason
@@ -102,8 +102,9 @@ article.post
 							figure.post-gallery-item
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
-										source(srcset={media.image_url_640})
-										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+										{#if !media.is_gif}
+											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -156,19 +157,17 @@ article.post
 			{#if !focus_comment_short_id}
 				h1.post-comments-label Comments
 				{#if post.discussion_type === 'CHAT'}
-					.post-comments-alternate-mode-notification Chat post. Expect lower quality comments.
-				{#if post.contest_mode}
+					.post-comments-alternate-mode-notification Chat post. Comments are ordered by newest first.
+				{:else if post.contest_mode}
 					.post-comments-alternate-mode-notification Post is in contest mode. Comments are sorted randomly.
 				{:else}
 					ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
 			{#key comments_sort}
 				PostCommentList(focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 			menu.post-comments-actions
-				Button(disabled={post.archived || post.locked} text='+ Add a comment...')
+				Button(disabled={post.archived || post.locked} icon_plus={true} text="Add comment...")
 
 style.
-	.post-comments-actions
-		margin-top 2em
 	.post-comments-alternate-mode-notification
 		background darkkhaki
 		border-radius 10px
@@ -209,7 +208,7 @@ style.
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
-		gap 6px
+		gap 2em
 	.post-gallery-item
 		display flex
 		flex-flow column nowrap
@@ -228,17 +227,18 @@ style.
 		border-radius 6px
 	.post-image
 		border-radius 6px
-		width 100%
+		width 420px
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 11px
-		letter-spacing 0.04em
+		letter-spacing 0.50px
 	.post-loading-message
 		padding 10px
 	.post-prediction-options > li
 		display flex
 	.post-selftext
 		margin-bottom 2em
+		max-width 390px
 	.post-unavailable-reason
 		background salmon
 		border-radius 10px

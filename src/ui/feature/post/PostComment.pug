@@ -31,14 +31,14 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-with-low-score={comment.score < 1} class:comment-upvoted={comment.likes === true} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.score_hidden ? 'score hidden' : comment.score + ' point' + (Math.abs(comment.score) === 1 ? '' : 's')})
-			aside.comment-sidebar
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.score_hidden ? 'score hidden' : comment.score + ' point' + (Math.abs(comment.score) === 1 ? '' : 's')})
+			cite.comment-author-info
 				UserAvatar(batch_id={user_batch_id} name={comment.author})
 				{#if comment.distinguished || comment.is_submitter}
 					UserDistinguish(type={comment.distinguished || 'submitter'})
 			TextHTML(html={comment.body_html})
 		{#if out_of_context}
-			.comment-context
+			cite.comment-source-info
 				a(href='/r/{comment.subreddit}') in r/{comment.subreddit}
 				a(href='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}') {comment.link_title}
 		{:else}
@@ -47,53 +47,50 @@ script.
 					{#each comment.replies as reply_short_id (reply_short_id)}
 						svelte:self(short_id={reply_short_id} user_batch_id={user_batch_id})
 				{#if comment.num_more_replies > 0}
-					.comment-more-replies
-						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="{comment.num_more_replies} {comment.num_more_replies === 1 ? 'reply' : 'replies'}")
+					menu.comment-more-replies
+						Button(action={() => api.load(comment.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{comment.num_more_replies} {comment.num_more_replies === 1 ? 'reply' : 'replies'}")
 				{#if comment.deeper_replies}
-					.comment-more-replies
+					menu.comment-more-replies
 						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}' text='Continue thread...')
 
 style.
 	.comment
 		display inline-block
-		margin 0.5em 0
+		margin 0.25em 0
 		position relative
 	:global(.comment > .md)
 		max-width 390px
 	:global(.comment > .md img)
-		margin-top 4px
 		max-height 60px
 		width auto
 	:global(.comment-deleted > .md)
 		opacity 0.25
 		pointer-events none
 	:global(.comment-downvoted > .md)
-		background cornflowerblue
-		color white
+		outline 1px solid cornflowerblue
 	:global(.comment-highlighted > .md)
-		border 1px solid
+		outline 1px solid
+	:global(.comment-upvoted > .md)
+		outline 1px solid orangered
 	:global(.comment-with-low-score:not(.comment-deleted) > .md)
 		opacity 0.5
-	:global(.comment-upvoted > .md)
-		background orangered
-		color white
-	.comment-clip
-		display flex
-	.comment-context
-		display flex
-		flex-flow column nowrap
-		padding 10px
-	.comment-more-replies
-		padding 0.5em 0
-	.comment-replies
-		border-left 1px solid var(--c-text-faint)
-		padding-left 41px
-	.comment-sidebar
+	.comment-author-info
 		align-items center
 		display flex
 		flex-flow column nowrap
 		height 100%
 		left -32px
-		padding 11px 0
+		padding 8px 0
 		position absolute
 		top 0
+	.comment-clip
+		display flex
+	.comment-more-replies
+		padding 0.25em 0
+	.comment-replies
+		border-left 1px solid var(--c-blend-normal)
+		padding-left 41px
+	.comment-source-info
+		display flex
+		flex-flow column nowrap
+		padding 10px

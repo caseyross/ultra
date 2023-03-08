@@ -3,6 +3,7 @@ script.
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import PostInfoCard from '../post/PostInfoCard.pug'
+	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
 
 	export type = null
 
@@ -122,6 +123,9 @@ script.
 	if base_page_id then load_page(0)
 
 nav.posts-list
+	section.posts-list-info
+		{#if type === 'subreddit'}
+			SubredditAvatar(name={subreddit_name} size='large')
 	menu.posts-list-sorting
 		{#if sort_options}
 			ButtonGroup(baselink={base_path + '/'} options={sort_options} selected={posts_sort.split('-')[0]} title='Posts')
@@ -144,19 +148,19 @@ nav.posts-list
 			Button(action={() => load_page(pages.length)} text='Load more')
 style.
 	.posts-list
-		align-items flex-end
+		background var(--c-blend-normal)
+		border-radius 10px
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		overflow auto
-		width 320px
+		padding 1em
+		width 270px
 	.posts-list-actions
 		display flex
 		flex 0 0 auto
 		justify-content space-between
 	.posts-list-content
-		background var(--c-con-weak)
-		border-radius 10px
 		display flex
 		flex 1
 		flex-flow column nowrap

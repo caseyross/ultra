@@ -21,8 +21,7 @@ export default (url) ->
 	switch path[1]
 		when undefined
 			return sanitize_route(
-				format: 'listings'
-				listings_type: 'subscriber'
+				format: 'dashboard'
 			)
 		when 'c', 'collection'
 			return sanitize_route(

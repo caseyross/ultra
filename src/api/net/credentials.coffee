@@ -15,9 +15,12 @@ forceRenew = (f) ->
 credentials = {
 
 	forget: ->
+		delete localStorage['api.credentials.associated_name']
+		delete localStorage['api.credentials.exchange_echo']
 		delete localStorage['api.credentials.exchange_token']
-		delete localStorage['api.credentials.key_expiry']
 		delete localStorage['api.credentials.key']
+		delete localStorage['api.credentials.key_expiry']
+		delete localStorage['api.credentials.renewing']
 		ratelimit.forget()
 
 	renew: ->

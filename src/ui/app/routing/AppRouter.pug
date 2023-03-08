@@ -4,9 +4,11 @@ script.
 	import AppAccountContext from '../context/AppAccountContext.pug'
 	import AppNetworkStatusContext from '../context/AppNetworkStatusContext.pug'
 	import AppRadialMenuContext from '../context/AppRadialMenuContext.pug'
+	import AppTableZoomContext from '../context/AppTableZoomContext.pug'
 	import AppThemeColorContext from '../context/AppThemeColorContext.pug'
 
 	import CollectionPage from '../../feature/collection/CollectionPage.pug'
+	import DashboardPage from '../../feature/dashboard/DashboardPage.pug'
 	import ListingsPage from '../../feature/listings/ListingsPage.pug'
 	import MultiredditPage from '../../feature/multireddit/MultiredditPage.pug'
 	import SubredditPage from '../../feature/subreddit/SubredditPage.pug'
@@ -90,19 +92,22 @@ script.
 		AppThemeColorContext
 			AppNetworkStatusContext
 				AppRadialMenuContext
-					{#if route.format === 'collection'}
-						CollectionPage(collection_short_id={route.listing.collection_short_id} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-					{:else if route.format === 'listings'}
-						ListingsPage(type={route.listings_type})
-					{:else if route.format === 'multireddit'}
-						MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-					{:else if route.format === 'subreddit'}
-						{#key route.listing.subreddit_name}
-							SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-					{:else if route.format === 'user'}
-						UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-					{:else if route.format === 'wiki'}
-						{#key route.listing.subreddit_name}
-							{#key route.selection.wikipage_name}
-								{#key route.selection.wikipage_revision_id}
-									WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})
+					AppTableZoomContext
+						{#if route.format === 'collection'}
+							CollectionPage(collection_short_id={route.listing.collection_short_id} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+						{:else if route.format === 'dashboard'}
+							DashboardPage
+						{:else if route.format === 'listings'}
+							ListingsPage(type={route.listings_type})
+						{:else if route.format === 'multireddit'}
+							MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+						{:else if route.format === 'subreddit'}
+							{#key route.listing.subreddit_name}
+								SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+						{:else if route.format === 'user'}
+							UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
+						{:else if route.format === 'wiki'}
+							{#key route.listing.subreddit_name}
+								{#key route.selection.wikipage_name}
+									{#key route.selection.wikipage_revision_id}
+										WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})

@@ -30,15 +30,15 @@ script.
 			{#if user.profile_img}
 				img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
 			{#if user.comment_karma + user.link_karma < 0}
-				span.user-avatar-badge.user-avatar-badge-negative-karma-user(title='Low karma user')
+				figure.user-avatar-badge.user-avatar-badge-negative-karma-user(title='Low karma user')
 					span.user-avatar-badge-backdrop −
 					span.user-avatar-badge-text −
 			{:else if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
-				span.user-avatar-badge.user-avatar-badge-new-user(title='New user')
+				figure.user-avatar-badge.user-avatar-badge-new-user(title='New user')
 					span.user-avatar-badge-backdrop ✗
 					span.user-avatar-badge-text ✗
 			{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
-				span.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
+				figure.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
 					span.user-avatar-badge-backdrop ⌃
 					span.user-avatar-badge-text ⌃
 

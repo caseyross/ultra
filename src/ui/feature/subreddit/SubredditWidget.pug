@@ -26,8 +26,7 @@ script.
 				a(href={relativize_url(image.linkUrl)})
 					img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
 			{:else}
-				a(href={image.url})
-					img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
+				img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
 	{:else if widget.kind === 'post-flair'}
 		header.subreddit-widget-title Filter by Flair
 		ol.subreddit-widget-post-flairs
@@ -39,6 +38,8 @@ script.
 		TextHTML(html={widget.textHtml})
 
 style.
+	.subreddit-widget-image
+		border-radius 10px
 	.subreddit-widget-links
 		display flex
 		flex-flow row wrap

@@ -7,7 +7,6 @@ script.
 	import Post from '../post/Post.pug'
 	import PostsList from '../posts/PostsList.pug'
 
-	import SubredditAvatar from './SubredditAvatar.pug'
 	import SubredditInfo from './SubredditInfo.pug'
 	import SubredditModerators from './SubredditModerators.pug'
 	import SubredditRules from './SubredditRules.pug'
@@ -37,7 +36,6 @@ svelte:head
 CenterLayout
 	.subreddit
 		nav.subreddit-nav
-			SubredditAvatar(name={subreddit_name} size='large')
 			{#if subreddit}
 				menu.subreddit-options(style='display:none')
 					Button(popup={true} text='About')
@@ -51,7 +49,8 @@ CenterLayout
 				PostsList(type='subreddit' subreddit_name={subreddit_name} posts_sort={posts_sort} selected_post_short_id={post_short_id})
 		{#if post_short_id}
 			{#key post_short_id}
-				Post(comments_sort={comments_sort} focus_comment_short_id={comment_short_id} short_id={post_short_id})
+				{#key comment_short_id}
+					Post(comments_sort={comments_sort} focus_comment_short_id={comment_short_id} short_id={post_short_id})
 		{:else}
 			SubredditInfo(name={subreddit_name})
 			{#if widgets}
@@ -77,14 +76,15 @@ style.
 		padding 20px 0
 	.subreddit-posts
 		height 100dvh
-		left calc(50% + 336px)
 		overflow-y auto
 		padding 40px 0
 		position fixed
+		right calc(50% + 336px)
+		scrollbar-width none
 		top 0
 		&::-webkit-scrollbar
 			display none
 	.subreddit-widgets
 		display flex
 		flex-flow column nowrap
-		gap 1em
+		gap 0.5em

@@ -14,17 +14,17 @@ script.
 		ArrowDown: ->
 			set_volume(audio.volume - 0.25)
 		ArrowLeft: ->
-			set_time(video.currentTime - 15)
+			set_time(video.currentTime - 5)
 		ArrowRight: ->
-			set_time(video.currentTime + 15)
+			set_time(video.currentTime + 5)
 		ArrowUp: ->
 			set_volume(audio.volume + 0.25)
 		j: ->
-			set_time(video.currentTime - 15)
+			set_time(video.currentTime - 10)
 		k: ->
 			play_pause()
 		l: ->
-			set_time(video.currentTime + 15)
+			set_time(video.currentTime + 10)
 		m: ->
 			if audio.volume > 0
 				localStorage['media.premute_volume'] = audio.volume
@@ -74,6 +74,7 @@ script.
 			document.exitFullscreen()
 		else
 			player.requestFullscreen()
+	volume_mixer = null
 	video = null
 	waiting_for_seek = false
 	wake_mouse = ->
@@ -93,6 +94,9 @@ script.
 				mouse_idle = true
 			else
 				fullscreen = false
+		)
+		scrobbler.addEventListener('keydown', (e) ->
+			e.preventDefault()
 		)
 		video.addEventListener('ended', (e) ->
 			if fullscreen
@@ -130,6 +134,9 @@ script.
 		video.addEventListener('waiting', (e) ->
 			audio?.pause()
 		)
+		volume_mixer.addEventListener('keydown', (e) ->
+			e.preventDefault()
+		)
 
 .media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' use:virtual_hotkeys={additional_hotkeys})
 	audio(bind:this={audio})
@@ -145,10 +152,10 @@ script.
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
 		.media-volume(title='Drag left or right to change volume')
 			figure.media-volume-graphics
-				span.media-volume-bar(class:media-volume-bar-filled={audio?.volume == 0} style='align-self: flex-start; height: 6px')
+				span.media-volume-bar.media-volume-bar-mute(class:media-volume-bar-filled={audio?.volume == 0}) ✗
 				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
-			input.media-volume-input(max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
+			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
 		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text={fullscreen ? '→←' : '⟷'})
 
 style.
@@ -232,6 +239,16 @@ style.
 		width 6px
 	.media-volume-bar-filled
 		background var(--c-text-strong)
+		color var(--c-text-strong) !important
+	.media-volume-bar-mute
+		align-self flex-start
+		background none !important
+		color var(--c-text-faint)
+		font-weight 900
+		left -4px
+		line-height 1
+		position relative
+		top -4px
 	.media-volume-graphics
 		align-items flex-end
 		display flex

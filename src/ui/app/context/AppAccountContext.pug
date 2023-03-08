@@ -1,21 +1,26 @@
 script.
-	import { setContext } from 'svelte'
 	import api from '../../../api/index.js'
-	context_set = false
+
+	import AppCrash from '../routing/AppCrash.pug'
+	
+	user_loaded = false
+	user_load_error = null
 	status = api.getLoginStatus()
 	if status is 'logged-in'
-		if localStorage['account.username']
-			setContext('username', localStorage['account.username'])
-			context_set = true
+		if api.getUser()
+			user_loaded = true
 		else
 			api.loadWatch('current_user',
 				(x) ->
-					if x?.data?.name
-						localStorage['account.username'] = x.data.name
-						location.reload() # workaround context only being settable during component initialization
+					if x?.error
+						user_load_error = x.error
+						user_load_error.message = "Could not retrieve your user details. This is likely an issue on Reddit's side --- try again later."
+					else if x?.data?.name
+						api.setUser(x.data.name)
+						user_loaded = true
 			)
 
-{#if status === 'logged-out'}
-	slot
-{:else if status === 'logged-in' && context_set}
+{#if user_load_error}
+	AppCrash(error={user_load_error})
+{:else if (status === 'logged-in' && user_loaded) || (status === 'logged-out')}
 	slot

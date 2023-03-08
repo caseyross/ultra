@@ -5,5 +5,7 @@ script.
 	h1 Whoops!
 	p There was an error. We didn't expect this.
 	{#if error}
+		p Error message:
+		pre {error.message}
 		p Technical details:
-		pre {error.stack || error}
+		pre {error.stack}

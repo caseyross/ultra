@@ -52,7 +52,7 @@ style.
 	.wiki-page
 		max-width 100%
 		padding-left 240px
-		width 960px
+		width 1160px
 	.wiki-page-body
 		margin-top 3em
 	:global(.wiki-page-body > .md)
@@ -70,13 +70,13 @@ style.
 	:global(.wiki-page .toc)
 		font-size 12px
 		left @css{max(0px, calc(50% - 640px))}
-		line-height 1
 		max-height 100vh
 		overflow auto
-		padding 8em 0
+		padding 40px 0
 		position fixed
+		scrollbar-width none
 		top 0
-		width 300px
+		width 320px
 		&::-webkit-scrollbar
 			display none
 	:global(.wiki-page .toc > ul)
@@ -85,10 +85,9 @@ style.
 		&::before
 			color var(--c-text-weak)
 			content 'Table of Contents'
-			line-height 2
 			position absolute
 			text-transform uppercase
-			top -1em
+			top 0
 	:global(.wiki-page .toc li)
 		list-style none
 		margin-top 1em
