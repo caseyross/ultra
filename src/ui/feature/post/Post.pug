@@ -120,16 +120,20 @@ article.post
 						{#if html_embeds(post)}
 							{@const embed = html_embeds(post)}
 								{@html embed.html}
+								menu.post-content-actions
+									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.action_description})
 						{:else if iframe_embeds(post.url)}
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
 								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {420 * Math.sqrt(embed.iframe_aspect_ratio)}px")
+								menu.post-content-actions
+									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
-						menu.post-content-actions
-							Button(key='e' link={relativize_url(post.url)} new_tab={true} text='Open link')
+							menu.post-content-actions
+								Button(key='e' link={relativize_url(post.url)} new_tab={true} text='Read')
 				{:else if post.format === 'prediction'}
 					ol.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -160,12 +164,13 @@ article.post
 					.post-comments-alternate-mode-notification Chat post. Comments are ordered by newest first.
 				{:else if post.contest_mode}
 					.post-comments-alternate-mode-notification Post is in contest mode. Comments are sorted randomly.
-				{:else}
+				{:else if post.num_comments > 0}
 					ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
-			{#key comments_sort}
-				PostCommentList(focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
-			menu.post-comments-actions
-				Button(disabled={post.archived || post.locked} icon_plus={true} text="Add comment...")
+			{#if post.num_comments < 1}
+				.post-comments-empty-notification [ None. ]
+			{:else}
+				{#key comments_sort}
+					PostCommentList(focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 
 style.
 	.post-comments-alternate-mode-notification
@@ -173,6 +178,8 @@ style.
 		border-radius 10px
 		color white
 		padding 10px
+	.post-comments-empty-notification
+		color var(--c-text-weak)
 	.post-comments-label
 		color var(--c-text-weak)
 		font-size 10px

@@ -10,13 +10,14 @@ script.
 	export post_short_id = null
 	export sort = null
 
+	loading = false
 	more_replies_loading = false
 	post = null
 	user_batch_id = null
 	if focus_comment_short_id
 		setContext('focus_comment_short_id', focus_comment_short_id)
 	api.loadWatch(api.ID('post', post_short_id, sort, 25, focus_comment_short_id), (x) ->
-		{ data: post } = x
+		{ data: post, loading } = x
 		if post?.contributors.length
 			user_batch_id = api.ID('users', post.contributors)
 			api.load(user_batch_id)
@@ -27,7 +28,9 @@ script.
 	)
 
 ol.post-comments-list
-	{#if post}
+	{#if loading}
+		.post-comments-list-loading-notification Loading...
+	{:else if post}
 		{#each post.replies as reply_short_id}
 			PostComment(short_id={reply_short_id} user_batch_id={user_batch_id})
 		{#if post.num_more_replies > 0}
@@ -37,5 +40,8 @@ ol.post-comments-list
 style.
 	.post-comments-list
 		margin 0.5em 0
+	.post-comments-list-loading-notification
+		color var(--c-text-weak)
+		padding 1em 0
 	.post-more-replies
 		padding 0.25em 0

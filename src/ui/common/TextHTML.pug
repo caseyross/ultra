@@ -5,7 +5,7 @@ script.
 	formatted =
 		html
 			.replace(/<a href="https?:\/\/redd\.it\/(?<path>[^"]*)"[^>]*>/g, '<a href="/p/$<path>">')
-			.replace(/<a href="https?:\/\/(?:[A-Za-z]+\.)?reddit\.com\/(?<path>[^"]*)"[^>]*>/g, '<a href="/$<path>">')
-			.replace(/<a href="https:\/\/preview\.redd\.it\/(?<filepath>[^"]+)">(?<linktext>[^<]*)<\/a>/g, '<a href="https://preview.redd.it/$<filepath>" target="_blank"><img src="https://preview.redd.it/$<filepath>"></a>')
+			.replace(/<a href="https?:\/\/(?:(?:new|np|old|www)\.)?reddit\.com\/(?<path>[^"]*)"[^>]*>/g, '<a href="/$<path>">')
+			.replace(/<a href="https:\/\/(?<subdomain>preview)\.redd\.it\/(?<filepath>[^"]+)">(?<linktext>[^<]*)<\/a>/g, '<a href="https://$<subdomain>.redd.it/$<filepath>" target="_blank"><img src="https://$<subdomain>.redd.it/$<filepath>"></a>')
 
 {@html formatted}

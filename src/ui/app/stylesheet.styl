@@ -228,6 +228,8 @@ pre
 		color var(--c-text-strong)
 		font inherit
 		padding 2em
+kbd
+	font inherit
 
 // Spoilers
 .md-spoiler-text
@@ -247,6 +249,7 @@ pre
 // Interactive
 button
 input
+select
 	background inherit
 	border 0
 	color inherit
@@ -259,6 +262,8 @@ input
 	word-spacing inherit
 summary
 	cursor pointer
+	&:hover::marker
+		color var(--c-hint-normal)
 
 // Media
 iframe

@@ -70,6 +70,7 @@ script.
 		localStorage['media.volume'] = audio.volume
 	scrobbler = null
 	toggle_fullscreen = ->
+		document.activeElement.blur() # prevent browser from forcing focus style for buttons on fullscreen change
 		if fullscreen
 			document.exitFullscreen()
 		else
@@ -96,7 +97,8 @@ script.
 				fullscreen = false
 		)
 		scrobbler.addEventListener('keydown', (e) ->
-			e.preventDefault()
+			if e.key != 'Tab'
+				e.preventDefault()
 		)
 		video.addEventListener('ended', (e) ->
 			if fullscreen
@@ -135,7 +137,8 @@ script.
 			audio?.pause()
 		)
 		volume_mixer.addEventListener('keydown', (e) ->
-			e.preventDefault()
+			if e.key != 'Tab'
+				e.preventDefault()
 		)
 
 .media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' use:virtual_hotkeys={additional_hotkeys})
@@ -146,7 +149,7 @@ script.
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} description='Play / pause' key='p' text="{ended ? '↻' : paused ? '▶' : '■'} {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
+		Button(action={play_pause} description='Play / pause' key='p' text="Playback ({Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)})")
 		.media-scrobbler(title='Drag left or right to change playback position')
 			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
@@ -156,7 +159,7 @@ script.
 				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
 			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
-		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text={fullscreen ? '→←' : '⟷'})
+		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text='Fullscreen')
 
 style.
 	audio
@@ -180,7 +183,7 @@ style.
 	.media-player-controls
 		display flex
 		font-feature-settings 'tnum'
-		gap 1em
+		gap 8px
 		margin-top 1em
 		:fullscreen &
 			bottom 0
@@ -206,19 +209,25 @@ style.
 		.media-player:not(:fullscreen) video:hover + &
 			opacity 1
 	.media-scrobbler
-		background var(--c-con-weak)
+		align-items center
+		background var(--c-blend-normal)
 		border-radius 6px
+		display flex
 		flex 1
+		padding 0 10px
 		position relative
 	.media-scrobbler-graphics
 		border-radius inherit
-		height 100%
+		height 8px
+		user-select none
+		width 100%
 	.media-scrobbler-input
 		appearance none
 		background transparent
 		height 100%
 		left 0
 		margin 0
+		padding inherit
 		position absolute
 		top 0
 		width 100%
@@ -226,10 +235,10 @@ style.
 			appearance none
 			background var(--c-text-strong)
 			border-radius 3px
-			height 2em
-			width 3px
+			height 16px
+			width 6px
 	.media-volume
-		background var(--c-con-weak)
+		background var(--c-blend-normal)
 		border-radius 6px
 		padding 0 9px
 		position relative
@@ -245,16 +254,17 @@ style.
 		background none !important
 		color var(--c-text-faint)
 		font-weight 900
-		left -4px
+		left -5px
 		line-height 1
 		position relative
-		top -4px
+		top -2px
 	.media-volume-graphics
 		align-items flex-end
 		display flex
 		gap 3px
 		height 100%
 		padding 4px 0
+		user-select none
 	.media-volume-input
 		appearance none
 		background transparent

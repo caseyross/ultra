@@ -1,0 +1,33 @@
+script.
+	import HotkeyLabel from './HotkeyLabel.pug'
+	import { virtual_hotkeys } from './actions/hotkeys.coffee'
+
+	export enter_action = ->
+	export key = null
+	export label = ''
+	export type_action = ->
+
+	input = null
+	hotkeys =
+		'/': ->
+			input?.focus()
+			input?.select()
+
+label.text-input-label
+	{#if key}
+		HotkeyLabel(key={key})
+	| {label}
+	input.text-input(bind:this={input} on:change={e => enter_action(e.target.value)} on:input={e => type_action(e.target.value)} use:virtual_hotkeys={hotkeys})
+
+style.
+	.text-input
+		border-bottom 2px solid var(--c-text-faint)
+		&:focus
+			border-color var(--c-hint-normal)
+			outline none
+	.text-input-label
+		align-items center
+		display inline-flex
+		gap 5px
+		margin-right 3px
+		user-select none

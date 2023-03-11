@@ -54,6 +54,8 @@ CenterLayout
 		{:else}
 			SubredditInfo(name={subreddit_name})
 			{#if widgets}
+				{#if widgets.topbar?.length}
+					SubredditWidget(widget={widgets.topbar[0]})
 				ol.subreddit-widgets
 					{#each widgets.sidebar as widget}
 						SubredditWidget(widget={widget})

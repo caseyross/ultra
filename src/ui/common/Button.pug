@@ -3,9 +3,8 @@ script.
 	import HotkeyLabel from './HotkeyLabel.pug'
 	import Popup from './Popup.pug'
 	
-	export action = null
+	export action = ->
 	export activated = false
-	export appearance = 'button'
 	export badge = null
 	export description = ''
 	export disabled = false
@@ -14,24 +13,29 @@ script.
 	export link = null
 	export loading = false
 	export new_tab = false
+	export options = null
 	export popup = false
-	export size = 'normal'
+	export selected_value = null
 	export text = ''
 
 	popup_open = false
 	if popup
 		action = -> popup_open = true
 
-{#if link}
-	a(class:activated={activated} class='appearance-{appearance} size-{size}' class:disabled={disabled} class:with-icon-plus={icon_plus} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
+{#if options}
+	select.button.button-dropdown(class:button-activated={activated} disabled={disabled || loading} on:change={e => action(e.target.value)} title={description} use:hotkey={key})
+		{#each options as option}
+			option.button-dropdown-option(disabled={option.disabled} label={option.label} selected={selected_value === option.value} value={option.value})
+{:else if link}
+	a.button(class:button-activated={activated} class:button-disabled={disabled} class:button-with-icon-plus={icon_plus} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		{#if text}
 			| {text}
 		{#if badge}
-			span.badge {badge}
+			span.button-badge {badge}
 {:else}
-	button(class:activated={activated} class='appearance-{appearance} size-{size}' class:with-icon-plus={icon_plus} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
+	button.button(class:button-activated={activated} class:button-with-icon-plus={icon_plus} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
 		{#if loading}
 			| loading...
 		{:else}
@@ -40,15 +44,15 @@ script.
 			{#if text}
 				| {text}
 			{#if badge}
-				span.badge {badge}
+				span.button-badge {badge}
 {#if popup}
 	Popup(on:close={() => popup_open = false} open={popup_open} title={text})
 		slot
 
 
 style.
-	.appearance-button
-		align-items flex-start
+	.button
+		align-items center
 		background var(--c-blend-normal)
 		border 1px solid transparent
 		border-radius 6px
@@ -59,35 +63,27 @@ style.
 		position relative
 		text-align left
 		user-select none
-		&:hover:not(:disabled):not(.disabled)
+		&:hover:not(:disabled):not(.disabled):not(.button-dropdown)
 			background var(--c-con-normal)
 			border-color var(--c-hint-normal)
 			color var(--c-hint-normal)
-		&:disabled
-		&.disabled
-			cursor not-allowed
-			opacity 0.5
-		&.activated
+		&.button-activated
 			background var(--c-text-strong)
 			color var(--c-text-reverse)
-		&.with-icon-plus::before
+		&.button-disabled
+		&:disabled
+			cursor not-allowed
+			opacity 0.5
+		&.button-with-icon-plus::before
 			color var(--c-text-weak)
 			content '+'
 			left -17px
 			position absolute
-	.appearance-text
-		color var(--color-writing-action)
-		font-size 12px
-		font-weight bold
-	.badge
+	.button-badge
 		border-radius 10px
 		background var(--c-con-strong)
 		font-size 0.5em
 		font-weight bold
 		padding 0 1ch
-	.size-big
-		font-size 1.5em
-	.size-normal
-		font-size 1em
-	.size-small
-		font-size 0.75em
+	.button-dropdown
+		font inherit

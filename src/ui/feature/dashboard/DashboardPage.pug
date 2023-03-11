@@ -2,7 +2,10 @@ script.
 	import api from '../../../api/index.js'
 
 	import Button from '../../common/Button.pug'
+	import TextInput from '../../common/TextInput.pug'
 
+nav#subreddit-search
+	TextInput(key='/' label='Search:')
 menu#auth-menu
 	{#if api.isLoggedIn()}
 		Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} text='Logout →')
@@ -12,5 +15,9 @@ menu#auth-menu
 style.
 	#auth-menu
 		bottom 1em
+		right 1em
+		position fixed
+	#subreddit-search
+		top 1em
 		right 1em
 		position fixed

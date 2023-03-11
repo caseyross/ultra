@@ -12,6 +12,7 @@ document.addEventListener('keydown', (e) ->
 			return
 		else
 			if e.isTrusted and handlers[e.key]?.length
+				e.preventDefault()
 				handlers[e.key].at(-1)()
 )
 

@@ -3,4 +3,4 @@ export relativize_url = (url) ->
 	url
 		.toString()
 		.replace(/^https?:\/\/redd\.it\/(?<path>[^"]*)/, '/p/$<path>')
-		.replace(/^https?:\/\/(?:[A-Za-z]+\.)?reddit\.com\/(?<path>.*)/, '/$<path>')
+		.replace(/^https?:\/\/(?:(?:new|np|old|www)\.)?reddit\.com\/(?<path>.*)/, '/$<path>')

@@ -27,6 +27,17 @@ script.
 					img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
 			{:else}
 				img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
+	{:else if widget.kind === 'menu'}
+		ol.subreddit-widget-menu
+			{#each widget.data as item}
+				{#if item.children}
+					details
+						summary {item.text}
+						ol
+							{#each item.children as child}
+								Button(link={relativize_url(child.url)} text={child.text})
+				{:else}
+					Button(link={relativize_url(item.url)} text={item.text})
 	{:else if widget.kind === 'post-flair'}
 		header.subreddit-widget-title Filter by Flair
 		ol.subreddit-widget-post-flairs
@@ -40,9 +51,10 @@ script.
 style.
 	.subreddit-widget-image
 		border-radius 10px
-	.subreddit-widget-links
+	.subreddit-widget-menu
+		align-items flex-start
 		display flex
-		flex-flow row wrap
+		flex-flow column nowrap
 		gap 10px
 	.subreddit-widget-post-flairs
 		display flex
