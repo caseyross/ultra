@@ -133,7 +133,7 @@ article.post
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
 							menu.post-content-actions
-								Button(key='e' link={relativize_url(post.url)} new_tab={true} text='Read')
+								Button(key='e' link={relativize_url(post.url)} new_tab={true} text='View')
 				{:else if post.format === 'prediction'}
 					ol.post-predictions
 						{#each post.tournament_data.predictions as prediction}

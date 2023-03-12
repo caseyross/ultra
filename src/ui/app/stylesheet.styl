@@ -85,8 +85,10 @@ ul
 		margin 0 0 1em
 		padding-inline-start 3ch
 	li
-	li > *:first-child
-		margin 0.75em 0
+		margin 0 0 0.75em
+		& > ol
+		& > ul
+			margin-top 0.75em
 menu
 	padding 0
 
@@ -250,6 +252,7 @@ kbd
 button
 input
 select
+summary
 	background inherit
 	border 0
 	color inherit
@@ -259,11 +262,17 @@ select
 	line-height inherit
 	padding 0
 	text-transform inherit
+	user-select none
 	word-spacing inherit
+details
+	margin 0 0 0.5em
 summary
-	cursor pointer
+	margin 0 0 0.5em
+	padding 4px
 	&:hover::marker
 		color var(--c-hint-normal)
+	details[open] &
+		color var(--c-text-weak)
 
 // Media
 iframe

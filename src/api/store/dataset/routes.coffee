@@ -91,7 +91,7 @@ export default {
 	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id) ->
 		get("/comments/#{post_short_id}", {
 			comment: focus_comment_short_id
-			context: 8
+			context: 1
 			limit: max_comments
 			showedits: true
 			showmedia: true
