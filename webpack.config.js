@@ -6,6 +6,7 @@ const pugToSvelte = require('pug-to-svelte')
 const stylus = require('stylus')
 // plugins
 const DotEnvFileWebpackPlugin = require('dotenv-webpack')
+const FileCopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlOutputWebpackPlugin = require('html-webpack-plugin')
 const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-plugin')
 
@@ -86,6 +87,11 @@ module.exports = {
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
 			scriptMatchPattern: [/^runtime/, /^preboot/] // avoid add'l network roundtrip on critical path
+		}),
+		new FileCopyWebpackPlugin({
+			patterns: [
+				{ from: 'src/ui/**/*.(png|svg)', to: '[name][ext]' }, // copy into top level, ignoring position in directory structure
+			],
 		}),
 	],
 }
