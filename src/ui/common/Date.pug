@@ -6,6 +6,26 @@ script.
 	export format = 'relabs'
 
 {#if edited_s}
-	time(datetime={edited_s} title='{Time.sToAbsTimeStr(created_s)} (edited {Time.sToAbsTimeStr(edited_s)})') {format === 'rel' ? Time.sToRelTimeStr(edited_s) + ' ago' : format === 'abs' ? Time.sToAbsTimeStr(edited_s) : Time.sToAbsRelTimeStr(edited_s)}
+	time(datetime={edited_s} title='{Time.sToAbsTimeStr(created_s)} (edited {Time.sToAbsTimeStr(edited_s)})')
+		{#if format === 'rel-abbr'}
+			| {Time.sToRelTimeStr(edited_s, { abbr: true })}
+		{:else if format === 'rel'}
+			| {Time.sToRelTimeStr(edited_s)} ago
+		{:else if format === 'abs'}
+			| {Time.sToAbsTimeStr(edited_s)}
+		{:else}
+			| {Time.sToAbsRelTimeStr(edited_s)}
 {:else}
-	time(datetime={created_s} title='{Time.sToAbsTimeStr(created_s)}') {format === 'rel' ? Time.sToRelTimeStr(created_s) + ' ago' : format === 'abs' ? Time.sToAbsTimeStr(created_s) : Time.sToAbsRelTimeStr(created_s)}
+	time(datetime={created_s} title='{Time.sToAbsTimeStr(created_s)}')
+		{#if format === 'rel-abbr'}
+			| {Time.sToRelTimeStr(created_s, { abbr: true })}
+		{:else if format === 'rel'}
+			| {Time.sToRelTimeStr(created_s)} ago
+		{:else if format === 'abs'}
+			| {Time.sToAbsTimeStr(created_s)}
+		{:else}
+			| {Time.sToAbsRelTimeStr(created_s)}
+
+style.
+	time
+		cursor help

@@ -1,6 +1,6 @@
 import api from '../../../api/index.js'
 import { Time } from '../../../lib/index.js'
-import parse_route from '../routing/parse_route.coffee'
+import { parse_url } from '../routing/url.coffee'
 
 # Set the API config from environment vars.
 api.configure({
@@ -20,7 +20,7 @@ if api.hasPendingLogin()
 	history.replaceState(null, null, remembered_path ? '/')
 
 # Parse the current route so we can start making network requests for critical path data ASAP.
-route = parse_route(location)
+route = parse_url(location)
 if route.preload
 	for id in route.preload
 		api.preload(id)

@@ -34,63 +34,63 @@ script.
 			)
 
 {#if error}
-	.list-info-card.list-info-card-unavailable
+	.feed-info-card.feed-info-card-unavailable
 {:else if info}
 	{#if type === 'collection'}
-		a.list-info-card(href='/c/{collection_short_id}')
-			section.list-info-card-avatar
-				img.list-info-card-avatar-image(alt='')
-				.list-info-card-avatar-owner-image
+		a.feed-info-card(href='/c/{collection_short_id}')
+			section.feed-info-card-avatar
+				img.feed-info-card-avatar-image(alt='')
+				.feed-info-card-avatar-owner-image
 					UserAvatar(name={info.author_name})
-			section.list-info-card-data
-				span.list-info-card-list-type Collection
-				strong.list-info-card-list-name {info.title}
+			section.feed-info-card-data
+				span.feed-info-card-list-type Collection
+				strong.feed-info-card-list-name {info.title}
 	{:else if type === 'multireddit'}
-		a.list-info-card(href='/m/{user_name}/{multireddit_name}')
-			section.list-info-card-avatar
-			section.list-info-card-data
-				span.list-info-card-list-type Multireddit
-				strong.list-info-card-list-name {user_name}/{multireddit_name}
+		a.feed-info-card(href='/m/{user_name}/{multireddit_name}')
+			section.feed-info-card-avatar
+			section.feed-info-card-data
+				span.feed-info-card-list-type Multireddit
+				strong.feed-info-card-list-name {user_name}/{multireddit_name}
 	{:else if type === 'subreddit'}
-		a.list-info-card(href='/{subreddit_name}' style='display:flex')
-			section.list-info-card-avatar
+		a.feed-info-card(href='/{subreddit_name}' style='display:flex')
+			section.feed-info-card-avatar
 				{#if info.community_icon || info.icon_img}
-					img.list-info-card-avatar-image(alt='' src={info.community_icon || info.icon_img})
-			section.list-info-card-data(style='display:none')
-				span.list-info-card-list-type Subreddit
-				strong.list-info-card-list-name(title={info.display_name}) {info.display_name}
+					img.feed-info-card-avatar-image(alt='' src={info.community_icon || info.icon_img})
+			section.feed-info-card-data
+				span.feed-info-card-list-type Subreddit
+				strong.feed-info-card-list-name(title={info.display_name}) {info.display_name}
 	{:else if type === 'user'}
-		a.list-info-card(href='/u/{user_name}')
-			section.list-info-card-avatar
+		a.feed-info-card(href='/u/{user_name}')
+			section.feed-info-card-avatar
 				{#if info.profile_img}
-					img.list-info-card-avatar-image(alt='' src={info.profile_img})
-			section.list-info-card-data
-				span.list-info-card-list-type User
-				strong.list-info-card-list-name {user_name}
+					img.feed-info-card-avatar-image(alt='' src={info.profile_img})
+			section.feed-info-card-data
+				span.feed-info-card-list-type User
+				strong.feed-info-card-list-name {user_name}
 
 style.
-	.list-info-card
+	.feed-info-card
 		align-items center
 		border-radius 1em
 		display grid
 		gap 10px
 		grid-template-columns 64px 216px
-	.list-info-card-avatar
+	.feed-info-card-avatar
 		position relative
 		width 64px
-	.list-info-card-avatar-image
+	.feed-info-card-avatar-image
 		aspect-ratio 1
 		border-radius 50%
 		object-fit cover
 		width 100%
-	.list-info-card-avatar-owner-image
+	.feed-info-card-avatar-owner-image
 		bottom -10px
 		position absolute
 		right 0
-	.list-info-card-data
+	.feed-info-card-data
 		display flex
 		flex-flow column nowrap
-	.list-info-card-list-name
+	.feed-info-card-list-name
 		font-size 1.5em
-	.list-info-card-list-type
+	.feed-info-card-list-type
 		color var(--c-text-weak)

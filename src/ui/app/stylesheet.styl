@@ -31,15 +31,15 @@ strong
 
 // Theme
 body
-	--c-hint-normal wheat
 	--c-theme-default #ffffff
-	background: var(--c-theme)
+	background var(--c-theme)
 	color var(--c-text-strong)
 	&.color-strategy-black-text
 		--c-blend-normal rgba(0,0,0,0.10)
 		--c-con-weak rgba(255,255,255,0.05)
 		--c-con-normal rgba(255,255,255,0.10)
 		--c-con-strong rgba(255,255,255,0.50)
+		--c-hint-normal cornflowerblue
 		--c-text-faint rgba(0,0,0,0.25)
 		--c-text-weak rgba(0,0,0,0.50)
 		--c-text-strong black
@@ -52,6 +52,7 @@ body
 		--c-con-weak rgba(0,0,0,0.05)
 		--c-con-normal rgba(0,0,0,0.10)
 		--c-con-strong rgba(0,0,0,0.50)
+		--c-hint-normal wheat
 		--c-text-faint rgba(255,255,255,0.25)
 		--c-text-weak rgba(255,255,255,0.50)
 		--c-text-strong #f2f4f7
@@ -123,33 +124,32 @@ th
 	font-weight inherit
 .md
 	table
-		border 1px solid var(--c-con-strong)
 		border-collapse collapse
-		border-radius 9px
+		border-radius 6px
 		display inline-block
 		font-size 12px
 		font-feature-settings 'cv11' 1, 'tnum' 1
-		letter-spacing 0.50px
 		margin 0 0 1em
 		max-width 100%
 		overflow-wrap normal
-		padding 1em 0.5em
-		overflow auto
-		white-space pre-line
+		white-space pre-wrap
 		&:hover:not(:fullscreen)
-			border-color var(--c-hint-normal)
+			background var(--c-con-weak)
 			cursor zoom-in
 		&:fullscreen
 			background var(--c-theme)
 			border-radius 0
 			color var(--c-text-strong)
-			font-size 14px
+			font-size inherit
 			padding 1.5em
 	th
 	td
-		border-right 1px solid var(--c-text-weak)
-		padding 0.5em 1em
+		padding 1em
 		vertical-align top
+	th
+		border-bottom 1px solid var(--c-con-normal)
+	td
+		border-right 1px solid var(--c-con-normal)
 		&:last-child
 			border-right none
 
@@ -164,10 +164,10 @@ sub
 sup
 	line-height 0
 .md
-	background var(--c-con-normal)
+	background var(--c-blend-normal)
 	border-radius 10px
 	overflow-wrap anywhere
-	padding 10px 15px
+	padding 1em
 	a
 		text-decoration underline
 		&:hover
@@ -215,6 +215,8 @@ code
 	border-radius 2px
 	padding 1px 2px
 	word-break break-all
+	pre > &
+		background none
 pre
 	background var(--c-con-normal)
 	border 1px solid transparent
@@ -228,7 +230,7 @@ pre
 	&:fullscreen
 		background var(--c-theme)
 		color var(--c-text-strong)
-		font inherit
+		font-size 1rem
 		padding 2em
 kbd
 	font inherit

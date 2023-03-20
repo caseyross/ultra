@@ -1,8 +1,8 @@
 script.
 	import SplitLayout from '../../common/layout/SplitLayout.pug'
+	import Feed from '../feed/Feed.pug'
+	import FeedInfoCard from '../feed/FeedInfoCard.pug'
 	import Post from '../post/Post.pug'
-	import PostsList from '../posts/PostsList.pug'
-	import PostsListInfo from '../posts/PostsListInfo.pug'
 
 	export collection_short_id = null
 	
@@ -14,8 +14,8 @@ svelte:head
 	title collection {collection_short_id}
 SplitLayout
 	svelte:fragment(slot='left')
-		PostsListInfo(type='collection' collection_short_id={collection_short_id})
-		PostsList(type='collection' collection_short_id={collection_short_id} selected_post_short_id={post_short_id})
+		FeedInfoCard(type='collection' collection_short_id={collection_short_id})
+		Feed(type='collection' collection_short_id={collection_short_id} selected_post_short_id={post_short_id})
 	svelte:fragment(slot='right')
 		{#if post_short_id}
 			{#key post_short_id}

@@ -15,26 +15,26 @@ export default {
 			mark: false
 			show: 'all'
 		})
-	current_user_owned_multireddits:  ->
+	current_user_multireddits_owned:  ->
 		get("/api/multi/mine", {
 			expand_srs: true
 		})
 	current_user_preferences: ->
 		get("/api/v1/me/prefs")
-	current_user_saved_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
+	current_user_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_short_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_comment_short_id and "t1_#{after_comment_short_id}"
 			limit: max_comments
-			sort: comments_sort.split('-')[0]
-			t: comments_sort.split('-')[1]
+			sort: comments_sort
+			t: comments_time_range
 			type: 'comments'
 		})
-	current_user_saved_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
+	current_user_saved_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
-			sort: posts_sort.split('-')[0]
-			t: posts_sort.split('-')[1]
+			sort: posts_sort
+			t: posts_time_range
 			type: 'links'
 		})
 	current_user_subreddits_approved_to_submit: (max_subreddits) ->
@@ -74,24 +74,24 @@ export default {
 	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve(null)
 		else get("/api/multi/user/#{user_name}/m/#{multireddit_name}")
-	multireddit_posts: (user_name, multireddit_name, posts_sort, max_posts, after_post_short_id) ->
+	multireddit_posts: (user_name, multireddit_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
 		get(
 			switch
-				when user_name is 'r' and multireddit_name is 'subscriptions' then "/#{posts_sort.split('-')[0]}"
-				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort.split('-')[0]}"
-				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort.split('-')[0]}"
+				when user_name is 'r' and multireddit_name is 'subscriptions' then "/#{posts_sort}"
+				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort}"
+				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort}"
 			{
 				after: after_post_short_id and "t3_#{after_post_short_id}"
 				limit: max_posts
 				show: 'all'
 				sr_detail: true
-				t: posts_sort.split('-')[1]
+				t: posts_time_range
 			}
 		)
-	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id) ->
+	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id, focus_comment_parent_count) ->
 		get("/comments/#{post_short_id}", {
 			comment: focus_comment_short_id
-			context: 1
+			context: focus_comment_parent_count
 			limit: max_comments
 			showedits: true
 			showmedia: true
@@ -111,31 +111,36 @@ export default {
 			link_id: "t3_#{post_short_id}"
 			sort: post_comments_sort
 		})
-	search_posts_in_subreddit: (subreddit_name, time_range, search_text, max_posts, after_post_short_id) ->
-		get("/r/#{subreddit_name}/search", {
+	search_posts: (query_string, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+		get("/search", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
-			q: search_text
-			restrict_sr: true
+			q: query_string.replaceAll('+', ' ').replaceAll('=', ':') # max 512 chars
+			show: 'all'
+			sort: posts_sort
+			t: posts_time_range
+		})
+	search_subreddits: (search_text, max_subreddits) ->
+		get("/subreddits/search", {
+			limit: max_subreddits
 			show: 'all'
 			sort: 'relevance'
-			t: time_range
+			q: search_text
 		})
-	search_subreddits: (search_text) ->
+	search_subreddits_autocomplete: (search_text) ->
 		get("/api/subreddit_autocomplete_v2", {
 			include_over_18: true
 			include_profiles: false
 			limit: 10
 			query: search_text # 1-25 chars
-			typeahead_active: false
+			typeahead_active: true
 		})
-	search_users: (search_text) ->
+	search_users: (search_text, max_users) ->
 		get("/users/search", {
-			limit: 10
+			limit: max_users
 			show: 'all'
 			sort: 'relevance'
 			q: search_text
-			typeahead_active: false
 		})
 	subreddit: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about")
@@ -147,12 +152,12 @@ export default {
 			limit: 100
 			show: 'all'
 		})
-	subreddit_posts: (subreddit_name, posts_sort, max_posts, after_post_short_id) ->
-		get("/r/#{subreddit_name}/#{posts_sort.split('-')[0]}", {
+	subreddit_posts: (subreddit_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+		get("/r/#{subreddit_name}/#{posts_sort}", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
 			show: 'all'
-			t: posts_sort.split('-')[1]
+			t: posts_time_range
 		})
 	subreddit_post_flairs: (subreddit_name) ->
 		get("/r/#{subreddit_name}/api/link_flair_v2")
@@ -176,19 +181,19 @@ export default {
 		get("/api/user_data_by_account_ids", {
 			ids: user_short_ids.split(',').map((short_id) -> "t2_#{short_id}")
 		})
-	user_comments: (user_name, comments_sort, max_comments, after_comment_short_id) ->
+	user_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_short_id) ->
 		get("/user/#{user_name}/comments", {
 			after: after_comment_short_id and "t1_#{after_comment_short_id}"
 			limit: max_comments
-			sort: comments_sort.split('-')[0]
-			t: comments_sort.split('-')[1]
+			sort: comments_sort
+			t: comments_time_range
 		})
-	user_posts: (user_name, posts_sort, max_posts, after_post_short_id) ->
+	user_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
 		get("/user/#{user_name}/submitted", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
-			sort: posts_sort.split('-')[0]
-			t: posts_sort.split('-')[1]
+			sort: posts_sort
+			t: posts_time_range
 		})
 	user_public_multireddits: (user_name) ->
 		get("/api/multi/user/#{user_name}", {

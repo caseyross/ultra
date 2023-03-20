@@ -1,5 +1,5 @@
 script.
-	import AppRedirect from './AppRedirect.pug'
+	import AppExternalLink from './AppExternalLink.pug'
 
 	import AppAccountContext from '../context/AppAccountContext.pug'
 	import AppNetworkStatusContext from '../context/AppNetworkStatusContext.pug'
@@ -9,17 +9,16 @@ script.
 
 	import CollectionPage from '../../feature/collection/CollectionPage.pug'
 	import DashboardPage from '../../feature/dashboard/DashboardPage.pug'
-	import ListingsPage from '../../feature/listings/ListingsPage.pug'
 	import MultiredditPage from '../../feature/multireddit/MultiredditPage.pug'
 	import SubredditPage from '../../feature/subreddit/SubredditPage.pug'
 	import UserPage from '../../feature/user/UserPage.pug'
 	import WikiPage from '../../feature/wiki/WikiPage.pug'
 	
-	import parse_route from './parse_route.coffee'
+	import { parse_url } from './url.coffee'
 	route = null
 
-	set_route =
-		-> route = parse_route(location)
+	set_route = ->
+		route = Object.fromEntries(parse_url(location))
 	external_navigate =
 		(link) -> location.href = link.href
 	external_navigate_new_tab =
@@ -85,29 +84,24 @@ script.
 
 	set_route()
 
-{#if route.format === 'official_site'}
-	AppRedirect(url='https://www.reddit.com{route.path}')
-{:else}
-	AppAccountContext
-		AppThemeColorContext
-			AppNetworkStatusContext
-				AppRadialMenuContext
-					AppTableZoomContext
-						{#if route.format === 'collection'}
-							CollectionPage(collection_short_id={route.listing.collection_short_id} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-						{:else if route.format === 'dashboard'}
-							DashboardPage
-						{:else if route.format === 'listings'}
-							ListingsPage(type={route.listings_type})
-						{:else if route.format === 'multireddit'}
-							MultiredditPage(multireddit_name={route.listing.multireddit_name} user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-						{:else if route.format === 'subreddit'}
-							{#key route.listing.subreddit_name}
-								SubredditPage(subreddit_name={route.listing.subreddit_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-						{:else if route.format === 'user'}
-							UserPage(user_name={route.listing.user_name} posts_sort={route.listing.posts_sort} comment_short_id={route.selection.comment_short_id} comments_sort={route.selection.comments_sort} post_short_id={route.selection.post_short_id})
-						{:else if route.format === 'wiki'}
-							{#key route.listing.subreddit_name}
-								{#key route.selection.wikipage_name}
-									{#key route.selection.wikipage_revision_id}
-										WikiPage(page_name={route.selection.wikipage_name} revision_id={route.selection.wikipage_revision_id} subreddit_name={route.listing.subreddit_name})
+AppAccountContext
+	AppThemeColorContext
+		AppNetworkStatusContext
+			AppRadialMenuContext
+				AppTableZoomContext
+					{#if route.wikipage_name}
+						{#key route.subreddit_name}
+							{#key route.wikipage_name}
+								{#key route.wikipage_version}
+									WikiPage(page_name={route.wikipage_name} revision_id={route.wikipage_version} subreddit_name={route.subreddit_name})
+					{:else if route.collection_short_id}
+						CollectionPage(collection_short_id={route.collection_short_id} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id})
+					{:else if route.multireddit_name}
+						MultiredditPage(multireddit_name={route.multireddit_name} user_name={route.user_name} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id} posts_sort={route.feed_sort || (route.feed_search_query ? 'relevance' : 'hot')} posts_search_query={route.feed_search_query} posts_time_range={route.feed_time_range || 'all'})
+					{:else if route.subreddit_name}
+						{#key route.subreddit_name}
+							SubredditPage(subreddit_name={route.subreddit_name} comment_parent_count={route.post_focus_comment_parent_count} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id} posts_sort={route.feed_sort || (route.feed_search_query ? 'relevance' : 'hot')} posts_search_query={route.feed_search_query} posts_time_range={route.feed_time_range || 'all'})
+					{:else if route.user_name}
+						UserPage(user_name={route.user_name} posts_sort={route.feed_sort || 'new'} posts_time_range={route.feed_time_range || 'all'} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id})
+					{:else}
+						AppExternalLink(original_url={location})

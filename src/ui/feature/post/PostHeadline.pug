@@ -1,0 +1,78 @@
+script.
+	import api from '../../../api/index.js'
+
+	import Date from '../../common/Date.pug'
+
+	import SubredditTag from '../subreddit/SubredditTag.pug'
+	
+	import PostFlair from './PostFlair.pug'
+	import PostTag from './PostTag.pug'
+
+	export post_short_id = null
+	export selected = false
+	export show_subreddit = false
+	
+	post = null
+	api.loadWatch(api.ID('post', post_short_id),
+		(x) ->
+			{ data: post } = x
+			if post?
+				api.preload(api.ID('post', post_short_id, post.suggested_sort or 'confidence', 25))
+	)
+
+{#if post}
+	.post-headline(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id})
+		section.post-tags
+			{#if post.archived}
+				PostTag(name='archived')
+			{#if post.locked}
+				PostTag(name='locked')
+			{#if post.quarantine}
+				PostTag(name='quarantined')
+			{#if post.over_18}
+				PostTag(name='nsfw')
+			{#if post.stickied}
+				PostTag(name='sticky')
+			{#if post.is_original_content}
+				PostTag(name='oc')
+		section.post-context
+			{#if show_subreddit}
+				SubredditTag(name={post.subreddit})
+			{#if post.link_flair_text}
+				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+		h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+		section.post-metadata
+			Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abbr')
+			| ‧
+			data.post-score {Number.isFinite(post.score) ? post.score : '??'} pts
+
+style.
+	.post-headline
+		align-items flex-start
+		border 1px solid transparent
+		border-radius 10px
+		color var(--c-text-weak)
+		display flex
+		flex-flow column nowrap
+		gap 6px
+		padding 1em
+		&:hover
+			color var(--c-hint-normal)
+			background var(--c-con-normal)
+		&.post-with-low-score .post-title
+			opacity 0.5
+	.post-metadata
+		align-items center
+		color var(--c-text-weak)
+		display flex
+		gap 6px
+	.post-tags
+		display flex
+		gap 3px
+	.post-title
+		font-size 16px
+		font-weight var(--f-wght-strong)
+		letter-spacing 0
+		line-height 1.25
+		margin 0
+		overflow-wrap anywhere

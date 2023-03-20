@@ -1,8 +1,11 @@
 script.
+	import { onMount } from 'svelte'
+	
 	import HotkeyLabel from './HotkeyLabel.pug'
 	import { virtual_hotkeys } from './actions/hotkeys.coffee'
 
 	export enter_action = ->
+	export initial_value = ''
 	export key = null
 	export label = ''
 	export type_action = ->
@@ -12,6 +15,10 @@ script.
 		'/': ->
 			input?.focus()
 			input?.select()
+
+	onMount ->
+		if initial_value
+			input.value = initial_value
 
 label.text-input-label
 	{#if key}

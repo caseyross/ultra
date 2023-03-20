@@ -5,11 +5,13 @@ script.
 	import PostComment from '../post/PostComment.pug'
 	import UserAvatar from './UserAvatar.pug'
 	export name = null
+	export sort = null
+	export time_range = null
 	comment_short_ids = null
 	trophies = null
 	user = null
 	api.loadWatch(api.ID('user', name), (x) -> { data: user } = x)
-	api.loadWatch(api.ID('user_comments', name, 'new', 25), (x) -> { data: comment_short_ids } = x)
+	api.loadWatch(api.ID('user_comments', name, time_range, sort, 25), (x) -> { data: comment_short_ids } = x)
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
 
 article.user

@@ -3,9 +3,9 @@ script.
 	import api from '../../../api/index.js'
 
 	import Button from '../../common/Button.pug'
-	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import PostComment from './PostComment.pug'
 	
+	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
 	export post_short_id = null
 	export sort = null
@@ -13,14 +13,10 @@ script.
 	loading = false
 	more_replies_loading = false
 	post = null
-	user_batch_id = null
 	if focus_comment_short_id
 		setContext('focus_comment_short_id', focus_comment_short_id)
-	api.loadWatch(api.ID('post', post_short_id, sort, 25, focus_comment_short_id), (x) ->
+	api.loadWatch(api.ID('post', post_short_id, sort, 25, focus_comment_short_id, focus_comment_parent_count), (x) ->
 		{ data: post, loading } = x
-		if post?.contributors.length
-			user_batch_id = api.ID('users', post.contributors)
-			api.load(user_batch_id)
 		if post?.more_replies
 			api.watch(post.more_replies_id, (x) ->
 				{ loading: more_replies_loading } = x
@@ -32,7 +28,7 @@ ol.post-comments-list
 		.post-comments-list-loading-notification Loading...
 	{:else if post}
 		{#each post.replies as reply_short_id}
-			PostComment(short_id={reply_short_id} user_batch_id={user_batch_id})
+			PostComment(short_id={reply_short_id})
 		{#if post.num_more_replies > 0}
 			.post-more-replies
 				Button(action={() => api.load(post.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{post.num_more_replies} {post.num_more_replies === 1 ? 'reply' : 'replies'}")

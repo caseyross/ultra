@@ -2,48 +2,38 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
-	import { relativize_url } from '../../app/routing/AppURL.coffee'
+	import { relativize_url } from '../../app/routing/url.coffee'
 
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import TextHTML from '../../common/TextHTML.pug'
+
+	import SubredditTag from '../subreddit/SubredditTag.pug'
+	import UserByline from '../user/UserByline.pug'
 	
 	import PostCommentList from './PostCommentList.pug'
-	import PostInfoCard from './PostInfoCard.pug'
+	import PostFlair from './PostFlair.pug'
+	import PostHeadline from './PostHeadline.pug'
+	import PostTag from './PostTag.pug'
 
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
 	export comments_sort = 'confidence'
+	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
 	export short_id = null
+	export show_subreddit = false
 
 	comments_sort_options = [
-		{
-			label: 'Best'
-			value: 'confidence'
-		}
-		{
-			label: 'Top'
-			value: 'top'
-		}
-		{
-			label: 'Q&A'
-			value: 'qa'
-		}
-		{
-			label: 'Old'
-			value: 'old'
-		}
-		{
-			label: 'New'
-			value: 'new'
-		}
-		{
-			label: 'Controversial'
-			value: 'controversial'
-		}
+		{ label: 'Best', value: 'confidence' }
+		{ label: 'Top', value: 'top' }
+		{ label: 'Q&A', value: 'qa' }
+		{ label: 'Old', value: 'old' }
+		{ label: 'New', value: 'new' }
+		{ label: 'Controversial', value: 'controversial' }
 	]
 	error = null
 	loading = false
@@ -57,19 +47,43 @@ script.
 
 svelte:head
 	{#if post}
-		title r/{post.subreddit} - {post.title}
-article.post
-	{#if error}
-		.post-unavailable-reason
-			{#if error instanceof api.errors.ServerBadRequestError && error.code === 403}
-				| Post subreddit is not accessible (likely private or banned).
-			{:else}
-				| Post unavailable for unknown reasons.
-	{:else if loading}
-		.post-loading-message Loading...
-	{:else if post}
-		PostInfoCard(post_short_id={short_id} selected={true})
-		br
+		title /{post.subreddit} - {post.title}
+{#if error}
+	.post-unavailable-reason
+		{#if error instanceof api.errors.ServerBadRequestError && error.code === 403}
+			| Post subreddit is not accessible (likely private or banned).
+		{:else}
+			| Post unavailable for unknown reasons.
+{:else if loading}
+	.post-loading-message Loading...
+{:else if post}
+	article.post(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + short_id] || false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
+		header.post-header
+			section.post-tags
+				{#if post.archived}
+					PostTag(name='archived')
+				{#if post.locked}
+					PostTag(name='locked')
+				{#if post.quarantine}
+					PostTag(name='quarantined')
+				{#if post.over_18}
+					PostTag(name='nsfw')
+				{#if post.stickied}
+					PostTag(name='sticky')
+				{#if post.is_original_content}
+					PostTag(name='oc')
+			section.post-context
+				{#if show_subreddit}
+					SubredditTag(name={post.subreddit})
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			section.post-metadata
+				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abbr')
+				| ‧
+				data.post-score {Number.isFinite(post.score) ? post.score : '??'} pts
+				| ‧
+				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 		{#if post.removed_by_category}
 			.post-unavailable-reason
 				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
@@ -95,7 +109,8 @@ article.post
 					.post-selftext
 						TextHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
-					PostInfoCard(link={true} post_short_id={post.crosspost_parent})
+					a(href={relativize_url(post.url)})
+						PostHeadline(post_short_id={post.crosspost_parent})
 				{:else if post.format === 'image'}
 					ol.post-gallery
 						{#each post.media as media, index}
@@ -103,8 +118,9 @@ article.post
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										{#if !media.is_gif}
-											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
-										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
+											source(srcset={media.image_url_960})
+											source(srcset={media.image_url_640})
+										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -126,7 +142,7 @@ article.post
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
-								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {420 * Math.sqrt(embed.iframe_aspect_ratio)}px")
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}")
 								menu.post-content-actions
 									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
@@ -154,7 +170,7 @@ article.post
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.video_is_gif} video_url={media.video_url})
+						MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 480 / (media.video_aspect_ratio || (16/9))]} mimic_gif={media.video_is_gif} video_url={media.video_url})
 				{:else}
 					p [Error displaying post.]
 		section.post-comments
@@ -170,7 +186,7 @@ article.post
 				.post-comments-empty-notification [ None. ]
 			{:else}
 				{#key comments_sort}
-					PostCommentList(focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
+					PostCommentList(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 
 style.
 	.post-comments-alternate-mode-notification
@@ -230,22 +246,38 @@ style.
 			right calc(100% + 1em)
 		&:only-child::before
 			content none
+	.post-header
+		align-items flex-start
+		display flex
+		flex-flow column nowrap
+		gap 6px
+		margin-bottom 20px
 	.post-iframe
 		border-radius 6px
+		width 100%
 	.post-image
 		border-radius 6px
-		width 420px
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 11px
 		letter-spacing 0.50px
 	.post-loading-message
 		padding 10px
+	.post-metadata
+		align-items baseline
+		color var(--c-text-weak)
+		display flex
+		gap 6px
 	.post-prediction-options > li
 		display flex
 	.post-selftext
 		margin-bottom 2em
-		max-width 390px
+	.post-title
+		font-size 20px
+		font-weight var(--f-wght-strong)
+		line-height 1.25
+		margin 0
+		overflow-wrap anywhere
 	.post-unavailable-reason
 		background salmon
 		border-radius 10px

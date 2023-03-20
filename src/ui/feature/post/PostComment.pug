@@ -4,16 +4,10 @@ script.
 	
 	import Button from '../../common/Button.pug'
 	import TextHTML from '../../common/TextHTML.pug'
+	import UserByline from '../user/UserByline.pug'
 
-	import UserAvatar from '../user/UserAvatar.pug'
-	import UserDistinguish from '../user/UserDistinguish.pug'
-
-	import PostAge from './PostAge.pug'
-	import PostScore from './PostScore.pug'
-	
 	export out_of_context = false
 	export short_id = null
-	export user_batch_id = null
 	
 	comment = null
 	focus_comment_short_id = getContext('focus_comment_short_id')
@@ -31,11 +25,8 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.score_hidden ? 'score hidden' : comment.score + ' point' + (Math.abs(comment.score) === 1 ? '' : 's')})
-			cite.comment-author-info
-				UserAvatar(batch_id={user_batch_id} name={comment.author})
-				{#if comment.distinguished || comment.is_submitter}
-					UserDistinguish(type={comment.distinguished || 'submitter'})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-hidden-score={comment.score_hidden} class:comment-with-low-score={comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment')
+			UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
 			TextHTML(html={comment.body_html})
 		{#if out_of_context}
 			cite.comment-source-info
@@ -45,7 +36,7 @@ script.
 			ol.comment-replies
 				{#if comment.replies.length > 0}
 					{#each comment.replies as reply_short_id (reply_short_id)}
-						svelte:self(short_id={reply_short_id} user_batch_id={user_batch_id})
+						svelte:self(short_id={reply_short_id})
 				{#if comment.num_more_replies > 0}
 					menu.comment-more-replies
 						Button(action={() => api.load(comment.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{comment.num_more_replies} {comment.num_more_replies === 1 ? 'reply' : 'replies'}")
@@ -57,39 +48,26 @@ style.
 	.comment
 		display inline-block
 		margin 0.25em 0
-		position relative
+		width 400px
 	:global(.comment > .md)
-		max-width 390px
+		display inline-block
 	:global(.comment > .md img)
 		max-height 60px
 		width auto
 	:global(.comment-deleted > .md)
 		opacity 0.25
 		pointer-events none
-	:global(.comment-downvoted > .md)
-		outline 1px solid cornflowerblue
 	:global(.comment-highlighted > .md)
 		outline 1px solid
-	:global(.comment-upvoted > .md)
-		outline 1px solid orangered
-	:global(.comment-with-low-score:not(.comment-deleted) > .md)
+	:global(.comment-with-low-score:not(.comment-deleted):not(.comment-with-hidden-score) > .md)
 		opacity 0.5
-	.comment-author-info
-		align-items center
-		display flex
-		flex-flow column nowrap
-		height 100%
-		left -32px
-		padding 8px 0
-		position absolute
-		top 0
 	.comment-clip
 		display flex
 	.comment-more-replies
 		padding 0.25em 0
 	.comment-replies
 		border-left 1px solid var(--c-blend-normal)
-		padding-left 41px
+		padding-left 39px
 	.comment-source-info
 		display flex
 		flex-flow column nowrap

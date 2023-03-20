@@ -1,13 +1,15 @@
 script.
 	import SplitLayout from '../../common/layout/SplitLayout.pug'
+	import Feed from '../feed/Feed.pug'
+	import FeedInfoCard from '../feed/FeedInfoCard.pug'
 	import Post from '../post/Post.pug'
-	import PostsList from '../posts/PostsList.pug'
-	import PostsListInfo from '../posts/PostsListInfo.pug'
 
 	export multireddit_name = null
 	export user_name = null
 
 	export posts_sort = null
+	export posts_search_query = null
+	export posts_time_range = null
 	
 	export post_short_id = null
 	export comment_short_id = null
@@ -17,8 +19,8 @@ svelte:head
 	title {user_name}/{multireddit_name}
 SplitLayout
 	svelte:fragment(slot='left')
-		PostsListInfo(type='multireddit' multireddit_name={multireddit_name} user_name={user_name})
-		PostsList(type='multireddit' multireddit_name={multireddit_name} user_name={user_name} posts_sort={posts_sort} selected_post_short_id={post_short_id})
+		FeedInfoCard(type='multireddit' multireddit_name={multireddit_name} user_name={user_name})
+		Feed(type='multireddit' multireddit_name={multireddit_name} user_name={user_name} search_query={posts_search_query} time_range={posts_time_range} sort={posts_sort} selected_post_short_id={post_short_id})
 	svelte:fragment(slot='right')
 		{#if post_short_id}
 			{#key post_short_id}
