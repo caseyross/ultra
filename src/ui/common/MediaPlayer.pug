@@ -149,7 +149,7 @@ script.
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} description='Play / pause' key='p' text="Playback ({Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)})")
+		Button(action={play_pause} description='Play / pause' key='p' text="{ended ? '↻' : paused ? '▶' : '■'} {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
 			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
@@ -159,7 +159,7 @@ script.
 				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
 			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
-		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text='Fullscreen')
+		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text='⟷')
 
 style.
 	audio
@@ -214,11 +214,10 @@ style.
 		border-radius 6px
 		display flex
 		flex 1
-		padding 0 10px
 		position relative
 	.media-scrobbler-graphics
 		border-radius inherit
-		height 8px
+		height 100%
 		user-select none
 		width 100%
 	.media-scrobbler-input
@@ -235,12 +234,12 @@ style.
 			appearance none
 			background var(--c-text-strong)
 			border-radius 3px
-			height 16px
-			width 6px
+			height 2em
+			width 3px
 	.media-volume
 		background var(--c-blend-normal)
 		border-radius 6px
-		padding 0 9px
+		padding 0 6px
 		position relative
 	.media-volume-bar
 		background var(--c-text-faint)
@@ -254,7 +253,7 @@ style.
 		background none !important
 		color var(--c-text-faint)
 		font-weight 900
-		left -5px
+		left -2px
 		line-height 1
 		position relative
 		top -2px
