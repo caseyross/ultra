@@ -66,7 +66,11 @@ script.
 			)
 		when 'multireddit'
 			base_path = "/m/#{user_name}/#{multireddit_name}"
-			base_page_id = api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
+			base_page_id =
+				if search_query
+					api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_query}", time_range, sort, page_size)
+				else
+					api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
 		when 'subreddit'
 			base_path = "/#{subreddit_name}"
 			base_page_id =

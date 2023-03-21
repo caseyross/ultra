@@ -112,10 +112,17 @@ export default {
 			sort: post_comments_sort
 		})
 	search_posts: (query_string, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
-		get("/search", {
+		path_prefix = ''
+		if query_string.startsWith('multireddit=')
+			[ multireddit_query_string, ...remaining_query ] = query_string.split('+')
+			[ user_name, multireddit_name ] = multireddit_query_string.split('=')[1].split('-')
+			path_prefix = "/user/#{user_name}/m/#{multireddit_name}"
+			query_string = remaining_query.join('+')
+		get("#{path_prefix}/search", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
 			limit: max_posts
 			q: query_string.replaceAll('+', ' ').replaceAll('=', ':') # max 512 chars
+			restrict_sr: path_prefix.length > 0
 			show: 'all'
 			sort: posts_sort
 			t: posts_time_range
