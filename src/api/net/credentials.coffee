@@ -62,7 +62,7 @@ credentials = {
 		return fetch('https://www.reddit.com/api/v1/access_token', config)
 		.catch (error) ->
 			# NOTE: a TypeError here means that either the network request failed OR the fetch config was structured badly. `fetch` does not distinguish between these errors, so we make the assumption that the config was OK.
-			if error instanceof TypeError then throw new errors.ServerConnectionFailedError({ cause: error })
+			if error instanceof TypeError then throw new errors.NetworkFailure({ cause: error })
 			throw error
 		.then (response) ->
 			response.json()
@@ -73,7 +73,7 @@ credentials = {
 				if data.refresh_token? then localStorage['api.credentials.exchange_token'] = data.refresh_token
 		.finally ->
 			localStorage['api.credentials.renewing'] = 'FALSE'
-			if not credentials.valid then throw new errors.CredentialsRequiredError({ message: 'failed to acquire valid credentials' })
+			if not credentials.valid then throw new errors.NeedCredentials({ message: 'failed to acquire valid credentials' })
 
 }
 

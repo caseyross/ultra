@@ -50,8 +50,8 @@ svelte:head
 		title /{post.subreddit} - {post.title}
 {#if error}
 	.post-unavailable-reason
-		{#if error instanceof api.errors.ServerBadRequestError && error.code === 403}
-			| Post subreddit is not accessible (likely private or banned).
+		{#if error.reason}
+			| Post unavailable: {error.reason}
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if loading}

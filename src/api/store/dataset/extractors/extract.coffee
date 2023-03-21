@@ -69,7 +69,7 @@ export default extract = (rawData, sourceID) ->
 				else new URL(post.url)
 			# Detect the content format for the post.
 			post.format = switch
-				when post.crosspost_parent_list
+				when post.crosspost_parent_list?.length
 					'crosspost'
 				when post.live_audio
 					'talk'

@@ -9,12 +9,12 @@ export put = (endpoint, content) -> call('PUT', endpoint, { content })
 
 call = (method, endpoint, { query = {}, content = {} }) ->
 	new Promise (fulfill) ->
-		if not credentials.valid then throw new errors.CredentialsRequiredError({ message: 'no valid credentials for request' })
+		if not credentials.valid then throw new errors.NeedCredentials({ message: 'no valid credentials for request' })
 		fulfill()
 	.catch ->
 		credentials.renew()
 	.then ->
-		if not ratelimit.availableRPS > 0 then throw new errors.RatelimitExceededError({ waitMs: ratelimit.msUntilReset })
+		if not ratelimit.availableRPS > 0 then throw new errors.OverRatelimit({ waitMs: ratelimit.msUntilReset })
 	.then ->
 		for key, value of query then if not value? then delete query[key]
 		# NOTE: for legacy compatibility, the API replaces special characters in responses with their corresponding HTML entities. Activating the raw_json parameter disables this behavior.
@@ -32,7 +32,7 @@ call = (method, endpoint, { query = {}, content = {} }) ->
 		fetch("https://oauth.reddit.com#{endpoint}?#{queryString}", config)
 	.catch (error) ->
 		# NOTE: a TypeError here means that either the network request failed OR the fetch config was structured badly. `fetch` does not distinguish between these errors, so we make the assumption that the config was OK.
-		if error instanceof TypeError then throw new errors.ServerConnectionFailedError({ cause: error })
+		if error instanceof TypeError then throw new errors.NetworkFailure({ cause: error })
 		throw error
 	.then (response) ->
 		ratelimit.update({
@@ -41,11 +41,23 @@ call = (method, endpoint, { query = {}, content = {} }) ->
 			secondsUntilReset: Number response.headers.get('X-Ratelimit-Reset')
 		})
 		code = response.status
-		switch
-			when 100 <= code <= 299 then response.json()
-			when 300 <= code <= 399 then throw new errors.ServerResourceMovedError({ code })
-			when 400 <= code <= 499 then throw new errors.ServerBadRequestError({ code })
-			when 500 <= code <= 599 then throw new errors.ServerNotAvailableError({ code })
+		if 100 <= code <= 299
+			response.json()
+		else
+			response.json().then (data) ->
+				# Parse "reddit standard" error objects if present.
+				message = data?.json?.errors?[0][1] or data.message
+				reason = data?.json?.errors?[0][0] or data.reason
+				switch
+					when 300 <= code <= 399
+						# Note: GET responses in this range are generally handled pre-emptively by browsers.
+						throw new errors.DataLocationChanged({ code, description: message, reason })
+					when 400 <= code <= 499
+						throw new errors.DataNotAvailable({ code, description: message, reason })
+					when 500 <= code <= 599
+						throw new errors.ServerFailure({ code, description: message, reason })
+					else
+						throw new errors.DataNotAvailable({ code, description: message, reason })
 	.catch (error) ->
-		if error instanceof errors.AnyError then throw error
-		throw new errors.UnknownError({ cause: error })
+		if error instanceof errors.Base then throw error
+		throw new errors.Unknown({ cause: error })

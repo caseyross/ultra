@@ -4,7 +4,6 @@ script.
 	import { Time } from '../../../lib/index.js'
 
 	import CenterLayout from '../../common/layout/CenterLayout.pug'
-	import Error404 from '../../common/Error404.pug'
 	import TextHTML from '../../common/TextHTML.pug'
 	
 	export page_name = null
@@ -36,8 +35,10 @@ svelte:head
 	title r/{subreddit_name} - Wiki - {page_name}
 CenterLayout
 	{#if error}
-		{#if error instanceof api.errors.ServerError}
-			Error404(path="/r/{subreddit_name}/wiki/{page_name}{revision_id ? '?v=' + revision_id : ''}")
+		.wiki-page-unavailable-reason
+			p Wiki page unavailable.
+			{#if error.reason}
+				p Reason: {error.reason}
 	{:else if loading}
 		p Loading...
 	{:else if page}

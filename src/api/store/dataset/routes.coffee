@@ -72,7 +72,7 @@ export default {
 			sr_detail: true
 		})
 	multireddit: (user_name, multireddit_name) ->
-		if user_name is 'r' then Promise.resolve(null)
+		if user_name is 'r' then Promise.resolve({})
 		else get("/api/multi/user/#{user_name}/m/#{multireddit_name}")
 	multireddit_posts: (user_name, multireddit_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
 		get(

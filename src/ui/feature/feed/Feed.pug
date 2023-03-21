@@ -103,8 +103,8 @@ script.
 
 nav.feed
 	section.feed-info
-		FeedInfoCard(subreddit_name={subreddit_name} type={type})
 		{#if type === 'subreddit'}
+			FeedInfoCard(subreddit_name={subreddit_name} type={type})
 			SubredditTag(name={subreddit_name})
 	menu.feed-controls
 		{#if search_mode}
@@ -118,9 +118,8 @@ nav.feed
 		Button(action={activate_search_mode} text='Search...')
 	ol.feed-posts
 		{#if error}
-			{#if error instanceof api.errors.ServerError}
-				p Content unavailable.
-				a(href={format_legacy_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: type, multireddit_name, page_type: type, subreddit_name, user_name })}) Visit Reddit to see why.
+			p Content unavailable.
+			a(href={format_legacy_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: type, multireddit_name, page_type: type, subreddit_name, user_name })}) Visit Reddit to see why.
 		{:else if loading}
 			p Loading...
 		{:else if pages.length}

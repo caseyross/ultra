@@ -56,7 +56,7 @@ reload = (id) ->
 	if not route
 		log({
 			id,
-			error: new errors.BadIDError({ id }),
+			error: new errors.MalformedID({ id }),
 			message: "unknown dataset type",
 		})
 		return Promise.resolve(null)
@@ -125,7 +125,7 @@ export submit = (id, payload) ->
 	if not route
 		log({
 			id,
-			error: new errors.BadIDError({ id }),
+			error: new errors.MalformedID({ id }),
 			message: "unknown interaction type",
 		})
 		return Promise.resolve(null)
@@ -141,9 +141,9 @@ export submit = (id, payload) ->
 		if error
 			switch error?[0]
 				when 'USER_REQUIRED'
-					throw new errors.LoginRequiredError()
+					throw new errors.NotLoggedIn()
 				else
-					throw new errors.InteractionFailedError({
+					throw new errors.InteractionRejected({
 						code: error?[0]
 						description: error?[1]
 					})

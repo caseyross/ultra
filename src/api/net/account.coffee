@@ -42,10 +42,10 @@ export finishPendingLogin = ->
 	# Evaluate result of login attempt.
 	try
 		if error then switch error
-			when 'access_denied' then throw new errors.LoginFailedError({ reason: 'user-refused-login' })
-			else throw new errors.LoginFailedError({ reason: error })
+			when 'access_denied' then throw new errors.LoginFailure({ reason: 'user-refused-login' })
+			else throw new errors.LoginFailure({ reason: error })
 		if !echo or echo != state
-			throw new errors.LoginFailedError({ reason: 'no-matching-login-attempt' })
+			throw new errors.LoginFailure({ reason: 'no-matching-login-attempt' })
 		if code
 			localStorage['api.credentials.exchange_code'] = code
 			credentials.forget() # new credentials will be generated on next API request
