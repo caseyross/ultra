@@ -2,7 +2,7 @@ script.
 	import { relativize_url } from '../../app/routing/url.coffee'
 
 	import Button from '../../common/Button.pug'
-	import TextHTML from '../../common/TextHTML.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
 
 	import PostFlair from '../post/PostFlair.pug'
 	import SubredditTag from './SubredditTag.pug'
@@ -46,7 +46,7 @@ script.
 					PostFlair(color={flair.backgroundColor} emoji_style='image' rich_text={flair.richtext} text={flair.text})
 	{:else if widget.kind === 'textarea'}
 		header.subreddit-widget-title {widget.shortName}
-		TextHTML(html={widget.textHtml})
+		FormattedHTML(html={widget.textHtml})
 
 style.
 	.subreddit-widget-image

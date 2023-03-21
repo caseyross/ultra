@@ -8,7 +8,7 @@ script.
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
-	import TextHTML from '../../common/TextHTML.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
 
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import UserByline from '../user/UserByline.pug'
@@ -107,7 +107,7 @@ svelte:head
 			section.post-content
 				{#if post.selftext_html && !post.removed_by_category}
 					.post-selftext
-						TextHTML(html={post.selftext_html})
+						FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					a(href={relativize_url(post.url)})
 						PostHeadline(post_short_id={post.crosspost_parent})

@@ -1,6 +1,6 @@
 script.
 	import api from '../../../api/index.js'
-	import TextHTML from '../../common/TextHTML.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
 	export short_id = null
 	private_message = null
 	api.loadWatch(api.ID('private_message', short_id),
@@ -13,7 +13,7 @@ script.
 			a(href='/u/{private_message.author}') u/{private_message.author}
 		.private-message-subject SUBJECT: {private_message.subject}
 		.private-message-text
-			TextHTML(html={private_message.body_html})
+			FormattedHTML(html={private_message.body_html})
 
 style.
 	.private-message

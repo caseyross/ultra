@@ -1,6 +1,6 @@
 script.
 	import api from '../../../api/index.js'
-	import TextHTML from '../../common/TextHTML.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
 	export name = null
 	rules = null
 	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
@@ -15,7 +15,7 @@ script.
 						.subreddit-rule-name {rule.short_name}
 					.subreddit-rule-description
 						{#if rule.description_html}
-							TextHTML(html={rule.description_html})
+							FormattedHTML(html={rule.description_html})
 						{:else}
 							p [ No description provided. ]
 	{:else}

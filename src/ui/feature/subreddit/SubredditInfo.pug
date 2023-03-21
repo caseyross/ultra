@@ -3,7 +3,7 @@ script.
 	
 	import Button from '../../common/Button.pug'
 	import Date from '../../common/Date.pug'
-	import TextHTML from '../../common/TextHTML.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
 	
 	import SubredditModerators from './SubredditModerators.pug'
 
@@ -29,7 +29,7 @@ script.
 						Date(created_s={info.created_utc})
 					td.subreddit-info-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
 		{#if info.public_description_html}
-			TextHTML(html={info.public_description_html})
+			FormattedHTML(html={info.public_description_html})
 		menu.subreddit-info-additional-options
 			Button(popup={true} text='Moderators')
 				SubredditModerators(name={name})

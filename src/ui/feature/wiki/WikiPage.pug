@@ -4,7 +4,7 @@ script.
 	import { Time } from '../../../lib/index.js'
 
 	import CenterLayout from '../../common/layout/CenterLayout.pug'
-	import TextHTML from '../../common/TextHTML.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
 	
 	export page_name = null
 	export revision_id = null
@@ -47,7 +47,7 @@ CenterLayout
 			section.wiki-page-info
 				.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
 			section.wiki-page-body
-				TextHTML(html={page.content_html})
+				FormattedHTML(html={page.content_html})
 
 style.
 	.wiki-page
