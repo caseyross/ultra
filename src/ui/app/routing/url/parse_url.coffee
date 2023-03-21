@@ -1,7 +1,7 @@
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 RECOGNIZED_TOP_LEVEL_PATH_SEGMENTS =
-	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'm', 'message', 'multi', 'p', 'poll', 'post', 'r', 'reddits', 'report', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video'] # front page sort options handled separately
+	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'm', 'message', 'multi', 'p', 'poll', 'post', 'prefs', 'r', 'reddits', 'report', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video'] # front page sort options handled separately
 SORT_OPTIONS_FEED = 
 	['controversial', 'hot', 'new', 'rising', 'top']
 SORT_OPTIONS_FEED_FRONTPAGE =
