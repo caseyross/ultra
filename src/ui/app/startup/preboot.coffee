@@ -1,12 +1,15 @@
 import api from '../../../api/index.js'
-import { Time } from '../../../lib/index.js'
 import { parse_url } from '../routing/url.coffee'
 
-# Set the API config from environment vars.
+# Set the API config from environment vars and query params.
+query = new URLSearchParams(location.search)
+clientID = process.env.API_CLIENT_ID
+debug = String(query.get('debug') or query.get('log') or process.env.API_DEBUG).toLowerCase() in ['1', 'true']
+redirectURI = process.env.API_REDIRECT_URI
 api.configure({
-	clientID: process.env.API_CLIENT_ID
-	loggingEnabled: ((new URLSearchParams(location.search)).get('debug') ? process.env.API_LOGGING_ENABLED) in ['TRUE', 'true', '1']
-	redirectURI: process.env.API_REDIRECT_URI
+	clientID,
+	debug,
+	redirectURI,
 })
 
 # If a login attempt was started by a prior instance of the application, finish it.

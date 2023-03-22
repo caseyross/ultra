@@ -2,15 +2,45 @@ import errors from '../core/errors.coffee'
 import { clear as clearStore } from '../store/store.coffee'
 import credentials from './credentials.coffee'
 
+ACCOUNT_SCOPES_ALL = [
+	'account'
+	'creddits'
+	'edit'
+	'flair'
+	'history'
+	'identity'
+	'livemanage'
+	'modconfig'
+	'modcontributors'
+	'modflair'
+	'modlog'
+	'modmail'
+	'modothers'
+	'modposts'
+	'modself'
+	'modwiki'
+	'mysubreddits'
+	'privatemessages'
+	'read'
+	'report'
+	'save'
+	'structuredstyles'
+	'submit'
+	'subscribe'
+	'vote'
+	'wikiedit'
+	'wikiread'
+]
+
 # To login on a third-party Reddit app, the user must visit the offical Reddit OAuth authentication page and confirm that they want to give that app permission to use their account. An appropriate custom URL must be created for the authentication page. An arbitrary string (`memoString`) can be passed through the authentication process and returned to the client after the login process finishes in order to e.g. rebuild local state on the client after page load.
-export getLoginURL = ({ memoString, scopeString }) ->
+export getLoginURL = ({ memoString, scopeArray, scopeString }) ->
 	echo = Math.trunc(Number.MAX_VALUE * Math.random()) + '$' + (memoString ? '')
 	localStorage['api.credentials.exchange_echo'] = echo
 	url = new URL('https://www.reddit.com/api/v1/authorize') 
 	url.search = new URLSearchParams
 		response_type: 'code'
 		duration: 'permanent'
-		scope: scopeString ? localStorage['api.config.default_oauth_scopes']
+		scope: scopeString ? scopeArray?.join(' ') ? ACCOUNT_SCOPES_ALL.join(' ')
 		client_id: localStorage['api.config.client_id']
 		redirect_uri: localStorage['api.config.redirect_uri']
 		state: echo
