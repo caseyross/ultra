@@ -230,6 +230,12 @@ style.
 		position absolute
 		top 0
 		width 100%
+		&::-moz-range-thumb
+			appearance none
+			background var(--c-text-strong)
+			border-radius 3px
+			height 2em
+			width 3px
 		&::-webkit-slider-thumb
 			appearance none
 			background var(--c-text-strong)
@@ -274,5 +280,7 @@ style.
 		position absolute
 		top 0
 		width 100%
+		&::-moz-range-thumb
+			visibility hidden
 		&::-webkit-slider-thumb
 			visibility hidden
