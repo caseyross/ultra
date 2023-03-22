@@ -1,11 +1,6 @@
 H  Listings: properly show to r/popular (or something else?) when not logged in
 
-M	General: compatibility with Firefox and Safari (scrollbar/video/input styling, general functionality)
-
-L	General: contingency for localStorage absence (e.g. when cookies are disabled)
 L	General: more descriptive error messages when Reddit data is unavailable
 L	Listings: way to hide viewed stickies
 L	Posts: rewrite links to avoid "\_" problem (we hope Reddit will fix)
 L	Posts: ability to sort markdown tables client-side
-
-Z	General: extract API, other libraries (?) into their own packages and publish separately
