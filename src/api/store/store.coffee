@@ -35,7 +35,7 @@ export load = (id) ->
 		return true
 	else if cache[id].loading
 		return false
-	else if cache[id].partial
+	else if cache[id].error or cache[id].partial
 		reload(id)
 		return true
 	else
