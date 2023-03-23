@@ -1,11 +1,13 @@
 script.
+	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	export error = null
 
-#crash
-	h1 Whoops!
-	p There was an error. We didn't expect this.
-	{#if error}
-		p Error message:
-		pre {error.message}
-		p Technical details:
-		pre {error.stack}
+CenterLayout
+	#crash
+		h1 Whoops!
+		p There was an error. We didn't expect this.
+		{#if error}
+			p Error message:
+			pre {error.message}
+			p Technical details:
+			pre {error.stack}
