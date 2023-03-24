@@ -50,7 +50,7 @@ export default (source_url) ->
 			else
 				null
 		when 'twitch.tv'
-			descriptor = source_url.pathname.split('/')[3]
+			descriptor = source_url.pathname.split('/').at(-1)
 			if descriptor?.length
 				iframe_action_description: 'Watch'
 				iframe_aspect_ratio: 16/9
