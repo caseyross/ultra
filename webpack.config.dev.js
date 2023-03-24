@@ -9,7 +9,7 @@ module.exports = {
 				errors: true,
 				warnings: false,
 			},
-			progress: true,
+			progress: false,
 			reconnect: false,
 		},
 		liveReload: false,
