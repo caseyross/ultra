@@ -239,13 +239,15 @@ kbd
 .md-spoiler-text
 	background black
 	border-radius 5px
+	box-decoration-break clone
+	-webkit-box-decoration-break clone
 	color transparent
 	cursor default
-	padding 1px
+	padding 1px 4px
 	*
 		opacity 0
 	&:hover
-		background transparent
+		background var(--c-con-normal)
 		color inherit
 		*
 			opacity 1
