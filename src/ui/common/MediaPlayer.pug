@@ -63,8 +63,8 @@ script.
 	reactive_time = 0
 	set_time = (value) ->
 		if !waiting_for_seek
-			video.currentTime = clamp(0, duration, value)
-			audio?.currentTime = video.currentTime
+			video?.currentTime = clamp(0, duration, value)
+			audio?.currentTime = video?.currentTime
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
 		localStorage['media.volume'] = audio.volume

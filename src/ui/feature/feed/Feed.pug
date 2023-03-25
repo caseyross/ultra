@@ -1,140 +1,25 @@
 script.
-	import api from '../../../api/index.js'
-	import { format_url, format_legacy_url } from '../../app/routing/url.coffee'
-	
-	import Button from '../../common/Button.pug'
-	import ButtonGroup from '../../common/ButtonGroup.pug'
-	import TextInput from '../../common/TextInput.pug'
-	
-	import PostHeadline from '../post/PostHeadline.pug'
-	import SubredditTag from '../subreddit/SubredditTag.pug'
-	
+	import FeedControls from './FeedControls.pug'
 	import FeedInfoCard from './FeedInfoCard.pug'
-	
-	time_range_options = [
-		{ label: 'All', value: 'all' }
-		{ label: 'Year', value: 'year' }
-		{ label: 'Month', value: 'month' }
-		{ label: 'Week', value: 'week' }
-		{ label: 'Day', value: 'day' }
-	]
-	sort_options = [
-		{ label: 'Hot', value: 'hot' }
-		{ label: 'Top', value: 'top' }
-		{ label: 'New', value: 'new' }
-		{ label: 'Controversial', value: 'controversial' }
-	]
+	import FeedPostList from './FeedPostList.pug'
 
 	export type = null
-
 	export collection_short_id = null
 	export multireddit_name = null
 	export subreddit_name = null
 	export user_name = null
-
-	export search_query = ''
+	export search_query = null
+	export sort = if search_query then 'relevance' else 'hot'
 	export time_range = 'all'
-	export sort = 'hot'
 
-	export page_size = 10
-	
 	export selected_post_short_id = null
-	
-	activate_search_mode = ->
-		search_mode = true
-
-	base_page_id = null
-	error = false
-	has_next_page = false
-	loading = false
-	page = null
-	pages = []
-	pages_error = []
-	pages_loading = []
-	search_mode = false
-	tentative_search_query = ''
-	
-	switch type
-		when 'collection'
-			base_path = "/c/#{collection_short_id}"
-			collection = null
-			api.loadWatch(api.ID('collection', collection_short_id), ({ data: collection, error, loading }) ->
-				if loading then pages_loading[0] = loading
-				if error then pages_error[0] = error
-				if collection
-					pages[0] = collection.posts
-			)
-		when 'multireddit'
-			base_path = "/m/#{user_name}/#{multireddit_name}"
-			base_page_id =
-				if search_query
-					api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_query}", time_range, sort, page_size)
-				else
-					api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
-		when 'subreddit'
-			base_path = "/#{subreddit_name}"
-			base_page_id =
-				if search_query
-					api.ID('search_posts', "subreddit=#{subreddit_name}+#{search_query}", time_range, sort, page_size)
-				else
-					api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
-		when 'user'
-			base_path = "/u/#{user_name}"
-			base_page_id = api.ID('user_posts', user_name, time_range, sort, page_size)
-
-	load_page = (page_number) ->
-		if page_number is 0
-			page_id = base_page_id
-		else
-			after_short_id = pages[page_number - 1].at(-1)
-			page_id = api.ID(base_page_id, after_short_id)
-		api.loadWatch(page_id, ({ data: page, error, loading }) ->
-			if loading then pages_loading[page_number] = loading
-			if error then pages_error[page_number] = error
-			if page
-				pages[page_number] = page
-				is_last_page = page_number == pages.length - 1
-				if is_last_page
-					if page_number is 0
-						if page.length >= page_size
-							has_next_page = true
-					else
-						if page.length < page_size
-							has_next_page = false
-		)
-
-	if base_page_id then load_page(0)
 
 nav.feed
-	section.feed-info
-		{#if type === 'subreddit'}
-			FeedInfoCard(subreddit_name={subreddit_name} type={type})
-			SubredditTag(name={subreddit_name})
-	menu.feed-controls
-		{#if search_mode}
-			TextInput(type_action={(value) => tentative_search_query = value})
-			Button(key='Enter' link={format_url({ feed_search_query: tentative_search_query, feed_sort: sort, feed_time_range: time_range, feed_type: type, multireddit_name, subreddit_name, user_name })} text='Search')
-		{:else}
-			{#if sort_options}
-				ButtonGroup(options={sort_options} selected={sort} title='Posts')
-				{#if sort === 'controversial' || sort === 'top'}
-					ButtonGroup(options={time_range_options} selected={time_range})
-		Button(action={activate_search_mode} text='Search...')
-	ol.feed-posts
-		{#if error}
-			p Content unavailable.
-			a(href={format_legacy_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: type, multireddit_name, page_type: type, subreddit_name, user_name })}) Visit Reddit to see why.
-		{:else if loading}
-			p Loading...
-		{:else if pages.length}
-			{#each pages as page}
-				{#each page as post_short_id}
-					a(href={format_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: type, multireddit_name, post_short_id, subreddit_name, user_name })})
-						PostHeadline(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id} show_subreddit={type !== 'subreddit'})
-	menu.feed-actions
-		section
-		{#if has_next_page}
-			Button(action={() => load_page(pages.length)} text='Load more')
+	FeedInfoCard(type={type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
+	{#if type !== 'collection'}
+		FeedControls(feed_type={type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range} selected_post_short_id={selected_post_short_id})
+	FeedPostList(feed_type={type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range} selected_post_short_id={selected_post_short_id})
+
 style.
 	.feed
 		border-radius 10px
@@ -144,14 +29,3 @@ style.
 		overflow auto
 		padding 1em
 		width 270px
-	.feed-actions
-		display flex
-		flex 0 0 auto
-		justify-content space-between
-	.feed-controls
-		flex 0 0 auto
-	.feed-posts
-		display flex
-		flex 1
-		flex-flow column nowrap
-		overflow auto

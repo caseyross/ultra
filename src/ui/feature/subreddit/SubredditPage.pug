@@ -48,8 +48,11 @@ CenterLayout
 					{#if subreddit.wiki_enabled}
 						Button(link='/r/{subreddit_name}/wiki/index' text='Wiki')
 		nav.subreddit-posts
-			{#key posts_sort}
-				Feed(type='subreddit' subreddit_name={subreddit_name} search_query={posts_search_query} time_range={posts_time_range} sort={posts_sort} selected_post_short_id={post_short_id})
+			{#key subreddit_name}
+				{#key posts_search_query}
+					{#key posts_time_range}
+						{#key posts_sort}
+							Feed(type='subreddit' subreddit_name={subreddit_name} search_query={posts_search_query} time_range={posts_time_range} sort={posts_sort} selected_post_short_id={post_short_id})
 		{#if post_short_id}
 			{#key post_short_id}
 				{#key comment_short_id}

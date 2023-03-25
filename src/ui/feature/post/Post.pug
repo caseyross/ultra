@@ -77,7 +77,7 @@ svelte:head
 					SubredditTag(name={post.subreddit})
 				{#if post.link_flair_text}
 					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-			h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			h1.post-title {post.title}
 			section.post-metadata
 				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abbr')
 				| ‧
@@ -110,7 +110,7 @@ svelte:head
 						FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					a(href={relativize_url(post.url)})
-						PostHeadline(post_short_id={post.crosspost_parent})
+						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
 					ol.post-gallery
 						{#each post.media as media, index}
@@ -118,9 +118,8 @@ svelte:head
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										{#if !media.is_gif}
-											source(srcset={media.image_url_960})
-											source(srcset={media.image_url_640})
-										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-image-caption
 										{#if media.caption_text}
@@ -142,7 +141,7 @@ svelte:head
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
-								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}")
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {420 * Math.sqrt(embed.iframe_aspect_ratio)}px")
 								menu.post-content-actions
 									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
@@ -172,7 +171,7 @@ svelte:head
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} dimensions={[480, 480 / (media.video_aspect_ratio || (16/9))]} mimic_gif={media.video_is_gif} video_url={media.video_url})
+						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.video_is_gif} video_url={media.video_url})
 				{:else}
 					p [Error displaying post.]
 		section.post-comments

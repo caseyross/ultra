@@ -1,0 +1,57 @@
+script.
+	import api from '../../../api/index.js'
+	import { format_url } from '../../app/routing/url.coffee'
+	
+	import Button from '../../common/Button.pug'
+	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import TextInput from '../../common/TextInput.pug'
+	
+	time_range_options = [
+		{ label: 'Any time', value: 'all' }
+		{ label: 'Y', value: 'year' }
+		{ label: 'M', value: 'month' }
+		{ label: 'W', value: 'week' }
+		{ label: 'D', value: 'day' }
+		{ label: 'H', value: 'hour' }
+	]
+	sort_options = [
+		{ label: 'Hot', show_time_ranges: false, value: 'hot' }
+		{ label: 'Top', show_time_ranges: true, value: 'top' }
+		{ label: 'Controversial', show_time_ranges: true, value: 'controversial' }
+		{ label: 'New', show_time_ranges: false, value: 'new' }
+	]
+	search_sort_options = [
+		{ label: 'Match %', value: 'relevance' }
+		{ label: 'Score', value: 'top' }
+		{ label: 'Date', value: 'new' }
+		{ label: 'Num. Comments', value: 'comments' }
+	]
+	
+	export feed_type = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export user_name = null
+	export search_query = null
+	export sort = null
+	export time_range = null
+	
+	local_search_query = search_query
+	local_time_range = time_range
+	local_sort = sort
+	search_mode_active = search_query?
+	activate_search_mode = ->
+		local_time_range = 'all'
+		local_sort = 'relevance'
+		search_mode_active = true
+
+menu.feed-controls
+	{#if search_mode_active}
+		TextInput(initial_value={search_query} type_action={value => local_search_query = value})
+		ButtonGroup(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
+		ButtonGroup(action={value => local_time_range = value} options={time_range_options} selected={local_time_range})
+		Button(disabled={!local_search_query?.length} key='Enter' link={format_url({ feed_search_query: local_search_query, feed_sort: local_sort, feed_time_range: local_time_range, feed_type, multireddit_name, subreddit_name, user_name })} text='Search')
+	{:else}
+		ButtonGroup(options={sort_options.map(x => ({ ...x, link: format_url({ feed_sort: x.value, feed_time_range: time_range, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={sort})
+		{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
+			ButtonGroup(options={time_range_options.map(x => ({ ...x, link: format_url({ feed_sort: sort, feed_time_range: x.value, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={time_range})
+		Button(action={activate_search_mode} text='Search...')

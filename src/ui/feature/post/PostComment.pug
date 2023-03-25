@@ -28,6 +28,7 @@ script.
 		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-hidden-score={comment.score_hidden} class:comment-with-low-score={comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment')
 			UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
 			FormattedHTML(html={comment.body_html})
+			button.comment-score(on:mousedown={() => api.submit(api.ID('comment_vote', short_id), { numerical_vote: comment.likes ? 0 : 1 })}) {comment.score}
 		{#if out_of_context}
 			cite.comment-source-info
 				a(href='/r/{comment.subreddit}') in r/{comment.subreddit}
@@ -45,9 +46,14 @@ script.
 						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}' text='Continue thread...')
 
 style.
+	.comment-score
+		color var(--c-text-weak)
+		position absolute
+		right calc(100% + 1em)
 	.comment
 		display inline-block
 		margin 0.25em 0
+		position relative
 		width 400px
 	:global(.comment > .md)
 		display inline-block

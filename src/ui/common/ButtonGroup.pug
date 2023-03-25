@@ -1,6 +1,6 @@
 script.
 	import Button from './Button.pug'
-	export baselink = null
+	export action = null
 	export options = []
 	export selected = null
 	export title = null
@@ -9,7 +9,7 @@ fieldset
 	{#if title}
 		legend {title}
 	{#each options as option}
-		Button(action={option.action} activated={selected === option.value} disabled={option.disabled} link={option.link || (baselink + option.value)} text={option.label})
+		Button(action={() => action ? action(option.value) : option.action(option.value)} activated={selected === option.value} disabled={option.disabled} link={option.link} text={option.label})
 
 style.
 	fieldset
