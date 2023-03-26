@@ -14,7 +14,7 @@
 		"stylus-loader": "^7.1.0",
 		"svelte": "^3.57.0",
 		"svelte-loader": "3.1.5",
-		"webpack": "^5.76.2",
+		"webpack": "^5.76.3",
 		"webpack-cli": "^5.0.1",
 		"webpack-dev-server": "^4.13.1"
 	},
