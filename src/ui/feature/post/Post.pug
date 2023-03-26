@@ -2,7 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
-	import { relativize_url } from '../../app/routing/url.coffee'
+	import { format_url, relativize_url } from '../../app/routing/url.coffee'
 
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
@@ -21,11 +21,19 @@ script.
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
-	export comments_sort = 'confidence'
+	export comments_sort = null
 	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
 	export short_id = null
-	export show_subreddit = false
+
+	export feed_collection_short_id = null
+	export feed_multireddit_name = null
+	export feed_search_query = null
+	export feed_sort = null
+	export feed_subreddit_name = null
+	export feed_time_range = null
+	export feed_type = null
+	export feed_user_name = null
 
 	comments_sort_options = [
 		{ label: 'Best', value: 'confidence' }
@@ -73,7 +81,7 @@ svelte:head
 				{#if post.is_original_content}
 					PostTag(name='oc')
 			section.post-context
-				{#if show_subreddit}
+				{#if post.subreddit !== feed_subreddit_name}
 					SubredditTag(name={post.subreddit})
 				{#if post.link_flair_text}
 					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
@@ -102,14 +110,14 @@ svelte:head
 		{#if focus_comment_short_id}
 			section.post-content-incomplete
 				| Viewing a single comment thread.
-				Button(link='/r/{post.subreddit}/post/{short_id}' text='View complete post')
+				Button(link={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })} text='View complete post')
 		{:else}
 			section.post-content
 				{#if post.selftext_html && !post.removed_by_category}
 					.post-selftext
 						FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
-					a(href={relativize_url(post.url)})
+					a(href={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: post.crosspost_parent, subreddit_name: feed_subreddit_name, user_name: feed_user_name })})
 						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
 					ol.post-gallery
@@ -182,7 +190,7 @@ svelte:head
 				{:else if post.contest_mode}
 					.post-comments-alternate-mode-notification Post is in contest mode. Comments are sorted randomly.
 				{:else if post.num_comments > 0}
-					ButtonGroup(baselink='/r/{post.subreddit}/post/{short_id}?sort=' options={comments_sort_options} selected={comments_sort})
+					ButtonGroup(options={comments_sort_options.map(x => ({ ...x, link: format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: x.value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })}))} selected={comments_sort})
 			{#if post.num_comments < 1}
 				.post-comments-empty-notification [ None. ]
 			{:else}

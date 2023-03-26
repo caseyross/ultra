@@ -3,7 +3,7 @@ script.
 	
 	import UserAvatar from '../user/UserAvatar.pug'
 	
-	export type = null
+	export feed_type = null
 	
 	export collection_short_id = null
 	export multireddit_name = null
@@ -12,7 +12,7 @@ script.
 	
 	error = null
 	info = null
-	switch type
+	switch feed_type
 		when 'collection'
 			api.loadWatch(api.ID('collection', collection_short_id), (x) ->
 				{ data: info, error } = x
@@ -33,7 +33,7 @@ script.
 {#if error}
 	.feed-info-card.feed-info-card-unavailable
 {:else if info}
-	{#if type === 'collection'}
+	{#if feed_type === 'collection'}
 		a.feed-info-card(href='/c/{collection_short_id}')
 			section.feed-info-card-avatar
 				img.feed-info-card-avatar-image(alt='')
@@ -42,13 +42,13 @@ script.
 			section.feed-info-card-data
 				span.feed-info-card-list-type Collection
 				strong.feed-info-card-list-name {info.title}
-	{:else if type === 'multireddit'}
+	{:else if feed_type === 'multireddit'}
 		a.feed-info-card(href='/m/{user_name}/{multireddit_name}')
 			section.feed-info-card-avatar
 			section.feed-info-card-data
 				span.feed-info-card-list-type Multireddit
 				strong.feed-info-card-list-name {user_name}/{multireddit_name}
-	{:else if type === 'subreddit'}
+	{:else if feed_type === 'subreddit'}
 		a.feed-info-card(href='/{subreddit_name}' style='display:flex')
 			section.feed-info-card-avatar
 				{#if info.community_icon || info.icon_img}
@@ -56,7 +56,7 @@ script.
 			section.feed-info-card-data
 				span.feed-info-card-list-type Subreddit
 				strong.feed-info-card-list-name(title={info.display_name}) {info.display_name}
-	{:else if type === 'user'}
+	{:else if feed_type === 'user'}
 		a.feed-info-card(href='/u/{user_name}')
 			section.feed-info-card-avatar
 				{#if info.profile_img}
@@ -72,6 +72,7 @@ style.
 		display grid
 		gap 10px
 		grid-template-columns 64px 216px
+		padding 1em
 	.feed-info-card-avatar
 		position relative
 		width 64px

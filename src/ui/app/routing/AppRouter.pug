@@ -1,24 +1,46 @@
 script.
+	import AppContexts from '../context/AppContexts.pug'
+	import AppContent from './AppContent.pug'
 	import AppExternalLink from './AppExternalLink.pug'
-
-	import AppAccountContext from '../context/AppAccountContext.pug'
-	import AppNetworkStatusContext from '../context/AppNetworkStatusContext.pug'
-	import AppRadialMenuContext from '../context/AppRadialMenuContext.pug'
-	import AppTableZoomContext from '../context/AppTableZoomContext.pug'
-	import AppThemeColorContext from '../context/AppThemeColorContext.pug'
-
-	import CollectionPage from '../../feature/collection/CollectionPage.pug'
-	import DashboardPage from '../../feature/dashboard/DashboardPage.pug'
-	import MultiredditPage from '../../feature/multireddit/MultiredditPage.pug'
-	import SubredditPage from '../../feature/subreddit/SubredditPage.pug'
-	import UserPage from '../../feature/user/UserPage.pug'
-	import WikiPage from '../../feature/wiki/WikiPage.pug'
-	
 	import { parse_url } from './url.coffee'
+
 	route = null
+	
+	feed_type = null
+	feed_selection_type = null
+	sanitized_feed_sort = null
+	sanitized_feed_time_range = null
+	sanitized_post_comments_sort = null
+	page_type = null
 
 	set_route = ->
 		route = Object.fromEntries(parse_url(location))
+		feed_type = switch
+			when route.collection_short_id then 'collection'
+			when route.multireddit_name and route.user_name then 'multireddit'
+			when route.subreddit_name then 'subreddit'
+			when route.user_name then 'user'
+			else null
+		feed_selection_type = switch
+			when !feed_type then null
+			when route.post_short_id then 'post'
+			else 'info'
+		page_type = switch
+			when route.wikipage_name then 'wiki'
+			when feed_type then 'feed'
+			else null
+		sanitized_feed_sort = switch
+			when route.feed_sort then route.feed_sort
+			when feed_type is 'user' then 'new'
+			when route.feed_search_query then 'relevance'
+			else 'hot'
+		sanitized_feed_time_range = switch
+			when route.feed_time_range then route.feed_time_range
+			else 'all'
+		sanitized_post_comments_sort = switch
+			when route.post_comments_sort then route.post_comments_sort
+			else 'confidence'
+
 	external_navigate =
 		(link) -> location.href = link.href
 	external_navigate_new_tab =
@@ -27,7 +49,6 @@ script.
 		(link) ->
 			history.pushState(null, null, new URL(link.href))
 			set_route()
-
 	is_external_new_tab_intent =
 		(link) -> link.target is '_blank'
 	is_same_hash =
@@ -55,7 +76,6 @@ script.
 						if is_external_new_tab_intent(link) then external_navigate_new_tab(link)
 						else external_navigate(link)
 	)
-
 	document.addEventListener('click',
 		(event) ->
 			if is_unmodified_left_click(event)
@@ -64,7 +84,6 @@ script.
 					if is_same_origin(link) and is_same_path(link) and not is_same_hash(link) then return
 					event.preventDefault()
 	)
-
 	document.addEventListener('keydown',
 		(event) ->
 			if is_unmodified_enter_key_on_link(event)
@@ -84,24 +103,8 @@ script.
 
 	set_route()
 
-AppAccountContext
-	AppThemeColorContext
-		AppNetworkStatusContext
-			AppRadialMenuContext
-				AppTableZoomContext
-					{#if route.wikipage_name}
-						{#key route.subreddit_name}
-							{#key route.wikipage_name}
-								{#key route.wikipage_version}
-									WikiPage(page_name={route.wikipage_name} revision_id={route.wikipage_version} subreddit_name={route.subreddit_name})
-					{:else if route.collection_short_id}
-						CollectionPage(collection_short_id={route.collection_short_id} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id})
-					{:else if route.multireddit_name}
-						MultiredditPage(multireddit_name={route.multireddit_name} user_name={route.user_name} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id} posts_sort={route.feed_sort || (route.feed_search_query ? 'relevance' : 'hot')} posts_search_query={route.feed_search_query} posts_time_range={route.feed_time_range || 'all'})
-					{:else if route.subreddit_name}
-						{#key route.subreddit_name}
-							SubredditPage(subreddit_name={route.subreddit_name} comment_parent_count={route.post_focus_comment_parent_count} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id} posts_sort={route.feed_sort || (route.feed_search_query ? 'relevance' : 'hot')} posts_search_query={route.feed_search_query} posts_time_range={route.feed_time_range || 'all'})
-					{:else if route.user_name}
-						UserPage(user_name={route.user_name} posts_sort={route.feed_sort || 'new'} posts_time_range={route.feed_time_range || 'all'} comment_short_id={route.post_focus_comment_short_id} comments_sort={route.post_comments_sort} post_short_id={route.post_short_id})
-					{:else}
-						AppExternalLink(original_url={location})
+AppContexts
+	{#if page_type}
+		AppContent(collection_short_id={route.collection_short_id} feed_search_query={route.feed_search_query} feed_selection_type={feed_selection_type} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} page_type={page_type} post_comments_sort={sanitized_post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_short_id={route.post_focus_comment_short_id} post_short_id={route.post_short_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
+	{:else}
+		AppExternalLink(original_url={location})

@@ -5,7 +5,6 @@ script.
 
 	import { hotkey } from '../../common/actions/hotkeys.coffee'
 
-	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	import Button from '../../common/Button.pug'
 	import HotkeyLabel from '../../common/HotkeyLabel.pug'
 	import TextInput from '../../common/TextInput.pug'
@@ -46,41 +45,40 @@ script.
 
 nav#subreddit-search
 	TextInput(key='/' label='Search:')
-CenterLayout
-	#dashboard-layout
-		section
-			h1 Watchlist
-			ol.subreddits#subreddits-watchlist
-				{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] as number, index}
-					li#subreddits-watchlist-item
-						HotkeyLabel(key={number})
-						{#if editing_watchlist}
-							TextInput(initial_value={watchlist[index].length > 1 && watchlist[index]} type_action={(value) => tentative_watchlist[index] = value})
-						{:else}
-							{#if watchlist[index].length > 1}
-								a(href='/{watchlist[index]}' use:hotkey={number})
-									SubredditTag(name={watchlist[index]})
-			{#if editing_watchlist}
-				Button(action={save_watchlist} text='Save')
-			{:else}
-				Button(action={edit_watchlist} text='Edit')
-		section
-			h1 Subscriptions
-			{#if api.isLoggedIn()}
-				{#if subreddits_subscribed}
-					ol.subreddits#subreddits-subscribed
-						{#each subreddits_subscribed as name}
-							SubredditTag(name={name})
-						Button(link='/r/subscriptions' text='Multireddit of subscriptions')
-			{:else}
-				Button(link={api.getLoginURL({ memoString: location.pathname })} text='→ Login')
-		section
-			h1 Trending
-			{#if subreddits_popular}
-				ol.subreddits#subreddits-popular
-					{#each subreddits_popular as name}
+#dashboard-layout
+	section
+		h1 Watchlist
+		ol.subreddits#subreddits-watchlist
+			{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] as number, index}
+				li#subreddits-watchlist-item
+					HotkeyLabel(key={number})
+					{#if editing_watchlist}
+						TextInput(initial_value={watchlist[index].length > 1 && watchlist[index]} type_action={(value) => tentative_watchlist[index] = value})
+					{:else}
+						{#if watchlist[index].length > 1}
+							a(href='/{watchlist[index]}' use:hotkey={number})
+								SubredditTag(name={watchlist[index]})
+		{#if editing_watchlist}
+			Button(action={save_watchlist} text='Save')
+		{:else}
+			Button(action={edit_watchlist} text='Edit')
+	section
+		h1 Subscriptions
+		{#if api.isLoggedIn()}
+			{#if subreddits_subscribed}
+				ol.subreddits#subreddits-subscribed
+					{#each subreddits_subscribed as name}
 						SubredditTag(name={name})
-					Button(link='/r/popular' text='Multireddit of popular')
+					Button(link='/r/subscriptions' text='Multireddit of subscriptions')
+		{:else}
+			Button(link={api.getLoginURL({ memoString: location.pathname })} text='→ Login')
+	section
+		h1 Trending
+		{#if subreddits_popular}
+			ol.subreddits#subreddits-popular
+				{#each subreddits_popular as name}
+					SubredditTag(name={name})
+				Button(link='/r/popular' text='Multireddit of popular')
 nav#home-menu
 	a(href='/')
 		img(alt='' src='/icon_frog.png')

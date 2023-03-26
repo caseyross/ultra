@@ -1,0 +1,13 @@
+script.
+	import AppAccountContext from './AppAccountContext.pug'
+	import AppNetworkStatusContext from './AppNetworkStatusContext.pug'
+	import AppRadialMenuContext from './AppRadialMenuContext.pug'
+	import AppTableZoomContext from './AppTableZoomContext.pug'
+	import AppThemeColorContext from './AppThemeColorContext.pug'
+
+AppAccountContext
+	AppThemeColorContext
+		AppNetworkStatusContext
+			AppRadialMenuContext
+				AppTableZoomContext
+					slot

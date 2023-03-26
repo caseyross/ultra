@@ -55,3 +55,7 @@ menu.feed-controls
 		{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
 			ButtonGroup(options={time_range_options.map(x => ({ ...x, link: format_url({ feed_sort: sort, feed_time_range: x.value, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={time_range})
 		Button(action={activate_search_mode} text='Search...')
+
+style.
+	.feed-controls
+		padding 1em

@@ -3,7 +3,6 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
-	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	
 	export page_name = null
@@ -33,21 +32,20 @@ script.
 
 svelte:head
 	title r/{subreddit_name} - Wiki - {page_name}
-CenterLayout
-	{#if error}
-		.wiki-page-unavailable-reason
-			p Wiki page unavailable.
-			{#if error.reason}
-				p Reason: {error.reason}
-	{:else if loading}
-		p Loading...
-	{:else if page}
-		article.wiki-page
-			h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
-			section.wiki-page-info
-				.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
-			section.wiki-page-body
-				FormattedHTML(html={page.content_html})
+{#if error}
+	.wiki-page-unavailable-reason
+		p Wiki page unavailable.
+		{#if error.reason}
+			p Reason: {error.reason}
+{:else if loading}
+	p Loading...
+{:else if page}
+	article.wiki-page
+		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
+		section.wiki-page-info
+			.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
+		section.wiki-page-body
+			FormattedHTML(html={page.content_html})
 
 style.
 	.wiki-page

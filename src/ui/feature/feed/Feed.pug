@@ -1,31 +1,40 @@
 script.
+	import { getContext } from 'svelte'
+	import api from '../../../api/index.js'
+
 	import FeedControls from './FeedControls.pug'
 	import FeedInfoCard from './FeedInfoCard.pug'
 	import FeedPostList from './FeedPostList.pug'
-
+	
 	export type = null
+
 	export collection_short_id = null
 	export multireddit_name = null
 	export subreddit_name = null
 	export user_name = null
+	
 	export search_query = null
-	export sort = if search_query then 'relevance' else 'hot'
-	export time_range = 'all'
-
+	export time_range = null
+	export sort = null
+	
 	export selected_post_short_id = null
+	
+	subreddit = null
+	set_theme_color = getContext('set_theme_color')
+	switch type
+		when 'subreddit'
+			api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
+				{ data: subreddit } = x
+				set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+			)
+		else
+			set_theme_color()
 
 nav.feed
-	FeedInfoCard(type={type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
+	FeedInfoCard(feed_type={type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
 	{#if type !== 'collection'}
-		FeedControls(feed_type={type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range} selected_post_short_id={selected_post_short_id})
-	FeedPostList(feed_type={type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range} selected_post_short_id={selected_post_short_id})
-
-style.
-	.feed
-		border-radius 10px
-		display flex
-		flex-flow column nowrap
-		gap 1em
-		overflow auto
-		padding 1em
-		width 270px
+		FeedControls(feed_type={type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
+	{#key search_query}
+		{#key time_range}
+			{#key sort}
+				FeedPostList(feed_type={type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range} selected_post_short_id={selected_post_short_id})

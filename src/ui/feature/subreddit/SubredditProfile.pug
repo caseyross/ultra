@@ -1,0 +1,60 @@
+script.
+	import { getContext } from 'svelte'
+	import api from '../../../api/index.js'
+
+	import Button from '../../common/Button.pug'
+
+	import SubredditInfo from './SubredditInfo.pug'
+	import SubredditModerators from './SubredditModerators.pug'
+	import SubredditRules from './SubredditRules.pug'
+	import SubredditWidget from './SubredditWidget.pug'
+
+	export name = null
+
+	subreddit = null
+	set_theme_color = getContext('set_theme_color')
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit } = x
+		set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+	)
+	widgets = null
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+	)
+
+svelte:head
+	title r/{subreddit ? subreddit.display_name : name}
+.subreddit
+	{#if subreddit}
+		menu.subreddit-options(style='display:none')
+			Button(popup={true} text='About')
+				SubredditInfo(name={name})
+			Button(popup={true} text='Rules')
+				SubredditRules(name={name})
+			{#if subreddit.wiki_enabled}
+				Button(link='/r/{name}/wiki/index' text='Wiki')
+	SubredditInfo(name={name})
+	{#if widgets}
+		{#if widgets.topbar?.length}
+			SubredditWidget(widget={widgets.topbar[0]})
+		ol.subreddit-widgets
+			{#each widgets.sidebar as widget}
+				SubredditWidget(widget={widget})
+	{#if subreddit?.header_title}
+		br
+		br
+		span(style='color:var(--c-text-weak)') "{subreddit.header_title}"
+
+style.
+	.subreddit
+		width 480px
+	.subreddit-options
+		align-items flex-end
+		display flex
+		flex-flow column nowrap
+		gap 3px
+		padding 20px 0
+	.subreddit-widgets
+		display flex
+		flex-flow column nowrap
+		gap 0.5em
