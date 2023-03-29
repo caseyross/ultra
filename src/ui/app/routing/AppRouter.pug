@@ -11,7 +11,6 @@ script.
 	sanitized_feed_sort = null
 	sanitized_feed_time_range = null
 	sanitized_post_comments_sort = null
-	page_type = null
 
 	set_route = ->
 		route = Object.fromEntries(parse_url(location))
@@ -22,13 +21,9 @@ script.
 			when route.user_name then 'user'
 			else null
 		feed_selection_type = switch
-			when !feed_type then null
-			when route.post_short_id then 'post'
-			else 'info'
-		page_type = switch
+			when false then 'about' # TODO
 			when route.wikipage_name then 'wiki'
-			when feed_type then 'feed'
-			else null
+			else 'posts'
 		sanitized_feed_sort = switch
 			when route.feed_sort then route.feed_sort
 			when feed_type is 'user' then 'new'
@@ -104,7 +99,7 @@ script.
 	set_route()
 
 AppContexts
-	{#if page_type}
-		AppContent(collection_short_id={route.collection_short_id} feed_search_query={route.feed_search_query} feed_selection_type={feed_selection_type} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} page_type={page_type} post_comments_sort={sanitized_post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_short_id={route.post_focus_comment_short_id} post_short_id={route.post_short_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
+	{#if feed_type}
+		AppContent(collection_short_id={route.collection_short_id} feed_search_query={route.feed_search_query} feed_selection_type={feed_selection_type} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} post_comments_sort={sanitized_post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_short_id={route.post_focus_comment_short_id} post_short_id={route.post_short_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
 	{:else}
 		AppExternalLink(original_url={location})

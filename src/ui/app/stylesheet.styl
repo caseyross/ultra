@@ -22,12 +22,10 @@ body
 	font-feature-settings 'cv11'
 	font-size 1rem
 	font-weight var(--f-wght-normal)
-	letter-spacing 0.444px
-	line-height 1.5
+	line-height 1.555
 b
 strong
 	font-weight var(--f-wght-strong)
-	letter-spacing 0.266px
 
 // Theme
 body
@@ -44,8 +42,8 @@ body
 		--c-text-weak rgba(0,0,0,0.50)
 		--c-text-strong black
 		--c-text-reverse white
-		--f-wght-normal 400
-		--f-wght-strong 640
+		--f-wght-normal 440
+		--f-wght-strong 660
 		color-scheme light
 	&.color-strategy-white-text
 		--c-blend-normal rgba(255,255,255,0.10)
@@ -57,8 +55,8 @@ body
 		--c-text-weak rgba(255,255,255,0.50)
 		--c-text-strong #f2f4f7
 		--c-text-reverse black
-		--f-wght-normal 340
-		--f-wght-strong 580
+		--f-wght-normal 420
+		--f-wght-strong 570
 		color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-con-weak)
@@ -68,10 +66,11 @@ body
 
 // Layout sections
 p
-	margin 0 0 1em
+	margin 0 0 0.666em
 hr
-	border 1px solid var(--c-text-faint)
-	margin 2em 0
+	border 1px dashed
+	margin 1em auto
+	opacity 0.8
 
 // Lists
 ol
@@ -84,12 +83,14 @@ ul
 	ul
 		list-style-type initial
 		margin 0 0 1em
-		padding-inline-start 3ch
 	li
-		margin 0 0 0.75em
+		margin 0 1ch 0.333em
+		padding-inline-start 1em
+		&::marker
+			content '⁕'
 		& > ol
 		& > ul
-			margin-top 0.75em
+			margin-top 0.333em
 menu
 	padding 0
 
@@ -100,58 +101,44 @@ h3
 h4
 h5
 h6
-	font-weight var(--f-wght-strong)
-	line-height 1.25
-	margin 0 0 1rem
+	font-weight inherit
+	line-height 1.111
+	margin 1.333em 0 0.666em
 	&:first-child
 		margin-top 0
 h1
-	font-size 1.6em
-	margin-top 3.2rem
+	font-size 1.333em
 h2
-	font-size 1.4em
-	margin-top 2.4rem
 h3
-	font-size 1.2em
-	margin-top 1.6rem
+	font-size 1.1666em
 h4
 h5
 h6
 	font-size 1em
 
 // Tables
-th
-	font-weight inherit
 .md
 	table
 		border-collapse collapse
-		border-radius 6px
-		display inline-block
 		font-size 12px
-		font-feature-settings 'cv11' 1, 'tnum' 1
+		font-feature-settings 'cv11', 'tnum'
 		margin 0 0 1em
-		max-width 100%
 		overflow-wrap normal
-		white-space pre-wrap
-		&:hover:not(:fullscreen)
-			background var(--c-con-weak)
-			cursor zoom-in
-		&:fullscreen
-			background var(--c-theme)
-			border-radius 0
-			color var(--c-text-strong)
-			font-size inherit
-			padding 1.5em
-	th
 	td
-		padding 1em
-		vertical-align top
 	th
-		border-bottom 1px solid var(--c-con-normal)
+		padding-right 1em
+		text-align left
 	td
-		border-right 1px solid var(--c-con-normal)
-		&:last-child
-			border-right none
+		padding-top 3px
+		vertical-align middle
+	tr:first-child > td
+		padding-top 6px
+	th
+		border-bottom 1px solid
+		font-weight var(--f-wght-strong)
+		font-size 10px
+		padding-bottom 3px
+		vertical-align bottom
 
 // Formatted text
 a
@@ -164,52 +151,25 @@ sub
 sup
 	line-height 0
 .md
-	background var(--c-blend-normal)
-	border-radius 10px
 	overflow-wrap anywhere
-	padding 1em
 	a
 		text-decoration underline
 		&:hover
 			color var(--c-hint-normal)
-	a[href^='#']
-	a[href^='/']
-		text-decoration none
-		&::before
-			background var(--c-text-strong)
-			border-radius 50%
-			color var(--c-theme)
-			content '→'
-			display inline
-			font-size 0.9em
-			font-style normal
-			font-weight 900
-			line-height 1
-			margin-left 0.1em
-			margin-right 0.5em
-			padding 0 0.1em
-		&:empty::before
-			display none
-		&:hover::before
-			background var(--c-hint-normal)
 	img
-		border 1px solid transparent
 		border-radius 6px
-		&:hover
-			border-color var(--c-hint-normal)
 
 // Verbatim text
 blockquote
 	border-left 3px solid var(--c-text-weak)
 	font-size 12px
-	margin 0 0 0.5em 2px
+	margin 0 0 0.666rem
 	opacity 0.8
 	padding-left 1em
 code
 pre
 	font-family var(--f-type-mono)
 	font-size 12px
-	letter-spacing 0
 code
 	background var(--c-con-normal)
 	border-radius 2px
@@ -224,14 +184,7 @@ pre
 	margin 0 0 1em
 	padding 1em
 	overflow auto
-	&:hover:not(:fullscreen)
-		border-color var(--c-hint-normal)
-		cursor zoom-in
-	&:fullscreen
-		background var(--c-theme)
-		color var(--c-text-strong)
-		font-size 1rem
-		padding 2em
+	white-space pre
 kbd
 	font inherit
 

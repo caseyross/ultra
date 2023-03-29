@@ -43,10 +43,11 @@ script.
 		{ label: 'New', value: 'new' }
 		{ label: 'Controversial', value: 'controversial' }
 	]
+	media_design_width = 480
 	error = null
 	loading = false
 	post = null
-	api.loadWatch(api.ID('post', short_id),
+	api.loadWatch(api.ID('post', short_id, comments_sort, 25, focus_comment_short_id, focus_comment_parent_count),
 		(x) ->
 			{ data: post, error, loading } = x
 			if post?.num_comments? and post?.score?
@@ -120,20 +121,25 @@ svelte:head
 					a(href={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: post.crosspost_parent, subreddit_name: feed_subreddit_name, user_name: feed_user_name })})
 						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
-					ol.post-gallery
-						{#each post.media as media, index}
-							figure.post-gallery-item
-								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-									picture
-										{#if !media.is_gif}
-											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
-										img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
-								{#if media.caption_text || media.caption_url}
-									figcaption.post-image-caption
-										{#if media.caption_text}
-											p {media.caption_text}
-										{#if media.caption_url}
-											a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
+					{@const media_design_width = post.media.length > 1 ? media_design_width / 2 : media_design_width}
+						ol.post-gallery
+							{#each post.media as media, index}
+								figure.post-gallery-item
+									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+										picture
+											{#if !media.is_gif}
+												{#if media.aspect_ratio >= (640 / media_design_width) ** 2}
+													source(srcset={media.image_url_960})
+												{#if media.aspect_ratio >= (320 / media_design_width) ** 2}
+													source(srcset={media.image_url_640})
+												source(srcset={media.image_url_320})
+											img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {media_design_width * Math.sqrt(media.aspect_ratio)}px")
+									{#if media.caption_text || media.caption_url}
+										figcaption.post-image-caption
+											{#if media.caption_text}
+												p {media.caption_text}
+											{#if media.caption_url}
+												a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
 					{#if post.media.length === 1}
 						{@const media = post.media[0]}
 							menu.post-content-actions
@@ -149,7 +155,7 @@ svelte:head
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
-								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {420 * Math.sqrt(embed.iframe_aspect_ratio)}px")
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {media_design_width * Math.sqrt(embed.iframe_aspect_ratio)}px")
 								menu.post-content-actions
 									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
@@ -179,7 +185,7 @@ svelte:head
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} dimensions={[560, 315]} mimic_gif={media.video_is_gif} video_url={media.video_url})
+						MediaPlayer(audio_url={media.video_audio_url} height={Math.round(media_design_width * Math.sqrt(1 / media.video_aspect_ratio))} mimic_gif={media.video_is_gif} video_url={media.video_url} width={Math.round(media_design_width * Math.sqrt(media.video_aspect_ratio))})
 				{:else}
 					p [Error displaying post.]
 		section.post-comments
@@ -215,7 +221,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		margin-bottom 30px
-		max-width 100%
+		width 480px
 	.post-content-actions
 		display flex
 		gap 1em
@@ -240,7 +246,7 @@ style.
 		counter-reset gallery-index
 		display flex
 		flex-flow column nowrap
-		gap 2em
+		gap 10px
 	.post-gallery-item
 		display flex
 		flex-flow column nowrap
@@ -261,6 +267,7 @@ style.
 		flex-flow column nowrap
 		gap 6px
 		margin-bottom 20px
+		width 480px
 	.post-iframe
 		border-radius 6px
 		width 100%
@@ -268,8 +275,7 @@ style.
 		border-radius 6px
 	.post-image-caption
 		color var(--c-text-weak)
-		font-size 11px
-		letter-spacing 0.50px
+		font-size 12px
 	.post-loading-message
 		padding 10px
 	.post-metadata
@@ -288,11 +294,11 @@ style.
 		& meter
 			width 200px
 	.post-selftext
-		margin-bottom 2em
+		margin-bottom 1em
 	.post-title
-		font-size 20px
+		font-size 1.5em
 		font-weight var(--f-wght-strong)
-		line-height 1.25
+		line-height 1.111
 		margin 0
 		overflow-wrap anywhere
 	.post-unavailable-reason

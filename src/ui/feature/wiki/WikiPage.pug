@@ -41,7 +41,11 @@ svelte:head
 	p Loading...
 {:else if page}
 	article.wiki-page
-		h1.wiki-page-name {subreddit_name} / {page_name.split('/').join(' / ')}
+		section.wiki-page-path
+			a(href='/{subreddit_name}/wiki') Wiki
+			{#each page_name.split('/') as path_segment, i}
+				| >
+				a(class:wiki-page-path-segment-current-page={i === page_name.split('/').length - 1} href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
 		section.wiki-page-info
 			.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
 		section.wiki-page-body
@@ -49,9 +53,7 @@ svelte:head
 
 style.
 	.wiki-page
-		max-width 100%
-		padding-left 240px
-		width 1160px
+		width 640px
 	.wiki-page-body
 		margin-top 3em
 	:global(.wiki-page-body > .md)
@@ -64,11 +66,18 @@ style.
 		gap 1ch
 		margin-top 1em
 		opacity 0.5
-	.wiki-page-name
-		font-size 2em
+	.wiki-page-path
+		color var(--c-text-weak)
+		text-transform uppercase
+		& > a
+			text-decoration underline
+		.wiki-page-path-segment-current-page
+			color var(--c-text-strong)
+			font-weight var(--f-wght-strong)
+			text-decoration none
 	:global(.wiki-page .toc)
 		font-size 12px
-		left @css{max(0px, calc(50% - 640px))}
+		left calc(50% + 360px)
 		max-height 100vh
 		overflow auto
 		padding 40px 0

@@ -22,7 +22,7 @@ export hotkey = (element, key) ->
 		handlers[key] = []
 	handlers[key].push(-> element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, code: 'Enter', key: 'Enter' })))
 	return {
-		destroy: -> handlers[key].pop()
+		destroy: -> handlers[key].pop() # potentially removes handlers out of order - if it becomes a problem we will change logic
 	}
 
 export virtual_hotkeys = (element, keymap) ->
@@ -31,5 +31,7 @@ export virtual_hotkeys = (element, keymap) ->
 			handlers[key] = []
 		handlers[key].push(handler)
 	return {
-		destroy: -> handlers[key].pop()
+		destroy: ->
+			for key of keymap
+				handlers[key].pop() # potentially removes handlers out of order - if it becomes a problem we will change logic
 	}

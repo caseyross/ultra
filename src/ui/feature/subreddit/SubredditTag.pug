@@ -4,19 +4,11 @@ script.
 	import SubredditAvatar from './SubredditAvatar.pug'
 
 	export name = null
-	export size = 'medium'
+	export size = 'small'
 
-	color = 'var(--c-text-strong)'
-	text_color = 'var(--c-text-reverse)'
-	api.loadWatch(api.ID('subreddit', name), ({ data: subreddit }) ->
-		if subreddit?.primary_color or subreddit?.key_color
-			color = subreddit?.primary_color or subreddit.key_color
-			text_color = if (new Color({ hex: color })).isLight() then 'black' else 'white'
-	)
-
-a.subreddit-tag(href='/{name}' style='background: {color}; color: {text_color}')
+a.subreddit-tag(href='/{name}')
 	SubredditAvatar(name={name} size={size})
-	span {name}
+	span {name.startsWith('u_') ? 'u/' + name.slice(2) : name}
 
 style.
 	.subreddit-tag

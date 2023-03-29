@@ -12,13 +12,15 @@ script.
 	export selected = false
 	export show_subreddit = false
 	
-	post = null
-	api.loadWatch(api.ID('post', post_short_id),
-		(x) ->
+	post = api.read(api.ID('post', post_short_id))?.data
+	if !post
+		api.loadWatch(api.ID('post', post_short_id, 'confidence', 25), (x) ->
 			{ data: post } = x
-			if post?
-				api.preload(api.ID('post', post_short_id, post.suggested_sort or 'confidence', 25))
-	)
+		)
+	else if post.num_comments > 0 and !post.replies?.length
+		api.preload(api.ID('post', post_short_id, 'confidence', 25), (x) ->
+			{ data: post } = x
+		)
 
 {#if post}
 	.post-headline(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id})
@@ -49,7 +51,6 @@ script.
 style.
 	.post-headline
 		align-items flex-start
-		border 1px solid transparent
 		border-radius 10px
 		color var(--c-text-weak)
 		display flex
@@ -57,8 +58,11 @@ style.
 		gap 6px
 		padding 1em
 		&:hover
-			color var(--c-hint-normal)
 			background var(--c-con-normal)
+			color var(--c-hint-normal)
+		&.post-selected
+			background var(--c-con-normal)
+			color var(--c-text-strong)
 		&.post-with-low-score .post-title
 			opacity 0.5
 	.post-metadata
@@ -73,7 +77,6 @@ style.
 		display inline
 		font-size 16px
 		font-weight var(--f-wght-strong)
-		letter-spacing 0
 		line-height 1.25
 		margin 0
 		overflow-wrap anywhere

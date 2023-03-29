@@ -1,8 +1,6 @@
 script.
-	import CenterLayout from '../../common/layout/CenterLayout.pug'
-	import FeedLayout from '../../common/layout/FeedLayout.pug'
-	
-	import Feed from '../../feature/feed/Feed.pug'
+	import FeedNavigation from '../../feature/feed/FeedNavigation.pug'
+	import FeedPostList from '../../feature/feed/FeedPostList.pug'
 	import Post from '../../feature/post/Post.pug'
 	import SubredditProfile from '../../feature/subreddit/SubredditProfile.pug'
 	import UserProfile from '../../feature/user/UserProfile.pug'
@@ -15,7 +13,6 @@ script.
 	export feed_time_range = null
 	export feed_type = null
 	export multireddit_name = null
-	export page_type = null
 	export post_comments_sort = null
 	export post_focus_comment_parent_count = null
 	export post_focus_comment_short_id = null
@@ -25,43 +22,87 @@ script.
 	export wikipage_name = null
 	export wikipage_version = null
 
-nav#home-menu
-	a(href='/')
-		img(alt='' src='/icon_frog.png')
-{#if page_type === 'feed'}
-	FeedLayout
-		svelte:fragment(slot='feed')
+main
+	section.layout-space-left
+		{#key collection_short_id}
+			{#key multireddit_name}
+				{#key subreddit_name}
+					{#key user_name}
+						FeedNavigation(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
+	hr.layout-divider
+	{#if feed_selection_type === 'about'}
+		section.layout-space-right(style='grid-column-start: content-start')
+			{#if feed_type === 'subreddit'}
+				{#key subreddit_name}
+					SubredditProfile(name={subreddit_name})
+			{:else if feed_type === 'user'}
+				{#key user_name}
+					{#key feed_time_range}
+						{#key feed_sort}
+							UserProfile(name={user_name} sort={feed_sort} time_range={feed_time_range})
+			{:else}
+				p [ Not yet implemented. ]
+	{:else if feed_selection_type === 'posts'}
+		section.layout-space-center
 			{#key collection_short_id}
 				{#key multireddit_name}
 					{#key subreddit_name}
 						{#key user_name}
-							Feed(collection_short_id={collection_short_id} multireddit_name={multireddit_name} post_comments_sort={post_comments_sort} post_focus_comment_parent_count={post_focus_comment_parent_count} post_focus_comment_short_id={post_focus_comment_short_id} selected_post_short_id={post_short_id} search_query={feed_search_query} sort={feed_sort} subreddit_name={subreddit_name} time_range={feed_time_range} type={feed_type} user_name={user_name})
-		svelte:fragment(slot='selection')
-			{#if feed_selection_type === 'info'}
-				{#if feed_type === 'subreddit'}
-					{#key subreddit_name}
-						SubredditProfile(name={subreddit_name})
-				{:else if feed_type === 'user'}
-					{#key user_name}
-						{#key feed_time_range}
-							{#key feed_sort}
-								UserProfile(name={user_name} sort={feed_sort} time_range={feed_time_range})
-				{:else}
-					p [ Not yet implemented. ]
-			{:else if feed_selection_type === 'post'}
+							{#key feed_search_query}
+								{#key feed_time_range}
+									{#key feed_sort}
+										FeedPostList(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_short_id={post_short_id})
+		hr.layout-divider
+		section.layout-space-right(style='grid-column-start: post-start')
+			{#if post_short_id}
 				{#key post_short_id}
 					{#key post_focus_comment_short_id}
 						{#key post_focus_comment_parent_count}
 							Post(comments_sort={post_comments_sort} feed_collection_short_id={collection_short_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_short_id={post_focus_comment_short_id} short_id={post_short_id})
-{:else if page_type === 'wiki'}
-	CenterLayout
-		{#key subreddit_name}
-			{#key wikipage_name}
-				{#key wikipage_version}
-					WikiPage(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
+			{:else}
+				p [ Select a post. ]
+	{:else if feed_selection_type === 'wiki'}
+		section.layout-space-right(style='grid-column-start: content-start')
+			{#key subreddit_name}
+				{#key wikipage_name}
+					{#key wikipage_version}
+						WikiPage(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
 
 style.
-	#home-menu
-		left 1em
-		position fixed
-		top 1em
+	main
+		display grid
+		grid-template-columns @css{1fr 1px [content-start] 240px 1px [post-start] 560px 1fr}
+		height 100dvh
+		overflow auto
+		width 100dvw
+	.layout-divider
+		background var(--c-hint-normal)
+		border 0
+		height 100%
+		margin 0
+		width 1px
+	.layout-space-center
+		display flex
+		flex-flow column nowrap
+		height 100%
+		overflow auto
+		padding 40px 20px
+		scrollbar-width none
+		width 200px
+		&::-webkit-scrollbar
+			display none
+	.layout-space-left
+		display flex
+		height 100%
+		justify-content flex-end
+		overflow auto
+		padding 40px 0
+		scrollbar-width none
+		&::-webkit-scrollbar
+			display none
+	.layout-space-right
+		grid-column-end -1
+		height 100%
+		overflow auto
+		padding 40px 80px
+		scrollbar-gutter stable

@@ -6,9 +6,10 @@ script.
 	import Button from './Button.pug'
 	
 	export audio_url = null
-	export dimensions = [480, 480]
+	export height = 480
 	export mimic_gif = false
 	export video_url = null
+	export width = 480
 
 	additional_hotkeys =
 		ArrowDown: ->
@@ -47,7 +48,6 @@ script.
 	duration = 0
 	ended = false
 	fullscreen = false
-	height = dimensions[1]
 	mouse_idle = false
 	mouse_idle_timer_id = null
 	paused = true
@@ -63,8 +63,8 @@ script.
 	reactive_time = 0
 	set_time = (value) ->
 		if !waiting_for_seek
-			video?.currentTime = clamp(0, duration, value)
-			audio?.currentTime = video?.currentTime
+			video.currentTime = clamp(0, duration, value)
+			audio?.currentTime = video.currentTime
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
 		localStorage['media.volume'] = audio.volume
@@ -85,7 +85,6 @@ script.
 			-> mouse_idle = true
 			200
 		)
-	width = dimensions[0]
 
 	onMount ->
 		audio.volume = Number(localStorage['media.volume']) or 0
@@ -130,8 +129,8 @@ script.
 			waiting_for_seek = false
 		)
 		video.addEventListener('timeupdate', (e) ->
-			scrobbler.value = video.currentTime
-			reactive_time = video.currentTime
+			scrobbler?.value = video?.currentTime # note: conditionals needed because event can trigger after element unmount (!)
+			reactive_time = video?.currentTime
 		)
 		video.addEventListener('waiting', (e) ->
 			audio?.pause()

@@ -4,6 +4,7 @@ script.
 	
 	import Button from '../../common/Button.pug'
 	import PostHeadline from '../post/PostHeadline.pug'
+	import FeedPostListControls from './FeedPostListControls.pug'
 
 	export feed_type = null
 	export collection_short_id = null
@@ -56,22 +57,26 @@ script.
 
 	load_page(0)
 
-ol.feed-post-list
-	{#each pages as page}
-		{#if page.error}
-			p Error: {page.error.reason || page.error.message}
-		{:else if page.posts}
-			{#each page.posts as post_short_id}
-				a(href={format_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: feed_type, multireddit_name, post_short_id, subreddit_name, user_name })})
-					PostHeadline(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id} show_subreddit={feed_type !== 'subreddit'})
-menu.feed-post-list-actions
-	{#if has_next_page}
-		Button(action={() => load_page(pages.at(-1).posts ? pages.length : pages.length - 1)} loading={pages.at(-1)?.loading} text='More')
+nav.feed-posts
+	{#if feed_type !== 'collection'}
+		FeedPostListControls(feed_type={feed_type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
+	ol.feed-post-list
+		{#each pages as page}
+			{#if page.error}
+				p Error: {page.error.reason || page.error.message}
+			{:else if page.posts}
+				{#each page.posts as post_short_id}
+					a(href={format_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: feed_type, multireddit_name, post_short_id, subreddit_name, user_name })})
+						PostHeadline(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id} show_subreddit={feed_type !== 'subreddit'})
+	menu.feed-post-list-actions
+		{#if has_next_page}
+			Button(action={() => load_page(pages.at(-1).posts ? pages.length : pages.length - 1)} loading={pages.at(-1)?.loading} text='More')
 
 style.
-	.feed-post-list
+	.feed-posts
 		display flex
 		flex-flow column nowrap
+		gap 1em
 	.feed-post-list-actions
 		display flex
 		justify-content flex-end

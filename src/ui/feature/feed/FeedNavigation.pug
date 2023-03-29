@@ -1,0 +1,21 @@
+script.
+	import FeedImprint from './FeedImprint.pug'
+	
+	export feed_type = null
+	
+	export collection_short_id = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export user_name = null
+
+nav.feed-navigation
+	FeedImprint(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
+
+style.
+	.feed-navigation
+		box-sizing content-box
+		display flex
+		gap 1em
+		padding 1em
+		width 64px
+		writing-mode vertical-rl
