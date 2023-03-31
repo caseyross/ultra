@@ -15,10 +15,9 @@ script.
 		{ label: 'H', value: 'hour' }
 	]
 	sort_options = [
+		{ label: 'New', show_time_ranges: false, value: 'new' }
 		{ label: 'Hot', show_time_ranges: false, value: 'hot' }
 		{ label: 'Top', show_time_ranges: true, value: 'top' }
-		{ label: 'Controversial', show_time_ranges: true, value: 'controversial' }
-		{ label: 'New', show_time_ranges: false, value: 'new' }
 	]
 	search_sort_options = [
 		{ label: 'Match %', value: 'relevance' }
@@ -54,7 +53,7 @@ menu.feed-post-list-controls
 		ButtonGroup(options={sort_options.map(x => ({ ...x, link: format_url({ feed_sort: x.value, feed_time_range: time_range, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={sort})
 		{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
 			ButtonGroup(options={time_range_options.map(x => ({ ...x, link: format_url({ feed_sort: sort, feed_time_range: x.value, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={time_range})
-		Button(action={activate_search_mode} text='Search...')
+		Button(action={activate_search_mode} text='🔍')
 
 style.
 	.feed-post-list-controls

@@ -83,6 +83,8 @@ export default (url) ->
 						vars.set('post_comments_sort', query.get('sort'))
 				when 'duplicates'
 					vars.set('post_short_id', d)
+				when 'search'
+					null
 				when 'submit'
 					null
 				when 'w', 'wiki'

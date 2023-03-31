@@ -43,7 +43,7 @@ script.
 		{ label: 'New', value: 'new' }
 		{ label: 'Controversial', value: 'controversial' }
 	]
-	media_design_width = 480
+	media_design_width = 384
 	error = null
 	loading = false
 	post = null
@@ -82,7 +82,7 @@ svelte:head
 				{#if post.is_original_content}
 					PostTag(name='oc')
 			section.post-context
-				{#if post.subreddit !== feed_subreddit_name}
+				{#if post.subreddit.toLowerCase() !== feed_subreddit_name}
 					SubredditTag(name={post.subreddit})
 				{#if post.link_flair_text}
 					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
@@ -121,7 +121,7 @@ svelte:head
 					a(href={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: post.crosspost_parent, subreddit_name: feed_subreddit_name, user_name: feed_user_name })})
 						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
-					{@const media_design_width = post.media.length > 1 ? media_design_width / 2 : media_design_width}
+					{@const media_design_width = post.media.length > 1 ? media_design_width * (2 / 3) : media_design_width}
 						ol.post-gallery
 							{#each post.media as media, index}
 								figure.post-gallery-item
@@ -149,15 +149,20 @@ svelte:head
 						{#if html_embeds(post)}
 							{@const embed = html_embeds(post)}
 								{@html embed.html}
+								{#if embed.script === 'imgur'}
+									script(defer='true' src='https://s.imgur.com/min/embed.js')
+								{:else if embed.script === 'twitter'}
+									script(defer='true' src='https://platform.twitter.com/widgets.js')
 								menu.post-content-actions
 									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.action_description})
 						{:else if iframe_embeds(post.url)}
 							{@const embed = iframe_embeds(post.url)}
-								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
-								<!-- svelte-ignore a11y-missing-attribute -->
-								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}; width: {media_design_width * Math.sqrt(embed.iframe_aspect_ratio)}px")
-								menu.post-content-actions
-									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
+								{@const aspect_ratio = post.media[0]?.aspect_ratio || embed.iframe_aspect_ratio}
+									<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+									<!-- svelte-ignore a11y-missing-attribute -->
+									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {aspect_ratio}; width: {media_design_width * Math.sqrt(aspect_ratio)}px")
+									menu.post-content-actions
+										Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
@@ -209,6 +214,7 @@ style.
 		border-radius 10px
 		color white
 		padding 10px
+		width 480px
 	.post-comments-empty-notification
 		color var(--c-text-weak)
 	.post-comments-label
@@ -222,6 +228,12 @@ style.
 		flex-flow column nowrap
 		margin-bottom 30px
 		width 480px
+		:global(& iframe.imgur-embed-iframe-pub)
+			border-radius 12px
+		:global(& .twitter-tweet)
+			margin 0 !important
+		:global(& iframe[id^=twitter])
+			border-radius 12px
 	.post-content-actions
 		display flex
 		gap 1em
@@ -234,6 +246,7 @@ style.
 		display flex
 		justify-content space-between
 		padding 10px
+		width 480px
 	.post-content-unavailable
 		align-items center
 		background salmon
@@ -242,6 +255,9 @@ style.
 		display flex
 		justify-content space-between
 		padding 10px
+		width 480px
+	.post-context
+		display flex
 	.post-gallery
 		counter-reset gallery-index
 		display flex
@@ -269,6 +285,7 @@ style.
 		margin-bottom 20px
 		width 480px
 	.post-iframe
+		background black
 		border-radius 6px
 		width 100%
 	.post-image
@@ -298,7 +315,8 @@ style.
 	.post-title
 		font-size 1.5em
 		font-weight var(--f-wght-strong)
-		line-height 1.111
+		letter-spacing -1px
+		line-height 1.1666
 		margin 0
 		overflow-wrap anywhere
 	.post-unavailable-reason
@@ -306,3 +324,4 @@ style.
 		border-radius 10px
 		color white
 		padding 10px
+		width 480px

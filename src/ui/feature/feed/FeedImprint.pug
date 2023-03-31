@@ -1,6 +1,7 @@
 script.
 	import { getContext } from 'svelte'
 	import api from '../../../api/index.js'
+	import { format_url } from '../../app/routing/url.coffee'
 	
 	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
 	import UserAvatar from '../user/UserAvatar.pug'
@@ -39,38 +40,30 @@ script.
 {#if error}
 	.feed-info.feed-info-unavailable
 {:else if info}
-	{#if feed_type === 'collection'}
-		a.feed-info(href='/c/{collection_short_id}')
-			section.feed-info-avatar
+	a.feed-info(href={format_url({ collection_short_id, feed_type, multireddit_name, subreddit_name, user_name })})
+		section.feed-info-avatar
+			{#if feed_type === 'collection'}
 				img.feed-info-avatar-image(alt='')
 				span.feed-info-avatar-owner-image
-					UserAvatar(name={info.author_name})
-			section.feed-info-data
-				span.feed-info-list-type Collection
-				strong.feed-info-list-name {info.title}
-	{:else if feed_type === 'multireddit'}
-		a.feed-info(href='/m/{user_name}/{multireddit_name}')
-			section.feed-info-avatar
+					UserAvatar(name={info.author_name} size='small')
+			{:else if feed_type === 'multireddit'}
 				img.feed-info-avatar-image(alt='')
 				span.feed-info-avatar-owner-image
-					UserAvatar(name={info.owner})
-			section.feed-info-data
-				span.feed-info-list-type Multireddit
-				strong.feed-info-list-name {user_name}/{multireddit_name}
-	{:else if feed_type === 'subreddit'}
-		a.feed-info(href='/{subreddit_name}' style='display:flex')
-			section.feed-info-avatar
+					UserAvatar(name={info.owner} size='small')
+			{:else if feed_type === 'subreddit'}
 				SubredditAvatar(name={subreddit_name} size='large')
-			section.feed-info-data
-				span.feed-info-list-type Subreddit
-				strong.feed-info-list-name(title={info.display_name}) {info.display_name.startsWith('u_') ? 'u/' + info.display_name.slice(2) : info.display_name}
-	{:else if feed_type === 'user'}
-		a.feed-info(href='/u/{user_name}')
-			section.feed-info-avatar
-				img.feed-info-avatar-image(alt='' src={info.profile_img})
-			section.feed-info-data
-				span.feed-info-list-type User
-				strong.feed-info-list-name {user_name}
+			{:else if feed_type === 'user'}
+				UserAvatar(name={user_name} size='large')
+		section.feed-info-data
+			span.feed-info-list-type {feed_type[0].toUpperCase() + feed_type.slice(1)}
+			{#if feed_type === 'collection'}
+				h1.feed-info-list-name {info.title}
+			{:else if feed_type === 'multireddit'}
+				h1.feed-info-list-name {user_name}/{multireddit_name}
+			{:else if feed_type === 'subreddit'}
+				h1.feed-info-list-name(title={info.display_name}) {info.display_name.startsWith('u_') ? 'u/' + info.display_name.slice(2) : info.display_name}
+			{:else if feed_type === 'user'}
+				h1.feed-info-list-name {user_name}
 
 style.
 	.feed-info

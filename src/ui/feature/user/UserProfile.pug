@@ -17,7 +17,7 @@ script.
 article.user
 	section.user-basic-info
 		div(style='text-align: center')
-			UserAvatar(name={name} size='large')
+			UserAvatar(name={name} size='xlarge')
 			h1.user-name {user ? user.name : name}
 			{#if user}
 				time.user-age(title='account created {Time.sToAbsTimeStr(user.created_utc)}') {Time.sToRelTimeStr(user.created_utc)}

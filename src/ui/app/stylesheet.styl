@@ -22,10 +22,8 @@ body
 	font-feature-settings 'cv11'
 	font-size 1rem
 	font-weight var(--f-wght-normal)
-	line-height 1.555
-b
-strong
-	font-weight var(--f-wght-strong)
+	letter-spacing -0.1666px
+	line-height 1.5
 
 // Theme
 body
@@ -68,11 +66,44 @@ body
 p
 	margin 0 0 0.666em
 hr
-	border 1px dashed
+	border 0
+	border-bottom 1px solid
 	margin 1em auto
 	opacity 0.8
 
+// Headers
+.md
+	h1
+	h2
+	h3
+	h4
+	h5
+	h6
+		line-height 1.333
+		margin 1.666rem 0 0.666rem
+		&:first-child
+			margin-top 0
+	h1
+		font-size 1.666em
+		letter-spacing -1px
+	h2
+		font-size 1.333em
+		letter-spacing -0.333px
+	h3
+		font-size 1.1666em
+		letter-spacing -0.333px
+	h4
+	h5
+	h6
+	strong
+	b
+		font-size 1em
+		font-weight var(--f-wght-strong)
+		letter-spacing -0.333px
+
 // Lists
+menu
+	padding 0
 ol
 ul
 	list-style none
@@ -81,8 +112,7 @@ ul
 .md
 	ol
 	ul
-		list-style-type initial
-		margin 0 0 1em
+		margin 0 0 0.666em
 	li
 		margin 0 1ch 0.333em
 		padding-inline-start 1em
@@ -91,30 +121,6 @@ ul
 		& > ol
 		& > ul
 			margin-top 0.333em
-menu
-	padding 0
-
-// Headers
-h1
-h2
-h3
-h4
-h5
-h6
-	font-weight inherit
-	line-height 1.111
-	margin 1.333em 0 0.666em
-	&:first-child
-		margin-top 0
-h1
-	font-size 1.333em
-h2
-h3
-	font-size 1.1666em
-h4
-h5
-h6
-	font-size 1em
 
 // Tables
 .md
@@ -184,7 +190,7 @@ pre
 	margin 0 0 1em
 	padding 1em
 	overflow auto
-	white-space pre
+	white-space pre-line
 kbd
 	font inherit
 
@@ -224,8 +230,6 @@ summary
 details
 	margin 0 0 0.5em
 summary
-	margin 0 0 0.5em
-	padding 4px
 	&:hover::marker
 		color var(--c-hint-normal)
 	details[open] &

@@ -12,22 +12,21 @@ script.
 		)
 
 a.subreddit-avatar(href='/{name}' style='border-color: {subreddit?.primary_color || subreddit?.key_color || "var(--c-text-strong)"}')
-	{#if icon_url || subreddit?.community_icon || subreddit?.icon_img}
-		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src={icon_url || subreddit?.community_icon || subreddit?.icon_img})
-	{:else}
-		.subreddit-avatar-image.subreddit-avatar-image-not-available(class='subreddit-avatar-image-size-{size}')
+	picture
+		source(srcset={icon_url})
+		source(srcset={subreddit?.community_icon})
+		source(srcset={subreddit?.icon_img})
+		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src='')
 
 style.
 	.subreddit-avatar
 		display inline-block
-		border-radius 50%
+		border-radius 50%y
 		user-select none
 	.subreddit-avatar-image
 		aspect-ratio 1
 		border-radius 50%
 		object-fit cover
-	.subreddit-avatar-image-not-available
-		background gray
 	.subreddit-avatar-image-size-large
 		width 64px
 	.subreddit-avatar-image-size-medium

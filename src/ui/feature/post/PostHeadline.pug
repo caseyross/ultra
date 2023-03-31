@@ -23,7 +23,7 @@ script.
 		)
 
 {#if post}
-	.post-headline(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id})
+	article.post-headline(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id})
 		section.post-tags
 			{#if post.archived}
 				PostTag(name='archived')
@@ -40,7 +40,7 @@ script.
 		section.post-context
 			{#if show_subreddit}
 				SubredditTag(name={post.subreddit})
-			{#if post.link_flair_text}
+			{:else if post.link_flair_text}
 				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 		h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
 		section.post-metadata
@@ -49,6 +49,8 @@ script.
 			data.post-score {Number.isFinite(post.score) ? post.score : '??'} pts
 
 style.
+	.post-context
+		display flex
 	.post-headline
 		align-items flex-start
 		border-radius 10px
@@ -56,7 +58,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		padding 1em
+		padding 10px
 		&:hover
 			background var(--c-con-normal)
 			color var(--c-hint-normal)

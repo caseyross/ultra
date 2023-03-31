@@ -47,7 +47,7 @@ svelte:head
 				| >
 				a(class:wiki-page-path-segment-current-page={i === page_name.split('/').length - 1} href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
 		section.wiki-page-info
-			.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
+			date.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
 		section.wiki-page-body
 			FormattedHTML(html={page.content_html})
 
@@ -56,9 +56,6 @@ style.
 		width 640px
 	.wiki-page-body
 		margin-top 3em
-	:global(.wiki-page-body > .md)
-		background none
-		padding 0
 	.wiki-page-info
 		align-items center
 		display flex
@@ -88,7 +85,7 @@ style.
 		&::-webkit-scrollbar
 			display none
 	:global(.wiki-page .toc > ul)
-		padding 2.25em 1.5em !important
+		padding 40px 0 40px 80px
 		position relative
 		&::before
 			color var(--c-text-weak)
@@ -96,17 +93,18 @@ style.
 			position absolute
 			text-transform uppercase
 			top 0
+	:global(.wiki-page .toc a)
+		text-decoration none
+		&:hover
+			text-decoration underline
 	:global(.wiki-page .toc li)
-		list-style none
-		margin-top 1em
-	:global(.wiki-page .toc ol)
-	:global(.wiki-page .toc ul)
-		padding 0
+		margin-inline-start 0
+		padding-inline-start 0
+		&::marker
+			content none
 	:global(.wiki-page .toc ol ol)
 	:global(.wiki-page .toc ol ul)
 	:global(.wiki-page .toc ul ol)
 	:global(.wiki-page .toc ul ul)
 		border-left 1px solid var(--c-text-faint)
 		padding-left 1em
-	:global(.wiki-page .toc + *)
-		margin-top 0
