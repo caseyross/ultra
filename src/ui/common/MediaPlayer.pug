@@ -12,6 +12,11 @@ script.
 	export width = 480
 
 	additional_hotkeys =
+		' ': ->
+			if fullscreen
+				play_pause()
+			else
+				false
 		ArrowDown: ->
 			set_volume(audio.volume - 0.25)
 		ArrowLeft: ->

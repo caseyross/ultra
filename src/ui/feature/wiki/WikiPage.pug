@@ -23,11 +23,11 @@ script.
 				document.getElementById(location.hash[1..])?.scrollIntoView()
 	)
 	
-	set_theme_color = getContext('set_theme_color')
+	set_theme_colors = getContext('set_theme_colors')
 	api.loadWatch(api.ID('subreddit', subreddit_name),
 		(x) ->
 			{ data: subreddit } = x
-			set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+			set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
 	)
 
 svelte:head
@@ -53,7 +53,7 @@ svelte:head
 
 style.
 	.wiki-page
-		width 640px
+		width 560px
 	.wiki-page-body
 		margin-top 3em
 	.wiki-page-info

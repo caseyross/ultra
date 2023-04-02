@@ -10,13 +10,11 @@ script.
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 
-	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import UserByline from '../user/UserByline.pug'
 	
 	import PostCommentList from './PostCommentList.pug'
 	import PostFlair from './PostFlair.pug'
 	import PostHeadline from './PostHeadline.pug'
-	import PostTag from './PostTag.pug'
 
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
@@ -43,9 +41,9 @@ script.
 		{ label: 'New', value: 'new' }
 		{ label: 'Controversial', value: 'controversial' }
 	]
-	media_design_width = 384
 	error = null
 	loading = false
+	media_index = 0
 	post = null
 	api.loadWatch(api.ID('post', short_id, comments_sort, 25, focus_comment_short_id, focus_comment_parent_count),
 		(x) ->
@@ -56,45 +54,28 @@ script.
 
 svelte:head
 	{#if post}
-		title /{post.subreddit} - {post.title}
+		title r/{post.subreddit} - {post.title}
 {#if error}
-	.post-unavailable-reason
+	article.post.post-unavailable
 		{#if error.reason}
 			| Post unavailable: {error.reason}
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if loading}
-	.post-loading-message Loading...
+	article.post.post-loading Loading...
 {:else if post}
 	article.post(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + short_id] || false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
 		header.post-header
-			section.post-tags
-				{#if post.archived}
-					PostTag(name='archived')
-				{#if post.locked}
-					PostTag(name='locked')
-				{#if post.quarantine}
-					PostTag(name='quarantined')
-				{#if post.over_18}
-					PostTag(name='nsfw')
-				{#if post.stickied}
-					PostTag(name='sticky')
-				{#if post.is_original_content}
-					PostTag(name='oc')
-			section.post-context
-				{#if post.subreddit.toLowerCase() !== feed_subreddit_name}
-					SubredditTag(name={post.subreddit})
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score}
+			{#if post.link_flair_text}
+				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 			h1.post-title {post.title}
 			section.post-metadata
-				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abbr')
-				| ‧
-				data.post-score {Number.isFinite(post.score) ? post.score : '??'} pts
+				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
 				| ‧
 				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 		{#if post.removed_by_category}
-			.post-unavailable-reason
+			section.post-content.post-content-unavailable
 				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
 					| Deleted by author.
 				{:else if post.removed_by_category === 'moderator'}
@@ -108,42 +89,46 @@ svelte:head
 					| Removed by Reddit due to a copyright notice.
 				{:else}
 					| Removed by Reddit, reason not specified.
-		{#if focus_comment_short_id}
-			section.post-content-incomplete
+		{:else if focus_comment_short_id}
+			section.post-content.post-content-incomplete
 				| Viewing a single comment thread.
 				Button(link={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })} text='View complete post')
+		{:else if post.format === 'talk'}
+			section.post-content.post-content-unavailable
+				| Reddit Talks are only available on the official app.
+				Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
+		{:else if post.format === 'self' && !post.selftext.length}
+			section.post-content.post-content-empty
 		{:else}
 			section.post-content
-				{#if post.selftext_html && !post.removed_by_category}
+				{#if post.selftext_html}
 					.post-selftext
 						FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					a(href={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: post.crosspost_parent, subreddit_name: feed_subreddit_name, user_name: feed_user_name })})
 						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
-					{@const media_design_width = post.media.length > 1 ? media_design_width * (2 / 3) : media_design_width}
-						ol.post-gallery
-							{#each post.media as media, index}
-								figure.post-gallery-item
-									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-										picture
-											{#if !media.is_gif}
-												{#if media.aspect_ratio >= (640 / media_design_width) ** 2}
-													source(srcset={media.image_url_960})
-												{#if media.aspect_ratio >= (320 / media_design_width) ** 2}
-													source(srcset={media.image_url_640})
-												source(srcset={media.image_url_320})
-											img.post-image(alt='image {index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {media_design_width * Math.sqrt(media.aspect_ratio)}px")
-									{#if media.caption_text || media.caption_url}
-										figcaption.post-image-caption
-											{#if media.caption_text}
-												p {media.caption_text}
-											{#if media.caption_url}
-												a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
-					{#if post.media.length === 1}
-						{@const media = post.media[0]}
-							menu.post-content-actions
-								Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
+					{@const media = post.media[media_index]}
+						menu.post-content-actions
+							Button(action={() => media_index = Math.max(media_index - 1, 0)} disabled={media_index === 0} key='a' text='Previous')
+							Button(action={() => media_index = Math.min(media_index + 1, post.media.length - 1)} disabled={media_index === post.media.length - 1} key='d' text='Next')
+						figure.post-figure
+							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+								picture
+									{#if !media.is_gif}
+										{#if media.image_url_960}
+											source(srcset='{media.image_url_960} 2x')
+										{#if media.image_url_640}
+											source(srcset='{media.image_url_640} 1x')
+									img.post-image(alt='image {media_index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+							figcaption.post-image-caption
+								{#if media.caption_text}
+									p {media.caption_text}
+								{#if media.caption_url}
+									a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
+						menu.post-content-actions
+							Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
+							data {media_index + 1} / {post.media.length}
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -157,17 +142,16 @@ svelte:head
 									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.action_description})
 						{:else if iframe_embeds(post.url)}
 							{@const embed = iframe_embeds(post.url)}
-								{@const aspect_ratio = post.media[0]?.aspect_ratio || embed.iframe_aspect_ratio}
-									<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
-									<!-- svelte-ignore a11y-missing-attribute -->
-									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {aspect_ratio}; width: {media_design_width * Math.sqrt(aspect_ratio)}px")
-									menu.post-content-actions
-										Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
+								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
+								<!-- svelte-ignore a11y-missing-attribute -->
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {post.media[0]?.aspect_ratio || embed.iframe_aspect_ratio}")
+								menu.post-content-actions
+									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
 							menu.post-content-actions
-								Button(key='e' link={relativize_url(post.url)} new_tab={true} text='View')
+								Button(key='e' link={relativize_url(post.url)} new_tab={true} text='Open link')
 				{:else if post.format === 'prediction'}
 					ol.md.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -179,122 +163,111 @@ svelte:head
 											meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
 										dd {option.text}
 					menu.post-content-actions
-						Button(key='e' link={post.url} new_tab={true} text='View on Reddit')
-				{:else if post.format === 'self'}
-					{#if !post.selftext.length}
-						.post-selftext-empty
-				{:else if post.format === 'talk'}
-					.post-content-unavailable
-						| Reddit Talks are only available on the official app.
-					menu.post-content-actions
-						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
+						Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} height={Math.round(media_design_width * Math.sqrt(1 / media.video_aspect_ratio))} mimic_gif={media.video_is_gif} video_url={media.video_url} width={Math.round(media_design_width * Math.sqrt(media.video_aspect_ratio))})
-				{:else}
-					p [Error displaying post.]
+						MediaPlayer(audio_url={media.video_audio_url} height={Math.ceil(480 / media.video_aspect_ratio)} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
 		section.post-comments
 			{#if !focus_comment_short_id}
-				h1.post-comments-label Comments
+				.post-comments-label Comments
 				{#if post.discussion_type === 'CHAT'}
-					.post-comments-alternate-mode-notification Chat post. Comments are ordered by newest first.
+					.post-comments-notification-alternate-mode Chat post. Comments are ordered by newest first.
 				{:else if post.contest_mode}
-					.post-comments-alternate-mode-notification Post is in contest mode. Comments are sorted randomly.
+					.post-comments-notification-alternate-mode Post is in contest mode. Comments are sorted randomly.
 				{:else if post.num_comments > 0}
 					ButtonGroup(options={comments_sort_options.map(x => ({ ...x, link: format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: x.value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })}))} selected={comments_sort})
 			{#if post.num_comments < 1}
-				.post-comments-empty-notification [ None. ]
+				.post-comments-notification-empty [ None. ]
 			{:else}
 				{#key comments_sort}
 					PostCommentList(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 
 style.
-	.post-comments-alternate-mode-notification
+	.post
+		padding 2em 0
+		width 480px
+		&.post-loading
+			padding 10px
+		&.post-unavailable
+			background salmon
+			border-radius 10px
+			color white
+			padding 10px
+	.post-comments-notification-alternate-mode
 		background darkkhaki
 		border-radius 10px
 		color white
 		padding 10px
-		width 480px
-	.post-comments-empty-notification
+	.post-comments-notification-empty
 		color var(--c-text-weak)
 	.post-comments-label
 		color var(--c-text-weak)
-		font-size 10px
 		font-feature-settings 'cpsp'
+		font-size 10px
+		font-weight var(--f-wght-strong)
+		margin-bottom 6px
 		text-transform uppercase
 	.post-content
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		margin-bottom 30px
-		width 480px
+		margin 20px 0 30px
 		:global(& iframe.imgur-embed-iframe-pub)
 			border-radius 12px
 		:global(& .twitter-tweet)
 			margin 0 !important
 		:global(& iframe[id^=twitter])
 			border-radius 12px
+		&.post-content-empty
+			margin-bottom 0
+		&.post-content-incomplete
+			align-items center
+			background darkkhaki
+			border-radius 10px
+			color white
+			flex-flow row nowrap
+			justify-content space-between
+			padding 10px
+		&.post-content-unavailable
+			align-items center
+			background salmon
+			border-radius 10px
+			color white
+			flex-flow row nowrap
+			justify-content space-between
+			padding 10px
 	.post-content-actions
+		align-items center
 		display flex
 		gap 1em
+		justify-content space-between
 		padding 10px 0
-	.post-content-incomplete
-		align-items center
-		background darkkhaki
-		border-radius 10px
-		color white
-		display flex
-		justify-content space-between
-		padding 10px
-		width 480px
-	.post-content-unavailable
-		align-items center
-		background salmon
-		border-radius 10px
-		color white
-		display flex
-		justify-content space-between
-		padding 10px
-		width 480px
-	.post-context
-		display flex
-	.post-gallery
-		counter-reset gallery-index
-		display flex
-		flex-flow column nowrap
-		gap 10px
-	.post-gallery-item
+		width 100%
+	.post-figure
 		display flex
 		flex-flow column nowrap
 		gap 6px
 		position relative
-		&::before
-			color var(--c-text-weak)
-			content counter(gallery-index)
-			counter-increment gallery-index
-			line-height 1
-			position absolute
-			right calc(100% + 1em)
-		&:only-child::before
-			content none
 	.post-header
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		margin-bottom 20px
-		width 480px
+		position relative
+		:global(& .post-flair)
+			bottom calc(100% + 0.333rem)
+			position absolute
 	.post-iframe
 		background black
 		border-radius 6px
 		width 100%
 	.post-image
+		background black
 		border-radius 6px
+		width 100%
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 12px
-	.post-loading-message
-		padding 10px
 	.post-metadata
 		align-items baseline
 		color var(--c-text-weak)
@@ -310,18 +283,18 @@ style.
 		gap 1em
 		& meter
 			width 200px
+	.post-score
+		color var(--c-text-weak)
+		font-size 1.5em
+		line-height 1.2
+		position absolute
+		right calc(100% + 1rem)
 	.post-selftext
 		margin-bottom 1em
 	.post-title
 		font-size 1.5em
 		font-weight var(--f-wght-strong)
-		letter-spacing -1px
-		line-height 1.1666
+		letter-spacing -0.333px
+		line-height 1.2
 		margin 0
 		overflow-wrap anywhere
-	.post-unavailable-reason
-		background salmon
-		border-radius 10px
-		color white
-		padding 10px
-		width 480px

@@ -1,12 +1,9 @@
 script.
 	import api from '../../../api/index.js'
-
-	import Date from '../../common/Date.pug'
+	import { Time } from '../../../lib/index.js'
 
 	import SubredditTag from '../subreddit/SubredditTag.pug'
-	
 	import PostFlair from './PostFlair.pug'
-	import PostTag from './PostTag.pug'
 
 	export post_short_id = null
 	export selected = false
@@ -23,62 +20,35 @@ script.
 		)
 
 {#if post}
-	article.post-headline(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id})
-		section.post-tags
-			{#if post.archived}
-				PostTag(name='archived')
-			{#if post.locked}
-				PostTag(name='locked')
-			{#if post.quarantine}
-				PostTag(name='quarantined')
-			{#if post.over_18}
-				PostTag(name='nsfw')
-			{#if post.stickied}
-				PostTag(name='sticky')
-			{#if post.is_original_content}
-				PostTag(name='oc')
-		section.post-context
-			{#if show_subreddit}
-				SubredditTag(name={post.subreddit})
-			{:else if post.link_flair_text}
-				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+	article.post-headline(class:post-downvoted={post.likes === false} class:post-nsfw={post.over_18} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
+		{#if show_subreddit}
+			SubredditTag(name={post.subreddit})
+		{:else if post.link_flair_text}
+			PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 		h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
-		section.post-metadata
-			Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abbr')
-			| ‧
-			data.post-score {Number.isFinite(post.score) ? post.score : '??'} pts
+		button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score} ({post.num_comments}) 
 
 style.
-	.post-context
-		display flex
 	.post-headline
 		align-items flex-start
-		border-radius 10px
-		color var(--c-text-weak)
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		padding 10px
-		&:hover
-			background var(--c-con-normal)
-			color var(--c-hint-normal)
-		&.post-selected
-			background var(--c-con-normal)
-			color var(--c-text-strong)
-		&.post-with-low-score .post-title
+		margin-left 80px
+		position relative
+		&.post-with-low-score
 			opacity 0.5
-	.post-metadata
+	.post-score
 		align-items center
 		color var(--c-text-weak)
 		display flex
 		gap 6px
-	.post-tags
-		display flex
-		gap 3px
+		position absolute
+		right calc(100% + 1em)
+		white-space pre
 	.post-title
-		display inline
 		font-size 16px
-		font-weight var(--f-wght-strong)
-		line-height 1.25
+		font-weight inherit
 		margin 0
 		overflow-wrap anywhere
+		width 160px

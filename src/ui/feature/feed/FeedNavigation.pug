@@ -2,7 +2,6 @@ script.
 	import api from '../../../api/index.js'
 	import { relativize_url } from '../../app/routing/url.coffee'
 
-	import Button from '../../common/Button.pug'
 	import FeedImprint from './FeedImprint.pug'
 	
 	export feed_type = null
@@ -31,22 +30,24 @@ nav.feed-navigation
 							a(href={relativize_url(child.url)}) {child.text}
 			{:else}
 				a.subreddit-custom-menu-item(href={relativize_url(item.url)}) {item.text}
+
 style.
 	.feed-navigation
 		box-sizing content-box
 		display flex
 		gap 40px
-		padding 1em
 		width 64px
 		writing-mode vertical-rl
 	.subreddit-custom-menu-dropdown
-		align-items flex-end
 		display flex
 		flex-flow column nowrap
 		gap 0.25em
+		left 300px
 		padding 0 1em
-		text-align right
+		position relative
+		top -6px
 		width 240px
 		writing-mode initial
 	.subreddit-custom-menu-item
+		padding-right 34px
 		white-space pre

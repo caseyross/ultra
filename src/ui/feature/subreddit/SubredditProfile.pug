@@ -5,17 +5,16 @@ script.
 	import Button from '../../common/Button.pug'
 
 	import SubredditInfo from './SubredditInfo.pug'
-	import SubredditModerators from './SubredditModerators.pug'
 	import SubredditRules from './SubredditRules.pug'
 	import SubredditWidget from './SubredditWidget.pug'
 
 	export name = null
 
 	subreddit = null
-	set_theme_color = getContext('set_theme_color')
+	set_theme_colors = getContext('set_theme_colors')
 	api.loadWatch(api.ID('subreddit', name), (x) ->
 		{ data: subreddit } = x
-		set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+		set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
 	)
 	widgets = null
 	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
@@ -45,7 +44,7 @@ svelte:head
 
 style.
 	.subreddit
-		width 640px
+		width 480px
 	.subreddit-options
 		align-items flex-end
 		display flex

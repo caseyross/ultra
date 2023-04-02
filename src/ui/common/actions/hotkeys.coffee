@@ -12,8 +12,7 @@ document.addEventListener('keydown', (e) ->
 			return
 		else
 			if e.isTrusted and handlers[e.key]?.length
-				e.preventDefault()
-				handlers[e.key].at(-1)()
+				handlers[e.key].at(-1)() == false and e.preventDefault() # handler can return false to allow default for event
 )
 
 export hotkey = (element, key) ->

@@ -23,15 +23,28 @@ script.
 	export wikipage_version = null
 
 main
-	section.layout-space-left
-		{#key collection_short_id}
-			{#key multireddit_name}
-				{#key subreddit_name}
-					{#key user_name}
-						FeedNavigation(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
-	hr.layout-divider
-	{#if feed_selection_type === 'about'}
-		section.layout-space-right(style='grid-column-start: content-start')
+	section.layout-area-left
+		{#if feed_selection_type === 'posts'}
+			{#key collection_short_id}
+				{#key multireddit_name}
+					{#key subreddit_name}
+						{#key user_name}
+							{#key feed_search_query}
+								{#key feed_time_range}
+									{#key feed_sort}
+										FeedPostList(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_short_id={post_short_id})
+	section.layout-area-center
+		{#if wikipage_name}
+			{#key subreddit_name}
+				{#key wikipage_name}
+					{#key wikipage_version}
+						WikiPage(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
+		{:else if post_short_id}
+			{#key post_short_id}
+				{#key post_focus_comment_short_id}
+					{#key post_focus_comment_parent_count}
+						Post(comments_sort={post_comments_sort} feed_collection_short_id={collection_short_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_short_id={post_focus_comment_short_id} short_id={post_short_id})
+		{:else}
 			{#if feed_type === 'subreddit'}
 				{#key subreddit_name}
 					SubredditProfile(name={subreddit_name})
@@ -42,67 +55,43 @@ main
 							UserProfile(name={user_name} sort={feed_sort} time_range={feed_time_range})
 			{:else}
 				p [ Not yet implemented. ]
-	{:else if feed_selection_type === 'posts'}
-		section.layout-space-center
-			{#key collection_short_id}
-				{#key multireddit_name}
-					{#key subreddit_name}
-						{#key user_name}
-							{#key feed_search_query}
-								{#key feed_time_range}
-									{#key feed_sort}
-										FeedPostList(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_short_id={post_short_id})
-		hr.layout-divider
-		section.layout-space-right(style='grid-column-start: post-start')
-			{#if post_short_id}
-				{#key post_short_id}
-					{#key post_focus_comment_short_id}
-						{#key post_focus_comment_parent_count}
-							Post(comments_sort={post_comments_sort} feed_collection_short_id={collection_short_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_short_id={post_focus_comment_short_id} short_id={post_short_id})
-			{:else}
-				p [ Select a post. ]
-	{:else if feed_selection_type === 'wiki'}
-		section.layout-space-right(style='grid-column-start: content-start')
-			{#key subreddit_name}
-				{#key wikipage_name}
-					{#key wikipage_version}
-						WikiPage(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
+	section.layout-area-right
+		{#key collection_short_id}
+			{#key multireddit_name}
+				{#key subreddit_name}
+					{#key user_name}
+						FeedNavigation(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name})
 
 style.
 	main
 		display grid
-		grid-template-columns @css{1fr 1px [content-start] 240px 1px [post-start] 560px 1fr}
+		grid-template-columns 1fr calc(480px + 14em) 1fr
 		height 100dvh
 		overflow auto
 		width 100dvw
-	.layout-divider
-		background var(--c-text-faint)
-		border 0
-		height 100%
-		margin 0
-		width 1px
-	.layout-space-center
+	.layout-area-center
+		align-items center
 		display flex
 		flex-flow column nowrap
 		height 100%
 		overflow auto
-		padding 40px
-		padding-left 10px
+		padding 2em 0
 		scrollbar-width none
 		&::-webkit-scrollbar
 			display none
-	.layout-space-left
+	.layout-area-left
 		display flex
 		height 100%
 		justify-content flex-end
 		overflow auto
-		padding 40px 0
+		padding 2em 0
 		scrollbar-width none
 		&::-webkit-scrollbar
 			display none
-	.layout-space-right
-		grid-column-end -1
+	.layout-area-right
 		height 100%
 		overflow auto
-		padding 40px 50px
-		scrollbar-gutter stable
+		padding 2em 0
+		scrollbar-width none
+		&::-webkit-scrollbar
+			display none

@@ -2,10 +2,13 @@ script.
 	import { setContext } from 'svelte'
 	import { Color } from '../../../lib/index.js'
 
-	set_theme_color = (color) ->
-		if color
-			document.body.style.setProperty('--c-theme', color)
-			if new Color({ hex: color }).isLight() 
+	set_theme_colors = (main_color, secondary_color) ->
+		if !main_color
+			main_color = secondary_color
+			secondary_color = null
+		if main_color
+			document.body.style.setProperty('--c-theme', main_color)
+			if new Color({ hex: main_color }).isLight() 
 				document.body.classList.add('color-strategy-black-text')
 				document.body.classList.remove('color-strategy-white-text')
 			else
@@ -15,8 +18,10 @@ script.
 			document.body.style.setProperty('--c-theme', 'var(--c-theme-default)')
 			document.body.classList.add('color-strategy-black-text')
 			document.body.classList.remove('color-strategy-white-text')
+		if secondary_color
+			document.body.style.setProperty('--c-theme-secondary', secondary_color)
 
-	setContext('set_theme_color', set_theme_color)
-	set_theme_color()
+	setContext('set_theme_colors', set_theme_colors)
+	set_theme_colors()
 
 slot

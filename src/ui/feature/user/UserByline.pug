@@ -2,11 +2,14 @@ script.
 	import UserFlair from './UserFlair.pug'
 
 	export distinguish = null
+	export flair_color = null
 	export flair_rich_text = null
 	export flair_text = null
 	export name = null
 
 span.user-byline
+	{#if flair_text}
+		UserFlair(color={flair_color} emoji_style='image' rich_text={flair_rich_text} text={flair_text})
 	a.user-byline-name(href='/u/{name}') {name}
 	{#if distinguish === 'submitter'}
 		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') OP
@@ -16,16 +19,15 @@ span.user-byline
 		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') ADMIN
 	{:else if distinguish === 'vip'}
 		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') VIP
-	{#if flair_text}
-		UserFlair(emoji_style='image' rich_text={flair_rich_text} text={flair_text})
 
 style.
 	.user-byline
-		align-items center
+		align-items baseline
 		color var(--c-text-weak)
 		display flex
-		font-size 11px
-		gap 6px
+		font-size 12px
+		gap 1rem
+		margin 0.333rem 0
 	.user-byline-distinguish
 		font-weight bold
 	.user-byline-distinguish-admin
@@ -36,7 +38,3 @@ style.
 		color dodgerblue
 	.user-byline-distinguish-vip
 		color rebeccapurple
-	.user-byline-name
-		background var(--c-con-weak)
-		border-radius 99px
-		padding 2px 11px

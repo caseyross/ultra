@@ -22,7 +22,7 @@ body
 	font-feature-settings 'cv11'
 	font-size 1rem
 	font-weight var(--f-wght-normal)
-	letter-spacing -0.1666px
+	letter-spacing 0.1666px
 	line-height 1.5
 
 // Theme
@@ -41,7 +41,7 @@ body
 		--c-text-strong black
 		--c-text-reverse white
 		--f-wght-normal 440
-		--f-wght-strong 660
+		--f-wght-strong 640
 		color-scheme light
 	&.color-strategy-white-text
 		--c-blend-normal rgba(255,255,255,0.10)
@@ -51,10 +51,10 @@ body
 		--c-hint-normal wheat
 		--c-text-faint rgba(255,255,255,0.25)
 		--c-text-weak rgba(255,255,255,0.50)
-		--c-text-strong #f2f4f7
+		--c-text-strong white
 		--c-text-reverse black
-		--f-wght-normal 420
-		--f-wght-strong 570
+		--f-wght-normal 400
+		--f-wght-strong 560
 		color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-con-weak)
@@ -132,7 +132,7 @@ ul
 		overflow-wrap normal
 	td
 	th
-		padding-right 1em
+		padding-right 2ch
 		text-align left
 	td
 		padding-top 3px
@@ -143,6 +143,7 @@ ul
 		border-bottom 1px solid
 		font-weight var(--f-wght-strong)
 		font-size 10px
+		letter-spacing 0.333px
 		padding-bottom 3px
 		vertical-align bottom
 
@@ -150,6 +151,8 @@ ul
 a
 	color inherit
 	text-decoration none
+	&:hover
+		color var(--c-hint-normal)
 address
 cite
 	font-style normal
@@ -160,18 +163,17 @@ sup
 	overflow-wrap anywhere
 	a
 		text-decoration underline
-		&:hover
-			color var(--c-hint-normal)
 	img
 		border-radius 6px
+		max-height 480px
 
 // Verbatim text
 blockquote
-	border-left 3px solid var(--c-text-weak)
-	font-size 12px
+	border-left 4px solid var(--c-text-faint)
+	color var(--c-text-weak)
+	font-size 13px
 	margin 0 0 0.666rem
-	opacity 0.8
-	padding-left 1em
+	padding-left 1ch
 code
 pre
 	font-family var(--f-type-mono)
