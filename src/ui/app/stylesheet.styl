@@ -27,35 +27,37 @@ body
 
 // Theme
 body
-	--c-theme-default #ffffff
-	background var(--c-theme)
-	color var(--c-text-strong)
-	&.color-strategy-black-text
-		--c-blend-normal rgba(0,0,0,0.10)
-		--c-con-weak rgba(255,255,255,0.05)
-		--c-con-normal rgba(255,255,255,0.10)
-		--c-con-strong rgba(255,255,255,0.50)
-		--c-hint-normal cornflowerblue
-		--c-text-faint rgba(0,0,0,0.25)
-		--c-text-weak rgba(0,0,0,0.50)
-		--c-text-strong black
-		--c-text-reverse white
-		--f-wght-normal 440
-		--f-wght-strong 640
-		color-scheme light
-	&.color-strategy-white-text
-		--c-blend-normal rgba(255,255,255,0.10)
-		--c-con-weak rgba(0,0,0,0.05)
-		--c-con-normal rgba(0,0,0,0.10)
-		--c-con-strong rgba(0,0,0,0.50)
-		--c-hint-normal wheat
-		--c-text-faint rgba(255,255,255,0.25)
-		--c-text-weak rgba(255,255,255,0.50)
-		--c-text-strong white
-		--c-text-reverse black
-		--f-wght-normal 400
-		--f-wght-strong 560
-		color-scheme dark
+	--c-subreddit-theme-default #cee3f8
+	--c-subreddit-theme-secondary-default orangered
+	--c-subreddit-theme-text-default black
+.color-strategy-black-text
+	--c-blend-normal rgba(0,0,0,0.10)
+	--c-con-weak rgba(255,255,255,0.05)
+	--c-con-normal rgba(255,255,255,0.10)
+	--c-con-strong rgba(255,255,255,0.50)
+	--c-hint-normal cornflowerblue
+	--c-text-faint rgba(0,0,0,0.25)
+	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong black
+	--c-text-reverse white
+	--f-wght-normal 440
+	--f-wght-strong 560
+	--f-wght-xstrong 640
+	color-scheme light
+.color-strategy-white-text
+	--c-blend-normal rgba(255,255,255,0.10)
+	--c-con-weak rgba(0,0,0,0.05)
+	--c-con-normal rgba(0,0,0,0.10)
+	--c-con-strong rgba(0,0,0,0.50)
+	--c-hint-normal wheat
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong white
+	--c-text-reverse black
+	--f-wght-normal 400
+	--f-wght-strong 530
+	--f-wght-xstrong 560
+	color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-con-weak)
 *::-webkit-scrollbar-thumb
@@ -79,27 +81,27 @@ hr
 	h4
 	h5
 	h6
+		font-weight var(--f-wght-strong)
+		letter-spacing -0.1666px
 		line-height 1.333
 		margin 1.666rem 0 0.666rem
 		&:first-child
 			margin-top 0
 	h1
-		font-size 1.666em
-		letter-spacing -1px
-	h2
 		font-size 1.333em
-		letter-spacing -0.333px
+	h2
+		font-size 1.25em
 	h3
 		font-size 1.1666em
-		letter-spacing -0.333px
 	h4
 	h5
 	h6
+		font-size 1em
+		letter-spacing 0
 	strong
 	b
-		font-size 1em
 		font-weight var(--f-wght-strong)
-		letter-spacing -0.333px
+		letter-spacing 0
 
 // Lists
 menu

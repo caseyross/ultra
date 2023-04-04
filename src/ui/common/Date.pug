@@ -8,13 +8,13 @@ script.
 {#if edited_s}
 	time(datetime={edited_s} title='{Time.sToAbsTimeStr(created_s)} (edited {Time.sToAbsTimeStr(edited_s)})')
 		{#if format === 'rel-abbr'}
-			| {Time.sToRelTimeStr(edited_s, { abbr: true })}
+			| {Time.sToRelTimeStr(edited_s, { abbr: true })}*
 		{:else if format === 'rel'}
-			| {Time.sToRelTimeStr(edited_s)} ago
+			| {Time.sToRelTimeStr(edited_s)} ago (edited)
 		{:else if format === 'abs'}
-			| {Time.sToAbsTimeStr(edited_s)}
+			| {Time.sToAbsTimeStr(edited_s)}*
 		{:else}
-			| {Time.sToAbsRelTimeStr(edited_s)}
+			| {Time.sToAbsRelTimeStr(edited_s)}*
 {:else}
 	time(datetime={created_s} title='{Time.sToAbsTimeStr(created_s)}')
 		{#if format === 'rel-abbr'}

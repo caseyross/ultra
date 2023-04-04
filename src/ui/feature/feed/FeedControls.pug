@@ -43,14 +43,22 @@ script.
 		local_sort = 'relevance'
 		search_mode_active = true
 
-menu.feed-post-list-controls
+menu.feed-controls
 	{#if search_mode_active}
 		TextInput(initial_value={search_query} type_action={value => local_search_query = value})
 		ButtonGroup(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
 		ButtonGroup(action={value => local_time_range = value} options={time_range_options} selected={local_time_range})
 		Button(disabled={!local_search_query?.length} key='Enter' link={format_url({ feed_search_query: local_search_query, feed_sort: local_sort, feed_time_range: local_time_range, feed_type, multireddit_name, subreddit_name, user_name })} text='Search')
 	{:else}
+		Button(action={activate_search_mode} text='Search')
 		ButtonGroup(options={sort_options.map(x => ({ ...x, link: format_url({ feed_sort: x.value, feed_time_range: time_range, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={sort})
 		{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
 			ButtonGroup(options={time_range_options.map(x => ({ ...x, link: format_url({ feed_sort: sort, feed_time_range: x.value, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={time_range})
-		Button(action={activate_search_mode} text='🔍')
+
+style.
+	.feed-controls
+		align-items flex-start
+		display flex
+		flex-flow column nowrap
+		gap 6px
+		width 160px

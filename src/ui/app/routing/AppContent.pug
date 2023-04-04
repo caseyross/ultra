@@ -1,6 +1,6 @@
 script.
 	import FeedNavigation from '../../feature/feed/FeedNavigation.pug'
-	import FeedPostList from '../../feature/feed/FeedPostList.pug'
+	import Feed from '../../feature/feed/Feed.pug'
 	import Post from '../../feature/post/Post.pug'
 	import SubredditProfile from '../../feature/subreddit/SubredditProfile.pug'
 	import UserProfile from '../../feature/user/UserProfile.pug'
@@ -32,7 +32,7 @@ main
 							{#key feed_search_query}
 								{#key feed_time_range}
 									{#key feed_sort}
-										FeedPostList(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_short_id={post_short_id})
+										Feed(feed_type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_short_id={post_short_id})
 	section.layout-area-center
 		{#if wikipage_name}
 			{#key subreddit_name}

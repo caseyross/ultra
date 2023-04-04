@@ -4,7 +4,8 @@ script.
 	
 	import Button from '../../common/Button.pug'
 	import PostHeadline from '../post/PostHeadline.pug'
-	import FeedPostListControls from './FeedPostListControls.pug'
+
+	import FeedControls from './FeedControls.pug'
 
 	export feed_type = null
 	export collection_short_id = null
@@ -57,12 +58,9 @@ script.
 
 	load_page(0)
 
-nav.feed-posts
+nav.feed
 	{#if feed_type !== 'collection'}
-		FeedPostListControls(feed_type={feed_type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
-	menu.feed-post-list-actions
-		Button(key='w' link={format_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: feed_type, multireddit_name, post_short_id: selected_post_short_id, subreddit_name, user_name })} text='Previous')
-		Button(key='s' link={format_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: feed_type, multireddit_name, post_short_id: selected_post_short_id, subreddit_name, user_name })} text='Next')
+		FeedControls(feed_type={feed_type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
 	ol.feed-post-list
 		{#each pages as page}
 			{#if page.error}
@@ -76,11 +74,11 @@ nav.feed-posts
 			Button(action={() => load_page(pages.at(-1).posts ? pages.length : pages.length - 1)} loading={pages.at(-1)?.loading} text='More')
 
 style.
-	.feed-posts
+	.feed
+		align-items flex-end
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		width 320px
 	.feed-post-list
 		display flex
 		flex-flow column nowrap

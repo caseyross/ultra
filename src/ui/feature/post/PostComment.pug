@@ -5,7 +5,6 @@ script.
 	
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	import UserByline from '../user/UserByline.pug'
 
 	export out_of_context = false
 	export short_id = null
@@ -26,8 +25,7 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-hidden-score={comment.score_hidden} class:comment-with-low-score={comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
-			UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
 			button.comment-score(on:mousedown={() => api.submit(api.ID('comment_vote', short_id), { numerical_vote: comment.likes ? 0 : 1 })}) {comment.score_hidden ? '?' : comment.score}
 			FormattedHTML(html={comment.body_html})
 		{#if out_of_context}
@@ -49,11 +47,15 @@ script.
 style.
 	.comment
 		display inline-block
-		margin 0.666em 0
+		margin 1em
 		max-width 480px
 		position relative
 	:global(.comment > .md)
+		background var(--c-subreddit-theme)
+		border-radius 10px
+		color var(--c-subreddit-theme-text)
 		display inline-block
+		padding 10px
 	:global(.comment > .md img)
 		max-height 60px
 		width auto
@@ -62,7 +64,7 @@ style.
 		pointer-events none
 	:global(.comment-highlighted > .md)
 		outline 1px solid
-	:global(.comment-with-low-score:not(.comment-deleted):not(.comment-with-hidden-score) > .md)
+	:global(.comment-with-low-score:not(.comment-deleted) > .md)
 		opacity 0.5
 	.comment-clip
 		display flex
@@ -72,7 +74,6 @@ style.
 		border-left 1px solid var(--c-blend-normal)
 		padding-left 2em
 	.comment-score
-		background var(--c-theme)
 		color var(--c-text-weak)
 		position absolute
 		right calc(100% + 2ch)

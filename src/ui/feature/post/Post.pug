@@ -9,8 +9,6 @@ script.
 	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-
-	import UserByline from '../user/UserByline.pug'
 	
 	import PostCommentList from './PostCommentList.pug'
 	import PostFlair from './PostFlair.pug'
@@ -67,13 +65,13 @@ svelte:head
 	article.post(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + short_id] || false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
 		header.post-header
 			button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score}
-			{#if post.link_flair_text}
-				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 			h1.post-title {post.title}
 			section.post-metadata
-				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
-				| ‧
-				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
+				div
+					{#if post.link_flair_text}
+						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				div
+					Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
 		{#if post.removed_by_category}
 			section.post-content.post-content-unavailable
 				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
@@ -109,26 +107,27 @@ svelte:head
 						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
 					{@const media = post.media[media_index]}
-						menu.post-content-actions
-							Button(action={() => media_index = Math.max(media_index - 1, 0)} disabled={media_index === 0} key='a' text='Previous')
-							Button(action={() => media_index = Math.min(media_index + 1, post.media.length - 1)} disabled={media_index === post.media.length - 1} key='d' text='Next')
 						figure.post-figure
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-								picture
-									{#if !media.is_gif}
-										{#if media.image_url_960}
-											source(srcset='{media.image_url_960} 2x')
-										{#if media.image_url_640}
-											source(srcset='{media.image_url_640} 1x')
-									img.post-image(alt='image {media_index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-							figcaption.post-image-caption
-								{#if media.caption_text}
-									p {media.caption_text}
-								{#if media.caption_url}
-									a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
+								{#key media}
+									picture
+										{#if !media.is_gif}
+											{#if media.image_url_960}
+												source(srcset='{media.image_url_960} 2x')
+											{#if media.image_url_640}
+												source(srcset='{media.image_url_640} 1x')
+										img.post-image(alt='image {media_index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+							{#if media.caption_text || media.caption_url}
+								figcaption.post-image-caption
+									{#if media.caption_text}
+										p {media.caption_text}
+									{#if media.caption_url}
+										a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
 						menu.post-content-actions
-							Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
 							data {media_index + 1} / {post.media.length}
+							Button(action={() => media_index = Math.max(media_index - 1, 0)} disabled={media_index === 0} key='a' text='Prev')
+							Button(action={() => media_index = Math.min(media_index + 1, post.media.length - 1)} disabled={media_index === post.media.length - 1} key='d' text='Next')
+							Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -169,15 +168,15 @@ svelte:head
 						MediaPlayer(audio_url={media.video_audio_url} height={Math.ceil(480 / media.video_aspect_ratio)} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
 		section.post-comments
 			{#if !focus_comment_short_id}
-				.post-comments-label Comments
 				{#if post.discussion_type === 'CHAT'}
 					.post-comments-notification-alternate-mode Chat post. Comments are ordered by newest first.
 				{:else if post.contest_mode}
 					.post-comments-notification-alternate-mode Post is in contest mode. Comments are sorted randomly.
 				{:else if post.num_comments > 0}
-					ButtonGroup(options={comments_sort_options.map(x => ({ ...x, link: format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: x.value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })}))} selected={comments_sort})
+					div(style='display:none')
+						ButtonGroup(options={comments_sort_options.map(x => ({ ...x, link: format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: x.value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })}))} selected={comments_sort})
 			{#if post.num_comments < 1}
-				.post-comments-notification-empty [ None. ]
+				.post-comments-notification-empty No comments.
 			{:else}
 				{#key comments_sort}
 					PostCommentList(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
@@ -200,13 +199,6 @@ style.
 		padding 10px
 	.post-comments-notification-empty
 		color var(--c-text-weak)
-	.post-comments-label
-		color var(--c-text-weak)
-		font-feature-settings 'cpsp'
-		font-size 10px
-		font-weight var(--f-wght-strong)
-		margin-bottom 6px
-		text-transform uppercase
 	.post-content
 		align-items flex-start
 		display flex
@@ -239,9 +231,10 @@ style.
 	.post-content-actions
 		align-items center
 		display flex
+		display none
 		gap 1em
 		justify-content space-between
-		padding 10px 0
+		margin-top 6px
 		width 100%
 	.post-figure
 		display flex
@@ -254,9 +247,6 @@ style.
 		flex-flow column nowrap
 		gap 6px
 		position relative
-		:global(& .post-flair)
-			bottom calc(100% + 0.333rem)
-			position absolute
 	.post-iframe
 		background black
 		border-radius 6px
@@ -269,10 +259,12 @@ style.
 		color var(--c-text-weak)
 		font-size 12px
 	.post-metadata
-		align-items baseline
+		align-items center
 		color var(--c-text-weak)
 		display flex
 		gap 6px
+		justify-content space-between
+		width 100%
 	.post-predictions
 		display flex
 		flex-flow column nowrap
@@ -293,7 +285,7 @@ style.
 		margin-bottom 1em
 	.post-title
 		font-size 1.5em
-		font-weight var(--f-wght-strong)
+		font-weight var(--f-wght-xstrong)
 		letter-spacing -0.333px
 		line-height 1.2
 		margin 0
