@@ -114,8 +114,9 @@ script.
 					play_pause()
 					wake_mouse()
 				else
-					player.requestFullscreen()
-					video.play()
+					if paused
+						player.requestFullscreen()
+					play_pause()
 		)
 		video.addEventListener('mousemove', (e) ->
 			if fullscreen
@@ -151,7 +152,7 @@ script.
 	<!-- svelte-ignore a11y-media-has-caption -->
 	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:ended={ended} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
-	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
+	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') {paused ? '▶ Play in fullscreen' : '■ Pause'}
 	menu.media-player-controls
 		Button(action={play_pause} description='Play / pause' key='p' text="{ended ? '↻' : paused ? '▶' : '■'} {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
