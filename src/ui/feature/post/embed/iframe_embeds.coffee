@@ -25,12 +25,12 @@ export default (source_url) ->
 			else
 				null
 		when 'open.spotify.com'
-			descriptor = source_url.pathname.split('/')[2]
+			descriptor = source_url.pathname?.slice(1)
 			if descriptor?.length
 				iframe_action_description: 'Listen (Spotify)'
 				iframe_aspect_ratio: 1
 				iframe_allow: 'encrypted-media'
-				iframe_url: "https://open.spotify.com/embed?uri=spotify%3Aalbum%3A#{descriptor}"
+				iframe_url: "https://open.spotify.com/embed/#{descriptor}"
 			else
 				null
 		when 'redgifs.com'

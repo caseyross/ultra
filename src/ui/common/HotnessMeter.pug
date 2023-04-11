@@ -1,0 +1,51 @@
+script.
+	import { Time } from '../../lib/index.js'
+
+	export create_time = null
+	export edit_time = null
+	export num_comments = null
+	export score = null
+
+	averaged_time = (create_time + (edit_time or create_time)) / 2
+	averaged_age = Time.sToAge(averaged_time)
+	time_hotness = switch
+		when averaged_age.hours < 1 then 5
+		when averaged_age.hours < 4 then 4
+		when averaged_age.days < 1 then 3
+		when averaged_age.days < 3 then 2
+		when averaged_age.weeks < 1 then 1
+		else 0
+	
+	interest_hotness = Math.floor(Math.log(num_comments * 3 + score or 1) / 2)
+
+.hotness-meter
+	data.interest-hotness
+		{#if interest_hotness >= 1}
+			span.interest-hotness-level-1 ♥
+		{#if interest_hotness >= 2}
+			span.interest-hotness-level-2 ♥
+		{#if interest_hotness >= 3}
+			span.interest-hotness-level-3 ♥
+		{#if interest_hotness >= 4}
+			span.interest-hotness-level-4 ♥
+		{#if interest_hotness >= 5}
+			span.interest-hotness-level-5 ♥
+	data.time-hotness {'♥'.repeat(time_hotness)}
+
+style.
+	.hotness-meter
+		display flex
+	.interest-hotness
+		display flex
+	.interest-hotness-level-1
+		color gray
+	.interest-hotness-level-2
+		color wheat
+	.interest-hotness-level-3
+		color lightsalmon
+	.interest-hotness-level-4
+		color salmon
+	.interest-hotness-level-5
+		color skyblue
+	.time-hotness
+		color green

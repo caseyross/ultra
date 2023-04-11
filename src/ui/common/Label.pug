@@ -1,0 +1,14 @@
+script.
+	export text = null
+
+label
+	span.label-text {text}
+	slot
+
+style.
+	label
+		align-items center
+		display inline-flex
+		gap 1ch
+	.label-text
+		color var(--c-text-weak)

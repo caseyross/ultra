@@ -59,6 +59,13 @@ Time = {
 		else
 			return s
 
+	msToAge: (ms) ->
+		nowMs = Time.unixMs()
+		result = []
+		for id, unit of units
+			result[unit.name + 's'] = Math.trunc((nowMs - ms) / unit.value)
+		return result
+
 	msToTopDuration: (ms, opt = { trunc: true }) ->
 		for id, unit of units
 			if ms > unit.value
@@ -141,6 +148,8 @@ Time = {
 
 Time.unixS = ->
 	Time.msToS(Time.unixMs(), { trunc: true })
+Time.sToAge = (s) ->
+	Time.msToAge(Time.sToMs(s))
 Time.sToAbsTimeStr = (s) ->
 	Time.msToAbsTimeStr(Time.sToMs(s))
 Time.sToAbsRelTimeStr = (s) ->

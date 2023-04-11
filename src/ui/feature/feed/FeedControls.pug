@@ -1,9 +1,10 @@
 script.
+	import { getContext } from 'svelte'
+
 	import api from '../../../api/index.js'
 	import { format_url } from '../../app/routing/url.coffee'
 	
 	import Button from '../../common/Button.pug'
-	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import TextInput from '../../common/TextInput.pug'
 	
 	time_range_options = [
@@ -34,6 +35,7 @@ script.
 	export sort = null
 	export time_range = null
 	
+	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	local_search_query = search_query
 	local_time_range = time_range
 	local_sort = sort
@@ -46,19 +48,18 @@ script.
 menu.feed-controls
 	{#if search_mode_active}
 		TextInput(initial_value={search_query} type_action={value => local_search_query = value})
-		ButtonGroup(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
-		ButtonGroup(action={value => local_time_range = value} options={time_range_options} selected={local_time_range})
+		Button(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
+		Button(action={value => local_time_range = value} options={time_range_options} selected={local_time_range})
 		Button(disabled={!local_search_query?.length} key='Enter' link={format_url({ feed_search_query: local_search_query, feed_sort: local_sort, feed_time_range: local_time_range, feed_type, multireddit_name, subreddit_name, user_name })} text='Search')
 	{:else}
-		Button(action={activate_search_mode} text='Search')
-		ButtonGroup(options={sort_options.map(x => ({ ...x, link: format_url({ feed_sort: x.value, feed_time_range: time_range, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={sort})
+		Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_sort: value, feed_time_range: time_range, feed_type, multireddit_name, subreddit_name, user_name }) })} options={sort_options} selected={sort})
 		{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
-			ButtonGroup(options={time_range_options.map(x => ({ ...x, link: format_url({ feed_sort: sort, feed_time_range: x.value, feed_type, multireddit_name, subreddit_name, user_name })}))} selected={time_range})
+			Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_sort: sort, feed_time_range: value, feed_type, multireddit_name, subreddit_name, user_name }) })} options={time_range_options} selected={time_range})
+		Button(action={activate_search_mode} text='Search...')
 
 style.
 	.feed-controls
-		align-items flex-start
 		display flex
-		flex-flow column nowrap
+		justify-content space-between
 		gap 6px
 		width 160px

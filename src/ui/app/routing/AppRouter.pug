@@ -1,4 +1,5 @@
 script.
+	import { setContext } from 'svelte'
 	import AppContexts from '../context/AppContexts.pug'
 	import AppContent from './AppContent.pug'
 	import AppExternalLink from './AppExternalLink.pug'
@@ -96,6 +97,8 @@ script.
 		set_route()
 	)
 
+	setContext('internal_navigate', internal_navigate) # only for use in rare situations where link tags cannot be used
+	
 	set_route()
 
 AppContexts

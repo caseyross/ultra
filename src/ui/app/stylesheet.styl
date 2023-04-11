@@ -4,8 +4,6 @@
 	margin 0
 	&:focus
 		outline-color gold
-	&:last-child
-		margin-bottom 0 !important
 
 // Type
 @font-face
@@ -24,6 +22,7 @@ body
 	font-weight var(--f-wght-normal)
 	letter-spacing 0.1666px
 	line-height 1.5
+	font-family arial
 
 // Theme
 body
@@ -115,14 +114,23 @@ ul
 	ol
 	ul
 		margin 0 0 0.666em
+	ol
+		counter-reset list
+		& li
+			counter-increment list
 	li
 		margin 0 1ch 0.333em
-		padding-inline-start 1em
+		padding-inline-start 1ch
 		&::marker
-			content '⁕'
+			content '-'
 		& > ol
 		& > ul
 			margin-top 0.333em
+		ol > &
+			margin-left 2ch
+		ol > &::marker
+			color var(--c-text-weak)
+			content counter(list)
 
 // Tables
 .md
@@ -134,19 +142,15 @@ ul
 		overflow-wrap normal
 	td
 	th
-		padding-right 2ch
+		border 1px solid
+		padding 3px 6px
 		text-align left
 	td
-		padding-top 3px
-		vertical-align middle
-	tr:first-child > td
-		padding-top 6px
+		vertical-align top
 	th
-		border-bottom 1px solid
 		font-weight var(--f-wght-strong)
 		font-size 10px
 		letter-spacing 0.333px
-		padding-bottom 3px
 		vertical-align bottom
 
 // Formatted text
@@ -163,11 +167,12 @@ sup
 	line-height 0
 .md
 	overflow-wrap anywhere
+	& > :last-child
+		margin-bottom 0
 	a
 		text-decoration underline
 	img
-		border-radius 6px
-		max-height 480px
+		margin 1.333em 0
 
 // Verbatim text
 blockquote
@@ -242,6 +247,9 @@ summary
 // Media
 iframe
 	border 0
+iframe
+img
+	border-radius 12px
 img
 video
 	box-sizing content-box

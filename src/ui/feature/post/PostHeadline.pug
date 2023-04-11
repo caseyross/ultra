@@ -2,6 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
+	import HotnessMeter from '../../common/HotnessMeter.pug'
 	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import PostFlair from './PostFlair.pug'
 
@@ -25,6 +26,7 @@ script.
 			SubredditTag(name={post.subreddit})
 		{:else if post.link_flair_text}
 			PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+		HotnessMeter(create_time={post.created_utc} edit_time={post.edited} num_comments={post.num_comments} score={post.score})
 		h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
 		button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score} ({post.num_comments}) 
 

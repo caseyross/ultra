@@ -1,16 +1,20 @@
 script.
+	import { getContext } from 'svelte'
+
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
 	import { format_url, relativize_url } from '../../app/routing/url.coffee'
 
 	import Button from '../../common/Button.pug'
-	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	
+	import UserByline from '../user/UserByline.pug'
+
 	import PostCommentList from './PostCommentList.pug'
+	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
 	import PostFlair from './PostFlair.pug'
 	import PostHeadline from './PostHeadline.pug'
 
@@ -39,7 +43,19 @@ script.
 		{ label: 'New', value: 'new' }
 		{ label: 'Controversial', value: 'controversial' }
 	]
+	comments_sort_options_chat = [
+		{ label: 'Best', value: 'confidence' }
+		{ label: 'Top', value: 'top' }
+		{ label: 'Q&A', value: 'qa' }
+		{ label: 'Old', value: 'old' }
+		{ label: 'New (Chat Mode)', value: 'new' }
+		{ label: 'Controversial', value: 'controversial' }
+	]
+	comments_sort_options_contest = [
+		{ label: 'Random (Contest Mode)' }
+	]
 	error = null
+	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	loading = false
 	media_index = 0
 	post = null
@@ -59,19 +75,18 @@ svelte:head
 			| Post unavailable: {error.reason}
 		{:else}
 			| Post unavailable for unknown reasons.
-{:else if loading}
-	article.post.post-loading Loading...
 {:else if post}
 	article.post(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + short_id] || false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
 		header.post-header
 			button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score}
-			h1.post-title {post.title}
-			section.post-metadata
-				div
-					{#if post.link_flair_text}
-						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-				div
+			aside.post-metadata
+				div(style='display:flex; align-items:center; gap:1em')
 					Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
+					| by
+					UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			h1.post-title {post.title}
 		{#if post.removed_by_category}
 			section.post-content.post-content-unavailable
 				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
@@ -100,8 +115,7 @@ svelte:head
 		{:else}
 			section.post-content
 				{#if post.selftext_html}
-					.post-selftext
-						FormattedHTML(html={post.selftext_html})
+					FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					a(href={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: post.crosspost_parent, subreddit_name: feed_subreddit_name, user_name: feed_user_name })})
 						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
@@ -117,17 +131,18 @@ svelte:head
 											{#if media.image_url_640}
 												source(srcset='{media.image_url_640} 1x')
 										img.post-image(alt='image {media_index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-							{#if media.caption_text || media.caption_url}
+							div(style='display:flex; align-items:center; justify-content:space-between; width:100%')
 								figcaption.post-image-caption
 									{#if media.caption_text}
 										p {media.caption_text}
 									{#if media.caption_url}
 										a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
-						menu.post-content-actions
-							data {media_index + 1} / {post.media.length}
-							Button(action={() => media_index = Math.max(media_index - 1, 0)} disabled={media_index === 0} key='a' text='Prev')
-							Button(action={() => media_index = Math.min(media_index + 1, post.media.length - 1)} disabled={media_index === post.media.length - 1} key='d' text='Next')
-							Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
+								menu.post-content-actions(style='width: auto;gap:1ch')
+									data {media_index + 1} / {post.media.length}
+									{#if post.media.length > 1}
+										Button(action={() => media_index = Math.max(media_index - 1, 0)} disabled={media_index === 0} key='a' text='Prev')
+										Button(action={() => media_index = Math.min(media_index + 1, post.media.length - 1)} disabled={media_index === post.media.length - 1} key='d' text='Next')
+									Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -143,7 +158,7 @@ svelte:head
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
-								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {post.media[0]?.aspect_ratio || embed.iframe_aspect_ratio}")
+								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}")
 								menu.post-content-actions
 									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
@@ -167,24 +182,23 @@ svelte:head
 					{@const media = post.media[0]}
 						MediaPlayer(audio_url={media.video_audio_url} height={Math.ceil(480 / media.video_aspect_ratio)} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
 		section.post-comments
-			{#if !focus_comment_short_id}
-				{#if post.discussion_type === 'CHAT'}
-					.post-comments-notification-alternate-mode Chat post. Comments are ordered by newest first.
-				{:else if post.contest_mode}
-					.post-comments-notification-alternate-mode Post is in contest mode. Comments are sorted randomly.
-				{:else if post.num_comments > 0}
-					div(style='display:none')
-						ButtonGroup(options={comments_sort_options.map(x => ({ ...x, link: format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: x.value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })}))} selected={comments_sort})
-			{#if post.num_comments < 1}
-				.post-comments-notification-empty No comments.
+			menu.post-comments-sort-controls
+				Button(action={value => internal_navigate({ href: location.origin + format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
+				{#if comments_sort === 'new'}
+					PostCommentsAutorefreshButton(post_short_id={short_id})
+			{#if !post.num_comments}
+				p.post-comments-notification-empty [ No comments. ]
 			{:else}
 				{#key comments_sort}
 					PostCommentList(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
+{:else if loading}
+	article.post.post-loading Loading...
 
 style.
 	.post
 		padding 2em 0
-		width 480px
+		padding-left 120px
+		width 720px
 		&.post-loading
 			padding 10px
 		&.post-unavailable
@@ -192,24 +206,17 @@ style.
 			border-radius 10px
 			color white
 			padding 10px
-	.post-comments-notification-alternate-mode
-		background darkkhaki
-		border-radius 10px
-		color white
-		padding 10px
 	.post-comments-notification-empty
 		color var(--c-text-weak)
+		padding 12px
 	.post-content
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		margin 20px 0 30px
-		:global(& iframe.imgur-embed-iframe-pub)
-			border-radius 12px
-		:global(& .twitter-tweet)
-			margin 0 !important
-		:global(& iframe[id^=twitter])
-			border-radius 12px
+		gap 1.333em
+		margin 1.333em 0
+		padding 0 12px
+		width 480px
 		&.post-content-empty
 			margin-bottom 0
 		&.post-content-incomplete
@@ -228,10 +235,15 @@ style.
 			flex-flow row nowrap
 			justify-content space-between
 			padding 10px
+		:global(& iframe, & img, & .media-player)
+			margin-inline-start -12px
+			max-width none
+			width calc(100% + 24px)
+		:global(& .twitter-tweet)
+			margin 0 !important
 	.post-content-actions
 		align-items center
 		display flex
-		display none
 		gap 1em
 		justify-content space-between
 		margin-top 6px
@@ -240,21 +252,17 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		position relative
+		width 100%
 	.post-header
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 6px
+		padding 0 12px
 		position relative
+		width 480px
 	.post-iframe
 		background black
-		border-radius 6px
-		width 100%
-	.post-image
-		background black
-		border-radius 6px
-		width 100%
 	.post-image-caption
 		color var(--c-text-weak)
 		font-size 12px
@@ -281,8 +289,6 @@ style.
 		line-height 1.2
 		position absolute
 		right calc(100% + 1rem)
-	.post-selftext
-		margin-bottom 1em
 	.post-title
 		font-size 1.5em
 		font-weight var(--f-wght-xstrong)

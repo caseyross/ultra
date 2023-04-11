@@ -146,7 +146,7 @@ script.
 				e.preventDefault()
 		)
 
-.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' use:virtual_hotkeys={additional_hotkeys})
+figure.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' use:virtual_hotkeys={additional_hotkeys})
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	<!-- svelte-ignore a11y-media-has-caption -->
