@@ -1,5 +1,5 @@
 script.
-	import { getContext, tick } from 'svelte'
+	import { tick } from 'svelte'
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -22,57 +22,50 @@ script.
 				await tick()
 				document.getElementById(location.hash[1..])?.scrollIntoView()
 	)
-	
-	set_theme_colors = getContext('set_theme_colors')
-	api.loadWatch(api.ID('subreddit', subreddit_name),
-		(x) ->
-			{ data: subreddit } = x
-			set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
-	)
 
 svelte:head
 	title r/{subreddit_name} - Wiki - {page_name}
 {#if error}
-	.wiki-page-unavailable-reason
+	.wiki-unavailable-reason
 		p Wiki page unavailable.
 		{#if error.reason}
 			p Reason: {error.reason}
 {:else if loading}
 	p Loading...
 {:else if page}
-	article.wiki-page
-		section.wiki-page-path
+	article.wiki
+		section.wiki-path
 			a(href='/{subreddit_name}/wiki') Wiki
 			{#each page_name.split('/') as path_segment, i}
 				| >
-				a(class:wiki-page-path-segment-current-page={i === page_name.split('/').length - 1} href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
-		section.wiki-page-info
-			date.wiki-page-edit-date Revised {Time.sToRelTimeStr(page.revision_date, { abbr: false })} ago
-		section.wiki-page-body
+				a(class:wiki-path-segment-current={i === page_name.split('/').length - 1} href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
+		section.wiki-info
+			date.wiki-edit-date Revised {Time.sToRelTimeStr(page.revision_date)} ago
+		section.wiki-body
 			FormattedHTML(html={page.content_html})
 
 style.
-	.wiki-page
+	.wiki
 		width 560px
-	.wiki-page-body
+	.wiki-body
 		margin-top 3em
-	.wiki-page-info
+	.wiki-info
 		align-items center
 		display flex
 		font-size 12px
 		gap 1ch
 		margin-top 1em
 		opacity 0.5
-	.wiki-page-path
+	.wiki-path
 		color var(--c-text-weak)
 		text-transform uppercase
 		& > a
 			text-decoration underline
-		.wiki-page-path-segment-current-page
+		.wiki-path-segment-current
 			color var(--c-text-strong)
 			font-weight var(--f-wght-strong)
 			text-decoration none
-	:global(.wiki-page .toc)
+	:global(.wiki .toc)
 		font-size 12px
 		left calc(50% + 360px)
 		max-height 100vh
@@ -84,7 +77,7 @@ style.
 		width 320px
 		&::-webkit-scrollbar
 			display none
-	:global(.wiki-page .toc > ul)
+	:global(.wiki .toc > ul)
 		padding 40px 0 40px 80px
 		position relative
 		&::before
@@ -93,18 +86,18 @@ style.
 			position absolute
 			text-transform uppercase
 			top 0
-	:global(.wiki-page .toc a)
+	:global(.wiki .toc a)
 		text-decoration none
 		&:hover
 			text-decoration underline
-	:global(.wiki-page .toc li)
+	:global(.wiki .toc li)
 		margin-inline-start 0
 		padding-inline-start 0
 		&::marker
 			content none
-	:global(.wiki-page .toc ol ol)
-	:global(.wiki-page .toc ol ul)
-	:global(.wiki-page .toc ul ol)
-	:global(.wiki-page .toc ul ul)
+	:global(.wiki .toc ol ol)
+	:global(.wiki .toc ol ul)
+	:global(.wiki .toc ul ol)
+	:global(.wiki .toc ul ul)
 		border-left 1px solid var(--c-text-faint)
 		padding-left 1em

@@ -3,11 +3,12 @@ script.
 	import { Color } from '../../../lib/index.js'
 	import SubredditAvatar from './SubredditAvatar.pug'
 
+	export icon_url = null
 	export name = null
 	export size = 'small'
 
 a.subreddit-tag(href='/{name}')
-	SubredditAvatar(name={name} size={size})
+	SubredditAvatar(icon_url={icon_url} name={name} size={size})
 	span {name.startsWith('u_') ? 'u/' + name.slice(2) : name}
 
 style.

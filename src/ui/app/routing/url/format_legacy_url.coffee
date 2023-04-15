@@ -65,7 +65,7 @@ export default ({
 				query.set('sort', feed_sort) # note: ignored for subs & multis
 			if feed_time_range
 				query.set('t', feed_time_range)
-	url = path.join('/')
+	path_string = path.join('/')
 	if query.toString()
-		url = url + '?' + query.toString()
-	return url
+		path_string = path_string + '?' + query.toString()
+	return path_string

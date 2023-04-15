@@ -3,9 +3,9 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 	
+	import { format_url } from '../../app/routing/url.coffee'
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	import SubredditTag from '../subreddit/SubredditTag.pug'
 	import UserByline from '../user/UserByline.pug'
 
 	export out_of_context = false
@@ -29,13 +29,12 @@ script.
 		<!-- svelte-ignore a11y-unknown-role -->
 		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
 			button.comment-score(on:mousedown={() => api.submit(api.ID('comment_vote', short_id), { numerical_vote: comment.likes ? 0 : 1 })}) {comment.score_hidden ? '?' : comment.score}
+			FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
-			FormattedHTML(html={comment.body_html})
 		{#if out_of_context}
 			cite.comment-source-info
-				SubredditTag(name={comment.subreddit})
-				a(href='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}?context=1') {comment.link_title}
+				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_short_id: short_id, post_short_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View in context →')
 		{:else}
 			ol.comment-replies
 				{#if comment.replies.length > 0}
@@ -91,6 +90,4 @@ style.
 		position absolute
 		right calc(100% + 2ch)
 	.comment-source-info
-		display flex
-		flex-flow column nowrap
-		padding 10px
+		margin 0.666em 1em

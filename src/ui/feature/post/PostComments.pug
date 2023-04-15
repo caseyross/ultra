@@ -3,7 +3,7 @@ script.
 	import api from '../../../api/index.js'
 
 	import Button from '../../common/Button.pug'
-	import PostComment from './PostComment.pug'
+	import Comment from '../comment/Comment.pug'
 	
 	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
@@ -23,20 +23,20 @@ script.
 			)
 	)
 
-ol.post-comments-list
+ol
 	{#if post}
 		{#each post.replies as reply_short_id (reply_short_id)}
-			PostComment(short_id={reply_short_id})
+			Comment(short_id={reply_short_id})
 		{#if post.num_more_replies > 0}
 			.post-more-replies
 				Button(action={() => api.load(post.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{post.num_more_replies} more")
 	{:else if loading}
-		.post-comments-list-loading-notification Loading...
+		.post-comments-loading-notification Loading...
 
 style.
-	.post-comments-list
+	ol
 		margin 0.666em 0
-	.post-comments-list-loading-notification
+	.post-comments-loading-notification
 		color var(--c-text-weak)
 		padding 1em 0
 	.post-more-replies

@@ -1,40 +1,64 @@
 script.
 	import api from '../../../api/index.js'
-	
+
 	import Button from '../../common/Button.pug'
 	import Date from '../../common/Date.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	
+
 	import SubredditModerators from './SubredditModerators.pug'
+	import SubredditRules from './SubredditRules.pug'
+	import SubredditWidget from './SubredditWidget.pug'
 
 	export name = null
-	
-	info = null
-	api.loadWatch(api.ID('subreddit', name), (x) -> { data: info } = x)
 
-{#if info}
-	.subreddit-info
-		{#if info.banner_background_image || info.banner_img}
-			p
-				a(href={info.banner_background_image || info.banner_img})
-					img.subreddit-info-banner-image(alt='' src={info.banner_background_image || info.banner_img})
-		table.subreddit-info-stats
-			thead
-				tr
-					th.subreddit-info-stats-label(align='left') Created
-					th.subreddit-info-stats-label(align='right') Subscribers
-			tbody
-				tr
-					td.subreddit-info-stats-value(align='left')
-						Date(created_s={info.created_utc})
-					td.subreddit-info-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
-		{#if info.public_description_html}
-			FormattedHTML(html={info.public_description_html})
-		menu.subreddit-info-additional-options
-			Button(popup={true} text='Moderators')
-				SubredditModerators(name={name})
+	info = null
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: info } = x
+	)
+	widgets = null
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+	)
+
+aside.subreddit-info
+	{#if info}
+		section
+			{#if info.banner_background_image || info.banner_img}
+				p
+					a(href={info.banner_background_image || info.banner_img})
+						img.subreddit-info-banner-image(alt='' src={info.banner_background_image || info.banner_img})
+			table.subreddit-info-stats
+				thead
+					tr
+						th.subreddit-info-stats-label(align='left') Created
+						th.subreddit-info-stats-label(align='right') Subscribers
+				tbody
+					tr
+						td.subreddit-info-stats-value(align='left')
+							Date(created_s={info.created_utc})
+						td.subreddit-info-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
+			{#if info.public_description_html}
+				FormattedHTML(html={info.public_description_html})
+			menu.subreddit-info-additional-options
+				Button(popup={true} text='Rules')
+					SubredditRules(name={name})
+				{#if api.isLoggedIn()}
+					Button(popup={true} text='Moderators')
+						SubredditModerators(name={name})
+				{#if info.wiki_enabled}
+					Button(link='/r/{name}/wiki/index' text='Wiki')
+	{#if widgets}
+		ol.subreddit-info-widgets
+			{#each widgets.sidebar as widget}
+				SubredditWidget(widget={widget})
+	{#if info?.header_title}
+		br
+		br
+		span(style='color:var(--c-text-weak)') "{info.header_title}"
 
 style.
+	.subreddit-info
+		width 480px
 	.subreddit-info-additional-options
 		display flex
 		gap 10px
@@ -52,3 +76,7 @@ style.
 		color var(--c-text-weak)
 	.subreddit-info-stats-value
 		font-size 2em
+	.subreddit-info-widgets
+		display flex
+		flex-flow column nowrap
+		gap 0.5em

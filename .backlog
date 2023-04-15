@@ -1,6 +1,0 @@
-H  Listings: properly show to r/popular (or something else?) when not logged in
-
-L	General: more descriptive error messages when Reddit data is unavailable
-L	Listings: way to hide viewed stickies
-L	Posts: rewrite links to avoid "\_" problem (we hope Reddit will fix)
-L	Posts: ability to sort markdown tables client-side

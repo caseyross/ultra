@@ -2,7 +2,6 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../api/index.js'
-	import { Time } from '../../../lib/index.js'
 
 	import { format_url, relativize_url } from '../../app/routing/url.coffee'
 
@@ -10,13 +9,14 @@ script.
 	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	
+
+	import SubredditNavigation from '../subreddit/SubredditNavigation.pug'	
 	import UserByline from '../user/UserByline.pug'
 
-	import PostCommentList from './PostCommentList.pug'
+	import PostComments from './PostComments.pug'
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
 	import PostFlair from './PostFlair.pug'
-	import PostHeadline from './PostHeadline.pug'
+	import PostLink from './PostLink.pug'
 
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
@@ -25,15 +25,6 @@ script.
 	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
 	export short_id = null
-
-	export feed_collection_short_id = null
-	export feed_multireddit_name = null
-	export feed_search_query = null
-	export feed_sort = null
-	export feed_subreddit_name = null
-	export feed_time_range = null
-	export feed_type = null
-	export feed_user_name = null
 
 	comments_sort_options = [
 		{ label: 'Best', value: 'confidence' }
@@ -62,8 +53,6 @@ script.
 	api.loadWatch(api.ID('post', short_id, comments_sort, 25, focus_comment_short_id, focus_comment_parent_count),
 		(x) ->
 			{ data: post, error, loading } = x
-			if post?.num_comments? and post?.score?
-				localStorage['visited.' + short_id] = "#{Time.unixMs()} #{post.num_comments} #{post.score}"
 	)
 
 svelte:head
@@ -73,10 +62,20 @@ svelte:head
 	article.post.post-unavailable
 		{#if error.reason}
 			| Post unavailable: {error.reason}
+		{:else if error.code === 404}
+			| Post or comment not found.
+		{:else if error.code === 403}
+			| Subreddit banned.
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-read={localStorage['visited.' + short_id] || false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
+	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
+		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
+			SubredditNavigation(subreddit_name={post.subreddit})
+		nav(style='position:fixed;top:2em;left:calc(50% + 320px);display:flex;flex-flow:column;gap:3px;align-items:flex-start')
+			Button(key='w' text='Prev post in ...')
+			Button(key='s' text='Next post in ...')
+			Button(key='c' text='Next top-level comment')
 		header.post-header
 			button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score}
 			aside.post-metadata
@@ -91,21 +90,23 @@ svelte:head
 			section.post-content.post-content-unavailable
 				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
 					| Deleted by author.
-				{:else if post.removed_by_category === 'moderator'}
-					| Removed by a moderator.
-				{:else if post.removed_by_category === 'reddit'}
-					| Removed by Reddit spam filter.
+				{:else if post.removed_by_category === 'automod_filtered'}
+					| Removed by AutoModerator.
 				{:else if post.removed_by_category === 'content_takedown'}
 					| Removed by Reddit due to violating
 					a(href='https://www.redditinc.com/policies/content-policy') site policy.
 				{:else if post.removed_by_category === 'copyright_takedown'}
 					| Removed by Reddit due to a copyright notice.
+				{:else if post.removed_by_category === 'moderator'}
+					| Removed by a moderator.
+				{:else if post.removed_by_category === 'reddit'}
+					| Removed by Reddit spam filter.
 				{:else}
 					| Removed by Reddit, reason not specified.
 		{:else if focus_comment_short_id}
 			section.post-content.post-content-incomplete
 				| Viewing a single comment thread.
-				Button(link={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name })} text='View complete post')
+				Button(link={format_url({ post_short_id: short_id, subreddit_name: post.subreddit })} text='View complete post')
 		{:else if post.format === 'talk'}
 			section.post-content.post-content-unavailable
 				| Reddit Talks are only available on the official app.
@@ -117,8 +118,7 @@ svelte:head
 				{#if post.selftext_html}
 					FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
-					a(href={format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_short_id: post.crosspost_parent, subreddit_name: feed_subreddit_name, user_name: feed_user_name })})
-						PostHeadline(post_short_id={post.crosspost_parent} show_subreddit={true})
+					PostLink(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
 					{@const media = post.media[media_index]}
 						figure.post-figure
@@ -183,14 +183,14 @@ svelte:head
 						MediaPlayer(audio_url={media.video_audio_url} height={Math.ceil(480 / media.video_aspect_ratio)} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
 		section.post-comments
 			menu.post-comments-sort-controls
-				Button(action={value => internal_navigate({ href: location.origin + format_url({ collection_short_id: feed_collection_short_id, feed_search_query, feed_sort, feed_time_range, feed_type, multireddit_name: feed_multireddit_name, post_comments_sort: value, post_short_id: short_id, subreddit_name: feed_subreddit_name, user_name: feed_user_name }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
+				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_short_id: short_id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
 				{#if comments_sort === 'new'}
 					PostCommentsAutorefreshButton(post_short_id={short_id})
 			{#if !post.num_comments}
 				p.post-comments-notification-empty [ No comments. ]
 			{:else}
 				{#key comments_sort}
-					PostCommentList(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
+					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
 {:else if loading}
 	article.post.post-loading Loading...
 

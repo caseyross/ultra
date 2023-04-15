@@ -1,13 +1,13 @@
 script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
+	import { format_url } from '../../app/routing/url.coffee'
 
 	import HotnessMeter from '../../common/HotnessMeter.pug'
-	import SubredditTag from '../subreddit/SubredditTag.pug'
+	import SubredditNameTag from '../subreddit/SubredditNameTag.pug'
 	import PostFlair from './PostFlair.pug'
 
 	export post_short_id = null
-	export selected = false
 	export show_subreddit = false
 	
 	post = api.read(api.ID('post', post_short_id))?.data
@@ -21,27 +21,25 @@ script.
 		)
 
 {#if post}
-	article.post-headline(class:post-downvoted={post.likes === false} class:post-nsfw={post.over_18} class:post-read={localStorage['visited.' + post_short_id] || false} class:post-selected={selected} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
+	a.post-link(class:post-downvoted={post.likes === false} class:post-nsfw={post.over_18} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={post_short_id} href={format_url({ post_short_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
 		{#if show_subreddit}
-			SubredditTag(name={post.subreddit})
+			SubredditNameTag(name={post.subreddit})
 		{:else if post.link_flair_text}
 			PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
 		HotnessMeter(create_time={post.created_utc} edit_time={post.edited} num_comments={post.num_comments} score={post.score})
-		h1.post-title(class:md-spoiler-text={post.spoiler}) {post.title}
-		button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score} ({post.num_comments}) 
+		h1.post-link-title(class:md-spoiler-text={post.spoiler}) {post.title}
+		button.post-link-score(on:mousedown={() => api.submit(api.ID('post_vote', post_short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score} ({post.num_comments}) 
 
 style.
-	.post-headline
+	.post-link
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		margin-left 80px
 		position relative
-		width 160px
 		&.post-with-low-score
 			opacity 0.5
-	.post-score
+	.post-link-score
 		align-items center
 		color var(--c-text-weak)
 		display flex
@@ -49,7 +47,7 @@ style.
 		position absolute
 		right calc(100% + 1em)
 		white-space pre
-	.post-title
+	.post-link-title
 		font-size 16px
 		font-weight inherit
 		margin 0

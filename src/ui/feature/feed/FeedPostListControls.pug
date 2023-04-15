@@ -45,7 +45,7 @@ script.
 		local_sort = 'relevance'
 		search_mode_active = true
 
-menu.feed-controls
+menu.feed-post-list-controls
 	{#if search_mode_active}
 		TextInput(initial_value={search_query} type_action={value => local_search_query = value})
 		Button(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
@@ -58,8 +58,6 @@ menu.feed-controls
 		Button(action={activate_search_mode} text='Search...')
 
 style.
-	.feed-controls
+	.feed-post-list-controls
 		display flex
-		justify-content space-between
 		gap 6px
-		width 160px

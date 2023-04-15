@@ -5,7 +5,7 @@ script.
 	export name = null
 	export size = 'medium'
 
-	if !icon_url
+	if !icon_url?
 		subreddit = null
 		api.loadWatch(api.ID('subreddit', name), (x) ->
 			{ data: subreddit } = x
@@ -16,12 +16,12 @@ a.subreddit-avatar(href='/{name}' style='border-color: {subreddit?.primary_color
 		source(srcset={icon_url})
 		source(srcset={subreddit?.community_icon})
 		source(srcset={subreddit?.icon_img})
-		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src='')
+		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src='/icon_frog.png')
 
 style.
 	.subreddit-avatar
 		display inline-block
-		border-radius 50%y
+		border-radius 50%
 		user-select none
 	.subreddit-avatar-image
 		aspect-ratio 1

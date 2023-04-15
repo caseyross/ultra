@@ -1,26 +1,24 @@
 script.
 	import api from '../../../api/index.js'
-	import { format_url } from '../../app/routing/url.coffee'
 	
 	import Button from '../../common/Button.pug'
-	import PostHeadline from '../post/PostHeadline.pug'
+	import Label from '../../common/Label.pug'
 
-	import FeedControls from './FeedControls.pug'
+	import PostLink from '../post/PostLink.pug'
+	import SubredditInfo from '../subreddit/SubredditInfo.pug'
+	import FeedPostListControls from './FeedPostListControls.pug'
 
-	export feed_type = null
 	export collection_short_id = null
 	export multireddit_name = null
-	export subreddit_name = null
-	export user_name = null
+	export page_size = 10
 	export search_query = null
 	export sort = null
+	export subreddit_name = null
 	export time_range = null
-	
-	export page_size = 10
+	export type = null
+	export user_name = null
 
-	export selected_post_short_id = null
-
-	base_page_id = switch feed_type
+	base_page_id = switch type
 		when 'collection'
 			api.ID('collection', collection_short_id)
 		when 'multireddit'
@@ -35,43 +33,42 @@ script.
 				api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
 		when 'user'
 			api.ID('user_posts', user_name, time_range, sort, page_size)
+	error = null
 	has_next_page = false
-	pages = []
+	loading = null
+	short_ids = []
 
-	load_page = (page_number) ->
-		if page_number > 0
-			after_short_id = pages[page_number - 1].posts.at(-1)
-			page_id = api.ID(base_page_id, after_short_id)
-		else
-			page_id = base_page_id
-		api.loadWatch(page_id, ({ data, error, loading }) ->
-			pages[page_number] = { error, loading, posts: data?.posts or data }
-			if data and feed_type != 'collection' # collections don't have pagination
-				if page_number == pages.length - 1 # loaded page is last page?
-					if page_number is 0
-						if data.length >= page_size
-							has_next_page = true
+	load_next_page = ->
+		after_short_id = short_ids.at(-1)
+		page_id = api.ID(base_page_id, after_short_id)
+		api.loadWatch(page_id, (x) ->
+			{ error, data, loading } = x
+			if !error and !loading and data
+				short_ids_subset = data?.posts or data
+				short_ids = short_ids.concat(short_ids_subset.filter((x) -> !short_ids.includes(x)))
+				has_next_page =
+					if short_ids_subset.length < page_size
+						false
 					else
-						if data.length < page_size
-							has_next_page = false
+						true
 		)
 
-	load_page(0)
+	load_next_page()
 
 nav.feed
-	{#if feed_type !== 'collection'}
-		FeedControls(feed_type={feed_type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
-	ol.feed-post-list
-		{#each pages as page}
-			{#if page.error}
-				p Error: {page.error.reason || page.error.message}
-			{:else if page.posts}
-				{#each page.posts as post_short_id}
-					a(href={format_url({ collection_short_id, feed_search_query: search_query, feed_sort: sort, feed_time_range: time_range, feed_type: feed_type, multireddit_name, post_short_id, subreddit_name, user_name })})
-						PostHeadline(post_short_id={post_short_id} selected={post_short_id === selected_post_short_id} show_subreddit={feed_type !== 'subreddit'})
+	{#if type !== 'collection'}
+		FeedPostListControls(feed_type={type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
+	{#if type === 'collection' || type === 'multireddit' || type === 'subreddit' || type === 'user'}
+		ol.feed-post-list
+			{#each short_ids as post_short_id (post_short_id)}
+				PostLink(post_short_id={post_short_id} show_subreddit={type !== 'subreddit'})
 	menu.feed-post-list-actions
 		{#if has_next_page}
-			Button(action={() => load_page(pages.at(-1).posts ? pages.length : pages.length - 1)} loading={pages.at(-1)?.loading} text='More')
+			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
+				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
+	{#if type === 'subreddit'}
+		{#key subreddit_name}
+			SubredditInfo(name={subreddit_name})
 
 style.
 	.feed
@@ -83,6 +80,4 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-	.feed-post-list-actions
-		display flex
-		justify-content flex-end
+		padding 0 80px
