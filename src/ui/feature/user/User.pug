@@ -2,17 +2,16 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	import Comment from '../comment/Comment.pug'
 	import UserAvatar from './UserAvatar.pug'
+	import UserComments from './UserComments.pug'
+	
 	export name = null
-	export sort = null
-	export time_range = null
-	comment_short_ids = null
-	error = null
+	export comments_sort = null
+	export comments_time_range = null
+	
 	trophies = null
 	user = null
 	api.loadWatch(api.ID('user', name), (x) -> { data: user } = x)
-	api.loadWatch(api.ID('user_comments', name, time_range, sort, 25), (x) -> { data: comment_short_ids } = x)
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
 
 {#if user}
@@ -34,10 +33,9 @@ script.
 		{:else if user.is_blocked}
 			.user-unavailable-notice You blocked this user.
 		{:else}
-			ol.user-comment-list
-				{#if comment_short_ids}
-					{#each comment_short_ids as short_id}
-						Comment(short_id={short_id} out_of_context={true})
+			{#key comments_sort}
+				{#key comments_time_range}
+					UserComments(name={name} sort={comments_sort} time_range={comments_time_range})
 
 style.
 	.user
@@ -49,11 +47,6 @@ style.
 		display grid
 		gap 30px
 		grid-template-columns 128px 1fr
-	.user-comment-list
-		display flex
-		flex-flow column nowrap
-		gap 0.5em
-		padding 30px 0
 	.user-name
 		font-size 12pt
 	.user-trophies

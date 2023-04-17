@@ -1,0 +1,23 @@
+script.
+	import api from '../../../api/index.js'
+	import Comment from '../comment/Comment.pug'
+
+	export name = null
+	export sort = null
+	export time_range = null
+
+	comment_short_ids = null
+	error = null
+	api.loadWatch(api.ID('user_comments', name, time_range, sort or 'new', 25), (x) -> { data: comment_short_ids, error } = x)
+
+ol.user-comments
+	{#if comment_short_ids}
+		{#each comment_short_ids as short_id}
+			Comment(short_id={short_id} out_of_context={true})
+
+style.
+	.user-comments
+		display flex
+		flex-flow column nowrap
+		gap 0.5em
+		padding 30px 0

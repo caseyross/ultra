@@ -83,9 +83,7 @@ main
 						Post(comments_sort={post_comments_sort} feed_collection_short_id={collection_short_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_short_id={post_focus_comment_short_id} short_id={post_short_id})
 		{:else if feed_type === 'user'}
 			{#key user_name}
-				{#key feed_time_range}
-					{#key feed_sort}
-						User(name={user_name} sort={feed_sort} time_range={feed_time_range})
+				User(comments_sort={feed_sort} comments_time_range={feed_time_range} name={user_name})
 		{:else if feed_selection_type === 'posts'}
 			{#key collection_short_id}
 				{#key multireddit_name}
