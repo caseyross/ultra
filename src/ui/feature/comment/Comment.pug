@@ -23,12 +23,22 @@ script.
 				)
 	)
 
+	vote = (current_vote, mouse_button_number) ->
+		new_vote = 
+			switch mouse_button_number
+				when 0 # left
+					if current_vote is 1 then 0 else 1
+				when 2 # right
+					if current_vote is -1 then 0 else -1
+		if new_vote != current_vote
+			api.submit(api.ID('comment_vote', short_id), { numerical_vote: new_vote })
+
 {#if comment}
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
 		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
-			button.comment-score(on:mousedown={() => api.submit(api.ID('comment_vote', short_id), { numerical_vote: comment.likes ? 0 : 1 })}) {comment.score_hidden ? '?' : comment.score}
+			button.comment-score(on:mousedown={e => vote(comment.likes === true ? 1 : comment.likes === false ? -1 : 0, e.button)}) {comment.score_hidden ? '?' : comment.score}
 			FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
@@ -89,5 +99,9 @@ style.
 		color var(--c-text-weak)
 		position absolute
 		right calc(100% + 2ch)
+		.comment-upvoted &
+			color salmon
+		.comment-downvoted &
+			color var(--c-text-faint)
 	.comment-source-info
 		margin 0.666em 1em

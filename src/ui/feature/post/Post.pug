@@ -53,6 +53,16 @@ script.
 				comments_sort = post.suggested_sort
 	)
 
+	vote = (current_vote, mouse_button_number) ->
+		new_vote = 
+			switch mouse_button_number
+				when 0 # left
+					if current_vote is 1 then 0 else 1
+				when 2 # right
+					if current_vote is -1 then 0 else -1
+		if new_vote != current_vote
+			api.submit(api.ID('post_vote', short_id), { numerical_vote: new_vote })
+
 svelte:head
 	{#if post}
 		title r/{post.subreddit} - {post.title}
@@ -75,7 +85,7 @@ svelte:head
 			Button(key='s' text='Next post in ...')
 			Button(key='c' text='Next top-level comment')
 		header.post-header
-			button.post-score(on:mousedown={() => api.submit(api.ID('post_vote', short_id), { numerical_vote: post.likes ? 0 : 1 })}) {post.hide_score ? '?' : post.score}
+			button.post-score(on:mousedown={e => vote(post.likes === true ? 1 : post.likes === false ? -1 : 0, e.button)}) {post.hide_score ? '?' : post.score}
 			aside.post-metadata
 				div(style='display:flex; align-items:center; gap:1em')
 					Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
@@ -287,6 +297,10 @@ style.
 		line-height 1.2
 		position absolute
 		right calc(100% + 1rem)
+		.post-upvoted &
+			color salmon
+		.post-downvoted &
+			color var(--c-text-faint)
 	.post-title
 		font-size 1.5em
 		font-weight var(--f-wght-xstrong)
