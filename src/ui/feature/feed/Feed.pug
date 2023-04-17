@@ -5,7 +5,7 @@ script.
 	import Label from '../../common/Label.pug'
 
 	import PostLink from '../post/PostLink.pug'
-	import SubredditInfo from '../subreddit/SubredditInfo.pug'
+	import SubredditSidebar from '../subreddit/SubredditSidebar.pug'
 	import FeedPostListControls from './FeedPostListControls.pug'
 
 	export collection_short_id = null
@@ -68,14 +68,14 @@ nav.feed
 				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
 	{#if type === 'subreddit'}
 		{#key subreddit_name}
-			SubredditInfo(name={subreddit_name})
+			SubredditSidebar(name={subreddit_name})
 
 style.
 	.feed
-		align-items flex-end
 		display flex
 		flex-flow column nowrap
 		gap 1em
+		width 560px
 	.feed-post-list
 		display flex
 		flex-flow column nowrap

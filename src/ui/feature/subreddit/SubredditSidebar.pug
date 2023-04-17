@@ -20,26 +20,26 @@ script.
 		{ data: widgets } = x
 	)
 
-aside.subreddit-info
+aside.subreddit-sidebar
 	{#if info}
 		section
 			{#if info.banner_background_image || info.banner_img}
 				p
 					a(href={info.banner_background_image || info.banner_img})
-						img.subreddit-info-banner-image(alt='' src={info.banner_background_image || info.banner_img})
-			table.subreddit-info-stats
+						img.subreddit-sidebar-banner-image(alt='' src={info.banner_background_image || info.banner_img})
+			table.subreddit-sidebar-stats
 				thead
 					tr
-						th.subreddit-info-stats-label(align='left') Created
-						th.subreddit-info-stats-label(align='right') Subscribers
+						th.subreddit-sidebar-stats-label(align='left') Created
+						th.subreddit-sidebar-stats-label(align='right') Subscribers
 				tbody
 					tr
-						td.subreddit-info-stats-value(align='left')
+						td.subreddit-sidebar-stats-value(align='left')
 							Date(created_s={info.created_utc})
-						td.subreddit-info-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
+						td.subreddit-sidebar-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
 			{#if info.public_description_html}
 				FormattedHTML(html={info.public_description_html})
-			menu.subreddit-info-additional-options
+			menu.subreddit-sidebar-additional-options
 				Button(popup={true} text='Rules')
 					SubredditRules(name={name})
 				{#if api.isLoggedIn()}
@@ -48,7 +48,7 @@ aside.subreddit-info
 				{#if info.wiki_enabled}
 					Button(link='/r/{name}/wiki/index' text='Wiki')
 	{#if widgets}
-		ol.subreddit-info-widgets
+		ol.subreddit-sidebar-widgets
 			{#each widgets.sidebar as widget}
 				SubredditWidget(widget={widget})
 	{#if info?.header_title}
@@ -57,26 +57,26 @@ aside.subreddit-info
 		span(style='color:var(--c-text-weak)') "{info.header_title}"
 
 style.
-	.subreddit-info
-		width 480px
-	.subreddit-info-additional-options
+	.subreddit-sidebar
+		width 256px
+	.subreddit-sidebar-additional-options
 		display flex
 		gap 10px
 		padding 10px 0
 		justify-content flex-end
-	.subreddit-info-banner-image
+	.subreddit-sidebar-banner-image
 		border-radius 99px
 		height 64px
 		object-fit cover
 		width 100%
-	.subreddit-info-stats
+	.subreddit-sidebar-stats
 		margin-bottom 10px
 		width 100%
-	.subreddit-info-stats-label
+	.subreddit-sidebar-stats-label
 		color var(--c-text-weak)
-	.subreddit-info-stats-value
+	.subreddit-sidebar-stats-value
 		font-size 2em
-	.subreddit-info-widgets
+	.subreddit-sidebar-widgets
 		display flex
 		flex-flow column nowrap
 		gap 0.5em

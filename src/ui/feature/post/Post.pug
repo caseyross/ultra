@@ -35,24 +35,22 @@ script.
 		{ label: 'Controversial', value: 'controversial' }
 	]
 	comments_sort_options_chat = [
-		{ label: 'Best', value: 'confidence' }
-		{ label: 'Top', value: 'top' }
-		{ label: 'Q&A', value: 'qa' }
-		{ label: 'Old', value: 'old' }
 		{ label: 'New (Chat Mode)', value: 'new' }
-		{ label: 'Controversial', value: 'controversial' }
+		{ label: 'Old (Chat Mode)', value: 'old' }
 	]
 	comments_sort_options_contest = [
-		{ label: 'Random (Contest Mode)' }
+		{ label: 'Random (Contest Mode)', value: 'random' }
 	]
 	error = null
 	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	loading = false
 	media_index = 0
 	post = null
-	api.loadWatch(api.ID('post', short_id, comments_sort, 25, focus_comment_short_id, focus_comment_parent_count),
+	api.loadWatch(api.ID('post', short_id, comments_sort or 'confidence', 25, focus_comment_short_id, focus_comment_parent_count),
 		(x) ->
 			{ data: post, error, loading } = x
+			if post?.suggested_sort && !comments_sort
+				comments_sort = post.suggested_sort
 	)
 
 svelte:head

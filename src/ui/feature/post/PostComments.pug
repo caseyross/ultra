@@ -15,7 +15,7 @@ script.
 	post = null
 	if focus_comment_short_id
 		setContext('focus_comment_short_id', focus_comment_short_id)
-	api.loadWatch(api.ID('post', post_short_id, sort, 25, focus_comment_short_id, focus_comment_parent_count), (x) ->
+	api.loadWatch(api.ID('post', post_short_id, sort or 'confidence', 25, focus_comment_short_id, focus_comment_parent_count), (x) ->
 		{ data: post, loading } = x
 		if post?.more_replies
 			api.watch(post.more_replies_id, (x) ->

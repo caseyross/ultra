@@ -98,7 +98,7 @@ main
 		{:else}
 			p [ Not yet implemented. ]
 	section.layout-area-right
-nav#global-nav-home
+nav#global-nav-home(style='display:none')
 	section
 		Button(key='h' link='/' text='Home')
 		{#if api.isLoggedIn()}
@@ -159,10 +159,10 @@ style.
 		align-items center
 		gap 6px
 	#global-nav-account
-		right 0
+		bottom 0
+		left 0
 		padding 1em
 		position fixed
-		top 0
 	#global-nav-home
 		display flex
 		flex-flow column wrap

@@ -16,7 +16,7 @@ script.
 			{ data: post } = x
 		)
 	else if post.num_comments > 0 and !post.replies?.length
-		api.preload(api.ID('post', post_short_id, 'confidence', 25), (x) ->
+		api.preload(api.ID('post', post_short_id, post.suggested_sort or 'confidence', 25), (x) ->
 			{ data: post } = x
 		)
 
