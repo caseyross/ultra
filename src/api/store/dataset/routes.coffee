@@ -89,16 +89,21 @@ export default {
 			}
 		)
 	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id, focus_comment_parent_count) ->
-		get("/comments/#{post_short_id}", {
-			comment: focus_comment_short_id
-			context: focus_comment_parent_count
-			limit: max_comments
-			showedits: true
-			showmedia: true
-			showmore: true
-			showtitle: true
-			sort: comments_sort
-		})
+		if comments_sort?
+			get("/comments/#{post_short_id}", {
+				comment: focus_comment_short_id
+				context: focus_comment_parent_count
+				limit: max_comments
+				showedits: true
+				showmedia: true
+				showmore: true
+				showtitle: true
+				sort: comments_sort
+			})
+		else
+			get("/api/info", {
+				id: "t3_#{post_short_id}"
+			})
 	post_duplicates: (post_short_id, max_posts, after_post_short_id) ->
 		get("/duplicates/#{post_short_id}", {
 			after: after_post_short_id and "t3_#{after_post_short_id}"
