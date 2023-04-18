@@ -2,6 +2,16 @@ import ID from '../../core/ID.coffee'
 
 export default {
 	
+	comment_save:
+		targetID: (comment_short_id) ->
+			ID('comment', comment_short_id)
+		modify: (target, { unsave }) ->
+			original =
+				saved: target.saved
+			target.saved = !unsave
+			return (target) ->
+				target.saved = original.saved
+	
 	comment_vote:
 		targetID: (comment_short_id) ->
 			ID('comment', comment_short_id)
@@ -21,6 +31,16 @@ export default {
 			return (target) ->
 				target.likes = original.likes
 				target.score = original.score
+	
+	post_save:
+		targetID: (post_short_id) ->
+			ID('post', post_short_id)
+		modify: (target, { unsave }) ->
+			original =
+				saved: target.saved
+			target.saved = !unsave
+			return (target) ->
+				target.saved = original.saved
 
 	post_vote:
 		targetID: (post_short_id) ->

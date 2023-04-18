@@ -21,6 +21,7 @@ script.
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
 	
+	export comments_initial_count = 25
 	export comments_sort = null
 	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
@@ -46,12 +47,13 @@ script.
 	loading = false
 	media_index = 0
 	post = null
-	api.loadWatch(api.ID('post', short_id, comments_sort or 'confidence', 25, focus_comment_short_id, focus_comment_parent_count),
-		(x) ->
-			{ data: post, error, loading } = x
-			if post?.suggested_sort && !comments_sort
-				comments_sort = post.suggested_sort
+
+	api.loadWatch(api.ID('post', short_id), (x) ->
+		{ data: post, error, loading } = x
+		if post?.suggested_sort && !comments_sort
+			comments_sort = post.suggested_sort
 	)
+	api.preload(api.ID('post', short_id, comments_sort or 'confidence', comments_initial_count, focus_comment_short_id, focus_comment_parent_count))
 
 	vote = (current_vote, mouse_button_number) ->
 		new_vote = 
@@ -77,7 +79,7 @@ svelte:head
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-likes={post.likes} data-radial-menu='post' data-short_id={short_id})
+	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={short_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null})
 		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
 			SubredditNavigation(subreddit_name={post.subreddit})
 		nav(style='position:fixed;top:2em;left:calc(50% + 320px);display:flex;flex-flow:column;gap:3px;align-items:flex-start')
@@ -193,12 +195,12 @@ svelte:head
 			menu.post-comments-sort-controls
 				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_short_id: short_id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
 				{#if comments_sort === 'new'}
-					PostCommentsAutorefreshButton(post_short_id={short_id})
+					PostCommentsAutorefreshButton(count={comments_initial_count} post_short_id={short_id})
 			{#if !post.num_comments}
 				p.post-comments-notification-empty [ No comments. ]
 			{:else}
 				{#key comments_sort}
-					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} post_short_id={short_id} sort={comments_sort})
+					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} initial_count={comments_initial_count} post_short_id={short_id} sort={comments_sort})
 {:else if loading}
 	article.post.post-loading Loading...
 

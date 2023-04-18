@@ -7,15 +7,18 @@ script.
 	
 	export focus_comment_parent_count = null
 	export focus_comment_short_id = null
+	export initial_count = null
 	export post_short_id = null
 	export sort = null
 
 	loading = false
 	more_replies_loading = false
 	post = null
+	
 	if focus_comment_short_id
 		setContext('focus_comment_short_id', focus_comment_short_id)
-	api.loadWatch(api.ID('post', post_short_id, sort or 'confidence', 25, focus_comment_short_id, focus_comment_parent_count), (x) ->
+	
+	api.loadWatch(api.ID('post', post_short_id, sort or 'confidence', initial_count, focus_comment_short_id, focus_comment_parent_count), (x) ->
 		{ data: post, loading } = x
 		if post?.more_replies
 			api.watch(post.more_replies_id, (x) ->

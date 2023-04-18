@@ -37,7 +37,7 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-likes={comment.likes} data-radial-menu='comment' data-short_id={short_id} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-id={short_id} data-locked={comment.locked || null} data-radial-menu='comment' data-saved={comment.saved || null} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
 			button.comment-score(on:mousedown={e => vote(comment.likes === true ? 1 : comment.likes === false ? -1 : 0, e.button)}) {comment.score_hidden ? '?' : comment.score}
 			FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
