@@ -11,12 +11,12 @@ script.
 			{ data: subreddit } = x
 		)
 
-a.subreddit-avatar(href='/{name}' style='border-color: {subreddit?.primary_color || subreddit?.key_color || "var(--c-text-strong)"}')
+a.subreddit-avatar(href='/{subreddit ? subreddit.display_name : name}')
 	picture
 		source(srcset={icon_url})
 		source(srcset={subreddit?.community_icon})
 		source(srcset={subreddit?.icon_img})
-		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src='/icon_frog.png')
+		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src='/logo.svg')
 
 style.
 	.subreddit-avatar

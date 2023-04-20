@@ -80,7 +80,7 @@ module.exports = {
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
-			favicon: './src/ui/app/favicon/favicon_16.png',
+			favicon: './src/ui/common/icon/logo.svg',
 			inject: false, // manual script placement in template
 			publicPath: '/',
 			template: './src/ui/app/index.html',

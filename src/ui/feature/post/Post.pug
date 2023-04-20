@@ -45,7 +45,6 @@ script.
 	error = null
 	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	loading = false
-	media_index = 0
 	post = null
 
 	api.loadWatch(api.ID('post', short_id), (x) ->
@@ -67,7 +66,7 @@ script.
 
 svelte:head
 	{#if post}
-		title r/{post.subreddit} - {post.title}
+		title {post.subreddit} / {post.title}
 {#if error}
 	article.post.post-unavailable
 		{#if error.reason}
@@ -82,10 +81,6 @@ svelte:head
 	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={short_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null})
 		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
 			SubredditNavigation(subreddit_name={post.subreddit})
-		nav(style='position:fixed;top:2em;left:calc(50% + 320px);display:flex;flex-flow:column;gap:3px;align-items:flex-start')
-			Button(key='w' text='Prev post in ...')
-			Button(key='s' text='Next post in ...')
-			Button(key='c' text='Next top-level comment')
 		header.post-header
 			button.post-score(on:mousedown={e => vote(post.likes === true ? 1 : post.likes === false ? -1 : 0, e.button)}) {post.hide_score ? '?' : post.score}
 			aside.post-metadata
@@ -130,17 +125,16 @@ svelte:head
 				{#if post.format === 'crosspost'}
 					PostLink(post_short_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
-					{@const media = post.media[media_index]}
+					{#each post.media as media, i}
 						figure.post-figure
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-								{#key media}
-									picture
-										{#if !media.is_gif}
-											{#if media.image_url_960}
-												source(srcset='{media.image_url_960} 2x')
-											{#if media.image_url_640}
-												source(srcset='{media.image_url_640} 1x')
-										img.post-image(alt='image {media_index + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+								picture
+									{#if !media.is_gif}
+										{#if media.image_url_960}
+											source(srcset='{media.image_url_960} 2x')
+										{#if media.image_url_640}
+											source(srcset='{media.image_url_640} 1x')
+									img.post-image(alt='image {i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 							div(style='display:flex; align-items:center; justify-content:space-between; width:100%')
 								figcaption.post-image-caption
 									{#if media.caption_text}
@@ -148,10 +142,7 @@ svelte:head
 									{#if media.caption_url}
 										a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
 								menu.post-content-actions(style='width: auto;gap:1ch')
-									data {media_index + 1} / {post.media.length}
-									{#if post.media.length > 1}
-										Button(action={() => media_index = Math.max(media_index - 1, 0)} disabled={media_index === 0} key='a' text='Prev')
-										Button(action={() => media_index = Math.min(media_index + 1, post.media.length - 1)} disabled={media_index === post.media.length - 1} key='d' text='Next')
+									data {i + 1} / {post.media.length}
 									Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
 				{:else if post.format === 'link'}
 					{#if post.url}

@@ -12,7 +12,8 @@ script.
 		(event) ->
 			if active
 				event.preventDefault()
-				menu[choice](object_data).action()
+				if choice != 0
+					menu[choice](object_data).action()
 				choice = null
 				menu = null
 				object_data = null

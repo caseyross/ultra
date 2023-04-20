@@ -40,13 +40,13 @@ script.
 			{#if type === 'collection'}
 				picture
 					source(srcset='')
-					img.feed-avatar-image(alt='' src='/icon_frog.png')
+					img.feed-avatar-image(alt='' src='/logo.svg')
 				span.feed-avatar-owner-image
 					UserAvatar(name={info.author_name} size='small')
 			{:else if type === 'multireddit'}
 				picture
 					source(srcset='')
-					img.feed-avatar-image(alt='' src='/icon_frog.png')
+					img.feed-avatar-image(alt='' src='/logo.svg')
 				span.feed-avatar-owner-image
 					UserAvatar(name={info.owner} size='small')
 			{:else if type === 'subreddit'}

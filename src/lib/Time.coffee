@@ -1,3 +1,18 @@
+months = [
+	{ short_name: 'Jan' }
+	{ short_name: 'Feb' }
+	{ short_name: 'Mar' }
+	{ short_name: 'Apr' }
+	{ short_name: 'May' }
+	{ short_name: 'Jun' }
+	{ short_name: 'Jul' }
+	{ short_name: 'Aug' }
+	{ short_name: 'Sep' }
+	{ short_name: 'Oct' }
+	{ short_name: 'Nov' }
+	{ short_name: 'Dec' }
+]
+
 units =
 	year:
 		abbr: 'y'
@@ -119,7 +134,7 @@ Time = {
 					[date.getHours(), date.getMinutes(), date.getSeconds()].map((s) -> String(s).padStart(2, '0')).join(':')
 				daysBack = if HHMMSS(currentDate) > HHMMSS(targetDate) then duration.count else duration.count + 1 # string comparison
 			when 'hour'
-				daysBack = if duration.count >= currentDate.getHours() then 1 else 0
+				daysBack = if duration.count > currentDate.getHours() then 1 else 0
 			when 'minute'
 				daysBack = if currentDate.getHours() is 0 and duration.count > currentDate.getMinutes() then 1 else 0
 			when 'second'
@@ -128,11 +143,13 @@ Time = {
 				daysBack = 0
 		if duration.count < 0
 			daysBack = 0
-		switch daysBack
-			when 0 then return 'Today ' + String(targetDate.getHours()).padStart(2, '0') + ':' + String(targetDate.getMinutes()).padStart(2, '0')
-			when 1 then return 'Yesterday'
+		switch
+			when daysBack < 1
+				targetDate.getHours() + ':' + String(targetDate.getMinutes()).padStart(2, '0')
+			when targetDate.getFullYear() == currentDate.getFullYear()
+				months[targetDate.getMonth()].short_name + ' ' + targetDate.getDate()
 			else
-				return targetDate.getFullYear()+ '/' + String(targetDate.getMonth() + 1).padStart(2, '0')  + '/' + String(targetDate.getDate()).padStart(2, '0')
+				months[targetDate.getMonth()].short_name + ' ' + targetDate.getFullYear()
 	
 	msToRelTimeStr: (ms, { abbr = false, endMs = Time.unixMs() } = {}) ->
 		duration = Time.msToTopDuration(endMs - ms, { trunc: true })
