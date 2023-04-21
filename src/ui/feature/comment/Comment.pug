@@ -8,13 +8,13 @@ script.
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import UserByline from '../user/UserByline.pug'
 
+	export id = null
 	export out_of_context = false
-	export short_id = null
 	
 	comment = null
-	focus_comment_short_id = getContext('focus_comment_short_id')
+	focus_comment_id = getContext('focus_comment_id')
 	more_replies_loading = false
-	api.loadWatch(api.ID('comment', short_id),
+	api.loadWatch(api.ID('comment', id),
 		(x) ->
 			{ data: comment } = x
 			if comment?.more_replies
@@ -31,31 +31,31 @@ script.
 				when 2 # right
 					if current_vote is -1 then 0 else -1
 		if new_vote != current_vote
-			api.submit(api.ID('comment_vote', short_id), { numerical_vote: new_vote })
+			api.submit(api.ID('comment_vote', id), { numerical_vote: new_vote })
 
 {#if comment}
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={short_id === focus_comment_short_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-id={short_id} data-locked={comment.locked || null} data-radial-menu='comment' data-saved={comment.saved || null} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-id={id} data-locked={comment.locked || null} data-radial-menu='comment' data-saved={comment.saved || null} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
 			button.comment-score(on:mousedown={e => vote(comment.likes === true ? 1 : comment.likes === false ? -1 : 0, e.button)}) {comment.score_hidden ? '?' : comment.score}
 			FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
 		{#if out_of_context}
 			cite.comment-source-info
-				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_short_id: short_id, post_short_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View in context →')
+				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View in context →')
 		{:else}
 			ol.comment-replies
 				{#if comment.replies.length > 0}
-					{#each comment.replies as reply_short_id (reply_short_id)}
-						svelte:self(short_id={reply_short_id})
+					{#each comment.replies as reply_id (reply_id)}
+						svelte:self(id={reply_id})
 				{#if comment.num_more_replies > 0}
 					menu.comment-more-replies
 						Button(action={() => api.load(comment.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{comment.num_more_replies} more")
 				{#if comment.deeper_replies}
 					menu.comment-more-replies
-						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{short_id}' text='Continue thread...')
+						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{id}' text='Continue thread...')
 
 style.
 	.comment-user-info

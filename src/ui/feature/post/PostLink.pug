@@ -6,15 +6,15 @@ script.
 	import SubredditNameTag from '../subreddit/SubredditNameTag.pug'
 	import PostFlair from './PostFlair.pug'
 
-	export post_short_id = null
+	export post_id = null
 	export show_subreddit = false
 	
 	post = null
 
-	api.loadWatch(api.ID('post', post_short_id), (x) ->
+	api.loadWatch(api.ID('post', post_id), (x) ->
 		{ data: post } = x
 		if post?
-			api.preload(api.ID('post', post_short_id, post.suggested_sort or 'confidence', 25))
+			api.preload(api.ID('post', post_id, post.suggested_sort or 'confidence', 25))
 	)
 
 	vote = (current_vote, mouse_button_number) ->
@@ -25,10 +25,10 @@ script.
 				when 2 # right
 					if current_vote is -1 then 0 else -1
 		if new_vote != current_vote
-			api.submit(api.ID('post_vote', post_short_id), { numerical_vote: new_vote })
+			api.submit(api.ID('post_vote', post_id), { numerical_vote: new_vote })
 
 {#if post}
-	a.post-link(class:post-downvoted={post.likes === false} class:post-nsfw={post.over_18} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={post_short_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} href={format_url({ post_short_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
+	a.post-link(class:post-downvoted={post.likes === false} class:post-nsfw={post.over_18} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={post_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} href={format_url({ post_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
 		{#if show_subreddit}
 			SubredditNameTag(name={post.subreddit})
 		{:else if post.link_flair_text}

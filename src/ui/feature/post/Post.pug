@@ -24,8 +24,8 @@ script.
 	export comments_initial_count = 25
 	export comments_sort = null
 	export focus_comment_parent_count = null
-	export focus_comment_short_id = null
-	export short_id = null
+	export focus_comment_id = null
+	export id = null
 
 	comments_sort_options = [
 		{ label: 'Best', value: 'confidence' }
@@ -47,12 +47,12 @@ script.
 	loading = false
 	post = null
 
-	api.loadWatch(api.ID('post', short_id), (x) ->
+	api.loadWatch(api.ID('post', id), (x) ->
 		{ data: post, error, loading } = x
 		if post?.suggested_sort && !comments_sort
 			comments_sort = post.suggested_sort
 	)
-	api.preload(api.ID('post', short_id, comments_sort or 'confidence', comments_initial_count, focus_comment_short_id, focus_comment_parent_count))
+	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
 
 	vote = (current_vote, mouse_button_number) ->
 		new_vote = 
@@ -62,7 +62,7 @@ script.
 				when 2 # right
 					if current_vote is -1 then 0 else -1
 		if new_vote != current_vote
-			api.submit(api.ID('post_vote', short_id), { numerical_vote: new_vote })
+			api.submit(api.ID('post_vote', id), { numerical_vote: new_vote })
 
 svelte:head
 	{#if post}
@@ -78,7 +78,7 @@ svelte:head
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={short_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null})
+	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null})
 		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
 			SubredditNavigation(subreddit_name={post.subreddit})
 		header.post-header
@@ -108,10 +108,10 @@ svelte:head
 					| Removed by Reddit spam filter.
 				{:else}
 					| Removed by Reddit, reason not specified.
-		{:else if focus_comment_short_id}
+		{:else if focus_comment_id}
 			section.post-content.post-content-incomplete
 				| Viewing a single comment thread.
-				Button(link={format_url({ post_short_id: short_id, subreddit_name: post.subreddit })} text='View complete post')
+				Button(link={format_url({ post_id: id, subreddit_name: post.subreddit })} text='View complete post')
 		{:else if post.format === 'talk'}
 			section.post-content.post-content-unavailable
 				| Reddit Talks are only available on the official app.
@@ -123,7 +123,7 @@ svelte:head
 				{#if post.selftext_html}
 					FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
-					PostLink(post_short_id={post.crosspost_parent} show_subreddit={true})
+					PostLink(post_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
 					{#each post.media as media, i}
 						figure.post-figure
@@ -184,14 +184,14 @@ svelte:head
 						MediaPlayer(audio_url={media.video_audio_url} height={Math.ceil(480 / media.video_aspect_ratio)} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
 		section.post-comments
 			menu.post-comments-sort-controls
-				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_short_id: short_id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
+				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
 				{#if comments_sort === 'new'}
-					PostCommentsAutorefreshButton(count={comments_initial_count} post_short_id={short_id})
+					PostCommentsAutorefreshButton(count={comments_initial_count} post_id={id})
 			{#if !post.num_comments}
 				p.post-comments-notification-empty [ No comments. ]
 			{:else}
 				{#key comments_sort}
-					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_short_id={focus_comment_short_id} initial_count={comments_initial_count} post_short_id={short_id} sort={comments_sort})
+					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_id={focus_comment_id} initial_count={comments_initial_count} post_id={id} sort={comments_sort})
 {:else if loading}
 	article.post.post-loading Loading...
 

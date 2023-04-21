@@ -12,7 +12,7 @@ script.
 	import UserAvatar from '../../feature/user/UserAvatar.pug'
 	import Wiki from '../../feature/wiki/Wiki.pug'
 
-	export collection_short_id = null
+	export collection_id = null
 	export feed_search_query = null
 	export feed_selection_type = null
 	export feed_sort = null
@@ -21,8 +21,8 @@ script.
 	export multireddit_name = null
 	export post_comments_sort = null
 	export post_focus_comment_parent_count = null
-	export post_focus_comment_short_id = null
-	export post_short_id = null
+	export post_focus_comment_id = null
+	export post_id = null
 	export subreddit_name = null
 	export user_name = null
 	export wikipage_name = null
@@ -76,23 +76,23 @@ main
 				{#key wikipage_name}
 					{#key wikipage_version}
 						Wiki(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
-		{:else if post_short_id}
-			{#key post_short_id}
-				{#key post_focus_comment_short_id}
+		{:else if post_id}
+			{#key post_id}
+				{#key post_focus_comment_id}
 					{#key post_focus_comment_parent_count}
-						Post(comments_sort={post_comments_sort} feed_collection_short_id={collection_short_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_short_id={post_focus_comment_short_id} short_id={post_short_id})
+						Post(comments_sort={post_comments_sort} feed_collection_id={collection_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_id={post_focus_comment_id} id={post_id})
 		{:else if feed_type === 'user'}
 			{#key user_name}
 				User(comments_sort={feed_sort} comments_time_range={feed_time_range} name={user_name})
 		{:else if feed_selection_type === 'posts'}
-			{#key collection_short_id}
+			{#key collection_id}
 				{#key multireddit_name}
 					{#key subreddit_name}
 						{#key user_name}
 							{#key feed_search_query}
 								{#key feed_time_range}
 									{#key feed_sort}
-										Feed(type={feed_type} collection_short_id={collection_short_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_short_id={post_short_id})
+										Feed(type={feed_type} collection_id={collection_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_id={post_id})
 		{:else}
 			p [ Not yet implemented. ]
 	section.layout-area-right

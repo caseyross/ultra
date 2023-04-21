@@ -8,7 +8,7 @@ script.
 	import SubredditSidebar from '../subreddit/SubredditSidebar.pug'
 	import FeedPostListControls from './FeedPostListControls.pug'
 
-	export collection_short_id = null
+	export collection_id = null
 	export multireddit_name = null
 	export page_size = 10
 	export search_query = null
@@ -20,7 +20,7 @@ script.
 
 	base_page_id = switch type
 		when 'collection'
-			api.ID('collection', collection_short_id)
+			api.ID('collection', collection_id)
 		when 'multireddit'
 			if search_query
 				api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_query}", time_range, sort, page_size)
@@ -36,18 +36,18 @@ script.
 	error = null
 	has_next_page = false
 	loading = null
-	short_ids = []
+	ids = []
 
 	load_next_page = ->
-		after_short_id = short_ids.at(-1)
-		page_id = api.ID(base_page_id, after_short_id)
+		after_id = ids.at(-1)
+		page_id = api.ID(base_page_id, after_id)
 		api.loadWatch(page_id, (x) ->
 			{ error, data, loading } = x
 			if !error and !loading and data
-				short_ids_subset = data?.posts or data
-				short_ids = short_ids.concat(short_ids_subset.filter((x) -> !short_ids.includes(x)))
+				ids_subset = data?.posts or data
+				ids = ids.concat(ids_subset.filter((x) -> !ids.includes(x)))
 				has_next_page =
-					if short_ids_subset.length < page_size
+					if ids_subset.length < page_size
 						false
 					else
 						true
@@ -57,7 +57,7 @@ script.
 
 svelte:head
 	{#if type === 'collection'}
-		title collection {collection_short_id}
+		title collection {collection_id}
 	{:else if type === 'multireddit'}
 		title {multireddit_name}
 	{:else if type === 'subreddit'}
@@ -69,8 +69,8 @@ nav.feed
 		FeedPostListControls(feed_type={type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
 	{#if type === 'collection' || type === 'multireddit' || type === 'subreddit' || type === 'user'}
 		ol.feed-post-list
-			{#each short_ids as post_short_id (post_short_id)}
-				PostLink(post_short_id={post_short_id} show_subreddit={type !== 'subreddit'})
+			{#each ids as post_id (post_id)}
+				PostLink(post_id={post_id} show_subreddit={type !== 'subreddit'})
 	menu.feed-post-list-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})

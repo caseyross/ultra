@@ -7,7 +7,7 @@ script.
 	
 	export type = null
 
-	export collection_short_id = null
+	export collection_id = null
 	export multireddit_name = null
 	export subreddit_name = null
 	export user_name = null
@@ -16,7 +16,7 @@ script.
 	info = null
 	switch type
 		when 'collection'
-			api.loadWatch(api.ID('collection', collection_short_id), (x) ->
+			api.loadWatch(api.ID('collection', collection_id), (x) ->
 				{ data: info, error } = x
 			)
 		when 'multireddit'
@@ -35,7 +35,7 @@ script.
 {#if error}
 	.feed-avatar.feed-avatar-unavailable
 {:else if info}
-	a.feed-avatar(href={format_url({ collection_short_id, feed_type: type, multireddit_name, subreddit_name, user_name })})
+	a.feed-avatar(href={format_url({ collection_id, feed_type: type, multireddit_name, subreddit_name, user_name })})
 		section
 			{#if type === 'collection'}
 				picture

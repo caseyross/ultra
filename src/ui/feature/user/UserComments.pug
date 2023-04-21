@@ -6,14 +6,14 @@ script.
 	export sort = null
 	export time_range = null
 
-	comment_short_ids = null
+	comment_ids = null
 	error = null
-	api.loadWatch(api.ID('user_comments', name, time_range, sort or 'new', 25), (x) -> { data: comment_short_ids, error } = x)
+	api.loadWatch(api.ID('user_comments', name, time_range, sort or 'new', 25), (x) -> { data: comment_ids, error } = x)
 
 ol.user-comments
-	{#if comment_short_ids}
-		{#each comment_short_ids as short_id}
-			Comment(short_id={short_id} out_of_context={true})
+	{#if comment_ids}
+		{#each comment_ids as id}
+			Comment(id={id} out_of_context={true})
 
 style.
 	.user-comments

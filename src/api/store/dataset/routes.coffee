@@ -1,16 +1,16 @@
 import { get, post } from '../../net/http.coffee'
 
 export default {
-	collection: (collection_short_id) ->
+	collection: (collection_id) ->
 		get("/api/v1/collections/collection", {
-			collection_id: collection_short_id
+			collection_id: collection_id
 			include_links: true
 		})
 	current_user: ->
 		get("/api/v1/me")
-	current_user_messages: (max_messages, after_message_short_id) ->
+	current_user_messages: (max_messages, after_message_id) ->
 		get("/message/inbox", {
-			after: after_message_short_id and "t4_#{after_message_short_id}"
+			after: after_message_id and "t4_#{after_message_id}"
 			limit: max_messages
 			mark: false
 			show: 'all'
@@ -21,17 +21,17 @@ export default {
 		})
 	current_user_preferences: ->
 		get("/api/v1/me/prefs")
-	current_user_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_short_id) ->
+	current_user_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/saved", {
-			after: after_comment_short_id and "t1_#{after_comment_short_id}"
+			after: after_comment_id and "t1_#{after_comment_id}"
 			limit: max_comments
 			sort: comments_sort
 			t: comments_time_range
 			type: 'comments'
 		})
-	current_user_saved_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+	current_user_saved_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/user/#{user_name}/saved", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
+			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
 			sort: posts_sort
 			t: posts_time_range
@@ -55,9 +55,9 @@ export default {
 			show: 'all'
 			sr_detail: true
 		})
-	comment: (comment_short_id) ->
+	comment: (comment_id) ->
 		get("/api/info", {
-			id: "t1_#{comment_short_id}"
+			id: "t1_#{comment_id}"
 		})
 	global_subreddits_new: (max_subreddits) ->
 		get("/subreddits/new", {
@@ -74,24 +74,24 @@ export default {
 	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve({})
 		else get("/api/multi/user/#{user_name}/m/#{multireddit_name}")
-	multireddit_posts: (user_name, multireddit_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+	multireddit_posts: (user_name, multireddit_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get(
 			switch
 				when user_name is 'r' and multireddit_name is 'subscriptions' then "/#{posts_sort}"
 				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort}"
 				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort}"
 			{
-				after: after_post_short_id and "t3_#{after_post_short_id}"
+				after: after_post_id and "t3_#{after_post_id}"
 				limit: max_posts
 				show: 'all'
 				sr_detail: true
 				t: posts_time_range
 			}
 		)
-	post: (post_short_id, comments_sort, max_comments, focus_comment_short_id, focus_comment_parent_count) ->
+	post: (post_id, comments_sort, max_comments, focus_comment_id, focus_comment_parent_count) ->
 		if comments_sort?
-			get("/comments/#{post_short_id}", {
-				comment: focus_comment_short_id
+			get("/comments/#{post_id}", {
+				comment: focus_comment_id
 				context: focus_comment_parent_count
 				limit: max_comments
 				showedits: true
@@ -102,21 +102,21 @@ export default {
 			})
 		else
 			get("/api/info", {
-				id: "t3_#{post_short_id}"
+				id: "t3_#{post_id}"
 			})
-	post_duplicates: (post_short_id, max_posts, after_post_short_id) ->
-		get("/duplicates/#{post_short_id}", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
+	post_duplicates: (post_id, max_posts, after_post_id) ->
+		get("/duplicates/#{post_id}", {
+			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
 		})
-	post_more_replies: (post_short_id, post_comments_sort, post_max_comments, parent_comment_short_id, comment_short_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
+	post_more_replies: (post_id, post_comments_sort, post_max_comments, parent_comment_id, comment_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
 		post("/api/morechildren", {
 			api_type: 'json'
-			children: comment_short_ids
-			link_id: "t3_#{post_short_id}"
+			children: comment_ids
+			link_id: "t3_#{post_id}"
 			sort: post_comments_sort
 		})
-	search_posts: (query_string, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+	search_posts: (query_string, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		path_prefix = ''
 		if query_string.startsWith('multireddit=')
 			[ multireddit_query_string, ...remaining_query ] = query_string.split('+')
@@ -124,7 +124,7 @@ export default {
 			path_prefix = "/user/#{user_name}/m/#{multireddit_name}"
 			query_string = remaining_query.join('+')
 		get("#{path_prefix}/search", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
+			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
 			q: query_string.replaceAll('+', ' ').replaceAll('=', ':') # max 512 chars
 			restrict_sr: path_prefix.length > 0
@@ -158,15 +158,15 @@ export default {
 		get("/r/#{subreddit_name}/about")
 	subreddit_emotes: (subreddit_name) ->
 		get("/api/v1/#{subreddit_name}/emojis/all")
-	subreddit_moderators: (subreddit_name, after_user_short_id) ->
+	subreddit_moderators: (subreddit_name, after_user_id) ->
 		get("/r/#{subreddit_name}/about/moderators", {
-			after: after_user_short_id and "t2_#{after_user_short_id}"
+			after: after_user_id and "t2_#{after_user_id}"
 			limit: 100
 			show: 'all'
 		})
-	subreddit_posts: (subreddit_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+	subreddit_posts: (subreddit_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/r/#{subreddit_name}/#{posts_sort}", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
+			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
 			show: 'all'
 			t: posts_time_range
@@ -189,20 +189,20 @@ export default {
 		get("/user/#{user_name}/about", {
 			sr_detail: true
 		})
-	users: (user_short_ids) ->
+	users: (user_ids) ->
 		get("/api/user_data_by_account_ids", {
-			ids: user_short_ids.split(',').map((short_id) -> "t2_#{short_id}")
+			ids: user_ids.split(',').map((id) -> "t2_#{id}")
 		})
-	user_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_short_id) ->
+	user_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/comments", {
-			after: after_comment_short_id and "t1_#{after_comment_short_id}"
+			after: after_comment_id and "t1_#{after_comment_id}"
 			limit: max_comments
 			sort: comments_sort
 			t: comments_time_range
 		})
-	user_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_short_id) ->
+	user_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/user/#{user_name}/submitted", {
-			after: after_post_short_id and "t3_#{after_post_short_id}"
+			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
 			sort: posts_sort
 			t: posts_time_range
@@ -215,13 +215,13 @@ export default {
 		get("/api/v1/user/username/trophies", {
 			id: user_name
 		})
-	wiki: (subreddit_name, page_name, version_short_id) ->
+	wiki: (subreddit_name, page_name, version_id) ->
 		get("/r/#{subreddit_name}/wiki/#{page_name}", {
-			v: version_short_id
+			v: version_id
 		})
-	wiki_versions: (subreddit_name, page_name, max_versions, after_version_short_id) ->
+	wiki_versions: (subreddit_name, page_name, max_versions, after_version_id) ->
 		get("/r/#{subreddit_name}/wiki/revisions/#{page_name}", {
-			after: after_wikipage_version_short_id and "WikiRevision_#{after_wikipage_version_short_id}"
+			after: after_wikipage_version_id and "WikiRevision_#{after_wikipage_version_id}"
 			limit: max_versions
 			show: 'all'
 		})

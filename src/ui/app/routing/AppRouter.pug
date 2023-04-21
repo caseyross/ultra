@@ -16,7 +16,7 @@ script.
 	set_route = ->
 		route = Object.fromEntries(parse_url(location))
 		feed_type = switch
-			when route.collection_short_id then 'collection'
+			when route.collection_id then 'collection'
 			when route.multireddit_name and route.user_name then 'multireddit'
 			when route.subreddit_name then 'subreddit'
 			when route.user_name then 'user'
@@ -99,7 +99,7 @@ script.
 	set_route()
 
 AppContexts
-	{#if route.post_short_id || (route.subreddit_name && route.wikipage_name) || feed_type}
-		AppContent(collection_short_id={route.collection_short_id} feed_search_query={route.feed_search_query} feed_selection_type={feed_selection_type} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} post_comments_sort={route.post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_short_id={route.post_focus_comment_short_id} post_short_id={route.post_short_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
+	{#if route.post_id || (route.subreddit_name && route.wikipage_name) || feed_type}
+		AppContent(collection_id={route.collection_id} feed_search_query={route.feed_search_query} feed_selection_type={feed_selection_type} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} post_comments_sort={route.post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_id={route.post_focus_comment_id} post_id={route.post_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
 	{:else}
 		AppExternalLink(original_url={location})

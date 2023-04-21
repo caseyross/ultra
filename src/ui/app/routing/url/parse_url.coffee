@@ -32,7 +32,7 @@ export default (url) ->
 	if query.get('comment_sort') in SORT_OPTIONS_POST_COMMENTS
 		vars.set('post_comments_sort', query.get('comment_sort'))
 	vars.set('post_focus_comment_parent_count', query.get('context'))
-	vars.set('post_focus_comment_short_id', query.get('comment'))
+	vars.set('post_focus_comment_id', query.get('comment'))
 	vars.set('wikipage_version', query.get('v'))
 	
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
@@ -57,8 +57,8 @@ export default (url) ->
 	[ a, b, c, d, e, f, g ] = path
 	switch a
 		when 'c', 'collection'
-			vars.set('collection_short_id', b)
-			vars.set('post_short_id', c)
+			vars.set('collection_id', b)
+			vars.set('post_id', c)
 		when 'm', 'multi'
 			vars.set('user_name', b)
 			vars.set('multireddit_name', c)
@@ -66,23 +66,23 @@ export default (url) ->
 				when d in SORT_OPTIONS_FEED
 					vars.set('feed_sort', d)
 				else
-					vars.set('post_short_id', d)
+					vars.set('post_id', d)
 		when 'r', 'subreddit'
 			vars.set('subreddit_name', b)
 			if c in SORT_OPTIONS_FEED
 				vars.set('feed_sort', c)
 			else switch c
 				when 'c', 'collection'
-					vars.set('collection_short_id', d)
+					vars.set('collection_id', d)
 				when 'comments', 'p', 'post'
-					vars.set('post_short_id', d)
-					vars.set('post_focus_comment_short_id', f)
+					vars.set('post_id', d)
+					vars.set('post_focus_comment_id', f)
 					# handle overloaded "sort" on post page
 					vars.set('feed_sort', null)
 					if query.get('sort') in SORT_OPTIONS_POST_COMMENTS
 						vars.set('post_comments_sort', query.get('sort'))
 				when 'duplicates'
-					vars.set('post_short_id', d)
+					vars.set('post_id', d)
 				when 'search'
 					null
 				when 'submit'
@@ -90,9 +90,9 @@ export default (url) ->
 				when 'w', 'wiki'
 					vars.set('wikipage_name', [d, e, f, g].filter((x) -> x).join('/') or 'index')
 				else
-					vars.set('post_short_id', c)
+					vars.set('post_id', c)
 		when 'p', 'post'
-			vars.set('post_short_id', b)
+			vars.set('post_id', b)
 		when 'u', 'user'
 			vars.set('user_name', b)
 			switch c
@@ -104,7 +104,7 @@ export default (url) ->
 					if e in SORT_OPTIONS_FEED
 						vars.set('feed_sort', e)
 				else
-					vars.set('post_short_id', c)
+					vars.set('post_id', c)
 					
 	vars.forEach((value, key) ->
 		if !value

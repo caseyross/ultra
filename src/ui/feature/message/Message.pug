@@ -1,9 +1,9 @@
 script.
 	import api from '../../../api/index.js'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	export short_id = null
+	export id = null
 	private_message = null
-	api.loadWatch(api.ID('private_message', short_id),
+	api.loadWatch(api.ID('private_message', id),
 		(x) -> { data: private_message } = x
 	)
 

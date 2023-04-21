@@ -1,5 +1,5 @@
 export default ({
-	collection_short_id
+	collection_id
 	feed_search_query
 	feed_sort
 	feed_time_range
@@ -7,8 +7,8 @@ export default ({
 	multireddit_name
 	post_comments_sort
 	post_focus_comment_parent_count
-	post_focus_comment_short_id
-	post_short_id
+	post_focus_comment_id
+	post_id
 	subreddit_name
 	user_name
 	wikipage_name
@@ -16,16 +16,16 @@ export default ({
 }) ->
 	path = ['']
 	query = new URLSearchParams
-	if post_short_id
+	if post_id
 		if subreddit_name
 			path.push(subreddit_name)
 		else
 			path.push('p')
-		path.push(post_short_id)
+		path.push(post_id)
 		if post_comments_sort
 			query.set('comment_sort', post_comments_sort)
-		if post_focus_comment_short_id
-			query.set('comment', post_focus_comment_short_id)
+		if post_focus_comment_id
+			query.set('comment', post_focus_comment_id)
 		if post_focus_comment_parent_count
 			query.set('context', post_focus_comment_parent_count)
 	else if wikipage_name
@@ -38,7 +38,7 @@ export default ({
 		switch feed_type
 			when 'collection'
 				path.push('c')
-				path.push(collection_short_id)
+				path.push(collection_id)
 			when 'multireddit'
 				path.push('m')
 				path.push(user_name)

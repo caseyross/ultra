@@ -1,5 +1,5 @@
 export default ({
-	collection_short_id
+	collection_id
 	feed_search_query
 	feed_sort
 	feed_time_range
@@ -8,8 +8,8 @@ export default ({
 	page_type
 	post_comments_sort
 	post_focus_comment_parent_count
-	post_focus_comment_short_id
-	post_short_id
+	post_focus_comment_id
+	post_id
 	subreddit_name
 	user_name
 	wikipage_name
@@ -24,12 +24,12 @@ export default ({
 					path.push('r')
 					path.push(subreddit_name)
 					path.push('comments')
-					path.push(post_short_id)
+					path.push(post_id)
 					if post_comments_sort
 						query.set('sort', post_comments_sort)
-					if post_focus_comment_short_id
+					if post_focus_comment_id
 						path.push('_')
-						path.push(post_focus_comment_short_id)
+						path.push(post_focus_comment_id)
 					if post_focus_comment_parent_count
 						query.set('context', post_focus_comment_parent_count)
 				when 'wiki'
@@ -43,7 +43,7 @@ export default ({
 			switch page_type
 				when 'collection'
 					path.push('collection')
-					path.push(collection_short_id)
+					path.push(collection_id)
 				when 'multireddit'
 					path.push('user')
 					path.push(user_name)

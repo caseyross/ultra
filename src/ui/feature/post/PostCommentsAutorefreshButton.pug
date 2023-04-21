@@ -6,7 +6,7 @@ script.
 	import Button from '../../common/Button.pug'
 	
 	export count = null
-	export post_short_id = null
+	export post_id = null
 	
 	interval_options = [
 		{ label: 'Off', value: -1 }
@@ -33,7 +33,7 @@ script.
 							option
 					)
 					if seconds_until_refresh < 1
-						api.reload(api.ID('post', post_short_id, 'new', count))
+						api.reload(api.ID('post', post_id, 'new', count))
 						seconds_until_refresh = seconds
 				1000
 			)
