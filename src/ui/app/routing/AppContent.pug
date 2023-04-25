@@ -14,7 +14,6 @@ script.
 
 	export collection_id = null
 	export feed_search_query = null
-	export feed_selection_type = null
 	export feed_sort = null
 	export feed_time_range = null
 	export feed_type = null
@@ -71,28 +70,35 @@ script.
 main
 	section.layout-area-left
 	section.layout-area-center
-		{#if wikipage_name}
+		{#if post_id}
+			{#key post_id}
+				{#key post_focus_comment_id}
+					{#key post_focus_comment_parent_count}
+						Post(comments_sort={post_comments_sort} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_id={post_focus_comment_id} id={post_id})
+		{:else if subreddit_name && wikipage_name}
 			{#key subreddit_name}
 				{#key wikipage_name}
 					{#key wikipage_version}
 						Wiki(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
-		{:else if post_id}
-			{#key post_id}
-				{#key post_focus_comment_id}
-					{#key post_focus_comment_parent_count}
-						Post(comments_sort={post_comments_sort} feed_collection_id={collection_id} feed_multireddit_name={multireddit_name} feed_search_query={feed_search_query} feed_sort={feed_sort} feed_subreddit_name={subreddit_name} feed_time_range={feed_time_range} feed_type={feed_type} feed_user_name={user_name} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_id={post_focus_comment_id} id={post_id})
+		{:else if feed_type === 'collection'}
+			{#key collection_id}
+				Feed(type={feed_type} collection_id={collection_id})
+		{:else if feed_type === 'multireddit'}
+			{#key user_name}
+				{#key multireddit_name}
+					{#key feed_search_query}
+						{#key feed_sort}
+							{#key feed_time_range}
+								Feed(type={feed_type} multireddit_name={multireddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range})
+		{:else if feed_type === 'subreddit'}
+			{#key subreddit_name}
+				{#key feed_search_query}
+					{#key feed_sort}
+						{#key feed_time_range}
+							Feed(type={feed_type} subreddit_name={subreddit_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range})
 		{:else if feed_type === 'user'}
 			{#key user_name}
 				User(comments_sort={feed_sort} comments_time_range={feed_time_range} name={user_name})
-		{:else if feed_selection_type === 'posts'}
-			{#key collection_id}
-				{#key multireddit_name}
-					{#key subreddit_name}
-						{#key user_name}
-							{#key feed_search_query}
-								{#key feed_time_range}
-									{#key feed_sort}
-										Feed(type={feed_type} collection_id={collection_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range} selected_post_id={post_id})
 		{:else}
 			p [ Not yet implemented. ]
 	section.layout-area-right

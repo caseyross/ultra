@@ -8,7 +8,6 @@ script.
 	route = null
 	
 	feed_type = null
-	feed_selection_type = null
 	sanitized_feed_sort = null
 	sanitized_feed_time_range = null
 	sanitized_post_comments_sort = null
@@ -21,10 +20,6 @@ script.
 			when route.subreddit_name then 'subreddit'
 			when route.user_name then 'user'
 			else null
-		feed_selection_type = switch
-			when false then 'about' # TODO
-			when route.wikipage_name then 'wiki'
-			else 'posts'
 		sanitized_feed_sort = switch
 			when route.feed_sort then route.feed_sort
 			when feed_type is 'user' then 'new'
@@ -100,6 +95,6 @@ script.
 
 AppContexts
 	{#if route.post_id || (route.subreddit_name && route.wikipage_name) || feed_type}
-		AppContent(collection_id={route.collection_id} feed_search_query={route.feed_search_query} feed_selection_type={feed_selection_type} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} post_comments_sort={route.post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_id={route.post_focus_comment_id} post_id={route.post_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
+		AppContent(collection_id={route.collection_id} feed_facet={route.feed_facet} feed_search_query={route.feed_search_query} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} post_comments_sort={route.post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_id={route.post_focus_comment_id} post_id={route.post_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
 	{:else}
 		AppExternalLink(original_url={location})

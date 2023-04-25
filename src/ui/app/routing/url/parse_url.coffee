@@ -1,7 +1,7 @@
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 RECOGNIZED_TOP_LEVEL_PATH_SEGMENTS =
-	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'm', 'message', 'multi', 'p', 'poll', 'post', 'prefs', 'r', 'reddits', 'report', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
+	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'message', 'p', 'poll', 'post', 'prefs', 'r', 'reddits', 'report', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
 SORT_OPTIONS_FEED = 
 	['controversial', 'hot', 'new', 'rising', 'top']
 SORT_OPTIONS_FEED_FRONTPAGE =
@@ -58,20 +58,18 @@ export default (url) ->
 	switch a
 		when 'c', 'collection'
 			vars.set('collection_id', b)
-			vars.set('post_id', c)
-		when 'm', 'multi'
-			vars.set('user_name', b)
-			vars.set('multireddit_name', c)
-			switch
-				when d in SORT_OPTIONS_FEED
-					vars.set('feed_sort', d)
-				else
-					vars.set('post_id', d)
 		when 'r', 'subreddit'
 			vars.set('subreddit_name', b)
 			if c in SORT_OPTIONS_FEED
+				vars.set('feed_facet', 'posts')
 				vars.set('feed_sort', c)
 			else switch c
+				when 'about'
+					switch d
+						when 'rules'
+							vars.set('feed_facet', 'rules')
+						else
+							vars.set('feed_facet', 'about')
 				when 'c', 'collection'
 					vars.set('collection_id', d)
 				when 'comments', 'p', 'post'
@@ -96,15 +94,36 @@ export default (url) ->
 		when 'u', 'user'
 			vars.set('user_name', b)
 			switch c
-				when 'comments', 'overview', 'submitted'
+				when undefined, 'comments'
+					vars.set('feed_facet', 'comments')
 					if d in SORT_OPTIONS_FEED_USER
 						vars.set('feed_sort', d)
+				when 'downvoted'
+					null
+				when 'gilded'
+					null
+				when 'hidden'
+					null
 				when 'm'
 					vars.set('multireddit_name', d)
 					if e in SORT_OPTIONS_FEED
 						vars.set('feed_sort', e)
+				when 'posts', 'submitted'
+					vars.set('feed_facet', 'posts')
+					if d in SORT_OPTIONS_FEED_USER
+						vars.set('feed_sort', d)
+				when 'saved'
+					switch d
+						when 'posts'
+							vars.set('feed_facet', 'saved_posts')
+						else
+							vars.set('feed_facet', 'saved_comments')
+				when 'upvoted'
+					null
 				else
-					vars.set('post_id', c)
+					vars.set('multireddit_name', c)
+					if e in SORT_OPTIONS_FEED
+						vars.set('feed_sort', d)
 					
 	vars.forEach((value, key) ->
 		if !value
