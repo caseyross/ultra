@@ -9,34 +9,41 @@ script.
 		when 'sticky' then 'This post has been stickied by a moderator. It will remain here until unstickied.'
 		else ''
 	text = switch name
-		when 'archived' then '❖ archived'
-		when 'locked' then '∅ locked'
-		when 'nsfw' then '⚠'
-		when 'oc' then '©'
-		when 'quarantined' then '∅ quarantined'
-		when 'sticky' then '★ pinned'
+		when 'archived' then 'archived'
+		when 'locked' then 'locked'
+		when 'nsfw' then 'nsfw'
+		when 'oc' then 'oc'
+		when 'quarantined' then 'quarantined'
+		when 'sticky' then 'sticky'
 		else name
 
 data.post-tag(class='post-tag-{name}' title={description}) {text}
 
 style.
 	.post-tag
-		border 1px solid
-		border-radius 0.25em
-		font-size 10px
+		border-radius 6px
 		font-feature-settings 'cpsp' 1
-		padding 0 0.25em
+		font-size 10px
+		font-weight bold
+		line-height 1
+		letter-spacing 1px
+		padding 3px 6px
 		text-transform uppercase
 		user-select none
 	.post-tag-archived
-		color tan
+		background tan
+		color white
 	.post-tag-locked
-		color red
+		background gray
+		color white
 	.post-tag-nsfw
-		color indianred
+		background pink
+		color white
 	.post-tag-oc
-		color orange
+		background orange
+		color white
 	.post-tag-quarantined
-		color lime
+		background lime
 	.post-tag-sticky
-		color darkseagreen
+		background darkseagreen
+		color white

@@ -5,7 +5,14 @@ script.
 	export rich_text = null
 	export text = null
 
-span.post-flair(style="background-color: {color || 'white'}; color: {(new Color({ hex: color }))?.isDark() ? 'white' : 'black'}" title={text})
+	background_color = color or 'var(--c-subreddit-theme)'
+	text_color =
+		if color
+			if (new Color({ hex: color })).isDark() then 'white' else 'black'
+		else
+			'var(--c-subreddit-theme-text)'
+
+span.post-flair(style="background-color: {background_color}; color: {text_color}" title={text})
 	{#if rich_text && rich_text.length}
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}
@@ -20,19 +27,17 @@ span.post-flair(style="background-color: {color || 'white'}; color: {(new Color(
 
 style.
 	.post-flair
-		border 1px solid var(--c-text-faint)
-		border-radius 10px
-		display inline-block
-		font-size 13px
-		font-weight 500
-		max-width 100%
-		overflow hidden
-		padding 2px 1em
-		text-overflow ellipsis
+		border-radius 6px
+		font-feature-settings 'cpsp' 1
+		font-size 10px
+		font-weight bold
+		line-height 1
+		letter-spacing 1px
+		padding 3px 6px
+		text-transform uppercase
 		user-select none
-		white-space pre
 	.post-flair-emoji
 		display inline-block
 		height 16px
-		margin-inline-end 4px
+		margin-inline-end 2px
 		vertical-align middle

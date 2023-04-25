@@ -14,7 +14,7 @@ script.
 		header.subreddit-widget-title {widget.shortName}
 		ol.subreddit-widget-links
 			{#each widget.buttons as button}
-				Button(link={relativize_url(button.url)} text={button.text})
+				a(href={relativize_url(button.url)}) {button.text}
 	{:else if widget.kind === 'community-list'}
 		header.subreddit-widget-title {widget.shortName}
 		ol.subreddit-widget-related-subreddits

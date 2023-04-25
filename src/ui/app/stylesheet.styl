@@ -5,30 +5,79 @@
 	&:focus
 		outline-color gold
 
-// Type
+// Typography
 @font-face
 	font-family 'Inter'
 	font-style normal italic
 	font-weight 100 900
 	src url('../../vendor/inter_100_900.woff2')
+@font-face
+	font-family 'Space Mono'
+	font-style normal
+	font-weight 400
+	src url('../../vendor/spacemono_400.ttf')
+@font-face
+	font-family 'Space Mono'
+	font-style italic
+	font-weight 400
+	src url('../../vendor/spacemono_400_i.ttf')
+@font-face
+	font-family 'Space Mono'
+	font-style normal
+	font-weight 700
+	src url('../../vendor/spacemono_700.ttf')
+@font-face
+	font-family 'Space Mono'
+	font-style italic
+	font-weight 700
+	src url('../../vendor/spacemono_700_i.ttf')
 html
-	font-size 14px
-body
-	--f-type-prop 'Inter', sans-serif
-	--f-type-mono 'Roboto Mono', 'Cascadia Mono', 'Consolas', monospace
-	font-family var(--f-type-prop)
-	font-feature-settings 'cv11'
-	font-size 1rem
-	font-weight var(--f-wght-normal)
-	letter-spacing 0.1666px
-	line-height 1.5
-	font-family arial
+	font 13.5px/22px 'Inter'
+	font-feature-settings 'ss01' 1, 'tnum' 1
+	letter-spacing 0.125pt // 1/6 pixel
+code
+pre
+	font 12px/22px 'Space Mono'
+	letter-spacing 0.25pt // 1/3 pixel
+.md
+	h1
+	h2
+	h3
+	h4
+	h5
+	h6
+		line-height 1.1666
+		margin 1em 0 0.5em
+		&:first-child
+			margin-top 0
+	h1
+		font-size 1.4em
+		font-weight var(--f-wght-xstrong)
+		letter-spacing -0.25pt
+	h2
+		font-size 1.3em
+		font-weight var(--f-wght-strong)
+		letter-spacing -0.125pt
+	h3
+		font-size 1.2em
+		font-weight var(--f-wght-strong)
+		letter-spacing -0.125pt
+	h4
+	h5
+	h6
+	b
+	em
+	strong
+		font-size 1em
+		font-weight var(--f-wght-strong)
+		letter-spacing 0
 
 // Theme
 body
 	--c-subreddit-theme-default #cee3f8
 	--c-subreddit-theme-secondary-default orangered
 	--c-subreddit-theme-text-default black
+	font-weight var(--f-wght-normal)
 .color-strategy-black-text
 	--c-blend-normal rgba(0,0,0,0.10)
 	--c-con-weak rgba(255,255,255,0.05)
@@ -39,9 +88,9 @@ body
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong black
 	--c-text-reverse white
-	--f-wght-normal 440
-	--f-wght-strong 560
-	--f-wght-xstrong 640
+	--f-wght-normal 400
+	--f-wght-strong 600
+	--f-wght-xstrong 700
 	color-scheme light
 .color-strategy-white-text
 	--c-blend-normal rgba(255,255,255,0.10)
@@ -53,9 +102,9 @@ body
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong white
 	--c-text-reverse black
-	--f-wght-normal 400
-	--f-wght-strong 530
-	--f-wght-xstrong 560
+	--f-wght-normal 350
+	--f-wght-strong 550
+	--f-wght-xstrong 650
 	color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-con-weak)
@@ -71,36 +120,6 @@ hr
 	border-bottom 1px solid
 	margin 1em auto
 	opacity 0.8
-
-// Headers
-.md
-	h1
-	h2
-	h3
-	h4
-	h5
-	h6
-		font-weight var(--f-wght-strong)
-		letter-spacing -0.1666px
-		line-height 1.333
-		margin 1.666rem 0 0.666rem
-		&:first-child
-			margin-top 0
-	h1
-		font-size 1.333em
-	h2
-		font-size 1.25em
-	h3
-		font-size 1.1666em
-	h4
-	h5
-	h6
-		font-size 1em
-		letter-spacing 0
-	strong
-	b
-		font-weight var(--f-wght-strong)
-		letter-spacing 0
 
 // Lists
 menu
@@ -125,7 +144,7 @@ ul
 			content '-'
 		& > ol
 		& > ul
-			margin-top 0.333em
+			margin 0.333em 0
 		ol > &
 			margin-left 2ch
 		ol > &::marker
@@ -137,13 +156,12 @@ ul
 	table
 		border-collapse collapse
 		font-size 12px
-		font-feature-settings 'cv11', 'tnum'
+		line-height 16px
 		margin 0 0 1em
 		overflow-wrap normal
 	td
 	th
-		border 1px solid
-		padding 3px 6px
+		padding 0 2ch 1ch 0
 		text-align left
 	td
 		vertical-align top
@@ -181,10 +199,8 @@ blockquote
 	font-size 13px
 	margin 0 0 0.666rem
 	padding-left 1ch
-code
-pre
-	font-family var(--f-type-mono)
-	font-size 12px
+	& > :last-child
+		margin-bottom 0
 code
 	background var(--c-con-normal)
 	border-radius 2px
@@ -198,7 +214,7 @@ pre
 	border 1px solid transparent
 	border-radius 6px
 	margin 0 0 1em
-	padding 1em
+	padding 0 1em
 	overflow auto
 	white-space pre-line
 kbd
@@ -248,9 +264,6 @@ summary
 // Media
 iframe
 	border 0
-iframe
-img
-	border-radius 12px
 img
 video
 	box-sizing content-box

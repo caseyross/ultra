@@ -107,7 +107,7 @@ Time = {
 	msToAbsTimeStr: (ms) ->
 		date = new Date(ms)
 		hour = date.getHours()
-		return date.getFullYear() + '/' + String(date.getMonth() + 1).padStart(2, '0')  + '/' + String(date.getDate()).padStart(2, '0') + ' ' + String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0')
+		return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0')  + '-' + String(date.getDate()).padStart(2, '0') + ' ' + String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0')
 	
 	msToAbsRelTimeStr: (ms) ->
 		# We want to account for day boundaries when counting relative days - i.e. treat days as midnight--midnight rather than just a particular number of milliseconds.

@@ -125,25 +125,27 @@ svelte:head
 				{#if post.format === 'crosspost'}
 					PostLink(post_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
-					{#each post.media as media, i}
-						figure.post-figure
+					{#if post.media.length > 1}
+						ol.post-gallery
+							{#each post.media as media, i}
+								figure.post-gallery-image
+									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+										picture
+											{#if !media.is_gif}
+												source(srcset={media.aspect_ratio >= 1.5 ? media.image_url_640 : media.image_url_320})
+											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url})
+									figcaption.post-gallery-image-caption
+										{#if media.caption_text}
+											| {media.caption_text}
+										{#if media.caption_url}
+											a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
+					{:else}
+						{@const media = post.media[0]}
 							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 								picture
 									{#if !media.is_gif}
-										{#if media.image_url_960}
-											source(srcset='{media.image_url_960} 2x')
-										{#if media.image_url_640}
-											source(srcset='{media.image_url_640} 1x')
-									img.post-image(alt='image {i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
-							div(style='display:flex; align-items:center; justify-content:space-between; width:100%')
-								figcaption.post-image-caption
-									{#if media.caption_text}
-										p {media.caption_text}
-									{#if media.caption_url}
-										a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
-								menu.post-content-actions(style='width: auto;gap:1ch')
-									data {i + 1} / {post.media.length}
-									Button(key='e' link={media.image_url} new_tab={true} text='Enlarge')
+										source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+									img.post-image(alt='1 of 1' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -153,20 +155,14 @@ svelte:head
 									script(defer='true' src='https://s.imgur.com/min/embed.js')
 								{:else if embed.script === 'twitter'}
 									script(defer='true' src='https://platform.twitter.com/widgets.js')
-								menu.post-content-actions
-									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.action_description})
 						{:else if iframe_embeds(post.url)}
 							{@const embed = iframe_embeds(post.url)}
 								<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 								<!-- svelte-ignore a11y-missing-attribute -->
 								iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}")
-								menu.post-content-actions
-									Button(key='e' link={relativize_url(post.url)} new_tab={true} text={embed.iframe_action_description})
 						{:else}
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
-							menu.post-content-actions
-								Button(key='e' link={relativize_url(post.url)} new_tab={true} text='Open link')
 				{:else if post.format === 'prediction'}
 					ol.md.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -181,7 +177,7 @@ svelte:head
 						Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} height={Math.ceil(480 / media.video_aspect_ratio)} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
+						MediaPlayer(audio_url={media.video_audio_url} height={270} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
 		section.post-comments
 			menu.post-comments-sort-controls
 				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
@@ -216,7 +212,6 @@ style.
 		flex-flow column nowrap
 		gap 1.333em
 		margin 1.333em 0
-		padding 0 12px
 		width 480px
 		&.post-content-empty
 			margin-bottom 0
@@ -236,10 +231,6 @@ style.
 			flex-flow row nowrap
 			justify-content space-between
 			padding 10px
-		:global(& iframe, & img, & .media-player)
-			margin-inline-start -12px
-			max-width none
-			width calc(100% + 24px)
 		:global(& .twitter-tweet)
 			margin 0 !important
 	.post-content-actions
@@ -247,26 +238,32 @@ style.
 		display flex
 		gap 1em
 		justify-content space-between
-		margin-top 6px
 		width 100%
-	.post-figure
+	.post-gallery
+		display flex
+		flex-flow row wrap
+		gap 1.333em
+	.post-gallery-image
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		width 100%
+		& .post-image
+			aspect-ratio 1
+			object-fit contain
+			width 240px
+	.post-gallery-image-caption
+		color var(--c-text-weak)
+		font-size 12px
 	.post-header
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		padding 0 12px
 		position relative
 		width 480px
 	.post-iframe
 		background black
-	.post-image-caption
-		color var(--c-text-weak)
-		font-size 12px
+		width 100%
 	.post-metadata
 		align-items center
 		color var(--c-text-weak)
@@ -297,7 +294,7 @@ style.
 	.post-title
 		font-size 1.5em
 		font-weight var(--f-wght-xstrong)
-		letter-spacing -0.333px
-		line-height 1.2
+		letter-spacing -0.25pt
+		line-height 1.1666
 		margin 0
 		overflow-wrap anywhere
