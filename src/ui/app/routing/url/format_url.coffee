@@ -40,7 +40,7 @@ export default ({
 				path.push('c')
 				path.push(collection_id)
 			when 'multireddit'
-				path.push('m')
+				path.push('u')
 				path.push(user_name)
 				path.push(multireddit_name)
 			when 'subreddit'
