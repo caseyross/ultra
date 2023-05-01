@@ -29,33 +29,40 @@ script.
 			api.submit(api.ID('post_vote', post_id), { numerical_vote: new_vote })
 
 {#if post}
-	a.post-link(class:post-downvoted={post.likes === false} class:post-nsfw={post.over_18} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={post_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} href={format_url({ post_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
-		ol.post-link-tags
-			{#if post.over_18}
-				PostTag(name='nsfw')
-			{#if post.stickied}
-				PostTag(name='sticky')
-			{#if post.locked}
-				PostTag(name='locked')
-			{#if post.original_content}
-				PostTag(name='oc')
-			{#if show_subreddit}
-				SubredditNameTag(name={post.subreddit})
-			{:else if post.link_flair_text}
-				PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
-		h1.post-link-title(class:md-spoiler-text={post.spoiler}) {post.title}
-		button.post-link-score(on:mousedown={e => vote(post.likes === true ? 1 : post.likes === false ? -1 : 0, e.button)}) {post.hide_score ? '?' : post.score}
-		span {post.num_comments} comments
+	li.post-link(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true})
+		button.post-link-score(on:contextmenu={e => e.preventDefault()} on:mousedown={e => vote(post.likes === true ? 1 : post.likes === false ? -1 : 0, e.button)}) {post.hide_score ? '?' : post.score}
+		a.post-link-body(data-id={post_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null}  href={format_url({ post_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
+			ol.post-link-tags
+				{#if post.over_18}
+					PostTag(name='nsfw')
+				{#if post.stickied}
+					PostTag(name='sticky')
+				{#if post.locked}
+					PostTag(name='locked')
+				{#if post.original_content}
+					PostTag(name='oc')
+				{#if show_subreddit}
+					SubredditNameTag(name={post.subreddit})
+				{:else if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+			h1.post-link-title(class:md-spoiler-text={post.spoiler}) {post.title}
+			data.post-link-num-comments {post.num_comments} comments
 
 style.
 	.post-link
+		position relative
+	.post-link-body
 		align-items flex-start
+		border-radius 12px
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		position relative
-		&.post-with-low-score
-			opacity 0.5
+		padding 12px
+		&:hover
+			background var(--c-subreddit-theme)
+			color var(--c-subreddit-theme-text)
+	.post-link-num-comments
+		color var(--c-text-weak)
 	.post-link-score
 		align-items center
 		color var(--c-text-weak)
@@ -79,3 +86,11 @@ style.
 		line-height 1.333
 		margin 0
 		overflow-wrap anywhere
+		.post-stickied &
+			color darkseagreen
+			font-weight bold
+		&.md-spoiler-text
+			padding 0
+			.post-link-body:hover &
+				background inherit
+				color inherit

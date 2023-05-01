@@ -17,6 +17,7 @@ script.
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
 	import PostFlair from './PostFlair.pug'
 	import PostLink from './PostLink.pug'
+	import PostTag from './PostTag.pug'
 
 	import html_embeds from './embed/html_embeds.coffee'
 	import iframe_embeds from './embed/iframe_embeds.coffee'
@@ -84,12 +85,19 @@ svelte:head
 		header.post-header
 			button.post-score(on:mousedown={e => vote(post.likes === true ? 1 : post.likes === false ? -1 : 0, e.button)}) {post.hide_score ? '?' : post.score}
 			aside.post-metadata
-				div(style='display:flex; align-items:center; gap:1em')
-					Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
-					| by
-					UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				ol.post-tags
+					{#if post.over_18}
+						PostTag(name='nsfw')
+					{#if post.stickied}
+						PostTag(name='sticky')
+					{#if post.locked}
+						PostTag(name='locked')
+					{#if post.original_content}
+						PostTag(name='oc')
+					{#if post.link_flair_text}
+						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
+				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 			h1.post-title {post.title}
 		{#if post.removed_by_category}
 			section.post-content.post-content-unavailable
@@ -120,32 +128,26 @@ svelte:head
 			section.post-content.post-content-empty
 		{:else}
 			section.post-content
-				{#if post.selftext_html}
-					FormattedHTML(html={post.selftext_html})
+				{#if post.selftext_html && post.format !== 'self'}
+					.post-selftext-caption
+						FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					PostLink(post_id={post.crosspost_parent} show_subreddit={true})
 				{:else if post.format === 'image'}
-					{#if post.media.length > 1}
-						ol.post-gallery
-							{#each post.media as media, i}
-								figure.post-gallery-image
-									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-										picture
-											{#if !media.is_gif}
-												source(srcset={media.aspect_ratio >= 1.5 ? media.image_url_640 : media.image_url_320})
-											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url})
+					ol.post-gallery
+						{#each post.media as media, i}
+							figure.post-gallery-image
+								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
+									picture
+										{#if !media.is_gif}
+											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+										img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
+								{#if media.caption_text || media.caption_url}
 									figcaption.post-gallery-image-caption
 										{#if media.caption_text}
 											| {media.caption_text}
 										{#if media.caption_url}
 											a(href={relativize_url(media.caption_url)}) {relativize_url(media.caption_url)}
-					{:else}
-						{@const media = post.media[0]}
-							a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
-								picture
-									{#if !media.is_gif}
-										source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
-									img.post-image(alt='1 of 1' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 				{:else if post.format === 'link'}
 					{#if post.url}
 						{#if html_embeds(post)}
@@ -163,6 +165,9 @@ svelte:head
 						{:else}
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
+				{:else if post.format === 'self'}
+					.post-selftext
+						FormattedHTML(html={post.selftext_html})
 				{:else if post.format === 'prediction'}
 					ol.md.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -212,7 +217,7 @@ style.
 		flex-flow column nowrap
 		gap 1.333em
 		margin 1.333em 0
-		width 480px
+		width 560px
 		&.post-content-empty
 			margin-bottom 0
 		&.post-content-incomplete
@@ -233,6 +238,7 @@ style.
 			padding 10px
 		:global(& .twitter-tweet)
 			margin 0 !important
+			width 420px !important
 	.post-content-actions
 		align-items center
 		display flex
@@ -247,13 +253,11 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 6px
-		& .post-image
-			aspect-ratio 1
-			object-fit contain
-			width 240px
 	.post-gallery-image-caption
 		color var(--c-text-weak)
-		font-size 12px
+		font-size 13px
+		letter-spacing 0.375pt
+		width 480px
 	.post-header
 		align-items flex-start
 		display flex
@@ -263,14 +267,12 @@ style.
 		width 480px
 	.post-iframe
 		background black
-		width 100%
+		width 480px
 	.post-metadata
 		align-items center
 		color var(--c-text-weak)
 		display flex
 		gap 6px
-		justify-content space-between
-		width 100%
 	.post-predictions
 		display flex
 		flex-flow column nowrap
@@ -291,10 +293,19 @@ style.
 			color salmon
 		.post-downvoted &
 			color var(--c-text-faint)
+	.post-selftext
+		width 480px
+	.post-selftext-caption
+		font-size 13px
+		letter-spacing 0.375pt
+		width 480px
+	.post-tags
+		display flex
+		gap 3px
 	.post-title
 		font-size 1.5em
-		font-weight var(--f-wght-xstrong)
+		font-weight var(--f-wght-normal)
 		letter-spacing -0.25pt
-		line-height 1.1666
+		line-height 1.333
 		margin 0
 		overflow-wrap anywhere
