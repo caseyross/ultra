@@ -49,7 +49,7 @@ export default {
 			original =
 				likes: target.likes
 				score: target.score
-			if Number.isFinite(target.score)
+			if Number.isFinite(target.score) and target.score > 0 # unlikely to be able to change a 0 post score
 				target.score = switch target.likes
 					when true then target.score + numerical_vote - 1
 					when null then target.score + numerical_vote
