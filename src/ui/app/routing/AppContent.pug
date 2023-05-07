@@ -28,19 +28,17 @@ script.
 	export wikipage_version = null
 
 	subreddits_subscribed = null
-	unread_mention_count = 0
-	unread_message_count = 0
-	unread_reply_count = 0
+	num_unread_private_messages = null
 	if api.isLoggedIn()
 		api.loadWatch(api.ID('current_user_subreddits_subscribed', 100), (x) ->
 			subreddits_subscribed = x?.data or []
 			subreddits_subscribed.sort()
 		)
-		api.loadWatch('current_user_messages',
-			({ comment_replies, post_replies, private_messages, username_mentions }) ->
-				unread_mention_count = username_mentions?.length or 0
-				unread_message_count = private_messages?.length or 0
-				unread_reply_count = (post_replies?.length + comment_replies?.length) or 0
+		api.loadWatch(api.ID('current_user_private_messages_unread', 10), ({ data: private_messages }) ->
+			num_unread_private_messages = switch
+				when !private_messages?.length then null
+				when 0 < private_messages.length < 10 then String(private_messages.length)
+				else '9+'
 		)
 	subreddits_popular = null
 	api.loadWatch(api.ID('global_subreddits_popular', 25), (x) ->
@@ -105,10 +103,6 @@ main
 nav#global-nav-home(style='display:none')
 	section
 		Button(key='h' link='/' text='Home')
-		{#if api.isLoggedIn()}
-			Button(badge={unread_reply_count || null} key='~' link='/mail/replies' text='Replies')
-			Button(badge={unread_message_count || null} key='!' link='/mail/messages' text='Messages')
-			Button(badge={unread_mention_count || null} key='@' link='/mail/mentions' text='Mentions')
 	section
 		TextInput(key='/' label='Search:')
 	section

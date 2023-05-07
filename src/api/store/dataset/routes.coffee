@@ -8,19 +8,26 @@ export default {
 		})
 	current_user: ->
 		get("/api/v1/me")
-	current_user_messages: (max_messages, after_message_id) ->
-		get("/message/inbox", {
-			after: after_message_id and "t4_#{after_message_id}"
-			limit: max_messages
-			mark: false
-			show: 'all'
-		})
 	current_user_multireddits_owned:  ->
 		get("/api/multi/mine", {
 			expand_srs: true
 		})
 	current_user_preferences: ->
 		get("/api/v1/me/prefs")
+	current_user_private_messages: (max_private_messages, after_private_message_id) ->
+		get("/message/inbox", {
+			after: after_private_message_id and "t4_#{after_private_message_id}"
+			limit: max_private_messages
+			mark: false
+			show: 'all'
+		})
+	current_user_private_messages_unread: (max_private_messages, after_private_message_id) ->
+		get("/message/unread", {
+			after: after_private_message_id and "t4_#{after_private_message_id}"
+			limit: max_private_messages
+			mark: false
+			show: 'all'
+		})
 	current_user_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_comment_id and "t1_#{after_comment_id}"

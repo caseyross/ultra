@@ -30,7 +30,7 @@ export default {
 			dir: numerical_vote
 			id: "t1_#{comment_id}"
 		})
-	message_new: -> ({ as_subreddit_name, body_text, subject, to_user_name }) ->
+	private_message_new: -> ({ as_subreddit_name, body_text, subject, to_user_name }) ->
 		post("/api/compose", {
 			api_type: 'json'
 			from_sr: as_subreddit_name
@@ -38,11 +38,11 @@ export default {
 			text: body_text
 			to: to_user_name
 		})
-	message_reply: -> ({ parent_message_id, text }) ->
+	private_message_reply: -> ({ parent_private_message_id, text }) ->
 		post("/api/comment", {
 			api_type: 'json'
 			text: text
-			thing_id: "t4_#{parent_message_id}"
+			thing_id: "t4_#{parent_private_message_id}"
 		})
 	subreddit_subscribe: (subreddit_name) -> ({ unsubscribe }) ->
 		post("/api/subscribe", {
