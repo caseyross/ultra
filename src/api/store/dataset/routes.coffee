@@ -207,16 +207,16 @@ export default {
 			sort: comments_sort
 			t: comments_time_range
 		})
+	user_multireddits_owned_public: (user_name) ->
+		get("/api/multi/user/#{user_name}", {
+			expand_srs: true
+		})
 	user_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/user/#{user_name}/submitted", {
 			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
 			sort: posts_sort
 			t: posts_time_range
-		})
-	user_public_multireddits: (user_name) ->
-		get("/api/multi/user/#{user_name}", {
-			expand_srs: true
 		})
 	user_trophies: (user_name) ->
 		get("/api/v1/user/username/trophies", {
