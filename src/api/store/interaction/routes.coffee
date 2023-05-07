@@ -30,6 +30,10 @@ export default {
 			dir: numerical_vote
 			id: "t1_#{comment_id}"
 		})
+	private_message_mark_read: -> ({ private_message_id }) ->
+		post("/api/read_message", {
+			id: "t4_#{private_message_id}"
+		})
 	private_message_new: -> ({ as_subreddit_name, body_text, subject, to_user_name }) ->
 		post("/api/compose", {
 			api_type: 'json'

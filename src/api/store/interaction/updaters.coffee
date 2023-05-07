@@ -32,6 +32,16 @@ export default {
 				target.likes = original.likes
 				target.score = original.score
 	
+	private_message_mark_read:
+		targetID: (private_message_id) ->
+			ID('private_message', private_message_id)
+		modify: (target) ->
+			original =
+				read: target.read
+			target.read = true
+			return (target) ->
+				target.read = original.read
+	
 	post_save:
 		targetID: (post_id) ->
 			ID('post', post_id)
