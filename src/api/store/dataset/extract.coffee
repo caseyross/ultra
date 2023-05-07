@@ -232,14 +232,6 @@ export default extract = (rawData, sourceID) ->
 					id: null
 					data: listingDatasets.map(({ main }) -> main.data)
 				result.sub = listingDatasets.flatMap(({ sub }) -> sub)
-		when 'LiveUpdate'
-			result.main =
-				id: null # NOTE: We'd like to assign these as "livethread_update", since live updates appear to have globally unique IDs. Unfortunately, there's no endpoint available to get an update solely by its ID (need thread ID as well), so assigning IDs here would break our data modeling assumptions.
-				data: rawData.data
-		when 'LiveUpdateEvent'
-			result.main =
-				id: ID('livethread', rawData.data.id)
-				data: rawData.data
 		when 'TrophyList'
 			result.main =
 				id: null
