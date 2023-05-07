@@ -30,11 +30,11 @@ script.
 	subreddits_subscribed = null
 	num_unread_private_messages = null
 	if api.isLoggedIn()
-		api.loadWatch(api.ID('current_user_subreddits_subscribed', 100), (x) ->
+		api.loadWatch(api.ID('account_subreddits_subscribed', 100), (x) ->
 			subreddits_subscribed = x?.data or []
 			subreddits_subscribed.sort()
 		)
-		api.loadWatch(api.ID('current_user_private_messages_unread', 10), ({ data: private_messages }) ->
+		api.loadWatch(api.ID('account_private_messages_unread', 10), ({ data: private_messages }) ->
 			num_unread_private_messages = switch
 				when !private_messages?.length then null
 				when 0 < private_messages.length < 10 then String(private_messages.length)

@@ -1,34 +1,29 @@
 import { get, post } from '../../net/http.coffee'
 
 export default {
-	collection: (collection_id) ->
-		get("/api/v1/collections/collection", {
-			collection_id: collection_id
-			include_links: true
-		})
-	current_user: ->
+	account: ->
 		get("/api/v1/me")
-	current_user_multireddits_owned:  ->
+	account_multireddits_owned:  ->
 		get("/api/multi/mine", {
 			expand_srs: true
 		})
-	current_user_preferences: ->
+	account_preferences: ->
 		get("/api/v1/me/prefs")
-	current_user_private_messages: (max_private_messages, after_private_message_id) ->
+	account_private_messages: (max_private_messages, after_private_message_id) ->
 		get("/message/inbox", {
 			after: after_private_message_id and "t4_#{after_private_message_id}"
 			limit: max_private_messages
 			mark: false
 			show: 'all'
 		})
-	current_user_private_messages_unread: (max_private_messages, after_private_message_id) ->
+	account_private_messages_unread: (max_private_messages, after_private_message_id) ->
 		get("/message/unread", {
 			after: after_private_message_id and "t4_#{after_private_message_id}"
 			limit: max_private_messages
 			mark: false
 			show: 'all'
 		})
-	current_user_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
+	account_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_comment_id and "t1_#{after_comment_id}"
 			limit: max_comments
@@ -36,7 +31,7 @@ export default {
 			t: comments_time_range
 			type: 'comments'
 		})
-	current_user_saved_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
+	account_saved_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
@@ -44,23 +39,28 @@ export default {
 			t: posts_time_range
 			type: 'links'
 		})
-	current_user_subreddits_approved_to_submit: (max_subreddits) ->
+	account_subreddits_approved_to_submit: (max_subreddits) ->
 		get("/subreddits/mine/contributor", {
 			limit: max_subreddits
 			show: 'all'
 			sr_detail: true
 		})
-	current_user_subreddits_moderated: (max_subreddits) ->
+	account_subreddits_moderated: (max_subreddits) ->
 		get("/subreddits/mine/moderator", {
 			limit: max_subreddits
 			show: 'all'
 			sr_detail: true
 		})
-	current_user_subreddits_subscribed: (max_subreddits) ->
+	account_subreddits_subscribed: (max_subreddits) ->
 		get("/subreddits/mine/subscriber", {
 			limit: max_subreddits
 			show: 'all'
 			sr_detail: true
+		})
+	collection: (collection_id) ->
+		get("/api/v1/collections/collection", {
+			collection_id: collection_id
+			include_links: true
 		})
 	comment: (comment_id) ->
 		get("/api/info", {

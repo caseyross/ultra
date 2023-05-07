@@ -10,7 +10,7 @@ script.
 		if api.getUser()
 			user_loaded = true
 		else
-			api.loadWatch('current_user',
+			api.loadWatch('account',
 				(x) ->
 					if x?.error
 						user_load_error = x.error
