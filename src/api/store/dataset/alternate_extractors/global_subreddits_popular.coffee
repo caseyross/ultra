@@ -1,4 +1,4 @@
-import extract from './extract.coffee'
+import extract from '../extract.coffee'
 
 export default (rawData) ->
 	datasets = extract(rawData)

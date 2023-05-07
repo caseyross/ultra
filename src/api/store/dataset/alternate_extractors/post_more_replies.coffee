@@ -1,5 +1,5 @@
 import ID from '../../../core/ID.coffee'
-import extract from './extract.coffee'
+import extract from '../extract.coffee'
 
 # Unlike the initially-loaded comments for posts, "more children" results are provided as flat lists instead of trees.
 export default (rawData, sourceID) ->

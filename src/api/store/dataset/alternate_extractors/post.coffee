@@ -1,5 +1,5 @@
 import ID from '../../../core/ID.coffee'
-import extract from './extract.coffee'
+import extract from '../extract.coffee'
 
 # Our "post" API response type is slightly different from Reddit's "t3" kind.
 # Reddit's "t3" kind refers only to bare posts, without their comment replies.

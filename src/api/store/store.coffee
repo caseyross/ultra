@@ -3,7 +3,8 @@ import errors from '../core/errors.coffee'
 import ID from '../core/ID.coffee'
 import log from '../core/log.coffee'
 import ratelimit from '../net/ratelimit.coffee'
-import datasetExtractors from './dataset/extractors/index.js'
+import datasetExtractor from './dataset/extract.coffee'
+import datasetExtractorsAlternate from './dataset/alternate_extractors/index.js'
 import datasetRoutes from './dataset/routes.coffee'
 import datasetUpdaters from './dataset/updaters.coffee'
 import interactionRoutes from './interaction/routes.coffee'
@@ -67,7 +68,7 @@ export reload = (id) ->
 	setLoading(id)
 	return route(...ID.varArray(id)[1..])
 	.then (rawData) ->
-		extract = datasetExtractors[ID.type(id)] ? datasetExtractors.GENERAL
+		extract = datasetExtractorsAlternate[ID.type(id)] ? datasetExtractor
 		extract(rawData, id)
 	.then (datasets) ->
 		log({

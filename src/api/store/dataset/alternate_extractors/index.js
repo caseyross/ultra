@@ -1,5 +1,3 @@
-import extract from './extract.coffee'
-
 // Special extractor functions for API routes that need data restructuring beyond what the general extractor can provide.
 import account from './account.coffee'
 import collection from './collection.coffee'
@@ -11,7 +9,6 @@ import users from './users.coffee'
 import user_public_multireddits from './user_public_multireddits.coffee'
 
 export default {
-	GENERAL: extract,
 	account,
 	collection,
 	global_subreddits_popular,
