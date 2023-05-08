@@ -1,6 +1,7 @@
 script.
 	import api from '../../../api/index.js'
 	
+	import StatTracker from '../../common/StatTracker.coffee'
 	import Button from '../../common/Button.pug'
 	import Label from '../../common/Label.pug'
 
@@ -37,6 +38,7 @@ script.
 	has_next_page = false
 	loading = null
 	ids = []
+	read = []
 
 	load_next_page = ->
 		after_id = ids.at(-1)
@@ -45,7 +47,9 @@ script.
 			{ error, data, loading } = x
 			if !error and !loading and data
 				ids_subset = data?.posts or data
-				ids = ids.concat(ids_subset.filter((x) -> !ids.includes(x)))
+				new_ids = ids_subset.filter((x) -> !ids.includes(x))
+				ids = ids.concat(new_ids)
+				read = read.concat(new_ids.map((x) -> StatTracker.check_post_read(x)))
 				has_next_page =
 					if ids_subset.length < page_size
 						false
@@ -67,10 +71,19 @@ svelte:head
 nav.feed
 	{#if type !== 'collection'}
 		FeedPostListControls(feed_type={type} multireddit_name={multireddit_name} subreddit_name={subreddit_name} user_name={user_name} search_query={search_query} sort={sort} time_range={time_range})
-	{#if type === 'collection' || type === 'multireddit' || type === 'subreddit' || type === 'user'}
-		ol.feed-post-list
-			{#each ids as post_id (post_id)}
-				PostLink(post_id={post_id} show_subreddit={type !== 'subreddit'})
+	{#if loading}
+		.feed-loading-notification Loading...
+	{:else}
+		{#if type === 'collection' || type === 'multireddit' || type === 'subreddit' || type === 'user'}
+			{#if ids.length === 0}
+				.feed-post-list-empty No posts.
+			{:else if !search_query && read.every((x) => x === true)}
+				.feed-post-list-no-unreads You've read all the posts on this page.
+			{:else}
+				ol.feed-post-list
+					{#each ids as post_id, i (post_id)}
+						{#if !search_query && !read[i]}
+							PostLink(post_id={post_id} show_subreddit={type !== 'subreddit'})
 	menu.feed-post-list-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
@@ -84,9 +97,8 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		width 560px
+		width 240px
 	.feed-post-list
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		padding 0 80px

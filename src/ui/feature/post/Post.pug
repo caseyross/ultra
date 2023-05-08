@@ -5,6 +5,7 @@ script.
 
 	import { format_url, relativize_url } from '../../app/routing/url.coffee'
 
+	import StatTracker from '../../common/StatTracker.coffee'
 	import Button from '../../common/Button.pug'
 	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
@@ -64,6 +65,8 @@ script.
 					if current_vote is -1 then 0 else -1
 		if new_vote != current_vote
 			api.submit(api.ID('post_vote', id), { numerical_vote: new_vote })
+
+	StatTracker.mark_post_read(id)
 
 svelte:head
 	{#if post}
