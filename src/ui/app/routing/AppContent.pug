@@ -137,6 +137,7 @@ nav#global-nav-settings
 nav#global-nav-account
 	{#if api.isLoggedIn()}
 		UserAvatar(name={api.getUser()} size='medium')
+		a.inbox-link(class:inbox-link-has-unread={num_unread_private_messages} href='/message/inbox' title='{num_unread_private_messages || 0} unread') 🖂
 		{#if false}
 			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} text='→ Logout')
 	{:else}
@@ -181,6 +182,11 @@ style.
 		height 100dvh
 		overflow auto
 		width 100dvw
+	.inbox-link
+		font-family 'Wingdings'
+		font-size 20px
+		&.inbox-link-has-unread
+			color salmon
 	.layout-area-center
 		align-items center
 		display flex
