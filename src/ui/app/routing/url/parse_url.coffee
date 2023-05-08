@@ -66,6 +66,8 @@ export default (url) ->
 			else switch c
 				when 'about'
 					switch d
+						when 'moderators'
+							vars.set('feed_facet', 'moderators')
 						when 'rules'
 							vars.set('feed_facet', 'rules')
 						else
