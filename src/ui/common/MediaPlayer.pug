@@ -72,7 +72,7 @@ script.
 			audio?.currentTime = video.currentTime
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
-		localStorage['media.volume'] = audio.volume
+		localStorage['ui.media.volume'] = audio.volume
 	scrobbler = null
 	toggle_fullscreen = ->
 		document.activeElement.blur() # prevent browser from forcing focus style for buttons on fullscreen change
@@ -92,7 +92,7 @@ script.
 		)
 
 	onMount ->
-		audio.volume = Number(localStorage['media.volume']) or 0
+		audio.volume = Number(localStorage['ui.media.volume']) or 0
 		player.addEventListener('fullscreenchange', (e) ->
 			if document.fullscreenElement? and document.fullscreenElement is player
 				fullscreen = true
