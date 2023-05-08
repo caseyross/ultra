@@ -1,0 +1,37 @@
+script.
+	import api from '../../../api/index.js'
+	
+	import FormattedHTML from '../../common/FormattedHTML.pug'
+	import UserAvatar from '../../feature/user/UserAvatar.pug'
+
+	export id = null
+	private_message = null
+	api.loadWatch(api.ID('private_message', id),
+		(x) -> { data: private_message } = x
+	)
+
+{#if private_message}
+	article.private-message
+		header.private-message-meta
+			address.private-message-author
+				UserAvatar(name={private_message.author})
+			strong.private-message-subject {private_message.subject}
+		FormattedHTML(html={private_message.body_html})
+
+style.
+	.private-message
+		display inline-flex
+		flex-flow column nowrap
+		gap 6px
+		margin 0.666em 1em
+		max-width 360px
+	:global(.private-message > .md)
+		background var(--c-subreddit-theme)
+		border-radius 12px
+		color var(--c-subreddit-theme-text)
+		display inline-block
+		padding 12px
+	.private-message-meta
+		align-items flex-end
+		display flex
+		gap 6px

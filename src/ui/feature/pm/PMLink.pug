@@ -1,0 +1,30 @@
+script.
+	import api from '../../../api/index.js'
+
+	import PMClassificationTag from './PMClassificationTag.pug'
+	
+	export id = null
+	private_message = null
+	api.loadWatch(api.ID('private_message', id),
+		(x) -> { data: private_message } = x
+	)
+
+{#if private_message}
+	a.private-message-link
+		PMClassificationTag(classification={private_message.type})
+		p.private-message-link-preview-text {private_message.body}
+
+style.
+	.private-message-link
+		border-radius 12px
+		display flex
+		flex-flow column nowrap
+		gap 6px
+		padding 12px
+		&:hover
+			background var(--c-subreddit-theme)
+	.private-message-link-preview-text
+		overflow hidden
+		text-overflow ellipsis
+		white-space nowrap
+		width 100%
