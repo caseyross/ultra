@@ -4,16 +4,15 @@ script.
 	import api from '../../../api/index.js'
 
 	import { format_url, relativize_url } from '../../app/routing/url.coffee'
-
 	import StatTracker from '../../common/StatTracker.coffee'
+
 	import Button from '../../common/Button.pug'
 	import Date from '../../common/Date.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-
+	import CommentEditor from '../comment/CommentEditor.pug'
 	import SubredditNavigation from '../subreddit/SubredditNavigation.pug'	
 	import UserByline from '../user/UserByline.pug'
-
 	import PostComments from './PostComments.pug'
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
 	import PostFlair from './PostFlair.pug'
@@ -48,7 +47,9 @@ script.
 	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	loading = false
 	post = null
-
+	replying = false
+	reply_error = null
+	reply_sending = false
 	api.loadWatch(api.ID('post', id), (x) ->
 		{ data: post, error, loading } = x
 		if post?.suggested_sort && !comments_sort
@@ -56,16 +57,33 @@ script.
 	)
 	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
 
-	vote = (current_vote, mouse_button_number) ->
-		new_vote = 
-			switch mouse_button_number
-				when 0 # left
-					if current_vote is 1 then 0 else 1
-				when 2 # right
-					if current_vote is -1 then 0 else -1
-		if new_vote != current_vote
-			api.submit(api.ID('post_vote', id), { numerical_vote: new_vote })
-
+	interact = (action_type, data) ->
+		switch action_type
+			when 'edit'
+				window.open('https://old.reddit.com/' + id)
+			when 'reply'
+				replying = true
+			when 'reply_finish'
+				api.submit('post_reply', { post_id: id, text: data.text }, (status) ->
+					reply_error = status.error
+					reply_sending = status.sending
+					if status.success
+						replying = false
+				)
+			when 'save'
+				api.submit(api.ID('post_save', id), {})
+			when 'unsave'
+				api.submit(api.ID('post_save', id), { unsave: true })
+			when 'vote'
+				new_vote =
+					switch data.mouse_button_number
+						when 0 # left
+							if data.current_vote is 1 then 0 else 1
+						when 2 # right
+							if data.current_vote is -1 then 0 else -1
+				if new_vote != data.current_vote
+					api.submit(api.ID('post_vote', id), { numerical_vote: new_vote })
+	
 	StatTracker.mark_post_read(id)
 
 svelte:head
@@ -82,11 +100,11 @@ svelte:head
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-id={id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null})
+	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
 		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
 			SubredditNavigation(subreddit_name={post.subreddit})
 		header.post-header
-			button.post-score(on:mousedown={e => vote(post.likes === true ? 1 : post.likes === false ? -1 : 0, e.button)}) {post.hide_score ? '?' : post.score}
+			button.post-score(on:mousedown={e => interact('vote', { current_vote: post.likes === true ? 1 : post.likes === false ? -1 : 0, mouse_button_number: e.button })}) {post.hide_score ? '?' : post.score}
 			aside.post-metadata
 				ol.post-tags
 					{#if post.over_18}
@@ -186,6 +204,8 @@ svelte:head
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
 						MediaPlayer(audio_url={media.video_audio_url} height={270} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
+		{#if replying}
+			CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
 		section.post-comments
 			menu.post-comments-sort-controls
 				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})

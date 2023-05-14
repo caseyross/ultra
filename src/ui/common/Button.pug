@@ -12,6 +12,7 @@ script.
 	export icon_plus = null
 	export link = null
 	export loading = false
+	export loading_text = 'Loading...'
 	export new_tab = false
 	export options = null
 	export popup = false
@@ -37,7 +38,7 @@ script.
 {:else}
 	button.button(class:button-activated={activated} class:button-with-icon-plus={icon_plus} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
 		{#if loading}
-			| Loading...
+			| {loading_text}
 		{:else}
 			{#if key}
 				HotkeyLabel(key={key})

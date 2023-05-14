@@ -4,9 +4,11 @@ import ID from '../core/ID.coffee'
 import log from '../core/log.coffee'
 import ratelimit from '../net/ratelimit.coffee'
 import datasetExtractor from './dataset/extract.coffee'
-import datasetExtractorsAlternate from './dataset/alternate_extractors/index.js'
+import datasetExtractorAlternates from './dataset/alternate_extractors/index.js'
 import datasetRoutes from './dataset/routes.coffee'
 import datasetUpdaters from './dataset/updaters.coffee'
+import interactionExtractors from './interaction/extractors/index.js'
+import interactionPreupdaters from './interaction/preupdaters.coffee'
 import interactionRoutes from './interaction/routes.coffee'
 import interactionUpdaters from './interaction/updaters.coffee'
 
@@ -68,7 +70,7 @@ export reload = (id) ->
 	setLoading(id)
 	return route(...ID.varArray(id)[1..])
 	.then (rawData) ->
-		extract = datasetExtractorsAlternate[ID.type(id)] ? datasetExtractor
+		extract = datasetExtractorAlternates[ID.type(id)] ? datasetExtractor
 		extract(rawData, id)
 	.then (datasets) ->
 		log({
@@ -124,7 +126,7 @@ setLoading = (id) ->
 	cache[id].loading = true
 	notifyWatchers(id)
 
-export submit = (id, payload) ->
+export submit = (id, payload, reportStatus = ->) ->
 	route = interactionRoutes[ID.type(id)]
 	if not route
 		log({
@@ -134,10 +136,11 @@ export submit = (id, payload) ->
 		})
 		return Promise.resolve(null)
 	startTime = Time.unixMs()
-	updater = interactionUpdaters[ID.type(id)]
-	if updater
-		targetID = updater.targetID(...ID.varArray(id)[1..])
-		change = (target) -> updater.modify(target, payload)
+	reportStatus({ error: null, sending: true, success: false })
+	preupdater = interactionPreupdaters[ID.type(id)]
+	if preupdater
+		targetID = preupdater.targetID(...ID.varArray(id)[1..])
+		change = (target) -> preupdater.modify(target, payload)
 		rollback = setDataFromExisting(targetID, change)
 	return route(...ID.varArray(id)[1..])(payload)
 	.then (rawData) ->
@@ -151,21 +154,33 @@ export submit = (id, payload) ->
 						code: error?[0]
 						description: error?[1]
 					})
+		response = rawData?.json?.data or rawData
 		log({
 			id,
-			details: { payload, response: rawData },
+			details: { payload, response },
 			message: "#{Time.msToS(Time.unixMs() - startTime).toFixed(1)}s",
 		})
-		setData(id, rawData)
+		extract = interactionExtractors[ID.type(id)]
+		if extract
+			datasets = extract(response)
+			for dataset in datasets.sub
+				if !cache[dataset.id] or (cache[dataset.id].partial is true) or !dataset.partial
+					setData(dataset.id, dataset.data, dataset.partial)
+			if datasets.main.id
+				setData(datasets.main.id, datasets.main.data, datasets.main.partial)
+				updater = interactionUpdaters[ID.type(id)]
+				if updater
+					targetID = updater.targetID(...ID.varArray(id)[1..])(payload)
+					change = (target) -> updater.modify(target, datasets.main.data)
+					setDataFromExisting(targetID, change)
+		reportStatus({ error: null, sending: false, success: true })
 	.catch (error) ->
+		reportStatus({ error, sending: false, success: false })
 		log({
 			id,
 			details: { payload },
 			error,
 			message: "send failed",
 		})
-		setError(id, error)
 		if rollback
 			setDataFromExisting(targetID, rollback)
-	.finally ->
-		return cache[id]

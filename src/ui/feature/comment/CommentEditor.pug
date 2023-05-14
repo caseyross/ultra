@@ -1,0 +1,42 @@
+script.
+	import { createEventDispatcher } from 'svelte'
+	import Button from '../../common/Button.pug'
+	import Label from '../../common/Label.pug'
+
+	export error = null
+	export initial_text = ''
+	export sending = false
+	dispatch = createEventDispatcher()
+	textbox = null
+
+	submit = ->
+		text = textbox.innerText
+		if text.length > 10000
+			error = { message: 'max length is 10,000 chars' }
+		if !error
+			dispatch('submit', text)
+
+form.comment-editor
+	<!-- svelte-ignore a11y-autofocus -->
+	.comment-editor-text-field(aria-multiline={true} autofocus bind:this={textbox} contenteditable role='textbox') {initial_text}
+	menu.comment-editor-actions
+		Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
+			Button(action={() => submit()} loading={sending} loading_text='Sending...' text='Submit')
+
+style.
+	.comment-editor
+		align-items flex-end
+		display inline-flex
+		flex-flow column nowrap
+		gap 6px
+		margin 0.666em 1em
+		position relative
+	.comment-editor-text-field
+		border 1px solid var(--c-subreddit-theme)
+		border-radius 12px
+		color var(--c-subreddit-theme-text)
+		font 13px monospace
+		line-height inherit
+		padding 12px
+		resize none
+		width 360px

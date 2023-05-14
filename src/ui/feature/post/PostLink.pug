@@ -11,25 +11,14 @@ script.
 	export show_subreddit = false
 	
 	post = null
-
 	api.loadWatch(api.ID('post', post_id), (x) ->
 		{ data: post } = x
 		if post?
 			api.preload(api.ID('post', post_id, post.suggested_sort or 'confidence', 25))
 	)
 
-	vote = (current_vote, mouse_button_number) ->
-		new_vote = 
-			switch mouse_button_number
-				when 0 # left
-					if current_vote is 1 then 0 else 1
-				when 2 # right
-					if current_vote is -1 then 0 else -1
-		if new_vote != current_vote
-			api.submit(api.ID('post_vote', post_id), { numerical_vote: new_vote })
-
 {#if post}
-	a.post-link(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} data-id={post_id} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null}  href={format_url({ post_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
+	a.post-link(class:post-stickied={post.stickied} href={format_url({ post_id, subreddit_name: post.subreddit })} title={post.edited ? Time.sToAbsRelTimeStr(post.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(post.edited) + ')' : Time.sToAbsRelTimeStr(post.created_utc)})
 		ol.post-link-tags
 			{#if post.over_18}
 				PostTag(name='nsfw')
@@ -48,11 +37,15 @@ script.
 style.
 	.post-link
 		align-items flex-start
+		border 1px solid
 		border-radius 12px
+		color var(--c-subreddit-theme)
 		display flex
 		flex-flow column nowrap
 		gap 6px
 		padding 12px
+		&.post-stickied
+			color darkseagreen
 		&:hover
 			background var(--c-subreddit-theme)
 			color var(--c-subreddit-theme-text)
@@ -65,7 +58,6 @@ style.
 		margin 0
 		overflow-wrap anywhere
 		.post-stickied &
-			color darkseagreen
 			font-weight bold
 		&.md-spoiler-text
 			padding 0

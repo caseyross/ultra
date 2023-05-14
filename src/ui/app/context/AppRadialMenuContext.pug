@@ -1,37 +1,66 @@
 script.
-	import available_menus from './radial_menus.coffee'
+	import available_menus from './radial_menus/index.js'
 
 	active = false
 	choice = null
-	object_data = null
 	menu = null
+	menu_variant = null
 	position = null
 	radius = 21
+	target_element = null
+
+	get_modifier_keys = (event) ->
+		modifier_keys = []
+		if event.altKey
+			modifier_keys.push('alt')
+		if event.ctrlKey
+			modifier_keys.push('ctrl')
+		if event.shiftKey
+			modifier_keys.push('shift')
+		if modifier_keys.length > 0
+			return modifier_keys.join('_')
+		return 'unmodified'
 
 	document.addEventListener('contextmenu',
 		(event) ->
 			if active
 				event.preventDefault()
 				if choice != 0
-					menu[choice](object_data).action()
+					menu_direction = switch choice
+						when 1 then 'N'
+						when 2 then 'E'
+						when 3 then 'S'
+						when 4 then 'W'
+					final_choice = menu[menu_direction]?[menu_variant](target_element.dataset)
+					target_element.dispatchEvent(new CustomEvent('radialmenu', { detail: final_choice.value }))
 				choice = null
+				menu_variant = null
 				menu = null
-				object_data = null
+				target_element = null
 				position = null
 				active = false
 	)
 
+	document.addEventListener('keydown',
+		(event) ->
+			if active
+				menu_variant = get_modifier_keys(event)
+	)
+
+	document.addEventListener('keyup',
+		(event) ->
+			if active
+				menu_variant = get_modifier_keys(event)
+	)
+
 	document.addEventListener('mousedown',
 		(event) ->
-			if event.button is 2 and event.detail > 0
+			if event.button is 2 and event.detail > 0 # right button, real event
 				element = event.target.closest("[data-radial-menu]")
 				if element
-					object_data = element.dataset
-					variant = switch
-						when event.ctrlKey and event.shiftKey then 'ctrlShift'
-						when event.ctrlKey then 'ctrl'
-						else 'default'
-					menu = available_menus[object_data.radialMenu][variant]
+					target_element = element
+					menu = available_menus[target_element.dataset.radialMenu]
+					menu_variant = get_modifier_keys(event)
 					choice = 0
 					position = [event.x, event.y]
 					active = true
@@ -60,10 +89,10 @@ script.
 slot
 {#if active}
 	menu.radial-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px') ・
-		figure.radial-menu-icon.radial-menu-icon-north(class:radial-menu-icon-selected={choice === 1}) {menu[1](object_data).icon}
-		figure.radial-menu-icon.radial-menu-icon-east(class:radial-menu-icon-selected={choice === 2}) {menu[2](object_data).icon}
-		figure.radial-menu-icon.radial-menu-icon-south(class:radial-menu-icon-selected={choice === 3}) {menu[3](object_data).icon}
-		figure.radial-menu-icon.radial-menu-icon-west(class:radial-menu-icon-selected={choice === 4}) {menu[4](object_data).icon}
+		figure.radial-menu-icon.radial-menu-icon-north(class:radial-menu-icon-selected={choice === 1}) {menu.N[menu_variant]?.(target_element.dataset).icon || ''}
+		figure.radial-menu-icon.radial-menu-icon-east(class:radial-menu-icon-selected={choice === 2}) {menu.E[menu_variant]?.(target_element.dataset).icon || ''}
+		figure.radial-menu-icon.radial-menu-icon-south(class:radial-menu-icon-selected={choice === 3}) {menu.S[menu_variant]?.(target_element.dataset).icon || ''}
+		figure.radial-menu-icon.radial-menu-icon-west(class:radial-menu-icon-selected={choice === 4}) {menu.W[menu_variant]?.(target_element.dataset).icon || ''}
 
 style.
 	.radial-menu

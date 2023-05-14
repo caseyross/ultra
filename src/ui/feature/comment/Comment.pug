@@ -7,13 +7,20 @@ script.
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import UserByline from '../user/UserByline.pug'
+	import CommentEditor from './CommentEditor.pug'
 
 	export id = null
 	export out_of_context = false
+	focus_comment_id = getContext('focus_comment_id')
 	
 	comment = null
-	focus_comment_id = getContext('focus_comment_id')
+	editing = false
+	edit_error = null
+	edit_sending = false
 	more_replies_loading = false
+	replying = false
+	reply_error = null
+	reply_sending = false
 	api.loadWatch(api.ID('comment', id),
 		(x) ->
 			{ data: comment } = x
@@ -23,22 +30,48 @@ script.
 				)
 	)
 
-	vote = (current_vote, mouse_button_number) ->
-		new_vote = 
-			switch mouse_button_number
-				when 0 # left
-					if current_vote is 1 then 0 else 1
-				when 2 # right
-					if current_vote is -1 then 0 else -1
-		if new_vote != current_vote
-			api.submit(api.ID('comment_vote', id), { numerical_vote: new_vote })
+	interact = (action_type, data) ->
+		switch action_type
+			when 'edit'
+				editing = true
+			when 'edit_finish'
+				api.submit('comment_edit', { comment_id: id, new_text: data.new_text }, (status) ->
+					edit_error = status.error
+					edit_sending = status.sending
+					if status.success
+						editing = false
+				)
+			when 'reply'
+				replying = true
+			when 'reply_finish'
+				api.submit('comment_reply', { parent_comment_id: id, text: data.text }, (status) ->
+					reply_error = status.error
+					reply_sending = status.sending
+					if status.success
+						replying = false
+				)
+			when 'save'
+				api.submit(api.ID('comment_save', id), {})
+			when 'unsave'
+				api.submit(api.ID('comment_save', id), { unsave: true })
+			when 'vote'
+				new_vote =
+					switch data.mouse_button_number
+						when 0 # left
+							if data.current_vote is 1 then 0 else 1
+						when 2 # right
+							if data.current_vote is -1 then 0 else -1
+				if new_vote != data.current_vote
+					api.submit(api.ID('comment_vote', id), { numerical_vote: new_vote })
 
-{#if comment}
+{#if editing}
+	CommentEditor(error={edit_error} initial_text={comment.body} on:submit={e => interact('edit_finish', { new_text: e.detail })} sending={edit_sending})
+{:else if comment}
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-id={id} data-locked={comment.locked || null} data-radial-menu='comment' data-saved={comment.saved || null} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
-			button.comment-score(on:mousedown={e => vote(comment.likes === true ? 1 : comment.likes === false ? -1 : 0, e.button)}) {comment.score_hidden ? '?' : comment.score}
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
+			button.comment-score(on:mousedown={e => interact('vote', { current_vote: comment.likes === true ? 1 : comment.likes === false ? -1 : 0, mouse_button_number: e.button })}) {comment.score_hidden ? '?' : comment.score}
 			FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
@@ -47,6 +80,8 @@ script.
 				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View in context →')
 		{:else}
 			ol.comment-replies
+				{#if replying}
+					CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
 				{#if comment.replies.length > 0}
 					{#each comment.replies as reply_id (reply_id)}
 						svelte:self(id={reply_id})
