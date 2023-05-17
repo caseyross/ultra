@@ -63,10 +63,12 @@ body
 	--c-subreddit-theme-text-default black
 	font-weight var(--f-wght-normal)
 .color-strategy-black-text
+	--c-blend-weak rgba(0,0,0,0.05)
 	--c-blend-normal rgba(0,0,0,0.10)
 	--c-con-weak rgba(255,255,255,0.05)
 	--c-con-normal rgba(255,255,255,0.10)
 	--c-con-strong rgba(255,255,255,0.50)
+	--c-con-xstrong rgba(255,255,255,0.80)
 	--c-hint-normal cornflowerblue
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
@@ -77,10 +79,12 @@ body
 	--f-wght-xstrong 700
 	color-scheme light
 .color-strategy-white-text
+	--c-blend-weak rgba(255,255,255,0.05)
 	--c-blend-normal rgba(255,255,255,0.10)
 	--c-con-weak rgba(0,0,0,0.05)
 	--c-con-normal rgba(0,0,0,0.10)
 	--c-con-strong rgba(0,0,0,0.50)
+	--c-con-xstrong rgba(0,0,0,0.80)
 	--c-hint-normal wheat
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
@@ -91,10 +95,10 @@ body
 	--f-wght-xstrong 650
 	color-scheme dark
 *::-webkit-scrollbar
-	background var(--c-con-weak)
+	background var(--c-blend-weak)
 *::-webkit-scrollbar-thumb
-	background var(--c-con-normal)
-	border-radius 10px
+	background var(--c-blend-normal)
+	border-radius 12px
 
 // Layout sections
 p
@@ -104,10 +108,13 @@ hr
 	border-bottom 1px solid
 	margin 1em auto
 	opacity 0.8
-
-// Lists
 menu
 	padding 0
+fieldset
+	border 0
+	padding 0
+
+// Lists
 ol
 ul
 	list-style none

@@ -1,5 +1,9 @@
 export default
-	N: {}
+	N:
+		unmodified: (data) ->
+			label: if data.canEdit then 'Edit' else ''
+			icon: if data.canEdit then '✏️' else ''
+			value: if data.canEdit then 'edit' else ''
 	E:
 		unmodified: (data) ->
 			label: if data.saved then 'Unsave' else 'Save'
@@ -10,16 +14,8 @@ export default
 			label: 'Reply'
 			icon: '💬'
 			value: 'reply'
-		alt: (data) ->
-			label: 'Edit'
-			icon: '✏️'
-			value: 'edit'
 	W:
 		unmodified: (data) ->
 			label: 'Report'
 			icon: '🚩'
 			value: 'report'
-		alt: (data) ->
-			label: 'Delete'
-			icon: '🗑️'
-			value: 'delete'

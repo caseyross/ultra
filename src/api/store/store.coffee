@@ -170,7 +170,7 @@ export submit = (id, payload, reportStatus = ->) ->
 				setData(datasets.main.id, datasets.main.data, datasets.main.partial)
 				updater = interactionUpdaters[ID.type(id)]
 				if updater
-					targetID = updater.targetID(...ID.varArray(id)[1..])(payload)
+					targetID = updater.targetID(...ID.varArray(id)[1..])
 					change = (target) -> updater.modify(target, datasets.main.data)
 					setDataFromExisting(targetID, change)
 		reportStatus({ error: null, sending: false, success: true })

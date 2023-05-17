@@ -1,21 +1,20 @@
 script.
 	import { createEventDispatcher } from 'svelte'
+	import { virtual_hotkeys } from './actions/hotkeys.coffee'
 	import Button from './Button.pug'
 
-	export open = false
-	export title = ''
-
 	dispatch = createEventDispatcher()
+	hotkeys =
+		'Escape': -> dispatch('close')
 
-{#if open}
-	.popup
-		.popup-overlay(on:mousedown={() => dispatch('close')})
-		article.popup-content
-			header.popup-content-header
-				h1.popup-content-title {title}
-				Button(action={() => dispatch('close')} key='Escape' text='✗')
-			section.popup-content-body
-				slot
+.popup(role='dialog' use:virtual_hotkeys={hotkeys})
+	.popup-overlay(on:mousedown={() => dispatch('close')})
+	<!-- svelte-ignore a11y-autofocus -->
+	.popup-body(autofocus)
+		.popup-body-content
+			slot
+		.popup-body-gradient-fade-top
+		.popup-body-gradient-fade-bottom
 
 style.
 	.popup
@@ -28,29 +27,37 @@ style.
 		top 0
 		width 100dvw
 		z-index 10
+	.popup-body
+		background white
+		border-radius 12px
+		box-shadow 0 0 24px gainsboro
+		max-height 96dvh
+		max-width 700px
+		overflow auto
+		padding 2em
+		position relative
+	.popup-body-content
+		overflow auto
+	.popup-body-gradient-fade-bottom
+		background linear-gradient(to top, white 0px, transparent)
+		bottom 0
+		height 3em
+		left 0
+		pointer-events none
+		position absolute
+		width 100%
+	.popup-body-gradient-fade-top
+		background linear-gradient(to bottom, white 0px, transparent)
+		top 0
+		height 3em
+		left 0
+		pointer-events none
+		position absolute
+		width 100%
 	.popup-overlay
-		background var(--c-con-strong)
+		background var(--c-con-xstrong)
 		height 100%
 		left 0
 		position absolute
 		top 0
 		width 100%
-	.popup-content
-		background var(--c-subreddit-theme)
-		border-radius 10px
-		max-height 90dvh
-		overflow auto
-		width 640px
-		z-index 11
-	.popup-content-body
-		padding 1em
-	.popup-content-header
-		background var(--c-blend-normal)
-		display flex
-		justify-content space-between
-		padding 1em
-	.popup-content-title
-		font-size 18px
-		font-weight 900
-		margin 0
-		text-transform uppercase

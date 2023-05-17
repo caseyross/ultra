@@ -8,9 +8,11 @@ script.
 
 	import Button from '../../common/Button.pug'
 	import Date from '../../common/Date.pug'
-	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
+	import MediaPlayer from '../../common/MediaPlayer.pug'
+	import Popup from '../../common/Popup.pug'
 	import CommentEditor from '../comment/CommentEditor.pug'
+	import ReportMenu from '../menu/ReportMenu.pug'
 	import SubredditNavigation from '../subreddit/SubredditNavigation.pug'	
 	import UserByline from '../user/UserByline.pug'
 	import PostComments from './PostComments.pug'
@@ -50,6 +52,7 @@ script.
 	replying = false
 	reply_error = null
 	reply_sending = false
+	reporting = false
 	api.loadWatch(api.ID('post', id), (x) ->
 		{ data: post, error, loading } = x
 		if post?.suggested_sort && !comments_sort
@@ -64,12 +67,17 @@ script.
 			when 'reply'
 				replying = true
 			when 'reply_finish'
-				api.submit('post_reply', { post_id: id, text: data.text }, (status) ->
+				api.submit(api.ID('post_reply', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count), { text: data.text }, (status) ->
 					reply_error = status.error
 					reply_sending = status.sending
 					if status.success
 						replying = false
 				)
+			when 'report'
+				reporting = true
+			when 'report_finish'
+				api.submit(api.ID('post_report', id), { violation_reason: data.violation_reason })
+				reporting = false
 			when 'save'
 				api.submit(api.ID('post_save', id), {})
 			when 'unsave'
@@ -100,7 +108,7 @@ svelte:head
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
+	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
 		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
 			SubredditNavigation(subreddit_name={post.subreddit})
 		header.post-header
@@ -149,8 +157,8 @@ svelte:head
 			section.post-content.post-content-empty
 		{:else}
 			section.post-content
-				{#if post.selftext_html && post.format !== 'self'}
-					.post-selftext-caption
+				{#if post.selftext_html}
+					.post-selftext
 						FormattedHTML(html={post.selftext_html})
 				{#if post.format === 'crosspost'}
 					PostLink(post_id={post.crosspost_parent} show_subreddit={true})
@@ -186,9 +194,6 @@ svelte:head
 						{:else}
 							.md.post-link
 								a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
-				{:else if post.format === 'self'}
-					.post-selftext
-						FormattedHTML(html={post.selftext_html})
 				{:else if post.format === 'prediction'}
 					ol.md.post-predictions
 						{#each post.tournament_data.predictions as prediction}
@@ -204,6 +209,9 @@ svelte:head
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
 						MediaPlayer(audio_url={media.video_audio_url} height={270} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
+		{#if reporting}
+			Popup(on:close={() => reporting = false})
+				ReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
 		{#if replying}
 			CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
 		section.post-comments
@@ -211,11 +219,8 @@ svelte:head
 				Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
 				{#if comments_sort === 'new'}
 					PostCommentsAutorefreshButton(count={comments_initial_count} post_id={id})
-			{#if !post.num_comments}
-				p.post-comments-notification-empty [ No comments. ]
-			{:else}
-				{#key comments_sort}
-					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_id={focus_comment_id} initial_count={comments_initial_count} post_id={id} sort={comments_sort})
+			{#key comments_sort}
+				PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_id={focus_comment_id} initial_count={comments_initial_count} post_id={id} sort={comments_sort})
 {:else if loading}
 	article.post.post-loading Loading...
 
@@ -231,16 +236,12 @@ style.
 			border-radius 10px
 			color white
 			padding 10px
-	.post-comments-notification-empty
-		color var(--c-text-weak)
-		padding 12px
 	.post-content
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
 		margin 1.333em 0
-		width 560px
 		&.post-content-empty
 			margin-bottom 0
 		&.post-content-incomplete
@@ -270,27 +271,31 @@ style.
 		width 100%
 	.post-gallery
 		display flex
-		flex-flow row wrap
 		gap 1.333em
+		overflow-x auto
+		width 100%
 	.post-gallery-image
 		display flex
+		flex 0 0 auto
 		flex-flow column nowrap
 		gap 6px
 	.post-gallery-image-caption
 		color var(--c-text-weak)
 		font-size 13px
 		letter-spacing 0.375pt
-		width 480px
 	.post-header
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 6px
 		position relative
-		width 480px
 	.post-iframe
 		background black
-		width 480px
+		border-radius 12px
+		width 560px
+	.post-image
+		border 1px solid
+		border-radius 12px
 	.post-metadata
 		align-items center
 		color var(--c-text-weak)
@@ -317,10 +322,6 @@ style.
 		.post-downvoted &
 			color var(--c-text-faint)
 	.post-selftext
-		width 480px
-	.post-selftext-caption
-		font-size 13px
-		letter-spacing 0.375pt
 		width 480px
 	.post-tags
 		display flex

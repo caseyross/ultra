@@ -6,7 +6,10 @@ script.
 	import { format_url } from '../../app/routing/url.coffee'
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
+	import Popup from '../../common/Popup.pug'
+	import ReportMenu from '../menu/ReportMenu.pug'
 	import UserByline from '../user/UserByline.pug'
+
 	import CommentEditor from './CommentEditor.pug'
 
 	export id = null
@@ -21,6 +24,7 @@ script.
 	replying = false
 	reply_error = null
 	reply_sending = false
+	reporting = false
 	api.loadWatch(api.ID('comment', id),
 		(x) ->
 			{ data: comment } = x
@@ -35,7 +39,7 @@ script.
 			when 'edit'
 				editing = true
 			when 'edit_finish'
-				api.submit('comment_edit', { comment_id: id, new_text: data.new_text }, (status) ->
+				api.submit(api.ID('comment_edit', id), { new_text: data.new_text }, (status) ->
 					edit_error = status.error
 					edit_sending = status.sending
 					if status.success
@@ -44,12 +48,17 @@ script.
 			when 'reply'
 				replying = true
 			when 'reply_finish'
-				api.submit('comment_reply', { parent_comment_id: id, text: data.text }, (status) ->
+				api.submit(api.ID('comment_reply', id), { text: data.text }, (status) ->
 					reply_error = status.error
 					reply_sending = status.sending
 					if status.success
 						replying = false
 				)
+			when 'report'
+				reporting = true
+			when 'report_finish'
+				api.submit(api.ID('comment_report', id), { violation_reason: data.violation_reason })
+				reporting = false
 			when 'save'
 				api.submit(api.ID('comment_save', id), {})
 			when 'unsave'
@@ -70,11 +79,14 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
 			button.comment-score(on:mousedown={e => interact('vote', { current_vote: comment.likes === true ? 1 : comment.likes === false ? -1 : 0, mouse_button_number: e.button })}) {comment.score_hidden ? '?' : comment.score}
 			FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
+		{#if reporting}
+			Popup(on:close={() => reporting = false})
+				ReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
 		{#if out_of_context}
 			cite.comment-source-info
 				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View in context →')
@@ -82,9 +94,8 @@ script.
 			ol.comment-replies
 				{#if replying}
 					CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
-				{#if comment.replies.length > 0}
-					{#each comment.replies as reply_id (reply_id)}
-						svelte:self(id={reply_id})
+				{#each comment.replies as reply_id (reply_id)}
+					svelte:self(id={reply_id})
 				{#if comment.num_more_replies > 0}
 					menu.comment-more-replies
 						Button(action={() => api.load(comment.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{comment.num_more_replies} more")

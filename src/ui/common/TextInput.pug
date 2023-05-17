@@ -8,11 +8,13 @@ script.
 	export initial_value = ''
 	export key = null
 	export label = ''
+	export placeholder = ''
 	export type_action = ->
 
 	input = null
-	hotkeys =
-		'/': ->
+	hotkeys = {}
+	if key
+		hotkeys[key] = ->
 			input?.focus()
 			input?.select()
 
@@ -24,7 +26,7 @@ label.text-input-label
 	{#if key}
 		HotkeyLabel(key={key})
 	| {label}
-	input.text-input(bind:this={input} on:change={e => enter_action(e.target.value)} on:keydown={e => (e.key === 'Enter') || e.stopPropagation()} on:input={e => type_action(e.target.value)} use:virtual_hotkeys={hotkeys})
+	input.text-input(bind:this={input} on:change={e => enter_action(e.target.value)} on:keydown={e => (e.key === 'Enter') || e.stopPropagation()} on:input={e => type_action(e.target.value)} placeholder={placeholder} use:virtual_hotkeys={hotkeys})
 
 style.
 	.text-input

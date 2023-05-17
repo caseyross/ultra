@@ -1,24 +1,23 @@
 import { post } from '../../net/http.coffee'
 
 export default {
-	comment_edit: -> ({ comment_id, new_text }) ->
+	comment_edit: (comment_id) -> ({ new_text }) ->
 		post("/api/editusertext", {
 			api_type: 'json'
 			text: new_text
 			thing_id: "t1_#{comment_id}"
 		})
-	comment_reply: -> ({ parent_comment_id, text }) ->
+	comment_reply: (parent_comment_id) -> ({ text }) ->
 		post("/api/comment", {
 			api_type: 'json'
 			text: text
 			thing_id: "t1_#{parent_comment_id}"
 		})
-	comment_report: (comment_id) -> ({ freeform_report_text, rule_text, subreddit_name }) ->
+	# note: freeform reports work the same way as specific rule violations; they are both just text
+	comment_report: (comment_id) -> ({ violation_reason }) ->
 		post("/api/report", {
 			api_type: 'json'
-			custom_text: freeform_report_text
-			reason: rule_text
-			sr_name: subreddit_name
+			reason: violation_reason
 			thing_id: "t1_#{comment_id}"
 		})
 	comment_save: (comment_id) -> ({ unsave }) ->
@@ -30,8 +29,8 @@ export default {
 			dir: numerical_vote
 			id: "t1_#{comment_id}"
 		})
-	private_message_mark_read: -> ({ private_message_id }) ->
-		post("/api/read_message", {
+	private_message_mark_read: (private_message_id) -> ({ unread }) ->
+		post((if unread then "/api/unread_message" else "/api/read_message"), {
 			id: "t4_#{private_message_id}"
 		})
 	private_message_new: -> ({ as_subreddit_name, body_text, subject, to_user_name }) ->
@@ -42,7 +41,7 @@ export default {
 			text: body_text
 			to: to_user_name
 		})
-	private_message_reply: -> ({ parent_private_message_id, text }) ->
+	private_message_reply: (parent_private_message_id) -> ({ text }) ->
 		post("/api/comment", {
 			api_type: 'json'
 			text: text
@@ -54,28 +53,22 @@ export default {
 			skip_initial_defaults: if unsubscribe then null else true
 			sr_name: subreddit_name
 		})
-	post_edit: -> ({ post_id, new_text }) ->
-		post("/api/editusertext", {
-			api_type: 'json'
-			text: new_text
-			thing_id: "t3_#{post_id}"
-		})
 	post_save: (post_id) -> ({ unsave }) ->
 		post((if unsave then "/api/unsave" else "/api/save"), {
 			id: "t3_#{post_id}"
 		})
-	post_reply: -> ({ post_id, text }) ->
+	# note: requires additional comments parameters after post ID (as in `post` route) for the new reply to be automatically synced locally
+	post_reply: (post_id) -> ({ text }) ->
 		post("/api/comment", {
 			api_type: 'json'
 			text: text
 			thing_id: "t3_#{post_id}"
 		})
-	post_report: (post_id) -> ({ freeform_report_text, rule_text, subreddit_name }) ->
+	# note: freeform reports work the same way as specific rule violations; they are both just text
+	post_report: (post_id) -> ({ violation_reason }) ->
 		post("/api/report", {
 			api_type: 'json'
-			custom_text: freeform_report_text
-			reason: rule_text
-			sr_name: subreddit_name
+			reason: violation_reason
 			thing_id: "t3_#{post_id}"
 		})
 	post_vote: (post_id) -> ({ numerical_vote }) ->

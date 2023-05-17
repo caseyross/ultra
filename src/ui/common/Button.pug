@@ -46,8 +46,8 @@ script.
 				| {text}
 			{#if badge}
 				span.button-badge {badge}
-{#if popup}
-	Popup(on:close={() => popup_open = false} open={popup_open} title={text})
+{#if popup_open}
+	Popup(on:close={() => popup_open = false})
 		slot
 
 

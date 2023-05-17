@@ -35,10 +35,10 @@ export default {
 	private_message_mark_read:
 		targetID: (private_message_id) ->
 			ID('private_message', private_message_id)
-		modify: (target) ->
+		modify: (target, { unread }) ->
 			original =
 				read: target.read
-			target.read = true
+			target.read = !unread
 			return (target) ->
 				target.read = original.read
 	
@@ -72,7 +72,7 @@ export default {
 				target.likes = original.likes
 				target.score = original.score
 
-	subreddit_subscription:
+	subreddit_subscribe:
 		targetID: (subreddit_name) ->
 			ID('subreddit', subreddit_name)
 		modify: (target, { unsubscribe }) ->
