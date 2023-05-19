@@ -69,9 +69,10 @@ export default (url) ->
 			post.id = b
 		when 'r', 'subreddit'
 			feed.subreddit_name = b
-			if c is undefined or c in SORT_OPTIONS_FEED or c in ['about', 'search']
+			if c in [undefined, 'about', 'search'] or c in SORT_OPTIONS_FEED
 				feed.type = 'subreddit_posts'
-				feed.sort = c 
+				if c in SORT_OPTIONS_FEED
+					feed.sort = c 
 			else switch c
 				when 'c', 'collection'
 					feed.type = 'collection_posts'
