@@ -8,24 +8,14 @@ script.
 	import Feed from '../../feature/feed/Feed.pug'
 	import Post from '../../feature/post/Post.pug'
 	import SubredditNameTag from '../../feature/subreddit/SubredditNameTag.pug'
-	import User from '../../feature/user/User.pug'
+	import SubredditProfile from '../../feature/subreddit/SubredditProfile.pug'
 	import UserAvatar from '../../feature/user/UserAvatar.pug'
-	import Wiki from '../../feature/wiki/Wiki.pug'
+	import UserProfile from '../../feature/user/UserProfile.pug'
+	import WikiPage from '../../feature/wiki/WikiPage.pug'
 
-	export collection_id = null
-	export feed_search_query = null
-	export feed_sort = null
-	export feed_time_range = null
-	export feed_type = null
-	export multireddit_name = null
-	export post_comments_sort = null
-	export post_focus_comment_parent_count = null
-	export post_focus_comment_id = null
-	export post_id = null
-	export subreddit_name = null
-	export user_name = null
-	export wikipage_name = null
-	export wikipage_version = null
+	export feed = null
+	export post = null
+	export wiki = null
 
 	subreddits_subscribed = null
 	num_unread_private_messages = null
@@ -67,44 +57,35 @@ script.
 
 main
 	section.layout-area-left
-	section.layout-area-center
-		{#if post_id}
-			{#key post_id}
-				{#key post_focus_comment_id}
-					{#key post_focus_comment_parent_count}
-						Post(comments_sort={post_comments_sort} focus_comment_parent_count={post_focus_comment_parent_count} focus_comment_id={post_focus_comment_id} id={post_id})
-		{:else if subreddit_name && wikipage_name}
-			{#key subreddit_name}
-				{#key wikipage_name}
-					{#key wikipage_version}
-						Wiki(page_name={wikipage_name} revision_id={wikipage_version} subreddit_name={subreddit_name})
-		{:else if feed_type === 'collection'}
-			{#key collection_id}
-				Feed(type={feed_type} collection_id={collection_id})
-		{:else if feed_type === 'multireddit'}
-			{#key user_name}
-				{#key multireddit_name}
-					{#key feed_search_query}
-						{#key feed_sort}
-							{#key feed_time_range}
-								Feed(type={feed_type} multireddit_name={multireddit_name} user_name={user_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range})
-		{:else if feed_type === 'subreddit'}
-			{#key subreddit_name}
-				{#key feed_search_query}
-					{#key feed_sort}
-						{#key feed_time_range}
-							Feed(type={feed_type} subreddit_name={subreddit_name} search_query={feed_search_query} sort={feed_sort} time_range={feed_time_range})
-		{:else if feed_type === 'user'}
-			{#key user_name}
-				User(comments_sort={feed_sort} comments_time_range={feed_time_range} name={user_name})
+		{#if feed}
+			{#key feed.collection_id}
+				{#key feed.multireddit_name}
+					{#key feed.subreddit_name}
+						{#key feed.user_name}
+							{#key feed.search_query}
+								{#key feed.sort}
+									{#key feed.time_range}
+										Feed(collection_id={feed.collection_id} duplicate_post_id={feed.duplicate_post_id} multireddit_name={feed.multireddit_name} search_query={feed.search_query} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
+	section.layout-area-right
+		{#if post}
+			{#key post.id}
+				{#key post.focus_comment_id}
+					{#key post.focus_comment_parent_count}
+						Post(comments_sort={post.comments_sort} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
+		{:else if wiki}
+			{#key wiki.subreddit_name}
+				{#key wiki.page_name}
+					{#key wiki.page_version}
+						WikiPage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
+		{:else if feed?.type === 'subreddit_posts'}
+			{#key feed.subreddit_name}
+				SubredditProfile(name={feed.subreddit_name})
+		{:else if feed?.type === 'user_posts'}
+			{#key feed.user_name}
+				UserProfile(name={feed.user_name})
 		{:else}
 			p [ Not yet implemented. ]
-	section.layout-area-right
 nav#global-nav-home(style='display:none')
-	section
-		Button(key='h' link='/' text='Home')
-	section
-		TextInput(key='/' label='Search:')
 	section
 		h1.global-nav-home-category Favorites
 		ol.global-nav-home-subreddits
@@ -178,25 +159,14 @@ style.
 		right 0
 	main
 		display grid
-		grid-template-columns 1fr 720px 1fr
+		grid-template-columns 880px 1fr
 		height 100dvh
-		overflow auto
 		width 100dvw
 	.inbox-link
 		font-family 'Wingdings'
 		font-size 20px
 		&.inbox-link-has-unread
 			color salmon
-	.layout-area-center
-		align-items center
-		display flex
-		flex-flow column nowrap
-		height 100%
-		overflow auto
-		padding 2em 0
-		scrollbar-width none
-		&::-webkit-scrollbar
-			display none
 	.layout-area-left
 		display flex
 		height 100%
@@ -210,6 +180,3 @@ style.
 		height 100%
 		overflow auto
 		padding 2em 0
-		scrollbar-width none
-		&::-webkit-scrollbar
-			display none

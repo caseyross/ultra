@@ -208,7 +208,7 @@ svelte:head
 						Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} height={270} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
+						MediaPlayer(audio_url={media.video_audio_url} height={315} mimic_gif={media.video_is_gif} video_url={media.video_url} width={560})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
@@ -227,8 +227,8 @@ svelte:head
 style.
 	.post
 		padding 2em 0
-		padding-left 120px
-		width 720px
+		padding-left 80px
+		width 100%
 		&.post-loading
 			padding 10px
 		&.post-unavailable
@@ -296,6 +296,7 @@ style.
 	.post-image
 		border 1px solid
 		border-radius 12px
+		min-width 320px
 	.post-metadata
 		align-items center
 		color var(--c-text-weak)

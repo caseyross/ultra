@@ -5,30 +5,14 @@ script.
 	import AppExternalLink from './AppExternalLink.pug'
 	import { parse_url } from './url.coffee'
 
-	route = null
+	route = {}
+	set_route_from_current_url = ->
+		# Copy route from URL, but (statefully) keep the current feed unless the new route requires a different one.
+		new_route = parse_url(location)
+		if !new_route.feed
+			new_route.feed = route.feed
+		route = new_route
 	
-	feed_type = null
-	sanitized_feed_sort = null
-	sanitized_feed_time_range = null
-	sanitized_post_comments_sort = null
-
-	set_route = ->
-		route = Object.fromEntries(parse_url(location))
-		feed_type = switch
-			when route.collection_id then 'collection'
-			when route.multireddit_name and route.user_name then 'multireddit'
-			when route.subreddit_name then 'subreddit'
-			when route.user_name then 'user'
-			else null
-		sanitized_feed_sort = switch
-			when route.feed_sort then route.feed_sort
-			when feed_type is 'user' then 'new'
-			when route.feed_search_query then 'relevance'
-			else 'hot'
-		sanitized_feed_time_range = switch
-			when route.feed_time_range then route.feed_time_range
-			else 'all'
-
 	external_navigate =
 		(link) -> location.href = link.href
 	external_navigate_new_tab =
@@ -36,7 +20,7 @@ script.
 	internal_navigate =
 		(link) ->
 			history.pushState(null, null, new URL(link.href))
-			set_route()
+			set_route_from_current_url()
 	is_external_new_tab_intent =
 		(link) -> link.target is '_blank'
 	is_same_hash =
@@ -84,17 +68,16 @@ script.
 					else external_navigate(link)
 				event.preventDefault()
 	)
-
-	window.addEventListener('popstate', (event) ->
-		set_route()
+	window.addEventListener('popstate',
+		(event) ->
+			set_route_from_current_url()
 	)
 
 	setContext('internal_navigate', internal_navigate) # only for use in rare situations where link tags cannot be used
-	
-	set_route()
+	set_route_from_current_url()
 
 AppContexts
-	{#if route.post_id || (route.subreddit_name && route.wikipage_name) || feed_type}
-		AppContent(collection_id={route.collection_id} feed_facet={route.feed_facet} feed_search_query={route.feed_search_query} feed_sort={sanitized_feed_sort} feed_time_range={sanitized_feed_time_range} feed_type={feed_type} multireddit_name={route.multireddit_name} post_comments_sort={route.post_comments_sort} post_focus_comment_parent_count={route.post_focus_comment_parent_count} post_focus_comment_id={route.post_focus_comment_id} post_id={route.post_id} subreddit_name={route.subreddit_name} user_name={route.user_name} wikipage_name={route.wikipage_name} wikipage_version={route.wikipage_version})
-	{:else}
+	{#if route.external}
 		AppExternalLink(original_url={location})
+	{:else}
+		AppContent(feed={route.feed} post={route.post} wiki={route.wiki})

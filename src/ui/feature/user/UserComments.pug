@@ -3,12 +3,13 @@ script.
 	import Comment from '../comment/Comment.pug'
 
 	export name = null
+	export page_size = 25
 	export sort = null
 	export time_range = null
 
 	comment_ids = null
 	error = null
-	api.loadWatch(api.ID('user_comments', name, time_range, sort or 'new', 25), (x) -> { data: comment_ids, error } = x)
+	api.loadWatch(api.ID('user_comments', name, time_range, sort, page_size), (x) -> { data: comment_ids, error } = x)
 
 ol.user-comments
 	{#if comment_ids}

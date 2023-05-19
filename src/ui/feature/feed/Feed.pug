@@ -9,9 +9,9 @@ script.
 	import Label from '../../common/Label.pug'
 	import TextInput from '../../common/TextInput.pug'
 	import PostLink from '../post/PostLink.pug'
-	import SubredditSidebar from '../subreddit/SubredditSidebar.pug'
 
 	export collection_id = null
+	export duplicate_post_id = null
 	export multireddit_name = null
 	export page_size = 10
 	export search_query = null
@@ -46,19 +46,21 @@ script.
 	]
 
 	base_page_id = switch type
-		when 'collection'
+		when 'collection_posts'
 			api.ID('collection', collection_id)
-		when 'multireddit'
+		when 'duplicate_posts'
+			api.ID('post_duplicates', duplicate_post_id, page_size)
+		when 'multireddit_posts'
 			if search_query
 				api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_query}", time_range, sort, page_size)
 			else
 				api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
-		when 'subreddit'
+		when 'subreddit_posts'
 			if search_query
 				api.ID('search_posts', "subreddit=#{subreddit_name}+#{search_query}", time_range, sort, page_size)
 			else
 				api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
-		when 'user'
+		when 'user_posts'
 			api.ID('user_posts', user_name, time_range, sort, page_size)
 	error = null
 	has_next_page = false
@@ -97,16 +99,16 @@ script.
 	load_next_page()
 
 svelte:head
-	{#if type === 'collection'}
+	{#if type === 'collection_posts'}
 		title collection {collection_id}
-	{:else if type === 'multireddit'}
+	{:else if type === 'multireddit_posts'}
 		title {multireddit_name}
-	{:else if type === 'subreddit'}
+	{:else if type === 'subreddit_posts'}
 		title {subreddit_name}
-	{:else if type === 'user'}
+	{:else if type === 'user_posts'}
 		title {user_name}
 nav.feed
-	{#if type !== 'collection'}
+	{#if type === 'multireddit_posts' || type === 'subreddit_posts' || type === 'user_posts'}
 		menu.feed-controls
 			{#if search_mode_active}
 				TextInput(initial_value={search_query} type_action={value => local_search_query = value})
@@ -122,7 +124,7 @@ nav.feed
 	{#if loading}
 		.feed-loading-notification Loading...
 	{:else}
-		{#if type === 'collection' || type === 'multireddit' || type === 'subreddit' || type === 'user'}
+		{#if type.endsWith('_posts')}
 			{#if ids.length === 0}
 				.feed-post-list-empty No posts.
 			{:else if !search_query && local_filter === 'unread' && read.every((x) => x === true)}
@@ -131,14 +133,11 @@ nav.feed
 				ol.feed-post-list
 					{#each ids as post_id, i (post_id)}
 						{#if search_query || local_filter === 'all' || (local_filter === 'unread' && !read[i])}
-							PostLink(post_id={post_id} show_subreddit={type !== 'subreddit'})
+							PostLink(post_id={post_id} show_subreddit={type !== 'subreddit_posts'})
 	menu.feed-post-list-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
-	{#if type === 'subreddit'}
-		{#key subreddit_name}
-			SubredditSidebar(name={subreddit_name})
 
 style.
 	.feed

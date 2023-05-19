@@ -36,16 +36,16 @@ export default ({
 			query.set('v', wikipage_version)
 	else if feed_type
 		switch feed_type
-			when 'collection'
+			when 'collection_posts'
 				path.push('c')
 				path.push(collection_id)
-			when 'multireddit'
+			when 'multireddit_posts'
 				path.push('u')
 				path.push(user_name)
 				path.push(multireddit_name)
-			when 'subreddit'
+			when 'subreddit_posts'
 				path.push(subreddit_name)
-			when 'user'
+			when 'user_posts'
 				path.push('u')
 				path.push(user_name)
 		if feed_search_query

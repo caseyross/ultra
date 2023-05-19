@@ -3,7 +3,6 @@ export default ({
 	feed_search_query
 	feed_sort
 	feed_time_range
-	feed_type
 	multireddit_name
 	page_type
 	post_comments_sort

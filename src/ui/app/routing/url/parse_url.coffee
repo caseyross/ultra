@@ -16,25 +16,30 @@ TIMERANGE_OPTIONS =
 	['all', 'day', 'hour', 'month', 'week', 'year']
 
 export default (url) ->
-	vars = new Map()
+	feed = {}
+	post = {}
+	wiki = {}
+	external = false
 	
+	#
+	# Parse URL query:
+	#
 	query = new URLSearchParams(decodeURI(url.search))
-	feed_flair_search_query = query.get('f')?.replaceAll('flair_name', 'flair')
-	feed_combined_search_query = [feed_flair_search_query, query.get('q')].filter((x) -> x).join('+')
-	feed_combined_sanitized_search_query = feed_combined_search_query.replaceAll(':', '=').replaceAll(' ', '+')
-	vars.set('feed_search_query', feed_combined_sanitized_search_query)
-	if query.get('sort') in SORT_OPTIONS_FEED_SEARCH and query.get('q')
-		vars.set('feed_sort', query.get('sort'))
-	else if query.get('sort') in SORT_OPTIONS_FEED
-		vars.set('feed_sort', query.get('sort'))
-	if query.get('t') in TIMERANGE_OPTIONS
-		vars.set('feed_time_range', query.get('t'))
-	if query.get('comment_sort') in SORT_OPTIONS_POST_COMMENTS
-		vars.set('post_comments_sort', query.get('comment_sort'))
-	vars.set('post_focus_comment_parent_count', query.get('context'))
-	vars.set('post_focus_comment_id', query.get('comment'))
-	vars.set('wikipage_version', query.get('v'))
+	flair_search_query = query.get('f')?.replaceAll('flair_name', 'flair')
+	combined_search_query = [flair_search_query, query.get('q')].filter((x) -> x).join('+')
+	combined_sanitized_search_query = combined_search_query.replaceAll(':', '=').replaceAll(' ', '+')
+	feed.search_query = combined_sanitized_search_query if combined_sanitized_search_query?.length > 0
+	if (query.get('sort') in SORT_OPTIONS_FEED_SEARCH and query.get('q')) or query.get('sort') in SORT_OPTIONS_FEED
+		feed.sort = query.get('sort')
+	feed.time_range = query.get('t') if query.get('t') in TIMERANGE_OPTIONS
+	post.comments_sort = query.get('comment_sort') if query.get('comment_sort') in SORT_OPTIONS_POST_COMMENTS
+	post.focus_comment_id = query.get('comment')
+	post.focus_comment_parent_count = query.get('context')
+	wiki.page_version = query.get('v')
 	
+	#
+	# Parse URL path:
+	#
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
 	# Strip empty leading/trailing segments.
 	if path[0] is ''
@@ -45,7 +50,7 @@ export default (url) ->
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]
 		path.shift()
 	# Rewrite "front page" requests to conform to multireddit syntax.
-	if path[0] in [undefined, ...SORT_OPTIONS_FEED_FRONTPAGE]
+	if path[0] in [...SORT_OPTIONS_FEED_FRONTPAGE]
 		path = ['user', 'r', 'm', 'subscriptions', ...path]
 	# Treat top-level paths as subreddit names unless we know otherwise.
 	if path[0]? and path[0] not in RECOGNIZED_TOP_LEVEL_PATH_SEGMENTS
@@ -53,82 +58,99 @@ export default (url) ->
 	# Rewrite r/all and r/popular to conform to multireddit syntax.
 	if path[0] is 'r' and path[1] is 'all' or path[1] is 'popular'
 		path = ['user', 'r', 'm', ...path[1..]]
-	
 	[ a, b, c, d, e, f, g ] = path
 	switch a
 		when 'c', 'collection'
-			vars.set('collection_id', b)
-		when 'r', 'subreddit'
-			vars.set('subreddit_name', b)
-			if c in SORT_OPTIONS_FEED
-				vars.set('feed_facet', 'posts')
-				vars.set('feed_sort', c)
-			else switch c
-				when 'about'
-					switch d
-						when 'moderators'
-							vars.set('feed_facet', 'moderators')
-						when 'rules'
-							vars.set('feed_facet', 'rules')
-						else
-							vars.set('feed_facet', 'about')
-				when 'c', 'collection'
-					vars.set('collection_id', d)
-				when 'comments', 'p', 'post'
-					vars.set('post_id', d)
-					vars.set('post_focus_comment_id', f)
-					# handle overloaded "sort" on post page
-					vars.set('feed_sort', null)
-					if query.get('sort') in SORT_OPTIONS_POST_COMMENTS
-						vars.set('post_comments_sort', query.get('sort'))
-				when 'duplicates'
-					vars.set('post_id', d)
-				when 'search'
-					null
-				when 'submit'
-					null
-				when 'w', 'wiki'
-					vars.set('wikipage_name', [d, e, f, g].filter((x) -> x).join('/') or 'index')
-				else
-					vars.set('post_id', c)
+			feed.type = 'collection_posts'
+			feed.collection_id = b
+		when 'message'
+			external = true
 		when 'p', 'post'
-			vars.set('post_id', b)
-		when 'u', 'user'
-			vars.set('user_name', b)
-			switch c
-				when undefined, 'comments'
-					vars.set('feed_facet', 'comments')
-					if d in SORT_OPTIONS_FEED_USER
-						vars.set('feed_sort', d)
-				when 'downvoted'
-					null
-				when 'gilded'
-					null
-				when 'hidden'
-					null
-				when 'm'
-					vars.set('multireddit_name', d)
-					if e in SORT_OPTIONS_FEED
-						vars.set('feed_sort', e)
-				when 'posts', 'submitted'
-					vars.set('feed_facet', 'posts')
-					if d in SORT_OPTIONS_FEED_USER
-						vars.set('feed_sort', d)
-				when 'saved'
-					switch d
-						when 'posts'
-							vars.set('feed_facet', 'saved_posts')
-						else
-							vars.set('feed_facet', 'saved_comments')
-				when 'upvoted'
-					null
+			post.id = b
+		when 'r', 'subreddit'
+			feed.subreddit_name = b
+			if c is undefined or c in SORT_OPTIONS_FEED or c in ['about', 'search']
+				feed.type = 'subreddit_posts'
+				feed.sort = c 
+			else switch c
+				when 'c', 'collection'
+					feed.type = 'collection_posts'
+					feed.collection_id = d
+				when 'comments', 'p', 'post'
+					post.id = d
+					post.focus_comment_id = f
+					# handle overloaded "sort" on legacy post page
+					delete feed.sort
+					post.comments_sort = query.get('sort') if query.get('sort') in SORT_OPTIONS_POST_COMMENTS
+				when 'duplicates'
+					feed.type = 'duplicate_posts'
+					feed.duplicate_post_id = d
+				when 'submit'
+					external = true
+				when 'w', 'wiki'
+					feed.type = 'subreddit_posts'
+					wiki.subreddit_name = b
+					wiki.page_name = [d, e, f, g].filter((x) -> x).join('/') or 'index'
 				else
-					vars.set('multireddit_name', c)
-					if e in SORT_OPTIONS_FEED
-						vars.set('feed_sort', d)
-					
-	vars.forEach((value, key) ->
-		if !value
-			vars.delete(key)
-	)
-	return vars
+					post.id = c
+		when 'u', 'user'
+			feed.user_name = b
+			switch c
+				when undefined, 'comments', 'posts', 'submitted'
+					feed.type = 'user_posts'
+					feed.sort = d if d in SORT_OPTIONS_FEED_USER
+				when 'downvoted'
+					feed.type = 'account_downvoted_posts'
+					external = true
+				when 'm'
+					feed.type = 'multireddit_posts'
+					feed.multireddit_name = d
+					feed.sort = e if e in SORT_OPTIONS_FEED
+				when 'gilded'
+					feed.type = 'account_gilded_posts'
+					external = true
+				when 'hidden'
+					feed.type = 'account_hidden_posts'
+					external = true
+				when 'saved'
+					feed.type = 'account_saved_posts'
+					external = true
+				when 'upvoted'
+					feed.type = 'account_upvoted_posts'
+					external = true
+				else
+					feed.type = 'multireddit_posts'
+					feed.multireddit_name = c
+					feed.sort = d if d in SORT_OPTIONS_FEED
+		else
+			external = true
+
+	#
+	# Fill in feed sort and time range values if not specified by user:
+	#
+	if !feed.sort
+		feed.sort = switch
+			when feed.search_query then 'relevance'
+			when feed.type is 'duplicate_posts' then 'top'
+			when feed.type is 'multireddit_posts' then 'hot'
+			when feed.type is 'subreddit_posts' then 'hot'
+			else 'new'
+	if !feed.time_range
+		feed.time_range = 'all'
+
+	#
+	# Return aggregate route object, removing empty variables:
+	#
+	route = {
+		external
+	}
+	for object in [feed, post, wiki]
+		for k, v of object
+			if !v? then delete object[k]
+	if feed.type
+		route.feed = feed
+	if post.id
+		route.post = post
+	if wiki.page_name and wiki.subreddit_name
+		route.wiki = wiki
+	return route

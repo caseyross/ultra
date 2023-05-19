@@ -6,8 +6,8 @@ script.
 	import UserComments from './UserComments.pug'
 	
 	export name = null
-	export comments_sort = null
-	export comments_time_range = null
+	local_sort = 'new'
+	local_time_range = 'all'
 	
 	trophies = null
 	user = null
@@ -35,9 +35,9 @@ svelte:head
 		{:else if user.is_blocked}
 			.user-unavailable-notice You blocked this user.
 		{:else}
-			{#key comments_sort}
-				{#key comments_time_range}
-					UserComments(name={name} sort={comments_sort} time_range={comments_time_range})
+			{#key local_sort}
+				{#key local_time_range}
+					UserComments(name={name} sort={local_sort} time_range={local_time_range})
 
 style.
 	.user
