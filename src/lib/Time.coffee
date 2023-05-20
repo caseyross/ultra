@@ -95,6 +95,10 @@ Time = {
 						count,
 						unit
 					}
+		return {
+			count: 0
+			unit: units.millisecond
+		}
 	
 	msToMediaDurationStr: (ms) ->
 		s = Time.msToS(ms, { trunc: true })
