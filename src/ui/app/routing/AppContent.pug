@@ -18,16 +18,16 @@ script.
 	export wiki = null
 
 	subreddits_subscribed = null
-	num_unread_private_messages = null
+	num_unread_messages = null
 	if api.isLoggedIn()
 		api.loadWatch(api.ID('account_subreddits_subscribed', 100), (x) ->
 			subreddits_subscribed = x?.data or []
 			subreddits_subscribed.sort()
 		)
-		api.loadWatch(api.ID('account_private_messages_received_unread', 10), ({ data: private_messages }) ->
-			num_unread_private_messages = switch
-				when !private_messages?.length then null
-				when 0 < private_messages.length < 10 then String(private_messages.length)
+		api.loadWatch(api.ID('account_messages_received_unread', 10), ({ data: messages }) ->
+			num_unread_messages = switch
+				when !messages?.length then null
+				when 0 < messages.length < 10 then String(messages.length)
 				else '9+'
 		)
 	subreddits_popular = null
@@ -118,7 +118,7 @@ nav#global-nav-settings
 nav#global-nav-account
 	{#if api.isLoggedIn()}
 		UserAvatar(name={api.getUser()} size='medium')
-		a.inbox-link(class:inbox-link-has-unread={num_unread_private_messages} href='/message/inbox' title='{num_unread_private_messages || 0} unread') 🖂
+		a.inbox-link(class:inbox-link-has-unread={num_unread_messages} href='/message/inbox' title='{num_unread_messages || 0} unread') 🖂
 		{#if false}
 			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} text='→ Logout')
 	{:else}

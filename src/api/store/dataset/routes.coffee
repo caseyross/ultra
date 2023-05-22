@@ -10,24 +10,24 @@ export default {
 	account_preferences: ->
 		get("/api/v1/me/prefs")
 	# Note: private message listings 
-	account_private_messages_received: (max_private_messages, after_id, after_type) ->
+	account_messages_received: (max_messages, after_id, after_type) ->
 		get("/message/inbox", {
 			after: after_id and after_type and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
-			limit: max_private_messages
+			limit: max_messages
 			mark: false
 			show: 'all'
 		})
-	account_private_messages_received_unread: (max_private_messages, after_id, after_type) ->
+	account_messages_received_unread: (max_messages, after_id, after_type) ->
 		get("/message/unread", {
 			after: after_id and after_type and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
-			limit: max_private_messages
+			limit: max_messages
 			mark: false
 			show: 'all'
 		})
-	account_private_messages_sent: (max_private_messages, after_id, after_type) ->
+	account_messages_sent: (max_messages, after_id, after_type) ->
 		get("/message/sent", {
 			after: after_id and after_type and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
-			limit: max_private_messages
+			limit: max_messages
 			mark: false
 			show: 'all'
 		})

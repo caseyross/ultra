@@ -29,11 +29,11 @@ export default {
 			dir: numerical_vote
 			id: "t1_#{comment_id}"
 		})
-	private_message_mark_read: (private_message_id) -> ({ unread }) ->
+	message_mark_read: (message_id) -> ({ unread }) ->
 		post((if unread then "/api/unread_message" else "/api/read_message"), {
-			id: "t4_#{private_message_id}"
+			id: "t4_#{message_id}"
 		})
-	private_message_new: -> ({ as_subreddit_name, body_text, subject, to_user_name }) ->
+	message_new: -> ({ as_subreddit_name, body_text, subject, to_user_name }) ->
 		post("/api/compose", {
 			api_type: 'json'
 			from_sr: as_subreddit_name
@@ -41,11 +41,11 @@ export default {
 			text: body_text
 			to: to_user_name
 		})
-	private_message_reply: (parent_private_message_id) -> ({ text }) ->
+	message_reply: (parent_message_id) -> ({ text }) ->
 		post("/api/comment", {
 			api_type: 'json'
 			text: text
-			thing_id: "t4_#{parent_private_message_id}"
+			thing_id: "t4_#{parent_message_id}"
 		})
 	subreddit_subscribe: (subreddit_name) -> ({ unsubscribe }) ->
 		post("/api/subscribe", {

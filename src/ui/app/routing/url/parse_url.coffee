@@ -64,7 +64,7 @@ export default (url) ->
 			feed.type = 'collection_posts'
 			feed.collection_id = b
 		when 'message'
-			feed.type = 'account_private_messages'
+			feed.type = 'account_messages'
 			switch b
 				when 'compose'
 					external = true

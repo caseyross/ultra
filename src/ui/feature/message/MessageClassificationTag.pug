@@ -1,18 +1,18 @@
 script.
 	export classification = null
 
-data.private-message-classification-tag(class="private-message-classification-tag-{classification.replace('_', '-')}")
+data.message-classification-tag(class="message-classification-tag-{classification.replace('_', '-')}")
 	{#if classification === 'comment_reply'}
 		| comment reply
 	{:else if classification === 'post_reply'}
 		| post reply
-	{:else if classification === 'private_message'}
+	{:else if classification === 'message'}
 		| private message
 	{:else if classification === 'username_mention'}
 		| mention
 
 style.
-	.private-message-classification-tag
+	.message-classification-tag
 		border-radius 6px
 		font-size 10px
 		font-weight bold
@@ -21,15 +21,15 @@ style.
 		padding 3px 6px
 		text-transform uppercase
 		user-select none
-	.private-message-classification-tag-comment-reply
+	.message-classification-tag-comment-reply
 		background black
 		color white
-	.private-message-classification-tag-mention
+	.message-classification-tag-mention
 		background black
 		color white
-	.private-message-classification-tag-message
+	.message-classification-tag-message
 		background black
 		color white
-	.private-message-classification-tag-post-reply
+	.message-classification-tag-post-reply
 		background black
 		color white

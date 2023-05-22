@@ -4,30 +4,30 @@ script.
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import UserAvatar from '../../feature/user/UserAvatar.pug'
 
-	export private_message = null
+	export message = null
 
-{#if private_message}
-	article.private-message
-		header.private-message-meta
-			address.private-message-author
-				UserAvatar(name={private_message.author})
-			strong.private-message-subject {private_message.subject}
-		FormattedHTML(html={private_message.body_html})
+{#if message}
+	article.message
+		header.message-meta
+			address.message-author
+				UserAvatar(name={message.author})
+			strong.message-subject {message.subject}
+		FormattedHTML(html={message.body_html})
 
 style.
-	.private-message
+	.message
 		display inline-flex
 		flex-flow column nowrap
 		gap 6px
 		margin 0.666em 1em
 		max-width 360px
-	:global(.private-message > .md)
+	:global(.message > .md)
 		background var(--c-subreddit-theme)
 		border-radius 12px
 		color var(--c-subreddit-theme-text)
 		display inline-block
 		padding 12px
-	.private-message-meta
+	.message-meta
 		align-items flex-end
 		display flex
 		gap 6px

@@ -8,7 +8,7 @@ script.
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import Label from '../../common/Label.pug'
 	import TextInput from '../../common/TextInput.pug'
-	import PMLink from '../pm/PMLink.pug'
+	import MessageLink from '../message/MessageLink.pug'
 	import PostLink from '../post/PostLink.pug'
 
 	export collection_id = null
@@ -47,8 +47,8 @@ script.
 	]
 
 	base_page_id = switch type
-		when 'account_private_messages'
-			api.ID('account_private_messages_' + sort, page_size)
+		when 'account_messages'
+			api.ID('account_messages_' + sort, page_size)
 		when 'collection_posts'
 			api.ID('collection', collection_id)
 		when 'duplicate_posts'
@@ -84,11 +84,11 @@ script.
 
 	load_next_page = ->
 		after_id = switch type
-			when 'account_private_messages' then items.at(-1)?.id
+			when 'account_messages' then items.at(-1)?.id
 			else items.at(-1)
 		if after_id
 			after_type = switch type
-				when 'account_private_messages' then (if items.at(-1)?.was_comment then 'comment' else 'message')
+				when 'account_messages' then (if items.at(-1)?.was_comment then 'comment' else 'message')
 				else null
 		page_id = api.ID(base_page_id, after_id, after_type)
 		api.loadWatch(page_id, (x) ->
@@ -144,8 +144,8 @@ nav.feed
 						li(on:mousedown={e => { if(e.button === 0) read[i] = true }})
 							{#if type.endsWith('_posts')}
 								PostLink(post_id={item} show_subreddit={type !== 'subreddit_posts'})
-							{:else if type.endsWith('_private_messages')}
-								PMLink(private_message={item})
+							{:else if type.endsWith('_messages')}
+								MessageLink(message={item})
 	menu.feed-items-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})

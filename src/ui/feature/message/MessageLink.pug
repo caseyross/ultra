@@ -3,16 +3,16 @@ script.
 
 	import SubredditNameTag from '../subreddit/SubredditNameTag.pug'
 	
-	export private_message = null
+	export message = null
 
-{#if private_message}
-	a.private-message-link(href={private_message.context.replace('/?context=3', '')})
-		{#if private_message.subreddit}
-			SubredditNameTag(name={private_message.subreddit})
-		strong {private_message.subject}
+{#if message}
+	a.message-link(href={message.context.replace('/?context=3', '')})
+		{#if message.subreddit}
+			SubredditNameTag(name={message.subreddit})
+		strong {message.subject}
 
 style.
-	.private-message-link
+	.message-link
 		border 1px solid var(--c-subreddit-theme)
 		border-radius 12px
 		display flex
