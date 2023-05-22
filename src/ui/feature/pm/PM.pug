@@ -4,11 +4,7 @@ script.
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import UserAvatar from '../../feature/user/UserAvatar.pug'
 
-	export id = null
-	private_message = null
-	api.loadWatch(api.ID('private_message', id),
-		(x) -> { data: private_message } = x
-	)
+	export private_message = null
 
 {#if private_message}
 	article.private-message

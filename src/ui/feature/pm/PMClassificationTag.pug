@@ -1,10 +1,10 @@
 script.
 	export classification = null
 
-data.private-message-classification-tag(class='private-message-classification-tag-{classification}')
-	{#if classification === 'comment-reply'}
+data.private-message-classification-tag(class="private-message-classification-tag-{classification.replace('_', '-')}")
+	{#if classification === 'comment_reply'}
 		| comment reply
-	{:else if classification === 'post-reply'}
+	{:else if classification === 'post_reply'}
 		| post reply
 	{:else if classification === 'private_message'}
 		| private message

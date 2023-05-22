@@ -8,6 +8,7 @@ script.
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import Label from '../../common/Label.pug'
 	import TextInput from '../../common/TextInput.pug'
+	import PMLink from '../pm/PMLink.pug'
 	import PostLink from '../post/PostLink.pug'
 
 	export collection_id = null
@@ -46,6 +47,8 @@ script.
 	]
 
 	base_page_id = switch type
+		when 'account_private_messages'
+			api.ID('account_private_messages_' + sort, page_size)
 		when 'collection_posts'
 			api.ID('collection', collection_id)
 		when 'duplicate_posts'
@@ -65,8 +68,8 @@ script.
 	error = null
 	has_next_page = false
 	loading = null
-	ids = []
 	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
+	items = []
 	local_filter = 'unread'
 	local_search_query = search_query
 	local_sort = sort
@@ -80,17 +83,23 @@ script.
 		search_mode_active = true
 
 	load_next_page = ->
-		after_id = ids.at(-1)
-		page_id = api.ID(base_page_id, after_id)
+		after_id = switch type
+			when 'account_private_messages' then items.at(-1)?.id
+			else items.at(-1)
+		if after_id
+			after_type = switch type
+				when 'account_private_messages' then (if items.at(-1)?.was_comment then 'comment' else 'message')
+				else null
+		page_id = api.ID(base_page_id, after_id, after_type)
 		api.loadWatch(page_id, (x) ->
 			{ error, data, loading } = x
 			if !error and !loading and data
-				ids_subset = data?.posts or data
-				new_ids = ids_subset.filter((x) -> !ids.includes(x))
-				ids = ids.concat(new_ids)
-				read = read.concat(new_ids.map((x) -> StatTracker.check_post_read(x)))
+				items_subset = data?.posts or data
+				new_items = items_subset.filter((x) -> !items.includes(x))
+				items = items.concat(new_items)
+				read = read.concat(new_items.map((x) -> StatTracker.check_post_read(x)))
 				has_next_page =
-					if ids_subset.length < page_size
+					if items_subset.length < page_size
 						false
 					else
 						true
@@ -124,17 +133,20 @@ nav.feed
 	{#if loading}
 		.feed-loading-notification Loading...
 	{:else}
-		{#if type.endsWith('_posts')}
-			{#if ids.length === 0}
-				.feed-post-list-empty No posts.
-			{:else if !search_query && local_filter === 'unread' && read.every((x) => x === true)}
-				.feed-post-list-no-unreads You've read all the posts on this page.
-			{:else}
-				ol.feed-post-list
-					{#each ids as post_id, i (post_id)}
-						{#if search_query || local_filter === 'all' || (local_filter === 'unread' && !read[i])}
-							PostLink(post_id={post_id} show_subreddit={type !== 'subreddit_posts'})
-	menu.feed-post-list-actions
+		{#if items.length === 0}
+			.feed-items-empty No {type.split('_').at(-1)}.
+		{:else if !search_query && local_filter === 'unread' && read.every((x) => x === true)}
+			.feed-items-no-unreads You've read all the {type.split('_').at(-1)} on this page.
+		{:else}
+			ol.feed-items
+				{#each items as item, i (item)}
+					{#if search_query || local_filter === 'all' || (local_filter === 'unread' && !read[i])}
+						li(on:mousedown={e => { if(e.button === 0) read[i] = true }})
+							{#if type.endsWith('_posts')}
+								PostLink(post_id={item} show_subreddit={type !== 'subreddit_posts'})
+							{:else if type.endsWith('_private_messages')}
+								PMLink(private_message={item})
+	menu.feed-items-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
@@ -148,7 +160,7 @@ style.
 	.feed-controls
 		display flex
 		gap 6px
-	.feed-post-list
+	.feed-items
 		display flex
 		flex-flow column nowrap
 		gap 1em

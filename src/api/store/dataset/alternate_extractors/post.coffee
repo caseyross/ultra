@@ -1,3 +1,4 @@
+import errors from '../../../core/errors.coffee'
 import ID from '../../../core/ID.coffee'
 import extract from '../extract.coffee'
 
@@ -48,5 +49,7 @@ export default (rawData, sourceID) ->
 			data: post
 		result.sub = [barePostDataset].concat(otherDatasets.concat(commentDatasets))
 	else
+		if !barePostDataset
+			throw new errors.DataNotAvailable({ code: '???', reason: 'unknown' })
 		result.main = barePostDataset
 	return result

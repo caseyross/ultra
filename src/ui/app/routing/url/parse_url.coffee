@@ -64,7 +64,14 @@ export default (url) ->
 			feed.type = 'collection_posts'
 			feed.collection_id = b
 		when 'message'
-			external = true
+			feed.type = 'account_private_messages'
+			switch b
+				when 'compose'
+					external = true
+				when 'sent'
+					feed.sort = 'sent'
+				else
+					feed.sort = 'received_unread'
 		when 'p', 'post'
 			post.id = b
 		when 'r', 'subreddit'

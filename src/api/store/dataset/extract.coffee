@@ -11,6 +11,10 @@ export default extract = (rawData, sourceID) ->
 	switch rawData.kind
 		when 't1'
 			comment = rawData.data
+			# Check if the comment is actually a private message.
+			# Reddit marks PMs that represent comments as `t1` like normal comments, even though the data structure matches `t4`.
+			if comment.was_comment
+				return extract({ kind: 't4', data: comment })
 			# Process replies.
 			# Comments in raw API data are structured as trees of comments containing other comments and various related objects. Our objective is to "de-link" these tree structures and subsequently identify comments entirely through direct ID reference.
 			repliesListing = comment.replies?.data?.children
@@ -186,7 +190,7 @@ export default extract = (rawData, sourceID) ->
 				data: post
 		when 't4'
 			result.main =
-				id: ID('private_message', rawData.data.id)
+				id: null # "message-type" private messages have independent IDs, but "comment-type" PMs don't
 				data: rawData.data
 		when 't5'
 			result.main =
