@@ -1,16 +1,24 @@
 script.
+	import api from '../../../api/index.js'
 	import { Color } from '../../../lib/index.js'
 	export color = null
 	export emoji_style = null
 	export rich_text = null
+	export subreddit_name = null
 	export text = null
 
-	background_color = color or 'var(--c-subreddit-theme)'
+	background_color = color or 'var(--c-subreddit-theme-default)'
 	text_color =
 		if color
 			if (new Color({ hex: color })).isDark() then 'white' else 'black'
 		else
-			'var(--c-subreddit-theme-text)'
+			'var(--c-subreddit-theme-text-default)'
+	if !color and subreddit_name
+		api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
+			if subreddit.primary_color or subreddit.key_color
+				background_color = subreddit.primary_color or subreddit.key_color
+				text_color = if (new Color({ hex: background_color })).isDark() then 'white' else 'black'
+		)
 
 span.post-flair(style="background-color: {background_color}; color: {text_color}" title={text})
 	{#if rich_text && rich_text.length}
