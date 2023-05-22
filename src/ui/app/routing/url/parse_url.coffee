@@ -98,7 +98,10 @@ export default (url) ->
 				when 'w', 'wiki'
 					feed.type = 'subreddit_posts'
 					wiki.subreddit_name = b
-					wiki.page_name = [d, e, f, g].filter((x) -> x).join('/') or 'index'
+					if d is 'pages'
+						external = true
+					else
+						wiki.page_name = [d, e, f, g].filter((x) -> x).join('/') or 'index'
 				else
 					post.id = c
 		when 'u', 'user'
