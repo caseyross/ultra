@@ -13,7 +13,7 @@ script.
 	import Popup from '../../common/Popup.pug'
 	import CommentEditor from '../comment/CommentEditor.pug'
 	import ReportMenu from '../menu/ReportMenu.pug'
-	import SubredditNavigation from '../subreddit/SubredditNavigation.pug'	
+	import UserAvatar from '../user/UserAvatar.pug'
 	import UserByline from '../user/UserByline.pug'
 	import PostComments from './PostComments.pug'
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
@@ -108,12 +108,12 @@ svelte:head
 		{:else}
 			| Post unavailable for unknown reasons.
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
-		nav(style='position:fixed;top:2em;right:calc(50% + 320px)')
-			SubredditNavigation(subreddit_name={post.subreddit})
+	article.post(class:post-downvoted={post.likes === false} class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1})
 		header.post-header
-			button.post-score(on:mousedown={e => interact('vote', { current_vote: post.likes === true ? 1 : post.likes === false ? -1 : 0, mouse_button_number: e.button })}) {post.hide_score ? '?' : post.score}
+			button.post-score(on:contextmenu={e => e.preventDefault()} on:mousedown={e => interact('vote', { current_vote: post.likes === true ? 1 : post.likes === false ? -1 : 0, mouse_button_number: e.button })}) {post.hide_score ? '?' : post.score}
+			h1.post-title(data-can-edit={post.author === api.getUser() || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)}) {post.title}
 			aside.post-metadata
+				UserAvatar(name={post.author})
 				ol.post-tags
 					{#if post.over_18}
 						PostTag(name='nsfw')
@@ -124,39 +124,38 @@ svelte:head
 					{#if post.original_content}
 						PostTag(name='oc')
 					{#if post.link_flair_text}
-						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} text={post.link_flair_text})
+						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} subreddit_name={post.subreddit} text={post.link_flair_text})
 				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
 				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
-			h1.post-title {post.title}
-		{#if post.removed_by_category}
-			section.post-content.post-content-unavailable
-				{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
-					| Deleted by author.
-				{:else if post.removed_by_category === 'automod_filtered'}
-					| Removed by AutoModerator.
-				{:else if post.removed_by_category === 'content_takedown'}
-					| Removed by Reddit due to violating
-					a(href='https://www.redditinc.com/policies/content-policy') site policy.
-				{:else if post.removed_by_category === 'copyright_takedown'}
-					| Removed by Reddit due to a copyright notice.
-				{:else if post.removed_by_category === 'moderator'}
-					| Removed by a moderator.
-				{:else if post.removed_by_category === 'reddit'}
-					| Removed by Reddit spam filter.
-				{:else}
-					| Removed by Reddit, reason not specified.
-		{:else if focus_comment_id}
-			section.post-content.post-content-incomplete
-				| Viewing a single comment thread.
-				Button(link={format_url({ post_id: id, subreddit_name: post.subreddit })} text='View complete post')
-		{:else if post.format === 'talk'}
-			section.post-content.post-content-unavailable
-				| Reddit Talks are only available on the official app.
-				Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
-		{:else if post.format === 'self' && !post.selftext.length}
-			section.post-content.post-content-empty
-		{:else}
-			section.post-content
+		section.post-content(data-can-edit={post.author === api.getUser() || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
+			{#if post.removed_by_category}
+				.post-content-unavailable
+					{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
+						| Deleted by author.
+					{:else if post.removed_by_category === 'automod_filtered'}
+						| Removed by AutoModerator.
+					{:else if post.removed_by_category === 'content_takedown'}
+						| Removed by Reddit due to violating
+						a(href='https://www.redditinc.com/policies/content-policy') site policy.
+					{:else if post.removed_by_category === 'copyright_takedown'}
+						| Removed by Reddit due to a copyright notice.
+					{:else if post.removed_by_category === 'moderator'}
+						| Removed by a moderator.
+					{:else if post.removed_by_category === 'reddit'}
+						| Removed by Reddit spam filter.
+					{:else}
+						| Removed by Reddit, reason not specified.
+			{:else if focus_comment_id}
+				.post-content-incomplete
+					| Viewing a single comment thread.
+					Button(link={format_url({ post_id: id, subreddit_name: post.subreddit })} text='View complete post')
+			{:else if post.format === 'talk'}
+				.post-content-unavailable
+					| Reddit Talks are only available on the official app.
+					Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
+			{:else if post.format === 'self' && !post.selftext.length}
+				.post-content-empty
+			{:else}
 				{#if post.selftext_html}
 					.post-selftext
 						FormattedHTML(html={post.selftext_html})
@@ -169,7 +168,7 @@ svelte:head
 								a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 									picture
 										{#if !media.is_gif}
-											source(srcset={media.aspect_ratio > 2.321 ? media.image_url_960 : media.aspect_ratio > 0.5805 ? media.image_url_640 : media.image_url_320})
+											source(srcset={media.aspect_ratio > 1.5 ? media.image_url_960 : media.image_url_640})
 										img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {420 * Math.sqrt(media.aspect_ratio)}px")
 								{#if media.caption_text || media.caption_url}
 									figcaption.post-gallery-image-caption
@@ -208,7 +207,7 @@ svelte:head
 						Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
 				{:else if post.format === 'video'}
 					{@const media = post.media[0]}
-						MediaPlayer(audio_url={media.video_audio_url} height={315} mimic_gif={media.video_is_gif} video_url={media.video_url} width={560})
+						MediaPlayer(audio_url={media.video_audio_url} height={420 * (1 / Math.sqrt(media.aspect_ratio))} mimic_gif={media.video_is_gif} video_url={media.video_url} width={420 * Math.sqrt(media.aspect_ratio)})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
@@ -226,9 +225,9 @@ svelte:head
 
 style.
 	.post
-		padding 2em 0
+		padding 4em 0
 		padding-left 80px
-		width 100%
+		max-width 720px
 		&.post-loading
 			padding 10px
 		&.post-unavailable
@@ -236,39 +235,42 @@ style.
 			border-radius 10px
 			color white
 			padding 10px
+	.post-comments
+		margin-top 1.333em
 	.post-content
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
-		margin 1.333em 0
-		&.post-content-empty
-			margin-bottom 0
-		&.post-content-incomplete
-			align-items center
-			background darkkhaki
-			border-radius 10px
-			color white
-			flex-flow row nowrap
-			justify-content space-between
-			padding 10px
-		&.post-content-unavailable
-			align-items center
-			background salmon
-			border-radius 10px
-			color white
-			flex-flow row nowrap
-			justify-content space-between
-			padding 10px
+		margin-top 1.333em
+		max-width 640px
 		:global(& .twitter-tweet)
 			margin 0 !important
 			width 420px !important
+		:global(& iframe[id^=twitter-widget])
+			border-radius 12px
 	.post-content-actions
 		align-items center
 		display flex
-		gap 1em
+		gap 0.666em
 		justify-content space-between
 		width 100%
+	.post-content-incomplete
+		align-items center
+		background darkkhaki
+		border-radius 10px
+		color white
+		flex-flow row nowrap
+		justify-content space-between
+		padding 10px
+	.post-content-unavailable
+		align-items center
+		background salmon
+		border-radius 10px
+		color white
+		flex-flow row nowrap
+		justify-content space-between
+		padding 10px
 	.post-gallery
 		display flex
 		gap 1.333em
@@ -288,20 +290,16 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 6px
+		max-width 480px
 		position relative
 	.post-iframe
-		background black
 		border-radius 12px
 		width 560px
-	.post-image
-		border 1px solid
-		border-radius 12px
-		min-width 320px
 	.post-metadata
 		align-items center
 		color var(--c-text-weak)
 		display flex
-		gap 6px
+		gap 0.666em
 	.post-predictions
 		display flex
 		flex-flow column nowrap
@@ -314,10 +312,10 @@ style.
 			width 200px
 	.post-score
 		color var(--c-text-weak)
-		font-size 1.5em
-		line-height 1.2
 		position absolute
-		right calc(100% + 1rem)
+		right calc(100% + 1em)
+		top 0
+		white-space pre
 		.post-upvoted &
 			color salmon
 		.post-downvoted &
@@ -329,8 +327,6 @@ style.
 		gap 3px
 	.post-title
 		font-size 1.5em
-		font-weight var(--f-wght-normal)
-		letter-spacing -0.25pt
-		line-height 1.333
-		margin 0
+		font-weight 600
+		letter-spacing -0.666px
 		overflow-wrap anywhere

@@ -37,8 +37,8 @@ aside.subreddit-sidebar
 						td.subreddit-sidebar-stats-value(align='left')
 							Date(created_s={info.created_utc})
 						td.subreddit-sidebar-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
-			{#if info.public_description_html}
-				FormattedHTML(html={info.public_description_html})
+			{#if info.public_description_html || info.description_html}
+				FormattedHTML(html={info.public_description_html || info.description_html})
 			menu.subreddit-sidebar-additional-options
 				Button(popup={true} text='Rules')
 					SubredditRules(name={name})
@@ -58,7 +58,8 @@ aside.subreddit-sidebar
 
 style.
 	.subreddit-sidebar
-		width 256px
+		padding 4em 80px
+		width 480px
 	.subreddit-sidebar-additional-options
 		display flex
 		gap 10px

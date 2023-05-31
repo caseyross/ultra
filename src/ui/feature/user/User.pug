@@ -1,13 +1,24 @@
 script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
+
+	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import Feed from '../feed/Feed.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import UserAvatar from './UserAvatar.pug'
 	import UserComments from './UserComments.pug'
 	
 	export name = null
-	local_sort = 'new'
-	local_time_range = 'all'
+	export sort = null
+	export time_range = null
+	tab = 'comments'
+	tabs = [
+		{ label: 'Comments', value: 'comments'}
+		{ label: 'Posts', value: 'posts'}
+		{ label: '', value: ''}
+		{ label: '', value: ''}
+		{ label: '', value: ''}
+	]
 	
 	trophies = null
 	user = null
@@ -35,9 +46,15 @@ svelte:head
 		{:else if user.is_blocked}
 			.user-unavailable-notice You blocked this user.
 		{:else}
-			{#key local_sort}
-				{#key local_time_range}
-					UserComments(name={name} sort={local_sort} time_range={local_time_range})
+			ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
+			{#if tab === 'comments'}
+				{#key sort}
+					{#key time_range}
+						UserComments(name={name} sort={sort} time_range={time_range})
+			{:else if tab === 'posts'}
+				{#key sort}
+					{#key time_range}
+						Feed(sort={sort} time_range={time_range} type='user_posts' user_name={name})
 
 style.
 	.user

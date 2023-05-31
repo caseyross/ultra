@@ -16,10 +16,16 @@
 	font-style italic
 	font-weight 400 700
 	src url('../../vendor/arimo_400_700_i.ttf')
+@font-face
+	font-family 'Inter'
+	font-style normal italic
+	font-weight 100 900
+	src url('../../vendor/inter_100_900.woff2')
 html
-	font 14.5px/1.5 'Arimo', 'Arial', sans-serif
-	letter-spacing 0.125pt // 1/6 pixel
-code
+	font 13.5px/1.7777777 'Inter'
+	font-feature-settings 'tnum' 1
+	font 15px/1.5 'Arimo', 'Arial', 'Helvetica', sans-serif
+	//letter-spacing 0.125pt // 1/6 pixel
 pre
 	font 12px/1.5 monospace
 	letter-spacing 0
@@ -30,38 +36,41 @@ pre
 	h4
 	h5
 	h6
-		line-height 1.1666
+		letter-spacing 0
+		line-height 1.333
 		margin 1em 0 0.5em
 		&:first-child
 			margin-top 0
 	h1
-		font-size 1.4em
-		font-weight var(--f-wght-xstrong)
-		letter-spacing -0.25pt
+		font-size 1.8em
+		font-weight 700
+		letter-spacing -1.333px
 	h2
-		font-size 1.3em
-		font-weight var(--f-wght-strong)
-		letter-spacing -0.125pt
+		font-size 1.55em
+		font-weight 650
+		letter-spacing -1px
 	h3
-		font-size 1.2em
-		font-weight var(--f-wght-strong)
-		letter-spacing -0.125pt
+		font-size 1.15em
+		font-weight 600
+		letter-spacing -0.333px
 	h4
 	h5
 	h6
-	b
-	em
-	strong
 		font-size 1em
-		font-weight var(--f-wght-strong)
-		letter-spacing 0
+		font-weight 550
 
 // Theme
 body
+	--c-op cornflowerblue
+	--c-admin orangered
+	--c-mod darkseagreen
+	--c-score-1 lightgoldenrodyellow
+	--c-score-2 wheat
+	--c-score-3 lightsalmon
+	--c-score-4 salmon
 	--c-subreddit-theme-default #cee3f8
 	--c-subreddit-theme-secondary-default orangered
 	--c-subreddit-theme-text-default black
-	font-weight var(--f-wght-normal)
 .color-strategy-black-text
 	--c-blend-weak rgba(0,0,0,0.05)
 	--c-blend-normal rgba(0,0,0,0.10)
@@ -75,8 +84,8 @@ body
 	--c-text-strong black
 	--c-text-reverse white
 	--f-wght-normal 400
-	--f-wght-strong 600
-	--f-wght-xstrong 700
+	--f-wght-strong 500
+	--f-wght-xstrong 600
 	color-scheme light
 .color-strategy-white-text
 	--c-blend-weak rgba(255,255,255,0.05)
@@ -91,8 +100,8 @@ body
 	--c-text-strong white
 	--c-text-reverse black
 	--f-wght-normal 350
-	--f-wght-strong 550
-	--f-wght-xstrong 650
+	--f-wght-strong 450
+	--f-wght-xstrong 550
 	color-scheme dark
 *::-webkit-scrollbar
 	background var(--c-blend-weak)

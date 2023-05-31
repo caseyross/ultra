@@ -2,7 +2,8 @@ script.
 	export text = null
 
 label
-	span.label-text {text}
+	{#if text}
+		span.label-text {text}
 	slot
 
 style.

@@ -1,5 +1,6 @@
 script.
 	import api from '../../../api/index.js'
+	import { Color } from '../../../lib/index.js'
 	import { format_url } from '../../app/routing/url.coffee'
 	
 	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
@@ -12,8 +13,10 @@ script.
 	export subreddit_name = null
 	export user_name = null
 	
+	background_color = 'var(--c-subreddit-theme)'
 	error = null
 	info = null
+	text_color = 'var(--c-subreddit-theme-text)'
 	switch type
 		when 'collection_posts'
 			api.loadWatch(api.ID('collection', collection_id), (x) ->
@@ -26,6 +29,9 @@ script.
 		when 'subreddit_posts'
 			api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
 				{ data: info, error } = x
+				if info?.primary_color or info?.key_color
+					background_color = info.primary_color or info.key_color
+					text_color = if (new Color({ hex: background_color })).isDark() then 'white' else 'black'
 			)
 		when 'user_posts'
 			api.loadWatch(api.ID('user', user_name), (x) ->
@@ -35,7 +41,7 @@ script.
 {#if error}
 	.feed-avatar.feed-avatar-unavailable
 {:else if info}
-	a.feed-avatar(href={format_url({ collection_id, feed_type: type, multireddit_name, subreddit_name, user_name })})
+	a.feed-avatar(href={format_url({ collection_id, feed_type: type, multireddit_name, subreddit_name, user_name })} style='background: {background_color}; color: {text_color}')
 		section
 			{#if type === 'collection_posts'}
 				picture
@@ -54,7 +60,7 @@ script.
 			{:else if type === 'user_posts'}
 				UserAvatar(name={user_name} size='large')
 		section
-			span.feed-avatar-list-type {type[0].toUpperCase() + type.slice(1)}
+			span.feed-avatar-list-type {type.split('_')[0][0].toUpperCase() + type.split('_')[0].slice(1)}
 			{#if type === 'collection_posts'}
 				h1.feed-avatar-list-name {info.title}
 			{:else if type === 'multireddit_posts'}
@@ -69,9 +75,13 @@ style.
 		position relative
 	.feed-avatar
 		align-items center
-		display grid
+		border-radius 32px
+		display inline-grid
 		grid-template-columns 64px 1fr
 		gap 10px
+		height 64px
+		line-height 1
+		padding-right 20px
 	.feed-avatar-image
 		aspect-ratio 1
 		border-radius 50%

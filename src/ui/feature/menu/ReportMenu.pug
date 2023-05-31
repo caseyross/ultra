@@ -51,7 +51,7 @@ form.report-menu
 						span Subreddit rule \#{rule.priority + 1}
 						h1.report-menu-subreddit-rule-violation-name {rule.violation_reason}
 						p.report-menu-subreddit-rule-violation-description
-							FormattedHTML(html={rule.description_html})
+							FormattedHTML(html={rule.description_html || ''})
 						input.report-menu-rule-button(on:change={e => dispatch('submit', e.target.value)} type='radio' value={rule.violation_reason})
 						.report-menu-rule-gradient-fade
 			hr

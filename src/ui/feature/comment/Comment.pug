@@ -25,13 +25,37 @@ script.
 	reply_error = null
 	reply_sending = false
 	reporting = false
+	score_color = 'lightgray'
+	score_text = '???'
+	score_text_color = 'var(--c-text-weak)'
 	api.loadWatch(api.ID('comment', id),
 		(x) ->
 			{ data: comment } = x
-			if comment?.more_replies
-				api.watch(comment.more_replies_id,
-					(x) -> { loading: more_replies_loading } = x
-				)
+			if comment?
+				score_color = switch
+					when comment.distinguished is 'admin' then 'var(--c-admin)'
+					when comment.distinguished is 'moderator' then 'var(--c-mod)'
+					when comment.is_submitter then 'var(--c-op)'
+					when comment.score_hidden then score_color
+					when !Number.isFinite(comment.score) then score_color
+					when Math.log10(comment.score) > 3 then 'var(--c-score-4)'
+					when Math.log10(comment.score) > 2 then 'var(--c-score-3)'
+					when Math.log10(comment.score) > 1 then 'var(--c-score-2)'
+					when Math.log10(comment.score) > 0 then 'var(--c-score-1)'
+					else score_color
+				score_text = switch
+					when comment.score_hidden then score_text
+					when !Number.isFinite(comment.score) then score_text
+					else comment.score
+				score_text_color = switch
+					when comment.distinguished is 'admin' then 'white'
+					when comment.distinguished is 'moderator' then 'white'
+					when comment.is_submitter then 'white'
+					else score_text_color
+				if comment.more_replies
+					api.watch(comment.more_replies_id,
+						(x) -> { loading: more_replies_loading } = x
+					)
 	)
 
 	interact = (action_type, data) ->
@@ -79,9 +103,13 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
-			button.comment-score(on:mousedown={e => interact('vote', { current_vote: comment.likes === true ? 1 : comment.likes === false ? -1 : 0, mouse_button_number: e.button })}) {comment.score_hidden ? '?' : comment.score}
-			FormattedHTML(html={comment.body_html})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
+			{#if api.isLoggedIn()}
+				button.comment-score(on:contextmenu={e => e.preventDefault()} on:mousedown={e => interact('vote', { current_vote: comment.likes === true ? 1 : comment.likes === false ? -1 : 0, mouse_button_number: e.button })} style='background: {score_color}; color: {score_text_color}') {score_text}
+			{:else}
+				data.comment-score(style='background: {score_color}; color: {score_text_color}') {score_text}
+			section.comment-body(data-can-edit={comment.author === api.getUser() || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)})
+				FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
 		{#if reporting}
@@ -113,41 +141,45 @@ style.
 			opacity 1
 	.comment
 		display inline-block
-		margin 0.666em 1em
+		margin 0.666em 0
 		max-width 360px
 		position relative
-	:global(.comment > .md)
+	.comment-body
 		background var(--c-subreddit-theme)
 		border-radius 12px
 		color var(--c-subreddit-theme-text)
 		display inline-block
-		padding 12px
-	:global(.comment > .md img)
-		border-radius 6px
-		margin 0
-		max-height 64px
-		width auto
-	:global(.comment-deleted > .md)
-		opacity 0.25
-		pointer-events none
-	:global(.comment-highlighted > .md)
-		outline 1px solid
-	:global(.comment-with-low-score:not(.comment-deleted) > .md)
-		opacity 0.5
+		padding 8px 9px 9px 11px
+		.comment-deleted > &
+			opacity 0.25
+			pointer-events none
+		.comment-highlighted > &
+			outline 1px solid
+		.comment-with-low-score:not(.comment-deleted) > &
+			opacity 0.5
+		:global(& img)
+			border-radius 6px
+			height auto
+			margin 0
 	.comment-clip
 		display flex
 	.comment-more-replies
 		padding 0.666em 0
 	.comment-replies
 		border-left 1px solid var(--c-blend-normal)
-		padding-left 2em
+		padding-left 4em
 	.comment-score
-		color var(--c-text-weak)
+		border-radius 4px
+		font-size 12px
+		font-weight bold
+		padding 1px 4px
 		position absolute
 		right calc(100% + 2ch)
-		.comment-upvoted &
-			color salmon
-		.comment-downvoted &
-			color var(--c-text-faint)
+		user-select none
+		white-space pre
+		.comment-upvoted &::before
+			content url('/icon_upvote.svg')
+		.comment-downvoted &::before
+			content url('/icon_downvote.svg')
 	.comment-source-info
 		margin 0.666em 1em

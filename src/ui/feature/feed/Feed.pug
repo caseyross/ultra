@@ -1,15 +1,17 @@
 script.
 	import { getContext } from 'svelte'
+
 	import api from '../../../api/index.js'
 	import { format_url } from '../../app/routing/url.coffee'
-	
 	import StatTracker from '../../common/StatTracker.coffee'
+	
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
+	import FeedAvatar from '../../feature/feed/FeedAvatar.pug'
 	import Label from '../../common/Label.pug'
-	import TextInput from '../../common/TextInput.pug'
 	import MessageLink from '../message/MessageLink.pug'
 	import PostLink from '../post/PostLink.pug'
+	import TextInput from '../../common/TextInput.pug'
 
 	export collection_id = null
 	export duplicate_post_id = null
@@ -117,6 +119,7 @@ svelte:head
 	{:else if type === 'user_posts'}
 		title {user_name}
 nav.feed
+	FeedAvatar(collection_id={collection_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} type={type} user_name={user_name})
 	{#if type === 'multireddit_posts' || type === 'subreddit_posts' || type === 'user_posts'}
 		menu.feed-controls
 			{#if search_mode_active}
@@ -156,11 +159,15 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		width 240px
+		height 100%
+		padding 4em 0
+		width 320px
 	.feed-controls
 		display flex
 		gap 6px
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 1em
+		flex 1
+		gap 0.333em
+		overflow auto

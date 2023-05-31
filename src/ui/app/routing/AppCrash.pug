@@ -1,13 +1,21 @@
 script.
-	import CenterLayout from '../../common/layout/CenterLayout.pug'
 	export error = null
 
-CenterLayout
+main#crash
+	h1 Whoops!
+	p There was an error. We didn't expect this.
+	{#if error}
+		p Error message:
+		pre {error.message}
+		p Technical details:
+		pre {error.stack}
+
+style.
 	#crash
-		h1 Whoops!
-		p There was an error. We didn't expect this.
-		{#if error}
-			p Error message:
-			pre {error.message}
-			p Technical details:
-			pre {error.stack}
+		align-items center
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		height 100dvh
+		justify-content center
+		width 100%

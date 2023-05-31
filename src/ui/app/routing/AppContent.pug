@@ -1,63 +1,29 @@
 script.
-	import { getContext } from 'svelte'
-	import api from '../../../api/index.js'
-	import { hotkey } from '../../common/actions/hotkeys.coffee'
-	import Button from '../../common/Button.pug'
-	import HotkeyLabel from '../../common/HotkeyLabel.pug'
-	import TextInput from '../../common/TextInput.pug'
 	import Feed from '../../feature/feed/Feed.pug'
 	import Post from '../../feature/post/Post.pug'
-	import SubredditNameTag from '../../feature/subreddit/SubredditNameTag.pug'
 	import SubredditProfile from '../../feature/subreddit/SubredditProfile.pug'
-	import UserAvatar from '../../feature/user/UserAvatar.pug'
-	import UserProfile from '../../feature/user/UserProfile.pug'
+	import User from '../../feature/user/User.pug'
 	import WikiPage from '../../feature/wiki/WikiPage.pug'
 
 	export feed = null
 	export post = null
 	export wiki = null
 
-	subreddits_subscribed = null
-	num_unread_messages = null
-	if api.isLoggedIn()
-		api.loadWatch(api.ID('account_subreddits_subscribed', 100), (x) ->
-			subreddits_subscribed = x?.data or []
-			subreddits_subscribed.sort()
-		)
-		api.loadWatch(api.ID('account_messages_received_unread', 10), ({ data: messages }) ->
-			num_unread_messages = switch
-				when !messages?.length then null
-				when 0 < messages.length < 10 then String(messages.length)
-				else '9+'
-		)
-	subreddits_popular = null
-	api.loadWatch(api.ID('global_subreddits_popular', 25), (x) ->
-		subreddits_popular = x?.data
-	)
-	favorites = (localStorage['favorites'] or 'x x x x x x x x x x').split(' ')
-	editing_favorites = false
-	tentative_favorites = null
-	edit_favorites = ->
-		tentative_favorites = favorites
-		editing_favorites = true
-	save_favorites = ->
-		favorites = tentative_favorites.map((value) =>
-			switch
-				when value.startsWith('/u/') then return 'u_' + value[3..]
-				when value.startsWith('u/') then return 'u_' + value[2..]
-				when value.startsWith('/r/') then return value[3..]
-				when value.startsWith('r/') then return value[2..]
-				when value.startsWith('/') then return value[1..]
-				else return value
-		)
-		localStorage['favorites'] = favorites.join(' ')
-		editing_favorites = false
-
-	getContext('set_theme_colors')()
-
-main
-	section.layout-area-left
-		{#if feed}
+{#if wiki}
+	main.layout-centered
+		{#key wiki.subreddit_name}
+			{#key wiki.page_name}
+				{#key wiki.page_version}
+					WikiPage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
+{:else if feed?.type === 'user_posts'}
+	main.layout-centered
+		{#key feed.user_name}
+			{#key feed.sort}
+				{#key feed.time_range}
+					User(name={feed.user_name} sort={feed.sort} time_range={feed.time_range})
+{:else if feed}
+	main.layout-split
+		section.layout-split-left
 			{#key feed.collection_id}
 				{#key feed.multireddit_name}
 					{#key feed.subreddit_name}
@@ -66,117 +32,43 @@ main
 								{#key feed.sort}
 									{#key feed.time_range}
 										Feed(collection_id={feed.collection_id} duplicate_post_id={feed.duplicate_post_id} multireddit_name={feed.multireddit_name} search_query={feed.search_query} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
-	section.layout-area-right
-		{#if post}
-			{#key post.id}
-				{#key post.focus_comment_id}
-					{#key post.focus_comment_parent_count}
-						Post(comments_sort={post.comments_sort} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
-		{:else if wiki}
-			{#key wiki.subreddit_name}
-				{#key wiki.page_name}
-					{#key wiki.page_version}
-						WikiPage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
-		{:else if feed?.type === 'subreddit_posts'}
-			{#key feed.subreddit_name}
-				SubredditProfile(name={feed.subreddit_name})
-		{:else if feed?.type === 'user_posts'}
-			{#key feed.user_name}
-				UserProfile(name={feed.user_name})
-		{:else}
-			p [ Not yet implemented. ]
-nav#global-nav-home(style='display:none')
-	section
-		h1.global-nav-home-category Favorites
-		ol.global-nav-home-subreddits
-			{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] as number, index}
-				{#if favorites[index].length > 1 || editing_favorites}
-					li.global-nav-home-subreddits-favorites-item
-						HotkeyLabel(key={number})
-						{#if editing_favorites}
-							TextInput(initial_value={favorites[index].length > 1 && favorites[index]} type_action={(value) => tentative_favorites[index] = value})
-						{:else}
-							{#if favorites[index].length > 1}
-								a(href='/{favorites[index]}' use:hotkey={number})
-									SubredditNameTag(name={favorites[index]})
-		{#if editing_favorites}
-			Button(action={save_favorites} text='Save')
-		{:else}
-			Button(action={edit_favorites} text='Manage')
-		{#if subreddits_subscribed}
-			h2.global-nav-home-category Subscribed
-			ol.global-nav-home-subreddits
-				{#each subreddits_subscribed as name}
-					SubredditNameTag(name={name})
-		{#if subreddits_popular}
-			h2.global-nav-home-category Trending
-			ol.global-nav-home-subreddits
-				{#each subreddits_popular as name}
-					SubredditNameTag(name={name})
-nav#global-nav-settings
-	Button(text='Settings')
-nav#global-nav-account
-	{#if api.isLoggedIn()}
-		UserAvatar(name={api.getUser()} size='medium')
-		a.inbox-link(class:inbox-link-has-unread={num_unread_messages} href='/message/inbox' title='{num_unread_messages || 0} unread') 🖂
-		{#if false}
-			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} text='→ Logout')
-	{:else}
-		Button(link={api.getLoginURL({ memoString: location.pathname })} text='Login → ')
+		section.layout-split-right
+			{#if post}
+				{#key post.id}
+					{#key post.focus_comment_id}
+						{#key post.focus_comment_parent_count}
+							Post(comments_sort={post.comments_sort} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
+			{:else if feed?.type === 'subreddit_posts'}
+				{#key feed.subreddit_name}
+					SubredditProfile(name={feed.subreddit_name})
+			{:else}
+				p [ Not yet implemented. ]
+{:else if post}
+	main.layout-centered
+		{#key post.id}
+			{#key post.focus_comment_id}
+				{#key post.focus_comment_parent_count}
+					Post(comments_sort={post.comments_sort} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
 
 style.
-	.global-nav-home-category
-		color var(--c-text-weak)
-		font-size 12px
-		margin 2em 0 1em
-		text-transform uppercase
-	.global-nav-home-subreddits
-		display flex
-		flex-flow column wrap
-		gap 6px
-	.global-nav-home-subreddits-favorites-item
-		display flex
-		align-items center
-		gap 6px
-	#global-nav-account
-		bottom 0
-		left 0
-		padding 1em
-		position fixed
-	#global-nav-home
-		display flex
-		flex-flow column wrap
-		gap 1em
-		left 0
-		padding 1em
-		position fixed
-		top 0
-		width 240px
-	#global-nav-settings
-		bottom 0
-		padding 1em
-		position fixed
-		right 0
-	main
+	.layout-centered
 		display grid
-		grid-template-columns 880px 1fr
-		height 100dvh
-		width 100dvw
-	.inbox-link
-		font-family 'Wingdings'
-		font-size 20px
-		&.inbox-link-has-unread
-			color salmon
-	.layout-area-left
+		grid-auto-flow row
+		grid-template-columns 1fr
+		place-items center
+		width 100%
+	.layout-split
+		display grid
+		grid-template-columns calc(100% / 3 - 80px) calc(200% / 3 + 80px)
+		grid-template-rows 100dvh
+		width 100%
+		@media (min-width: 1280px)
+			&
+				grid-template-columns calc(50% - 80px) calc(50% + 80px)
+	.layout-split-left
+		align-items flex-end
 		display flex
-		height 100%
-		justify-content flex-end
+		flex-flow column nowrap
 		overflow auto
-		padding 2em 0
-		scrollbar-width none
-		&::-webkit-scrollbar
-			display none
-	.layout-area-right
-		height 100%
+	.layout-split-right
 		overflow auto
-		padding 2em 0

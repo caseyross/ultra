@@ -15,7 +15,7 @@ script.
 			'var(--c-subreddit-theme-text-default)'
 	if !color and subreddit_name
 		api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
-			if subreddit.primary_color or subreddit.key_color
+			if subreddit?.primary_color or subreddit?.key_color
 				background_color = subreddit.primary_color or subreddit.key_color
 				text_color = if (new Color({ hex: background_color })).isDark() then 'white' else 'black'
 		)
@@ -36,15 +36,17 @@ span.post-flair(style="background-color: {background_color}; color: {text_color}
 style.
 	.post-flair
 		border-radius 6px
+		display inline-flex
+		font-feature-settings 'calt' 1, 'tnum' 1
 		font-size 10px
 		font-weight bold
-		line-height 1
+		height 16px
 		letter-spacing 1px
+		line-height 1
 		padding 3px 6px
 		text-transform uppercase
 		user-select none
 	.post-flair-emoji
-		display inline-block
 		height 16px
+		margin-block-start -3px
 		margin-inline-end 2px
-		vertical-align middle
