@@ -88,7 +88,7 @@ script.
 
 slot
 {#if active}
-	menu.radial-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px') ・
+	menu.radial-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px') 🗙
 		figure.radial-menu-icon.radial-menu-icon-north(class:radial-menu-icon-selected={choice === 1}) {menu.N[menu_variant]?.(target_element.dataset).icon || ''}
 		figure.radial-menu-icon.radial-menu-icon-east(class:radial-menu-icon-selected={choice === 2}) {menu.E[menu_variant]?.(target_element.dataset).icon || ''}
 		figure.radial-menu-icon.radial-menu-icon-south(class:radial-menu-icon-selected={choice === 3}) {menu.S[menu_variant]?.(target_element.dataset).icon || ''}
@@ -97,8 +97,7 @@ slot
 style.
 	.radial-menu
 		align-items center
-		border 1px solid salmon
-		border-radius 50%
+		color salmon
 		cursor default
 		display flex
 		font-size 1.5em

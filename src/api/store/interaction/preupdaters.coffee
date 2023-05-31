@@ -1,6 +1,57 @@
+import { Time } from '../../../lib/index.js'
 import ID from '../../core/ID.coffee'
+import { getUser } from '../../net/account.coffee'
 
 export default {
+	
+	comment_approve:
+		targetID: (comment_id) ->
+			ID('comment', comment_id)
+		modify: (target) ->
+			original =
+				approved_at_utc: target.approved_at_utc
+				approved_by: target.approved_by
+			target.approved_at_utc = Time.msToS(Time.unixMs(), { trunc: true })
+			target.approved_by = getUser()
+			return (target) ->
+				target.approved_at_utc = original.approved_at_utc
+				target.approved_by = original.approved_by
+	
+	comment_distinguish:
+		targetID: (comment_id) ->
+			ID('comment', comment_id)
+		modify: (target, { type }) ->
+			original =
+				distinguished: target.distinguished
+			target.distinguished = type or null
+			return (target) ->
+				target.distinguished = original.distinguished
+	
+	comment_pin:
+		targetID: (comment_id) ->
+			ID('comment', comment_id)
+		modify: (target, { unpin }) ->
+			original =
+				distinguished: target.distinguished
+				pinned: target.pinned
+			target.distinguished = 'moderator'
+			target.pinned = !unpin
+			return (target) ->
+				target.distinguished = original.distinguished
+				target.pinned = original.pinned
+	
+	comment_remove:
+		targetID: (comment_id) ->
+			ID('comment', comment_id)
+		modify: (target) ->
+			original =
+				removed_by: target.removed_by
+				removed_by_category: target.removed_by_category
+			target.removed_by = getUser()
+			target.removed_by_category = 'moderator'
+			return (target) ->
+				target.removed_by = original.removed_by
+				target.removed_by_category = original.removed_by_category
 	
 	comment_save:
 		targetID: (comment_id) ->
@@ -32,7 +83,7 @@ export default {
 				target.likes = original.likes
 				target.score = original.score
 	
-	message_mark_read:
+	message_read:
 		targetID: (message_id) ->
 			ID('message', message_id)
 		modify: (target, { unread }) ->
@@ -41,6 +92,32 @@ export default {
 			target.read = !unread
 			return (target) ->
 				target.read = original.read
+	
+	post_approve:
+		targetID: (post_id) ->
+			ID('post', post_id)
+		modify: (target) ->
+			original =
+				approved_at_utc: target.approved_at_utc
+				approved_by: target.approved_by
+			target.approved_at_utc = Time.msToS(Time.unixMs(), { trunc: true })
+			target.approved_by = getUser()
+			return (target) ->
+				target.approved_at_utc = original.approved_at_utc
+				target.approved_by = original.approved_by
+	
+	post_remove:
+		targetID: (post_id) ->
+			ID('post', post_id)
+		modify: (target) ->
+			original =
+				removed_by: target.removed_by
+				removed_by_category: target.removed_by_category
+			target.removed_by = getUser()
+			target.removed_by_category = 'moderator'
+			return (target) ->
+				target.removed_by = original.removed_by
+				target.removed_by_category = original.removed_by_category
 	
 	post_save:
 		targetID: (post_id) ->
