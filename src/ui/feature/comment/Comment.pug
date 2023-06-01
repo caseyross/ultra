@@ -7,6 +7,7 @@ script.
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import Popup from '../../common/Popup.pug'
+	import BanMenu from '../menu/BanMenu.pug'
 	import ReportMenu from '../menu/ReportMenu.pug'
 	import UserByline from '../user/UserByline.pug'
 
@@ -16,6 +17,7 @@ script.
 	export out_of_context = false
 	focus_comment_id = getContext('focus_comment_id')
 	
+	banning = false
 	comment = null
 	editing = false
 	edit_error = null
@@ -25,33 +27,37 @@ script.
 	reply_error = null
 	reply_sending = false
 	reporting = false
-	score_color = 'lightgray'
-	score_text = '???'
-	score_text_color = 'var(--c-text-weak)'
+	score_color = null
+	score_text = null
+	score_text_color = null
 	api.loadWatch(api.ID('comment', id),
 		(x) ->
 			{ data: comment } = x
 			if comment?
+				score_default_color = 'var(--c-score-0)'
+				score_default_text = 'New'
+				score_default_text_color = 'var(--c-text-weak)'
 				score_color = switch
 					when comment.distinguished is 'admin' then 'var(--c-admin)'
 					when comment.distinguished is 'moderator' then 'var(--c-mod)'
 					when comment.is_submitter then 'var(--c-op)'
-					when comment.score_hidden then score_color
-					when !Number.isFinite(comment.score) then score_color
+					when comment.score_hidden then score_default_color
+					when !Number.isFinite(comment.score) then score_default_color
 					when Math.log10(comment.score) > 3 then 'var(--c-score-4)'
 					when Math.log10(comment.score) > 2 then 'var(--c-score-3)'
 					when Math.log10(comment.score) > 1 then 'var(--c-score-2)'
 					when Math.log10(comment.score) > 0 then 'var(--c-score-1)'
-					else score_color
+					else score_default_color
 				score_text = switch
-					when comment.score_hidden then score_text
-					when !Number.isFinite(comment.score) then score_text
+					when comment.pinned then 'Pin'
+					when comment.score_hidden then score_default_text
+					when !Number.isFinite(comment.score) then score_default_text
 					else comment.score
 				score_text_color = switch
 					when comment.distinguished is 'admin' then 'white'
 					when comment.distinguished is 'moderator' then 'white'
 					when comment.is_submitter then 'white'
-					else score_text_color
+					else score_default_text_color
 				if comment.more_replies
 					api.watch(comment.more_replies_id,
 						(x) -> { loading: more_replies_loading } = x
@@ -66,7 +72,10 @@ script.
 						api.submit(api.ID('comment_ignore_reports', id))
 				)
 			when 'ban_user'
+				banning = true
+			when 'ban_user_finish'
 				api.submit(api.ID('user_ban', data.user_name, data.subreddit_name), { days: data.days, message_to_user: data.message_to_user, violation_reason: data.violation_reason })
+				banning = false
 			when 'distinguish_as_mod'
 				api.submit(api.ID('comment_distinguish', id), { type: 'moderator' })
 			when 'edit'
@@ -132,6 +141,9 @@ script.
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
+		{#if banning}
+			Popup(on:close={() => banning = false})
+				BanMenu(on:submit={e => interact('ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
 		{#if out_of_context}
 			cite.comment-source-info
 				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View in context →')
@@ -162,11 +174,10 @@ style.
 		max-width 360px
 		position relative
 	.comment-body
-		background var(--c-subreddit-theme)
 		border-radius 12px
 		color var(--c-subreddit-theme-text)
 		display inline-block
-		padding 8px 9px 9px 11px
+		padding 12px
 		.comment-deleted > &
 			opacity 0.25
 			pointer-events none

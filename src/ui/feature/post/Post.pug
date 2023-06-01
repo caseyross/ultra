@@ -12,8 +12,8 @@ script.
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import Popup from '../../common/Popup.pug'
 	import CommentEditor from '../comment/CommentEditor.pug'
+	import BanMenu from '../menu/BanMenu.pug'
 	import ReportMenu from '../menu/ReportMenu.pug'
-	import UserAvatar from '../user/UserAvatar.pug'
 	import UserByline from '../user/UserByline.pug'
 	import PostComments from './PostComments.pug'
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
@@ -30,6 +30,7 @@ script.
 	export focus_comment_id = null
 	export id = null
 
+	banning = false
 	comments_sort_options = [
 		{ label: 'Best', value: 'confidence' }
 		{ label: 'Top', value: 'top' }
@@ -68,7 +69,10 @@ script.
 						api.submit(api.ID('post_ignore_reports', id))
 				)
 			when 'ban_user'
+				banning = true
+			when 'ban_user_finish'
 				api.submit(api.ID('user_ban', data.user_name, data.subreddit_name), { days: data.days, message_to_user: data.message_to_user, violation_reason: data.violation_reason })
+				banning = false
 			when 'edit'
 				window.open('https://old.reddit.com/' + id)
 			when 'remove'
@@ -122,7 +126,6 @@ svelte:head
 			button.post-score(on:contextmenu={e => e.preventDefault()} on:mousedown={e => interact('vote', { current_vote: post.likes === true ? 1 : post.likes === false ? -1 : 0, mouse_button_number: e.button })}) {post.hide_score ? '?' : post.score}
 			h1.post-title(data-can-edit={post.author === api.getUser() || null} data-can-mod={post.can_mod_post || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)}) {post.title}
 			aside.post-metadata
-				UserAvatar(name={post.author})
 				ol.post-tags
 					{#if post.over_18}
 						PostTag(name='nsfw')
@@ -220,6 +223,9 @@ svelte:head
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
+		{#if banning}
+			Popup(on:close={() => banning = false})
+				BanMenu(on:submit={e => interact('ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: post.subreddit, user_name: post.author })})
 		{#if replying}
 			CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
 		section.post-comments
