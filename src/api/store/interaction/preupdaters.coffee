@@ -33,12 +33,12 @@ export default {
 		modify: (target, { unpin }) ->
 			original =
 				distinguished: target.distinguished
-				pinned: target.pinned
+				stickied: target.stickied
 			target.distinguished = 'moderator'
-			target.pinned = !unpin
+			target.stickied = !unpin
 			return (target) ->
 				target.distinguished = original.distinguished
-				target.pinned = original.pinned
+				target.stickied = original.stickied
 	
 	comment_remove:
 		targetID: (comment_id) ->
