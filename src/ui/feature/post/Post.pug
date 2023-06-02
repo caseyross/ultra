@@ -2,12 +2,12 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
 
 	import { format_url, relativize_url } from '../../app/routing/url.coffee'
 	import StatTracker from '../../common/StatTracker.coffee'
 
 	import Button from '../../common/Button.pug'
-	import Date from '../../common/Date.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import MediaPlayer from '../../common/MediaPlayer.pug'
 	import Popup from '../../common/Popup.pug'
@@ -137,8 +137,13 @@ svelte:head
 						PostTag(name='oc')
 					{#if post.link_flair_text}
 						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} subreddit_name={post.subreddit} text={post.link_flair_text})
-				Date(created_s={post.created_utc} edited_s={post.edited} format='rel-abs')
-				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
+				time.post-datetime(datetime={post.created_utc})
+					span.post-datetime-rel {Time.sToRelTimeStr(post.created_utc)} ago
+					span.post-datetime-abs ({Time.sToAbsTimeStr(post.created_utc)})
+					{#if post.edited}
+						span(title='edited {Time.sToRelTimeStr(post.edited)} ago ({Time.sToAbsTimeStr(post.edited)})') *
+				{#if false}
+					UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 		section.post-content(data-can-edit={post.author === api.getUser() || null} data-can-mod={post.can_mod_post || null}  data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
 			{#if post.removed_by_category}
 				.post-content-unavailable
@@ -286,6 +291,11 @@ style.
 		flex-flow row nowrap
 		justify-content space-between
 		padding 10px
+	.post-datetime-abs
+		font-size 12px
+		font-weight bold
+	.post-datetime-rel
+		font-size 17px
 	.post-gallery
 		display flex
 		gap 1.333em

@@ -1,8 +1,8 @@
 script.
 	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
 
 	import Button from '../../common/Button.pug'
-	import Date from '../../common/Date.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 
 	import SubredditModerators from './SubredditModerators.pug'
@@ -34,8 +34,7 @@ aside.subreddit-sidebar
 						th.subreddit-sidebar-stats-label(align='right') Subscribers
 				tbody
 					tr
-						td.subreddit-sidebar-stats-value(align='left')
-							Date(created_s={info.created_utc})
+						td.subreddit-sidebar-stats-value(align='left' title={Time.sToAbsTimeStr(info.created_utc)}) {Time.sToRelTimeStr(info.created_utc)} ago
 						td.subreddit-sidebar-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
 			{#if info.public_description_html || info.description_html}
 				FormattedHTML(html={info.public_description_html || info.description_html})
