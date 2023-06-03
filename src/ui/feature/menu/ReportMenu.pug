@@ -29,6 +29,8 @@ script.
 					rules.rules.filter((x) -> x.kind == 'all' || x.kind == 'comment') 
 				when 'post'
 					rules.rules.filter((x) -> x.kind == 'all' || x.kind == 'link')
+				else
+					[]
 			site_rules = []
 			collect_site_rules(site_rules, rules.site_rules_flow) # site rules come in a complicated flow --- flatten it
 	)

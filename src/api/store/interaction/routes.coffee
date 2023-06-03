@@ -73,6 +73,12 @@ export default {
 			text: text
 			thing_id: "t4_#{parent_message_id}"
 		})
+	message_report: (message_id) -> ({ violation_reason }) ->
+		post("/api/report", {
+			api_type: 'json'
+			reason: violation_reason
+			thing_id: "t4_#{message_id}"
+		})
 	post_approve: (post_id) -> () ->
 		post("/api/approve", {
 			id: "t3_#{post_id}"
@@ -111,7 +117,7 @@ export default {
 	subreddit_subscribe: (subreddit_name) -> ({ unsubscribe }) ->
 		post("/api/subscribe", {
 			action: if unsubscribe then 'unsub' else 'sub'
-			skip_initial_defaults: if unsubscribe then null else true
+			skip_initial_defaults: true
 			sr_name: subreddit_name
 		})
 	user_ban: (user_name, subreddit_name) -> ({ days, message_to_user, violation_reason }) ->
