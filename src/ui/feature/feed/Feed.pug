@@ -7,9 +7,10 @@ script.
 	
 	import Button from '../../common/Button.pug'
 	import ButtonGroup from '../../common/ButtonGroup.pug'
-	import FeedAvatar from '../../feature/feed/FeedAvatar.pug'
+	import Comment from '../comment/Comment.pug'
+	import FeedAvatar from '../feed/FeedAvatar.pug'
 	import Label from '../../common/Label.pug'
-	import MessageLink from '../message/MessageLink.pug'
+	import Message from '../message/Message.pug'
 	import PostLink from '../post/PostLink.pug'
 	import TextInput from '../../common/TextInput.pug'
 
@@ -148,7 +149,10 @@ nav.feed
 							{#if type.endsWith('_posts')}
 								PostLink(post_id={item} show_subreddit={type !== 'subreddit_posts'})
 							{:else if type.endsWith('_messages')}
-								MessageLink(message={item})
+								{#if item.was_comment}
+									Comment(id={item.id} out_of_context={true})
+								{:else}
+									Message(message={item})
 	menu.feed-items-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
