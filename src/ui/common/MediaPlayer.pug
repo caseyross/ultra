@@ -46,6 +46,10 @@ script.
 			params += " transparent #{start}, var(--c-text-faint) #{start}, var(--c-text-faint) #{end}, transparent #{end},"
 		params = params + ' transparent 100%'
 	buffer_regions = []
+	check_forced_audio_control = ->
+		# Check if the audio was forcibly play/paused outside our UI, for example via OS-level play/pause features.
+		if audio.paused != paused
+			play_pause()
 	clamp = (min, max, value) ->
 		if value < min then return min
 		if value > max then return max
@@ -93,6 +97,12 @@ script.
 
 	onMount ->
 		audio.volume = Number(localStorage['ui.media.volume']) or 0
+		audio.addEventListener('pause', (e) ->
+			check_forced_audio_control()
+		)
+		audio.addEventListener('playing', (e) ->
+			check_forced_audio_control()
+		)
 		player.addEventListener('fullscreenchange', (e) ->
 			if document.fullscreenElement? and document.fullscreenElement is player
 				fullscreen = true
