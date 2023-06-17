@@ -1,11 +1,13 @@
 script.
 	import api from '../../../api/index.js'
 	import { relativize_url } from '../../app/routing/url.coffee'
+	
 	import SubredditAvatar from './SubredditAvatar.pug'
 	
 	export subreddit_name = null
 
 	subreddit_custom_menu = null
+	
 	api.loadWatch(api.ID('subreddit_widgets', subreddit_name), (x) ->
 		{ data: widgets } = x
 		subreddit_custom_menu = widgets?.topbar?[0]?.data

@@ -1,5 +1,7 @@
 export default (post) ->
+
 	domain = if post.url.hostname.startsWith('www') then post.url.hostname[4..] else post.url.hostname
+	
 	switch domain
 		when 'i.imgur.com'
 			descriptor = post.url.pathname.split('/').at(-1).split('.')[0]

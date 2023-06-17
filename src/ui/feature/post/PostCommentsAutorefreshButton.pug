@@ -1,5 +1,6 @@
 script.
 	import { onDestroy } from 'svelte'
+
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 
@@ -18,6 +19,7 @@ script.
 	interval_timer = null
 	seconds_until_refresh = 1
 	selected_value = null
+	
 	set_autorefresh_interval = (seconds) ->
 		clearInterval(interval_timer)
 		interval_timer = null

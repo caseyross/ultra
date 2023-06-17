@@ -11,7 +11,7 @@ script.
 			{ data: subreddit } = x
 		)
 
-a.subreddit-avatar(href='/{subreddit ? subreddit.display_name : name}')
+a.subreddit-avatar(href='/{subreddit ? subreddit.display_name : name}' title='r/{subreddit ? subreddit.display_name : name}')
 	picture
 		source(srcset={icon_url})
 		source(srcset={subreddit?.community_icon})

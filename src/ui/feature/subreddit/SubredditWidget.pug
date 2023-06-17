@@ -1,9 +1,8 @@
 script.
 	import { relativize_url } from '../../app/routing/url.coffee'
-
+	
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-
 	import PostFlair from '../post/PostFlair.pug'
 	import SubredditNameTag from './SubredditNameTag.pug'
 
@@ -23,7 +22,7 @@ script.
 	{:else if widget.kind === 'image'}
 		{@const image = widget.data[0]}
 			{#if image.linkUrl}
-				a(href={relativize_url(image.linkUrl)})
+				a(href={relativize_url(image.linkUrl)} target='_blank')
 					img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
 			{:else}
 				img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')

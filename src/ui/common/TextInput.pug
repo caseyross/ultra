@@ -1,9 +1,10 @@
 script.
 	import { onMount } from 'svelte'
 	
-	import HotkeyLabel from './HotkeyLabel.pug'
 	import { virtual_hotkeys } from './actions/hotkeys.coffee'
+	import HotkeyLabel from './HotkeyLabel.pug'
 
+	export autofocus = false
 	export enter_action = ->
 	export initial_value = ''
 	export key = null
@@ -26,7 +27,8 @@ label.text-input-label
 	{#if key}
 		HotkeyLabel(key={key})
 	| {label}
-	input.text-input(bind:this={input} on:change={e => enter_action(e.target.value)} on:keydown={e => (e.key === 'Enter') || e.stopPropagation()} on:input={e => type_action(e.target.value)} placeholder={placeholder} use:virtual_hotkeys={hotkeys})
+	<!-- svelte-ignore a11y-autofocus -->
+	input.text-input(autofocus={autofocus} bind:this={input} on:change={e => enter_action(e.target.value)} on:keydown={e => (e.key === 'Enter') || e.stopPropagation()} on:input={e => type_action(e.target.value)} placeholder={placeholder} use:virtual_hotkeys={hotkeys})
 
 style.
 	.text-input

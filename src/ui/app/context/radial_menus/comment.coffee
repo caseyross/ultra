@@ -1,41 +1,89 @@
 export default
-	N:
-		alt: (data) ->
-			label: if data.distinguish is 'moderator' then 'Undistinguish' else 'Distinguish as Mod'
-			icon: if data.distinguish is 'moderator' then '🀄' else '🀅'
-			value: if data.distinguish is 'moderator' then 'undistinguish' else 'distinguish_as_mod'
-	E:
-		unmodified: (data) ->
-			label: if data.saved then 'Unsave' else 'Save'
-			icon: if data.saved then '🗑️' else '💾'
-			value: if data.saved then 'unsave' else 'save'
-		alt: (data) ->
-			label: if data.pinned then 'Unpin' else 'Pin'
-			icon: '📌'
-			value: if data.pinned then 'unpin' else 'pin'
-		ctrl: (data) ->
-			label: 'Approve'
-			icon: '🛡️'
-			value: 'approve'
-	S:
-		unmodified: (data) ->
-			label: 'Reply'
-			icon: '💬'
-			value: 'reply'
-		alt: (data) ->
-			label: 'Edit'
-			icon: '✏️'
-			value: 'edit'
-		ctrl: (data) ->
-			label: 'Ban User'
-			icon: '💀'
-			value: 'ban_user'
-	W:
-		unmodified: (data) ->
-			label: 'Report'
-			icon: '🚩'
-			value: 'report'
-		ctrl: (data) ->
-			label: 'Remove'
-			icon: '🪓'
-			value: 'remove'
+	alt: (data) ->
+		if data.canEdit
+			N:
+				if data.canMod
+					if data.distinguish is 'moderator'
+						action: 'undistinguish'
+						icon: '🗙'
+						label: 'Undistinguish'
+					else
+						action: 'distinguish_as_mod'
+						icon: '🟢'
+						label: 'Distinguish as Mod'
+			W:
+				action: 'edit'
+				icon: '✏️'
+				label: 'Edit'
+			E:
+				action: ''
+				icon: ''
+				label: ''
+			S:
+				action: ''
+				icon: ''
+				label: ''
+	ctrl: (data) ->
+		if data.canMod
+			N:
+				action: 'approve'
+				icon: '✅'
+				label: 'Approve'
+			W:
+				action: 'ban_user'
+				icon: '💀'
+				label: 'Ban User'
+			E:
+				if data.pinned
+					action: 'unpin'
+					icon: '❌'
+					label: 'Unpin'
+				else
+					action: 'pin'
+					icon: '📌'
+					label: 'Pin'
+			S:
+				action: 'remove'
+				icon: '❎'
+				label: 'Remove'
+	shift: (data) ->
+		if data.canInteract
+			N:
+				if data.saved
+					action: 'unsave'
+					icon: '💔'
+					label: 'Unsave'
+				else
+					action: 'save'
+					icon: '❤️'
+					label: 'Save'
+			W:
+				action: ''
+				icon: ''
+				label: ''
+			E:
+				action: ''
+				icon: ''
+				label: ''
+			S:
+				action: ''
+				icon: ''
+				label: ''
+	unmodified: (data) ->
+		if data.canInteract
+			N:
+				action: 'upvote'
+				icon: '👍'
+				label: 'Upvote'
+			W:
+				action: 'report'
+				icon: '🚩'
+				label: 'Report'
+			E:
+				action: 'reply'
+				icon: '🗨️'
+				label: 'Reply'
+			S:
+				action: 'downvote'
+				icon: '👎'
+				label: 'Downvote'

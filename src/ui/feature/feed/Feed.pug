@@ -1,97 +1,64 @@
 script.
-	import { getContext } from 'svelte'
-
 	import api from '../../../api/index.js'
 	import { format_url } from '../../app/routing/url.coffee'
 	import StatTracker from '../../common/StatTracker.coffee'
 	
 	import Button from '../../common/Button.pug'
-	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import Comment from '../comment/Comment.pug'
-	import FeedAvatar from '../feed/FeedAvatar.pug'
 	import Label from '../../common/Label.pug'
 	import Message from '../message/Message.pug'
-	import PostLink from '../post/PostLink.pug'
-	import TextInput from '../../common/TextInput.pug'
+	import Post from '../post/Post.pug'
 
 	export collection_id = null
 	export duplicate_post_id = null
 	export multireddit_name = null
+	export filter = 'all'
 	export page_size = 10
-	export search_query = null
+	export search = null
 	export sort = null
 	export subreddit_name = null
 	export time_range = null
 	export type = null
 	export user_name = null
-	
-	filter_options = [
-		{ label: 'Unread', value: 'unread' }
-		{ label: 'All', value: 'all' }
-	]
-	time_range_options = [
-		{ label: 'Any time', value: 'all' }
-		{ label: 'Y', value: 'year' }
-		{ label: 'M', value: 'month' }
-		{ label: 'W', value: 'week' }
-		{ label: 'D', value: 'day' }
-		{ label: 'H', value: 'hour' }
-	]
-	sort_options = [
-		{ label: 'New', show_time_ranges: false, value: 'new' }
-		{ label: 'Hot', show_time_ranges: false, value: 'hot' }
-		{ label: 'Top', show_time_ranges: true, value: 'top' }
-	]
-	search_sort_options = [
-		{ label: 'Match %', value: 'relevance' }
-		{ label: 'Score', value: 'top' }
-		{ label: 'Date', value: 'new' }
-		{ label: 'Num. Comments', value: 'comments' }
-	]
 
 	base_page_id = switch type
 		when 'account_messages'
-			api.ID('account_messages_' + sort, page_size)
+			api.ID('account_messages', sort, page_size)
+		when 'account_saved_comments'
+			api.ID('account_saved_comments', user_name, time_range, sort, page_size)
+		when 'account_saved_posts'
+			api.ID('account_saved_posts', user_name, time_range, sort, page_size)
 		when 'collection_posts'
 			api.ID('collection', collection_id)
 		when 'duplicate_posts'
 			api.ID('post_duplicates', duplicate_post_id, page_size)
 		when 'multireddit_posts'
-			if search_query
-				api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_query}", time_range, sort, page_size)
+			if search
+				api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search}", time_range, sort, page_size)
 			else
 				api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
 		when 'subreddit_posts'
-			if search_query
-				api.ID('search_posts', "subreddit=#{subreddit_name}+#{search_query}", time_range, sort, page_size)
+			if search
+				api.ID('search_posts', "subreddit=#{subreddit_name}+#{search}", time_range, sort, page_size)
 			else
 				api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
+		when 'user_comments'
+			api.ID('user_comments', user_name, time_range, sort, page_size)
 		when 'user_posts'
 			api.ID('user_posts', user_name, time_range, sort, page_size)
 	error = null
 	has_next_page = false
 	loading = null
-	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	items = []
-	local_filter = 'unread'
-	local_search_query = search_query
-	local_sort = sort
-	local_time_range = time_range
-	search_mode_active = search_query?
 	read = []
-
-	activate_search_mode = ->
-		local_time_range = 'all'
-		local_sort = 'relevance'
-		search_mode_active = true
 
 	load_next_page = ->
 		after_id = switch type
-			when 'account_messages' then items.at(-1)?.id
+			when type.endsWith('_messages') then items.at(-1)?.id
 			else items.at(-1)
 		if after_id
 			after_type = switch type
-				when 'account_messages' then (if items.at(-1)?.was_comment then 'comment' else 'message')
+				when type.endsWith('_messages') then (if items.at(-1)?.was_comment then 'comment' else 'message')
 				else null
 		page_id = api.ID(base_page_id, after_id, after_type)
 		api.loadWatch(page_id, (x) ->
@@ -110,49 +77,29 @@ script.
 
 	load_next_page()
 
-svelte:head
-	{#if type === 'collection_posts'}
-		title collection {collection_id}
-	{:else if type === 'multireddit_posts'}
-		title {multireddit_name}
-	{:else if type === 'subreddit_posts'}
-		title {subreddit_name}
-	{:else if type === 'user_posts'}
-		title {user_name}
 nav.feed
-	FeedAvatar(collection_id={collection_id} multireddit_name={multireddit_name} subreddit_name={subreddit_name} type={type} user_name={user_name})
-	{#if type === 'multireddit_posts' || type === 'subreddit_posts' || type === 'user_posts'}
-		menu.feed-controls
-			{#if search_mode_active}
-				TextInput(initial_value={search_query} type_action={value => local_search_query = value})
-				Button(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
-				Button(action={value => local_time_range = value} options={time_range_options} selected={local_time_range})
-				Button(disabled={!local_search_query?.length} key='Enter' link={format_url({ feed_search_query: local_search_query, feed_sort: local_sort, feed_time_range: local_time_range, feed_type: type, multireddit_name, subreddit_name, user_name })} text='Search')
-			{:else}
-				ButtonGroup(options={sort_options.map(x => ({ ...x, link: format_url({ feed_sort: x.value, feed_time_range: time_range, feed_type: type, multireddit_name, subreddit_name, user_name })}))} selected={sort})
-				{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
-					Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_sort: sort, feed_time_range: value, feed_type: type, multireddit_name, subreddit_name, user_name }) })} options={time_range_options} selected={time_range})
-				Button(action={activate_search_mode} text='Search...')
-				ButtonGroup(action={value => local_filter = value} options={filter_options} selected={local_filter})
 	{#if loading}
 		.feed-loading-notification Loading...
 	{:else}
 		{#if items.length === 0}
 			.feed-items-empty No {type.split('_').at(-1)}.
-		{:else if !search_query && local_filter === 'unread' && read.every((x) => x === true)}
+		{:else if !search && filter === 'unread' && read.every((x) => x === true)}
 			.feed-items-no-unreads You've read all the {type.split('_').at(-1)} on this page.
 		{:else}
 			ol.feed-items
 				{#each items as item, i (item)}
-					{#if search_query || local_filter === 'all' || (local_filter === 'unread' && !read[i])}
-						li(on:mousedown={e => { if(e.button === 0) read[i] = true }})
-							{#if type.endsWith('_posts')}
-								PostLink(post_id={item} show_subreddit={type !== 'subreddit_posts'})
+					{#if search || (filter === 'all') || (filter === 'unread' && !read[i])}
+						li(on:mousedown={e => { if(type.endsWith('_posts') && e.button === 0) { read[i] = true } }})
+							{#if type.endsWith('_comments')}
+								Comment(id={item} out_of_context={true})
 							{:else if type.endsWith('_messages')}
 								{#if item.was_comment}
 									Comment(id={item.id} out_of_context={true})
 								{:else}
 									Message(message={item})
+							{:else if type.endsWith('_posts')}
+								a(href={format_url({ post_id: item, subreddit_name })})
+									Post(expanded={false} id={item})
 	menu.feed-items-actions
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
@@ -163,15 +110,10 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		height 100%
-		padding 4em 0
-		width 320px
-	.feed-controls
-		display flex
-		gap 6px
+		width 480px
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		flex 1
-		gap 0.333em
-		overflow auto
+		gap 1em
+	.feed-items-actions
+		height 64px

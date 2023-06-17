@@ -1,69 +1,58 @@
 script.
 	import { getContext } from 'svelte'
+	
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
-	
 	import { format_url } from '../../app/routing/url.coffee'
+
+	import BanMenu from '../menu/BanMenu.pug'
 	import Button from '../../common/Button.pug'
+	import CommentEditor from './CommentEditor.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import Popup from '../../common/Popup.pug'
-	import BanMenu from '../menu/BanMenu.pug'
 	import ReportMenu from '../menu/ReportMenu.pug'
 	import UserByline from '../user/UserByline.pug'
 
-	import CommentEditor from './CommentEditor.pug'
-
 	export id = null
 	export out_of_context = false
-	focus_comment_id = getContext('focus_comment_id')
 	
 	banning = false
 	comment = null
 	editing = false
 	edit_error = null
 	edit_sending = false
+	focus_comment_id = getContext('focus_comment_id')
 	more_replies_loading = false
 	replying = false
 	reply_error = null
 	reply_sending = false
 	reporting = false
-	score_color = null
-	score_text = null
-	score_text_color = null
-	api.loadWatch(api.ID('comment', id),
-		(x) ->
-			{ data: comment } = x
-			if comment?
-				score_default_color = 'var(--c-score-0)'
-				score_default_text = 'New'
-				score_default_text_color = 'var(--c-text-weak)'
-				score_color = switch
-					when comment.distinguished is 'admin' then 'var(--c-admin)'
-					when comment.distinguished is 'moderator' then 'var(--c-mod)'
-					when comment.is_submitter then 'var(--c-op)'
-					when comment.score_hidden then score_default_color
-					when !Number.isFinite(comment.score) then score_default_color
-					when Math.log10(comment.score) > 3 then 'var(--c-score-4)'
-					when Math.log10(comment.score) > 2 then 'var(--c-score-3)'
-					when Math.log10(comment.score) > 1 then 'var(--c-score-2)'
-					when Math.log10(comment.score) > 0 then 'var(--c-score-1)'
-					else score_default_color
-				score_text = switch
-					when comment.stickied then 'Pin'
-					when comment.score_hidden then score_default_text
-					when !Number.isFinite(comment.score) then score_default_text
-					else comment.score
-				score_text_color = switch
-					when comment.distinguished is 'admin' then 'white'
-					when comment.distinguished is 'moderator' then 'white'
-					when comment.is_submitter then 'white'
-					else score_default_text_color
-				if comment.more_replies
-					api.watch(comment.more_replies_id,
-						(x) -> { loading: more_replies_loading } = x
-					)
-	)
-
+	score_color = (comment) -> switch
+		when comment.distinguished is 'admin' then 'var(--c-admin)'
+		when comment.distinguished is 'moderator' then 'var(--c-mod)'
+		when comment.is_submitter then 'var(--c-op)'
+		when comment.score_hidden or !Number.isFinite(comment.score) then 'var(--c-score-0)'
+		when Math.log10(comment.score) > 3 then 'var(--c-score-4)'
+		when Math.log10(comment.score) > 2 then 'var(--c-score-3)'
+		when Math.log10(comment.score) > 1 then 'var(--c-score-2)'
+		when Math.log10(comment.score) > 0 then 'var(--c-score-1)'
+		else 'var(--c-score-0)'
+	score_text_color = (comment) -> switch
+		when comment.distinguished is 'admin' then 'white'
+		when comment.distinguished is 'moderator' then 'white'
+		else 'var(--c-text-weak)'
+	title_text = (comment) ->
+		score_text = switch
+			when comment.score_hidden or !Number.isFinite(comment.score) then 'score hidden'
+			when comment.score > 0 then '+' + comment.score
+			else comment.score
+		time_text = switch
+			when comment.edited
+				Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')'
+			else
+				Time.sToAbsRelTimeStr(comment.created_utc)
+		return "#{score_text}, #{time_text}"
+	
 	interact = (action_type, data) ->
 		switch action_type
 			when 'approve'
@@ -78,6 +67,8 @@ script.
 				banning = false
 			when 'distinguish_as_mod'
 				api.submit(api.ID('comment_distinguish', id), { type: 'moderator' })
+			when 'downvote'
+				api.submit(api.ID('comment_vote', id), { numerical_vote: if comment.likes == false then 0 else -1 })
 			when 'edit'
 				editing = true
 			when 'edit_finish'
@@ -113,15 +104,17 @@ script.
 				api.submit(api.ID('comment_pin', id), { unpin: true })
 			when 'unsave'
 				api.submit(api.ID('comment_save', id), { unsave: true })
-			when 'vote'
-				new_vote =
-					switch data.mouse_button_number
-						when 0 # left
-							if data.current_vote is 1 then 0 else 1
-						when 2 # right
-							if data.current_vote is -1 then 0 else -1
-				if new_vote != data.current_vote
-					api.submit(api.ID('comment_vote', id), { numerical_vote: new_vote })
+			when 'upvote'
+				api.submit(api.ID('comment_vote', id), { numerical_vote: if comment.likes == true then 0 else 1 })
+	
+	api.loadWatch(api.ID('comment', id),
+		(x) ->
+			{ data: comment } = x
+			if comment?.more_replies
+				api.watch(comment.more_replies_id,
+					(x) -> { loading: more_replies_loading } = x
+				)
+	)
 
 {#if editing}
 	CommentEditor(error={edit_error} initial_text={comment.body} on:submit={e => interact('edit_finish', { new_text: e.detail })} sending={edit_sending})
@@ -129,12 +122,8 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} role='comment' title={comment.edited ? Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')' : Time.sToAbsRelTimeStr(comment.created_utc)})
-			{#if api.isLoggedIn()}
-				button.comment-score(on:contextmenu={e => e.preventDefault()} on:mousedown={e => interact('vote', { current_vote: comment.likes === true ? 1 : comment.likes === false ? -1 : 0, mouse_button_number: e.button })} style='background: {score_color}; color: {score_text_color}') {score_text}
-			{:else}
-				data.comment-score(style='background: {score_color}; color: {score_text_color}') {score_text}
-			section.comment-body(data-can-edit={comment.author === api.getUser() || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} role='comment' title={title_text(comment)})
+			section.comment-body(data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} style='background-color: {score_color(comment)}; color: {score_text_color(comment)}')
 				FormattedHTML(html={comment.body_html})
 			aside.comment-user-info
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
@@ -155,58 +144,45 @@ script.
 					svelte:self(id={reply_id})
 				{#if comment.num_more_replies > 0}
 					menu.comment-more-replies
-						Button(action={() => api.load(comment.more_replies_id)} icon_plus={true} loading={more_replies_loading} text="{comment.num_more_replies} more")
+						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="+ {comment.num_more_replies} {comment.num_more_replies === 1 ? 'reply' : 'replies'}")
 				{#if comment.deeper_replies}
 					menu.comment-more-replies
 						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{id}' text='Continue thread...')
 
 style.
-	.comment-user-info
-		bottom 100%
-		left 0
-		opacity 0
-		position absolute
-		.comment:hover &
-			opacity 1
 	.comment
-		display inline-block
 		margin 0.666em 0
-		max-width 360px
 		position relative
 	.comment-body
-		border-radius 12px
+		border-radius 1em
 		display inline-block
-		padding 12px
+		max-width 360px
+		padding 1em
 		.comment-deleted > &
 			opacity 0.25
 			pointer-events none
 		.comment-highlighted > &
-			outline 1px solid wheat
+			background-color gold !important
 		.comment-with-low-score:not(.comment-deleted) > &
 			opacity 0.5
 		:global(& img)
-			border-radius 6px
-			height auto
-			margin 0
+			border-radius 0.5em
+			margin 0.2em
+			max-height 5em
+			width auto
 	.comment-clip
 		display flex
 	.comment-more-replies
 		padding 0.666em 0
 	.comment-replies
 		border-left 1px solid var(--c-blend-normal)
-		padding-left 4em
-	.comment-score
-		border-radius 7px
-		font-size 12px
-		font-weight bold
-		padding 1px 9px
-		position absolute
-		right calc(100% + 2ch)
-		user-select none
-		white-space pre
-		.comment-upvoted &::before
-			content url('/icon_upvote.svg')
-		.comment-downvoted &::before
-			content url('/icon_downvote.svg')
+		padding-left 24px
 	.comment-source-info
 		margin 0.666em 1em
+	.comment-user-info
+		left 0
+		opacity 0
+		position absolute
+		top -1.5em
+		.comment:hover &
+			opacity 1

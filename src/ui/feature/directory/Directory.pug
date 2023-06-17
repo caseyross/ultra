@@ -12,7 +12,7 @@ script.
 	
 	subreddits_popular = null
 	subreddits_subscribed = null
-	api.loadWatch(api.ID('global_subreddits_popular', 25), (x) ->
+	api.loadWatch(api.ID('subreddits_popular', 25), (x) ->
 		subreddits_popular = x?.data
 	)
 	if api.isLoggedIn()
@@ -41,7 +41,7 @@ script.
 
 	num_unread_messages = null
 	if api.isLoggedIn()
-		api.loadWatch(api.ID('account_messages_received_unread', 10), ({ data: messages }) ->
+		api.loadWatch(api.ID('account_messages', 'unread', 10), ({ data: messages }) ->
 			num_unread_messages = switch
 				when !messages?.length then 0
 				when 0 < messages.length < 10 then String(messages.length)

@@ -1,7 +1,7 @@
 script.
 	import { createEventDispatcher } from 'svelte'
+	
 	import { virtual_hotkeys } from './actions/hotkeys.coffee'
-	import Button from './Button.pug'
 
 	dispatch = createEventDispatcher()
 	hotkeys =
@@ -11,10 +11,7 @@ script.
 	.popup-overlay(on:mousedown={() => dispatch('close')})
 	<!-- svelte-ignore a11y-autofocus -->
 	.popup-body(autofocus)
-		.popup-body-content
-			slot
-		.popup-body-gradient-fade-top
-		.popup-body-gradient-fade-bottom
+		slot
 
 style.
 	.popup
@@ -36,24 +33,6 @@ style.
 		overflow auto
 		padding 2em
 		position relative
-	.popup-body-content
-		overflow auto
-	.popup-body-gradient-fade-bottom
-		background linear-gradient(to top, white 0px, transparent)
-		bottom 0
-		height 3em
-		left 0
-		pointer-events none
-		position absolute
-		width 100%
-	.popup-body-gradient-fade-top
-		background linear-gradient(to bottom, white 0px, transparent)
-		top 0
-		height 3em
-		left 0
-		pointer-events none
-		position absolute
-		width 100%
 	.popup-overlay
 		background var(--c-con-xstrong)
 		height 100%

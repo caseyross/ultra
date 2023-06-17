@@ -1,7 +1,7 @@
 script.
 	import { onMount } from 'svelte'
+
 	import { Time } from '../../lib/index.js'
-	
 	import { virtual_hotkeys } from './actions/hotkeys.coffee'
 	import Button from './Button.pug'
 	
@@ -11,32 +11,6 @@ script.
 	export video_url = null
 	export width = 480
 
-	additional_hotkeys =
-		' ': ->
-			if fullscreen
-				play_pause()
-			else
-				false
-		ArrowDown: ->
-			set_volume(audio.volume - 0.25)
-		ArrowLeft: ->
-			set_time(video.currentTime - 5)
-		ArrowRight: ->
-			set_time(video.currentTime + 5)
-		ArrowUp: ->
-			set_volume(audio.volume + 0.25)
-		j: ->
-			set_time(video.currentTime - 10)
-		k: ->
-			play_pause()
-		l: ->
-			set_time(video.currentTime + 10)
-		m: ->
-			if audio.volume > 0
-				localStorage['media.premute_volume'] = audio.volume
-				set_volume(0)
-			else
-				set_volume(Number(localStorage['media.premute_volume']) or 1)
 	audio = null
 	buffer_gradient_params = (buffer_regions) ->
 		params = 'transparent 0%,'
@@ -46,10 +20,6 @@ script.
 			params += " transparent #{start}, var(--c-text-faint) #{start}, var(--c-text-faint) #{end}, transparent #{end},"
 		params = params + ' transparent 100%'
 	buffer_regions = []
-	check_forced_audio_control = ->
-		# Check if the audio was forcibly play/paused outside our UI, for example via OS-level play/pause features.
-		if audio.paused != paused
-			play_pause()
 	clamp = (min, max, value) ->
 		if value < min then return min
 		if value > max then return max
@@ -63,9 +33,9 @@ script.
 	play_pause = ->
 		if ended
 			set_time(0)
-			video.play()
+			video.play().catch(-> null)
 		else if paused
-			video.play()
+			video.play().catch(-> null)
 		else
 			video.pause()
 	player = null
@@ -95,14 +65,35 @@ script.
 			200
 		)
 
+	additional_hotkeys =
+		' ': ->
+			if fullscreen
+				play_pause()
+			else
+				false
+		ArrowDown: ->
+			set_volume(audio.volume - 0.25)
+		ArrowLeft: ->
+			set_time(video.currentTime - 5)
+		ArrowRight: ->
+			set_time(video.currentTime + 5)
+		ArrowUp: ->
+			set_volume(audio.volume + 0.25)
+		j: ->
+			set_time(video.currentTime - 10)
+		k: ->
+			play_pause()
+		l: ->
+			set_time(video.currentTime + 10)
+		m: ->
+			if audio.volume > 0
+				localStorage['media.premute_volume'] = audio.volume
+				set_volume(0)
+			else
+				set_volume(Number(localStorage['media.premute_volume']) or 1)
+
 	onMount ->
 		audio.volume = Number(localStorage['ui.media.volume']) or 0
-		audio.addEventListener('pause', (e) ->
-			check_forced_audio_control()
-		)
-		audio.addEventListener('playing', (e) ->
-			check_forced_audio_control()
-		)
 		player.addEventListener('fullscreenchange', (e) ->
 			if document.fullscreenElement? and document.fullscreenElement is player
 				fullscreen = true
@@ -124,9 +115,9 @@ script.
 					play_pause()
 					wake_mouse()
 				else
+					player.requestFullscreen()
 					if paused
-						player.requestFullscreen()
-					play_pause()
+						play_pause()
 		)
 		video.addEventListener('mousemove', (e) ->
 			if fullscreen
@@ -162,7 +153,7 @@ figure.media-player(bind:this={player} class:media-player-controls-hidden={fulls
 	<!-- svelte-ignore a11y-media-has-caption -->
 	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:ended={ended} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
-	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') {paused ? '▶ Play in fullscreen' : '■ Pause'}
+	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
 		Button(action={play_pause} description='Play / pause' key='p' text="{ended ? '↻' : paused ? '▶' : '■'} {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
@@ -170,7 +161,7 @@ figure.media-player(bind:this={player} class:media-player-controls-hidden={fulls
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
 		.media-volume(title='Drag left or right to change volume')
 			figure.media-volume-graphics
-				span.media-volume-bar.media-volume-bar-mute(class:media-volume-bar-filled={audio?.volume == 0}) ✗
+				span.media-volume-bar.media-volume-bar-mute(class:media-volume-bar-filled={audio?.volume == 0}) x
 				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
 			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
@@ -272,17 +263,17 @@ style.
 		align-self flex-start
 		background none !important
 		color var(--c-text-faint)
-		font-weight 900
-		left -2px
+		font-weight bold
+		left 1px
 		line-height 1
 		position relative
-		top -2px
+		top -5px
 	.media-volume-graphics
 		align-items flex-end
 		display flex
 		gap 3px
 		height 100%
-		padding 4px 0
+		padding 5px 0
 		user-select none
 	.media-volume-input
 		appearance none

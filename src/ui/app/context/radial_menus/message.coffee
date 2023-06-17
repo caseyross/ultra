@@ -1,13 +1,18 @@
 export default
-	N: {}
-	E: {}
-	S:
-		unmodified: (data) ->
-			label: 'Reply'
-			icon: '💬'
-			value: 'reply'
-	W:
-		unmodified: (data) ->
-			label: 'Report'
+	unmodified: (data) ->
+		N:
+			action: ''
+			icon: ''
+			label: ''
+		W:
+			action: 'report'
 			icon: '🚩'
-			value: 'report'
+			label: 'Report'
+		E:
+			action: 'reply'
+			icon: '💬'
+			label: 'Reply'
+		S:
+			action: ''
+			icon: ''
+			label: ''

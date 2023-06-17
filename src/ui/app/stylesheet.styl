@@ -1,11 +1,4 @@
-// Baseline resets
-*
-	box-sizing border-box
-	margin 0
-	&:focus
-		outline-color gold
-
-// Typography
+// Imports
 @font-face
 	font-family 'Arimo'
 	font-style normal
@@ -21,11 +14,77 @@
 	font-style normal italic
 	font-weight 100 900
 	src url('../../vendor/inter_100_900.woff2')
+
+// Resets
+*
+	box-sizing border-box
+	margin 0
+	&:focus
+		outline-color gold
+	&::-webkit-scrollbar
+		background var(--c-blend-weak)
+	&::-webkit-scrollbar-thumb
+		background var(--c-blend-normal)
+		border-radius 12px
+
+// Base layout & theme
 html
-	font 13.5px/1.7777777 'Inter'
-	font-feature-settings 'tnum' 1
 	font 15px/1.5 'Arimo', 'Arial', 'Helvetica', sans-serif
-	//letter-spacing 0.125pt // 1/6 pixel
+	scrollbar-gutter stable both-edges // doesn't work on <body>
+body
+	background-color var(--c-bg)
+	color var(--c-text-strong)
+	display grid
+	grid-auto-flow row
+	grid-template-columns 1fr
+	padding 4em 2em
+	place-items center
+	--c-admin orangered
+	--c-hint-normal wheat
+	--c-mod darkseagreen
+	--c-op #c3e0ff
+	--c-score-0 #e3e6eb
+	--c-score-1 antiquewhite
+	--c-score-2 wheat
+	--c-score-3 lightsalmon
+	--c-score-4 salmon
+	--c-subreddit-theme-default #cee3f8
+	--c-subreddit-theme-secondary-default orangered
+	--c-subreddit-theme-text-default black
+.color-strategy-black-text
+	color-scheme light
+	--c-bg white
+	--c-blend-weak rgba(0,0,0,0.05)
+	--c-blend-normal rgba(0,0,0,0.10)
+	--c-con-weak rgba(255,255,255,0.05)
+	--c-con-normal rgba(255,255,255,0.10)
+	--c-con-strong rgba(255,255,255,0.50)
+	--c-con-xstrong rgba(255,255,255,0.80)
+	--c-text-faint rgba(0,0,0,0.25)
+	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong #333
+	--c-text-reverse white
+	--f-wght-normal 400
+	--f-wght-strong 500
+	--f-wght-xstrong 600
+.color-strategy-white-text
+	color-scheme dark
+	--c-bg #333
+	--c-blend-weak rgba(255,255,255,0.05)
+	--c-blend-normal rgba(255,255,255,0.10)
+	--c-con-weak rgba(0,0,0,0.05)
+	--c-con-normal rgba(0,0,0,0.10)
+	--c-con-strong rgba(0,0,0,0.50)
+	--c-con-xstrong rgba(0,0,0,0.80)
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong white
+	--c-text-reverse black
+	--f-wght-normal 350
+	--f-wght-strong 450
+	--f-wght-xstrong 550
+
+// Typography
 pre
 	font 12px/1.5 monospace
 	letter-spacing 0
@@ -58,57 +117,6 @@ pre
 	h6
 		font-size 1em
 		font-weight 550
-
-// Theme
-body
-	--c-op #87b3eb
-	--c-admin orangered
-	--c-mod darkseagreen
-	--c-score-0 #e3e6eb
-	--c-score-1 lightgoldenrodyellow
-	--c-score-2 wheat
-	--c-score-3 lightsalmon
-	--c-score-4 salmon
-	--c-subreddit-theme-default #cee3f8
-	--c-subreddit-theme-secondary-default orangered
-	--c-subreddit-theme-text-default black
-.color-strategy-black-text
-	--c-blend-weak rgba(0,0,0,0.05)
-	--c-blend-normal rgba(0,0,0,0.10)
-	--c-con-weak rgba(255,255,255,0.05)
-	--c-con-normal rgba(255,255,255,0.10)
-	--c-con-strong rgba(255,255,255,0.50)
-	--c-con-xstrong rgba(255,255,255,0.80)
-	--c-hint-normal cornflowerblue
-	--c-text-faint rgba(0,0,0,0.25)
-	--c-text-weak rgba(0,0,0,0.50)
-	--c-text-strong black
-	--c-text-reverse white
-	--f-wght-normal 400
-	--f-wght-strong 500
-	--f-wght-xstrong 600
-	color-scheme light
-.color-strategy-white-text
-	--c-blend-weak rgba(255,255,255,0.05)
-	--c-blend-normal rgba(255,255,255,0.10)
-	--c-con-weak rgba(0,0,0,0.05)
-	--c-con-normal rgba(0,0,0,0.10)
-	--c-con-strong rgba(0,0,0,0.50)
-	--c-con-xstrong rgba(0,0,0,0.80)
-	--c-hint-normal wheat
-	--c-text-faint rgba(255,255,255,0.25)
-	--c-text-weak rgba(255,255,255,0.50)
-	--c-text-strong white
-	--c-text-reverse black
-	--f-wght-normal 350
-	--f-wght-strong 450
-	--f-wght-xstrong 550
-	color-scheme dark
-*::-webkit-scrollbar
-	background var(--c-blend-weak)
-*::-webkit-scrollbar-thumb
-	background var(--c-blend-normal)
-	border-radius 12px
 
 // Layout sections
 p
@@ -165,6 +173,7 @@ ul
 		padding 0 2ch 1ch 0
 		text-align left
 	td
+		border-top 1px solid var(--c-text-faint)
 		vertical-align top
 	th
 		font-weight var(--f-wght-strong)
@@ -219,11 +228,8 @@ kbd
 .md-spoiler-text
 	background black
 	border-radius 5px
-	box-decoration-break clone
-	-webkit-box-decoration-break clone
 	color transparent
 	cursor default
-	padding 1px 4px
 	*
 		opacity 0
 	&:hover

@@ -1,5 +1,4 @@
 # total size of localStorage data should not exceed 5MB to stay within typical browser limits
-
 MAX_POSTS_READ = 50_000 # @ 10 chars per * 2B per char = 1MB max; 36^(9 data chars per ID) covers sequential posts IDs as far as 101 trillion
 
 export default {

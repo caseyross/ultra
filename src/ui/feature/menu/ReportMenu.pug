@@ -1,5 +1,6 @@
 script.
 	import { createEventDispatcher } from 'svelte'
+
 	import api from '../../../api/index.js'
 	import Button from '../../common/Button.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
@@ -7,12 +8,6 @@ script.
 	
 	export subreddit_name = null
 	export target_type = null
-	dispatch = createEventDispatcher()
-	
-	subreddit = null
-	api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
-		{ data: subreddit } = x
-	)
 
 	collect_site_rules = (array, site_rules_tree) ->
 		for current_level_rule in site_rules_tree
@@ -20,8 +15,15 @@ script.
 				collect_site_rules(array, current_level_rule.nextStepReasons)
 			else
 				array.push({ violation_reason: current_level_rule.reasonText })
+	dispatch = createEventDispatcher()
+	freeform_input_value = null
 	site_rules = null
+	subreddit = null
 	subreddit_rules = null
+
+	api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
+		{ data: subreddit } = x
+	)
 	api.loadWatch(api.ID('subreddit_rules', subreddit_name), ({ data: rules }) ->
 		if rules
 			subreddit_rules = switch target_type # filter non-applicable rules
@@ -35,17 +37,15 @@ script.
 			collect_site_rules(site_rules, rules.site_rules_flow) # site rules come in a complicated flow --- flatten it
 	)
 
-	freeform_input_value = null
-
 form.report-menu
 	{#if site_rules && subreddit}
 		{#if subreddit.free_form_reports}
 			fieldset.report-menu-subreddit-freeform-report
-				TextInput(placeholder='Enter custom reason' type_action={value => freeform_input_value = value})
+				TextInput(autofocus={true} placeholder='Enter custom reason' type_action={value => freeform_input_value = value})
 				Button(action={() => freeform_input_value.length && dispatch('submit', freeform_input_value)} text='Submit')
 				span.report-menu-hint ...or click a reason below:
 		{:else}
-			span Click reason to submit:
+			span Click on reason to send report:
 		{#if subreddit_rules.length}
 			fieldset.report-menu-subreddit-rules
 				{#each subreddit_rules as rule}

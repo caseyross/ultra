@@ -1,5 +1,6 @@
 script.
 	import { hotkey } from './actions/hotkeys.coffee'
+
 	import HotkeyLabel from './HotkeyLabel.pug'
 	import Popup from './Popup.pug'
 	
@@ -9,7 +10,6 @@ script.
 	export description = ''
 	export disabled = false
 	export key = null
-	export icon_plus = null
 	export link = null
 	export loading = false
 	export loading_text = 'Loading...'
@@ -20,6 +20,7 @@ script.
 	export text = ''
 
 	popup_open = false
+	
 	if popup
 		action = -> popup_open = true
 
@@ -28,7 +29,7 @@ script.
 		{#each options as option}
 			option.button-dropdown-option(disabled={option.disabled} label={option.label} selected={selected === option.value} value={option.value})
 {:else if link}
-	a.button(class:button-activated={activated} class:button-disabled={disabled} class:button-with-icon-plus={icon_plus} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
+	a.button(class:button-activated={activated} class:button-disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
 		{#if key}
 			HotkeyLabel(key={key})
 		{#if text}
@@ -36,7 +37,7 @@ script.
 		{#if badge}
 			span.button-badge {badge}
 {:else}
-	button.button(class:button-activated={activated} class:button-with-icon-plus={icon_plus} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
+	button.button(class:button-activated={activated} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
 		{#if loading}
 			| {loading_text}
 		{:else}
@@ -56,7 +57,7 @@ style.
 		align-items center
 		background var(--c-blend-normal)
 		border 1px solid transparent
-		border-radius 6px
+		border-radius 0.5em
 		display inline-flex
 		gap 5px
 		line-height 18px
@@ -65,21 +66,14 @@ style.
 		text-align left
 		user-select none
 		&:hover:not(:disabled):not(.disabled):not(.button-dropdown)
-			background var(--c-con-normal)
+		&.button-activated
+			background #333
 			border-color var(--c-hint-normal)
 			color var(--c-hint-normal)
-		&.button-activated
-			background var(--c-text-strong)
-			color var(--c-text-reverse)
 		&.button-disabled
 		&:disabled
-			cursor not-allowed
+			cursor normal
 			opacity 0.5
-		&.button-with-icon-plus::before
-			color var(--c-text-weak)
-			content '+'
-			left -2ch
-			position absolute
 	.button-badge
 		border-radius 10px
 		background var(--c-con-strong)

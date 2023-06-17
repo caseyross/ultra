@@ -3,34 +3,19 @@ import { get, post } from '../../net/http.coffee'
 export default {
 	account: ->
 		get("/api/v1/me")
+	account_messages: (sort, max_messages, after_type, after_id) ->
+		get("/message/#{sort}", {
+			after: after_type and after_id and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
+			limit: max_messages
+			mark: false
+			show: 'all'
+		})
 	account_multireddits_owned:  ->
 		get("/api/multi/mine", {
 			expand_srs: true
 		})
 	account_preferences: ->
 		get("/api/v1/me/prefs")
-	# Note: private message listings 
-	account_messages_received: (max_messages, after_id, after_type) ->
-		get("/message/inbox", {
-			after: after_id and after_type and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
-			limit: max_messages
-			mark: false
-			show: 'all'
-		})
-	account_messages_received_unread: (max_messages, after_id, after_type) ->
-		get("/message/unread", {
-			after: after_id and after_type and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
-			limit: max_messages
-			mark: false
-			show: 'all'
-		})
-	account_messages_sent: (max_messages, after_id, after_type) ->
-		get("/message/sent", {
-			after: after_id and after_type and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
-			limit: max_messages
-			mark: false
-			show: 'all'
-		})
 	account_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_comment_id and "t1_#{after_comment_id}"
@@ -73,18 +58,6 @@ export default {
 	comment: (comment_id) ->
 		get("/api/info", {
 			id: "t1_#{comment_id}"
-		})
-	global_subreddits_new: (max_subreddits) ->
-		get("/subreddits/new", {
-			limit: max_subreddits
-			show: 'all'
-			sr_detail: true
-		})
-	global_subreddits_popular: (max_subreddits) ->
-		get("/subreddits/popular", {
-			limit: Number(max_subreddits) + 1 # first result is always r/home
-			show: 'all'
-			sr_detail: true
 		})
 	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve({})
@@ -162,23 +135,8 @@ export default {
 			query: search_text # 1-25 chars
 			typeahead_active: true
 		})
-	search_users: (search_text, max_users) ->
-		get("/users/search", {
-			limit: max_users
-			show: 'all'
-			sort: 'relevance'
-			q: search_text
-		})
 	subreddit: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about")
-	subreddit_emotes: (subreddit_name) ->
-		get("/api/v1/#{subreddit_name}/emojis/all")
-	subreddit_moderators: (subreddit_name, after_user_id) ->
-		get("/r/#{subreddit_name}/about/moderators", {
-			after: after_user_id and "t2_#{after_user_id}"
-			limit: 100
-			show: 'all'
-		})
 	subreddit_posts: (subreddit_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/r/#{subreddit_name}/#{posts_sort}", {
 			after: after_post_id and "t3_#{after_post_id}"
@@ -186,27 +144,21 @@ export default {
 			show: 'all'
 			t: posts_time_range
 		})
-	subreddit_post_flairs: (subreddit_name) ->
-		get("/r/#{subreddit_name}/api/link_flair_v2")
-	subreddit_post_guidelines: (subreddit_name) ->
-		get("/r/#{subreddit_name}/api/submit_text")
-	subreddit_post_requirements: (subreddit_name) ->
-		get("/api/v1/#{subreddit_name}/post_requirements")
 	subreddit_rules: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about/rules")
-	subreddit_user_flairs: (subreddit_name) ->
-		get("/r/#{subreddit_name}/api/user_flair_v2")
 	subreddit_widgets: (subreddit_name) ->
 		get("/r/#{subreddit_name}/api/widgets", {
 			progressive_images: true
 		})
+	subreddits_popular: (max_subreddits) ->
+		get("/subreddits/popular", {
+			limit: Number(max_subreddits) + 1 # first result is always r/home
+			show: 'all'
+			sr_detail: true
+		})
 	user: (user_name) ->
 		get("/user/#{user_name}/about", {
 			sr_detail: true
-		})
-	users: (user_ids) ->
-		get("/api/user_data_by_account_ids", {
-			ids: user_ids.split(',').map((id) -> "t2_#{id}")
 		})
 	user_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/comments", {
@@ -229,6 +181,10 @@ export default {
 	user_trophies: (user_name) ->
 		get("/api/v1/user/username/trophies", {
 			id: user_name
+		})
+	users: (user_ids) ->
+		get("/api/user_data_by_account_ids", {
+			ids: user_ids.split(',').map((id) -> "t2_#{id}")
 		})
 	wiki: (subreddit_name, page_name, version_id) ->
 		get("/r/#{subreddit_name}/wiki/#{page_name}", {

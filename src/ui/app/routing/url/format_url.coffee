@@ -1,10 +1,10 @@
 export default ({
 	collection_id
-	feed_search_query
+	feed_search
 	feed_sort
 	feed_time_range
-	feed_type
 	multireddit_name
+	page_type
 	post_comments_sort
 	post_focus_comment_parent_count
 	post_focus_comment_id
@@ -34,22 +34,22 @@ export default ({
 			path.push(segment)
 		if wikipage_version
 			query.set('v', wikipage_version)
-	else if feed_type
-		switch feed_type
-			when 'collection_posts'
+	else if page_type
+		switch page_type
+			when 'collection'
 				path.push('c')
 				path.push(collection_id)
-			when 'multireddit_posts'
+			when 'multireddit'
 				path.push('u')
 				path.push(user_name)
 				path.push(multireddit_name)
-			when 'subreddit_posts'
+			when 'subreddit'
 				path.push(subreddit_name)
-			when 'user_posts'
+			when 'user'
 				path.push('u')
 				path.push(user_name)
-		if feed_search_query
-			query.set('q', feed_search_query)
+		if feed_search
+			query.set('q', feed_search)
 		if feed_sort
 			query.set('sort', feed_sort)
 		if feed_time_range

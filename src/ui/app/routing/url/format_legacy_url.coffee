@@ -1,6 +1,6 @@
 export default ({
 	collection_id
-	feed_search_query
+	feed_search
 	feed_sort
 	feed_time_range
 	multireddit_name
@@ -58,8 +58,8 @@ export default ({
 				when 'user'
 					path.push('user')
 					path.push(user_name)
-			if feed_search_query
-				query.set('q', feed_search_query)
+			if feed_search
+				query.set('q', feed_search)
 			if feed_sort
 				query.set('sort', feed_sort) # note: ignored for subs & multis
 			if feed_time_range

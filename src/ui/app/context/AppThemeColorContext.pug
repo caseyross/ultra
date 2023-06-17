@@ -1,5 +1,6 @@
 script.
 	import { setContext } from 'svelte'
+	
 	import { Color } from '../../../lib/index.js'
 
 	set_theme_colors = (main_color, secondary_color) ->
@@ -20,6 +21,7 @@ script.
 		document.body.style.setProperty('--c-subreddit-theme-text', text_color or 'var(--c-subreddit-theme-text-default)')
 
 	setContext('set_theme_colors', set_theme_colors)
+	
 	set_theme_colors()
 
 slot

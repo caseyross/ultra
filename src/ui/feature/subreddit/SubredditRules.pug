@@ -1,8 +1,12 @@
 script.
 	import api from '../../../api/index.js'
+	
 	import FormattedHTML from '../../common/FormattedHTML.pug'
+
 	export name = null
+	
 	rules = null
+	
 	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
 
 {#if rules}

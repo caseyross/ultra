@@ -6,12 +6,12 @@ script.
 	import Feed from '../feed/Feed.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import UserAvatar from './UserAvatar.pug'
-	import UserComments from './UserComments.pug'
 	
 	export name = null
 	export sort = null
+	export tab = 'comments'
 	export time_range = null
-	tab = 'comments'
+
 	tabs = [
 		{ label: 'Comments', value: 'comments'}
 		{ label: 'Posts', value: 'posts'}
@@ -22,14 +22,14 @@ script.
 		{ label: 'Saved', value: 'saved'}
 		{ label: 'Messages', value: 'messages'}
 	]
-	
 	trophies = null
 	user = null
+	
 	api.loadWatch(api.ID('user', name), (x) -> { data: user } = x)
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
 
 svelte:head
-	title {name.toLowerCase()} (user)
+	title {user ? user.name : name.toLowerCase()} (user)
 {#if user}
 	article.user
 		section.user-basic-info
@@ -53,16 +53,19 @@ svelte:head
 			{#if tab === 'comments'}
 				{#key sort}
 					{#key time_range}
-						UserComments(name={name} sort={sort} time_range={time_range})
+						Feed(sort={sort} time_range={time_range} type='user_comments' user_name={name})
 			{:else if tab === 'posts'}
 				{#key sort}
 					{#key time_range}
 						Feed(sort={sort} time_range={time_range} type='user_posts' user_name={name})
 			{:else if tab === 'saved'}
-				Feed(type='account_saved_comments' user_name={name})
-				Feed(type='account_saved_posts' user_name={name})
+				{#key sort}
+					{#key time_range}
+						Feed(sort={sort} time_range={time_range} type='account_saved_comments' user_name={name})
+						Feed(sort={sort} time_range={time_range} type='account_saved_posts' user_name={name})
 			{:else if tab === 'messages'}
-				Feed(type='account_messages' user_name={name})
+				{#key sort}
+					Feed(sort={sort} type='account_messages' user_name={name})
 
 style.
 	.user
@@ -73,7 +76,7 @@ style.
 	.user-basic-info
 		display grid
 		gap 30px
-		grid-template-columns 128px 1fr
+		grid-template-columns 64px 1fr
 	.user-name
 		font-size 12pt
 	.user-trophies

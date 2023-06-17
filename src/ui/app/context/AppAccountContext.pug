@@ -3,9 +3,10 @@ script.
 
 	import AppCrash from '../routing/AppCrash.pug'
 	
+	status = api.getLoginStatus()
 	user_loaded = false
 	user_load_error = null
-	status = api.getLoginStatus()
+
 	if status is 'logged-in'
 		if api.getUser()
 			user_loaded = true

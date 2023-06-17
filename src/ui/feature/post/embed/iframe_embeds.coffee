@@ -1,4 +1,5 @@
 export default (source_url) ->
+	
 	switch (if source_url?.hostname.startsWith('www') then source_url?.hostname[4..] else source_url?.hostname)
 		when 'clips.twitch.tv'
 			descriptor = source_url.pathname.split('/')[1]
