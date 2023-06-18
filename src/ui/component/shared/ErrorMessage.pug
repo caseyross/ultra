@@ -1,0 +1,30 @@
+script.
+	import api from '../../../api/index.js'
+
+	export error = null
+	export object = null
+	export scope = 'partial'
+
+	message = switch
+		when error instanceof api.errors.DataNotAvailable
+			switch error.reason
+				when 'private'
+					switch object
+						when 'post' then "This post is in a private subreddit."
+						when 'subreddit' then "This subreddit is private."
+						when 'wiki' then "This subreddit is private."
+
+.error(class='error-{scope}')
+	h1 Error
+	p {message}
+
+style.
+	.error
+		border-radius 1em
+		border 1ch solid salmon
+		&.error-partial
+			padding 1em
+			width 100%
+		&.error-total
+			padding 4em
+			width 480px

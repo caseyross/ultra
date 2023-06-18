@@ -1,0 +1,66 @@
+script.
+	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
+
+	import Button from '../shared/Button.pug'
+	import FormattedHTML from '../shared/FormattedHTML.pug'
+	import SubredditWidget from './SubredditWidget.pug'
+
+	export name = null
+	
+	info = null
+	widgets = null
+
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: info } = x
+	)
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+	)
+
+aside.subreddit-sidebar
+	{#if info}
+		{#if info.banner_background_image || info.banner_img}
+			p
+				a(href={info.banner_background_image || info.banner_img} target='_blank')
+					img.subreddit-sidebar-banner-image(alt='' src={info.banner_background_image || info.banner_img})
+		table.subreddit-sidebar-stats
+			thead
+				tr
+					th.subreddit-sidebar-stats-label(align='left') Created
+					th.subreddit-sidebar-stats-label(align='right') Subscribers
+			tbody
+				tr
+					td.subreddit-sidebar-stats-value(align='left' title={Time.sToAbsTimeStr(info.created_utc)}) {Time.sToRelTimeStr(info.created_utc)} ago
+					td.subreddit-sidebar-stats-value(align='right') {info.subscribers.toLocaleString('en-US')}
+		{#if info.public_description_html || info.description_html}
+			FormattedHTML(html={info.public_description_html || info.description_html})
+		{#if info?.header_title}
+			p(style='color:var(--c-text-weak)') "{info.header_title}"
+	{#if widgets}
+		ol.subreddit-sidebar-widgets
+			{#each widgets.sidebar as widget}
+				SubredditWidget(widget={widget})
+
+style.
+	.subreddit-sidebar
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		width 480px
+	.subreddit-sidebar-banner-image
+		border-radius 99px
+		height 64px
+		object-fit cover
+		width 100%
+	.subreddit-sidebar-stats
+		margin-bottom 10px
+		width 100%
+	.subreddit-sidebar-stats-label
+		color var(--c-text-weak)
+	.subreddit-sidebar-stats-value
+		font-size 2em
+	.subreddit-sidebar-widgets
+		display flex
+		flex-flow column nowrap
+		gap 2em

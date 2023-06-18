@@ -1,0 +1,119 @@
+script.
+	import api from '../../../api/index.js'
+	import { format_url } from '../../routing/url.coffee'
+	import StatTracker from '../shared/StatTracker.coffee'
+	
+	import Button from '../shared/Button.pug'
+	import Comment from '../comment/Comment.pug'
+	import Label from '../shared/Label.pug'
+	import Message from '../message/Message.pug'
+	import Post from '../post/Post.pug'
+
+	export collection_id = null
+	export duplicate_post_id = null
+	export multireddit_name = null
+	export filter = 'all'
+	export page_size = 10
+	export search = null
+	export sort = null
+	export subreddit_name = null
+	export time_range = null
+	export type = null
+	export user_name = null
+
+	base_page_id = switch type
+		when 'account_messages'
+			api.ID('account_messages', sort, page_size)
+		when 'account_saved_comments'
+			api.ID('account_saved_comments', user_name, time_range, sort, page_size)
+		when 'account_saved_posts'
+			api.ID('account_saved_posts', user_name, time_range, sort, page_size)
+		when 'collection_posts'
+			api.ID('collection', collection_id)
+		when 'duplicate_posts'
+			api.ID('post_duplicates', duplicate_post_id, page_size)
+		when 'multireddit_posts'
+			if search
+				api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search}", time_range, sort, page_size)
+			else
+				api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
+		when 'subreddit_posts'
+			if search
+				api.ID('search_posts', "subreddit=#{subreddit_name}+#{search}", time_range, sort, page_size)
+			else
+				api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
+		when 'user_comments'
+			api.ID('user_comments', user_name, time_range, sort, page_size)
+		when 'user_posts'
+			api.ID('user_posts', user_name, time_range, sort, page_size)
+	error = null
+	has_next_page = false
+	loading = null
+	items = []
+	read = []
+
+	load_next_page = ->
+		after_id = switch type
+			when type.endsWith('_messages') then items.at(-1)?.id
+			else items.at(-1)
+		if after_id
+			after_type = switch type
+				when type.endsWith('_messages') then (if items.at(-1)?.was_comment then 'comment' else 'message')
+				else null
+		page_id = api.ID(base_page_id, after_id, after_type)
+		api.loadWatch(page_id, (x) ->
+			{ error, data, loading } = x
+			if !error and !loading and data
+				items_subset = data?.posts or data
+				new_items = items_subset.filter((x) -> !items.includes(x))
+				items = items.concat(new_items)
+				read = read.concat(new_items.map((x) -> StatTracker.check_post_read(x)))
+				has_next_page =
+					if items_subset.length < page_size
+						false
+					else
+						true
+		)
+
+	load_next_page()
+
+nav.feed
+	{#if loading}
+		.feed-loading-notification Loading...
+	{:else}
+		{#if items.length === 0}
+			.feed-items-empty No {type.split('_').at(-1)}.
+		{:else if !search && filter === 'unread' && read.every((x) => x === true)}
+			.feed-items-no-unreads You've read all the {type.split('_').at(-1)} on this page.
+		{:else}
+			ol.feed-items
+				{#each items as item, i (item)}
+					{#if search || (filter === 'all') || (filter === 'unread' && !read[i])}
+						li(on:mousedown={e => { if(type.endsWith('_posts') && e.button === 0) { read[i] = true } }})
+							{#if type.endsWith('_comments')}
+								Comment(id={item} out_of_context={true})
+							{:else if type.endsWith('_messages')}
+								{#if item.was_comment}
+									Comment(id={item.id} out_of_context={true})
+								{:else}
+									Message(message={item})
+							{:else if type.endsWith('_posts')}
+								a(href={format_url({ post_id: item, subreddit_name })})
+									Post(expanded={false} id={item})
+	menu.feed-items-actions
+		{#if has_next_page}
+			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
+				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
+
+style.
+	.feed
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		width 480px
+	.feed-items
+		display flex
+		flex-flow column nowrap
+		gap 1em
+	.feed-items-actions
+		height 64px

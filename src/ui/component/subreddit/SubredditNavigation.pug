@@ -1,0 +1,77 @@
+script.
+	import api from '../../../api/index.js'
+	import { relativize_url } from '../../routing/url.coffee'
+	
+	import SubredditAvatar from './SubredditAvatar.pug'
+	
+	export subreddit_name = null
+
+	subreddit_custom_menu = null
+	
+	api.loadWatch(api.ID('subreddit_widgets', subreddit_name), (x) ->
+		{ data: widgets } = x
+		subreddit_custom_menu = widgets?.topbar?[0]?.data
+	)
+
+nav.subreddit-navigation
+	SubredditAvatar(name={subreddit_name} size='large')
+	menu.subreddit-navigation-options
+		a(href='/') About
+		a(href='/') Rules
+		a(href='/') Posts
+		a(href='/') Wiki
+	a.back-link(href='/{subreddit_name}') ←
+	a.next-link(href='') ↓
+	{#if false}
+		{#if subreddit_custom_menu}
+			{#each subreddit_custom_menu as item}
+				{#if item.children}
+					details.subreddit-navigation-custom-menu-item
+						summary {item.text}
+						ol.subreddit-navigation-custom-menu-dropdown
+							{#each item.children as child}
+								a(href={relativize_url(child.url)}) {child.text}
+				{:else}
+					a.subreddit-navigation-custom-menu-item(href={relativize_url(item.url)}) {item.text}
+
+style.
+	.back-link
+		border-right 1px solid
+		color var(--c-text-faint)
+		align-items center
+		display flex
+		justify-content center
+		flex 1 1 auto
+		font-size 2em
+		writing-mode initial
+	.next-link
+		border-right 1px solid
+		color var(--c-text-faint)
+		align-items center
+		display flex
+		justify-content center
+		flex 0 0 20vh
+		font-size 2em
+		writing-mode initial
+	.subreddit-navigation
+		align-items center
+		box-sizing content-box
+		display flex
+		gap 2em
+		height 100vh
+		width 64px
+		writing-mode vertical-rl
+	.subreddit-navigation-custom-menu-dropdown
+		display flex
+		flex-flow column nowrap
+		gap 0.25em
+		padding 0 1em
+		text-align right
+		writing-mode initial
+	.subreddit-navigation-custom-menu-item
+		padding-right 34px
+		white-space pre
+	.subreddit-navigation-options
+		color var(--c-text-weak)
+		display flex
+		gap 1em

@@ -1,0 +1,128 @@
+script.
+	import { getContext } from 'svelte'
+	
+	import api from '../../../api/index.js'
+	import { hotkey } from '../shared/actions/hotkeys.coffee'
+
+	import Button from '../shared/Button.pug'
+	import HotkeyLabel from '../shared/HotkeyLabel.pug'
+	import SubredditNameTag from '../subreddit/SubredditNameTag.pug'
+	import TextInput from '../shared/TextInput.pug'
+	import UserAvatar from '../user/UserAvatar.pug'
+	
+	subreddits_popular = null
+	subreddits_subscribed = null
+	api.loadWatch(api.ID('subreddits_popular', 25), (x) ->
+		subreddits_popular = x?.data
+	)
+	if api.isLoggedIn()
+		api.loadWatch(api.ID('account_subreddits_subscribed', 100), (x) ->
+			subreddits_subscribed = x?.data or []
+			subreddits_subscribed.sort()
+		)
+	favorites = (localStorage['favorites'] or 'x x x x x x x x x x').split(' ')
+	editing_favorites = false
+	tentative_favorites = null
+	edit_favorites = ->
+		tentative_favorites = favorites
+		editing_favorites = true
+	save_favorites = ->
+		favorites = tentative_favorites.map((value) =>
+			switch
+				when value.startsWith('/u/') then return 'u_' + value[3..]
+				when value.startsWith('u/') then return 'u_' + value[2..]
+				when value.startsWith('/r/') then return value[3..]
+				when value.startsWith('r/') then return value[2..]
+				when value.startsWith('/') then return value[1..]
+				else return value
+		)
+		localStorage['favorites'] = favorites.join(' ')
+		editing_favorites = false
+
+	num_unread_messages = null
+	if api.isLoggedIn()
+		api.loadWatch(api.ID('account_messages', 'unread', 10), ({ data: messages }) ->
+			num_unread_messages = switch
+				when !messages?.length then 0
+				when 0 < messages.length < 10 then String(messages.length)
+				else '9+'
+		)
+	getContext('set_theme_colors')()
+
+nav#global-nav-home
+	section
+		h1.global-nav-home-category Favorites
+		ol.global-nav-home-subreddits
+			{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 0] as number, index}
+				{#if favorites[index].length > 1 || editing_favorites}
+					li.global-nav-home-subreddits-favorites-item
+						HotkeyLabel(key={number})
+						{#if editing_favorites}
+							TextInput(initial_value={favorites[index].length > 1 && favorites[index]} type_action={(value) => tentative_favorites[index] = value})
+						{:else}
+							{#if favorites[index].length > 1}
+								a(href='/{favorites[index]}' use:hotkey={number})
+									SubredditNameTag(name={favorites[index]})
+		{#if editing_favorites}
+			Button(action={save_favorites} text='Save')
+		{:else}
+			Button(action={edit_favorites} text='Manage')
+		{#if subreddits_subscribed}
+			h2.global-nav-home-category Subscribed
+			ol.global-nav-home-subreddits
+				{#each subreddits_subscribed as name}
+					SubredditNameTag(name={name})
+		{#if subreddits_popular}
+			h2.global-nav-home-category Trending
+			ol.global-nav-home-subreddits
+				{#each subreddits_popular as name}
+					SubredditNameTag(name={name})
+nav#nav-settings
+	Button(text='Settings')
+nav#nav-account
+	{#if api.isLoggedIn()}
+		UserAvatar(name={api.getUser()} size='medium')
+		a.inbox-link(class:inbox-link-has-unread={num_unread_messages > 0} href='/message/inbox' title='{num_unread_messages} unread') 🖂
+		{#if false}
+			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} text='→ Logout')
+	{:else}
+		Button(link={api.getLoginURL({ memoString: location.pathname })} text='Login → ')
+
+style.
+	#global-nav-home
+		display flex
+		flex-flow column wrap
+		gap 1em
+		left 0
+		padding 1em
+		position fixed
+		top 0
+		width 240px
+	.global-nav-home-category
+		color var(--c-text-weak)
+		font-size 12px
+		margin 2em 0 1em
+		text-transform uppercase
+	.global-nav-home-subreddits
+		display flex
+		flex-flow column wrap
+		gap 6px
+	.global-nav-home-subreddits-favorites-item
+		display flex
+		align-items center
+		gap 6px
+	#nav-account
+		bottom 0
+		left 0
+		padding 1em
+		position fixed
+	#nav-settings
+		bottom 0
+		padding 1em
+		position fixed
+		right 0
+	.inbox-link
+		font-family 'Wingdings'
+		font-size 20px
+		&.inbox-link-has-unread
+			color salmon
