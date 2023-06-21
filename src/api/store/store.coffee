@@ -54,9 +54,6 @@ export preload = (id) ->
 		return true
 	return false
 
-export read = (id) ->
-	return cache[id]
-
 export reload = (id) ->
 	route = datasetRoutes[ID.type(id)]
 	if not route
