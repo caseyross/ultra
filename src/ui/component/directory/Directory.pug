@@ -9,6 +9,23 @@ script.
 	import SubredditNameTag from '../subreddit/SubredditNameTag.pug'
 	import TextInput from '../shared/TextInput.pug'
 	import UserAvatar from '../user/UserAvatar.pug'
+
+	account_scopes = [
+		'account'
+		'edit'
+		'history'
+		'identity'
+		'modposts'
+		'mysubreddits'
+		'privatemessages'
+		'read'
+		'report'
+		'save'
+		'structuredstyles'
+		'subscribe'
+		'vote'
+		'wikiread'
+	]
 	
 	subreddits_popular = null
 	subreddits_subscribed = null
@@ -86,7 +103,7 @@ nav#nav-account
 		{#if false}
 			Button(action={() => { api.logout(); localStorage.clear(); location.reload() }} text='→ Logout')
 	{:else}
-		Button(link={api.getLoginURL({ memoString: location.pathname })} text='Login → ')
+		Button(link={api.getLoginURL({ memoString: location.pathname, scopeArray: account_scopes })} text='Login → ')
 
 style.
 	#global-nav-home
