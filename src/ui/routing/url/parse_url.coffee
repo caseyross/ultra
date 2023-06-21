@@ -107,8 +107,7 @@ export default (url) ->
 					delete feed.sort
 					post.comments_sort = query.get('sort') if query.get('sort') in SORT_OPTIONS_POST_COMMENTS
 				when 'duplicates'
-					page = 'duplicates'
-					feed.duplicate_post_id = d
+					page = 'external'
 				when 'submit'
 					page = 'none'
 				when 'w', 'wiki'
@@ -160,7 +159,6 @@ export default (url) ->
 	if !feed.sort
 		feed.sort = switch
 			when feed.search then 'relevance'
-			when page is 'duplicates' then 'top'
 			when page is 'multireddit' then 'hot'
 			when page is 'subreddit' then 'hot'
 			else 'new'

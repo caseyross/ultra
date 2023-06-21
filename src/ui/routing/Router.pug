@@ -6,7 +6,6 @@ script.
 	import AllGlobals from '../component/global/AllGlobals.pug'
 	import Collection from '../component/collection/Collection.pug'
 	import Directory from '../component/directory/Directory.pug'
-	import Duplicates from '../component/duplicates/Duplicates.pug'
 	import Messages from '../component/message/Messages.pug'
 	import Multireddit from '../component/multireddit/Multireddit.pug'
 	import Post from '../component/post/Post.pug'
@@ -91,9 +90,6 @@ AllGlobals
 			Collection(id={feed.collection_id})
 	{:else if page === 'directory'}
 		Directory
-	{:else if page === 'duplicates'}
-		{#key feed.duplicate_post_id}
-			Duplicates(post_id={feed.duplicate_post_id})
 	{:else if page === 'messages'}
 		Messages
 	{:else if page === 'multireddit'}

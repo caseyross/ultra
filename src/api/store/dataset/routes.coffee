@@ -92,11 +92,6 @@ export default {
 			get("/api/info", {
 				id: "t3_#{post_id}"
 			})
-	post_duplicates: (post_id, max_posts, after_post_id) ->
-		get("/duplicates/#{post_id}", {
-			after: after_post_id and "t3_#{after_post_id}"
-			limit: max_posts
-		})
 	post_more_replies: (post_id, post_comments_sort, post_max_comments, parent_comment_id, comment_ids) -> # NOTE: Max concurrency for this call is 1 per Reddit rules.
 		post("/api/morechildren", {
 			api_type: 'json'
