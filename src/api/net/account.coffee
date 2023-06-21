@@ -15,6 +15,7 @@ ACCOUNT_SCOPES_ALL = [
 	'modflair'
 	'modlog'
 	'modmail'
+	'modnote'
 	'modothers'
 	'modposts'
 	'modself'
