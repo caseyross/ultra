@@ -93,6 +93,7 @@ nav.feed
 			ol.feed-items
 				{#each items as item, i (item)}
 					{#if !(filter === 'unread' && read[i])}
+						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						li(on:mousedown={e => { if(e.button === 0) { read[i] = true } }})
 							{#if type.endsWith('_comments')}
 								Comment(id={item?.id || item} out_of_context={true})
