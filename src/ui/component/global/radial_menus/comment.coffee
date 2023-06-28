@@ -51,11 +51,11 @@ export default
 			N:
 				if data.saved
 					action: 'unsave'
-					icon: '💔'
+					icon: '🚮'
 					label: 'Unsave'
 				else
 					action: 'save'
-					icon: '❤️'
+					icon: '💾'
 					label: 'Save'
 			W:
 				action: ''

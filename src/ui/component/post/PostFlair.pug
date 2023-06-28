@@ -1,6 +1,6 @@
 script.
 	import api from '../../../api/index.js'
-	import { Color } from '../../../lib/index.js'
+	import { HexColor } from '../../../lib/index.js'
 	
 	export color = null
 	export emoji_style = null
@@ -11,7 +11,7 @@ script.
 	background_color = color or 'var(--c-subreddit-theme-default)'
 	text_color =
 		if color
-			if (new Color({ hex: color })).isDark() then 'white' else 'black'
+			HexColor.contrast(color)
 		else
 			'var(--c-subreddit-theme-text-default)'
 
@@ -19,7 +19,7 @@ script.
 		api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
 			if subreddit?.primary_color or subreddit?.key_color
 				background_color = subreddit.primary_color or subreddit.key_color
-				text_color = if (new Color({ hex: background_color })).isDark() then 'white' else 'black'
+				text_color = HexColor.contrast(background_color)
 		)
 
 span.post-flair(style="background-color: {background_color}; color: {text_color}" title={text})
@@ -37,15 +37,18 @@ span.post-flair(style="background-color: {background_color}; color: {text_color}
 
 style.
 	.post-flair
-		border-radius 6px
+		border-radius 999px
 		display inline-flex
+		font-feature-settings 'calt', 'cpsp', 'ss01'
 		font-size 10px
 		font-weight bold
-		height 16px
+		gap 5px
+		height 20px
 		letter-spacing 1px
 		line-height 1
-		padding 3px 6px
+		padding 5px 10px
 		text-transform uppercase
 		user-select none
 	.post-flair-emoji
-		height 8px
+		height 16px
+		margin-top -3px

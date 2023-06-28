@@ -11,25 +11,26 @@ script.
 			{ data: subreddit } = x
 		)
 
-a.subreddit-avatar(href='/{subreddit ? subreddit.display_name : name}' title='r/{subreddit ? subreddit.display_name : name}')
+a.subreddit-avatar(class='subreddit-avatar-size-{size}' href='/{subreddit ? subreddit.display_name : name}' title='r/{subreddit ? subreddit.display_name : name}')
 	picture
 		source(srcset={icon_url})
 		source(srcset={subreddit?.community_icon})
 		source(srcset={subreddit?.icon_img})
-		img.subreddit-avatar-image(alt='' class='subreddit-avatar-image-size-{size}' decoding='async' fetchpriority='low' loading='lazy' src='/logo.svg')
+		img.subreddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/logo.svg')
 
 style.
 	.subreddit-avatar
+		aspect-ratio 1
 		display inline-block
-		border-radius 50%
 		user-select none
 	.subreddit-avatar-image
-		aspect-ratio 1
 		border-radius 50%
+		height 100%
 		object-fit cover
-	.subreddit-avatar-image-size-large
-		width 64px
-	.subreddit-avatar-image-size-medium
-		width 32px
-	.subreddit-avatar-image-size-small
-		width 16px
+		width 100%
+	.subreddit-avatar-size-large
+		height 64px
+	.subreddit-avatar-size-medium
+		height 32px
+	.subreddit-avatar-size-small
+		height 16px

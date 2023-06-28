@@ -198,16 +198,22 @@ export default extract = (rawData, sourceID) ->
 				data: rawData.data
 		when 'wikipage'
 			wikipage = rawData.data
+			if wikipage.content_html?.kind == 'stylesheet'
+				wikipage.content_css = wikipage.content_html.data.stylesheet
+				delete wikipage.content_html
 			if wikipage.revision_by
-				revised_by_user_id = ID('user', wikipage.revision_by.data.name)
 				result.sub.push({
-					id: revised_by_user_id
+					id: ID('user', wikipage.revision_by.data.name)
 					data: wikipage.revision_by.data
 				})
-				wikipage.revision_by = revised_by_user_id
+				wikipage.revision_by = wikipage.revision_by.data.name
 			result.main =
 				id: null
 				data: wikipage
+		when 'wikipagelisting'
+			result.main =
+				id: null
+				data: rawData.data
 		when 'LabeledMulti'
 			for subreddit in rawData.data.subreddits
 				if subreddit.data

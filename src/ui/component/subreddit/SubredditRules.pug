@@ -1,47 +1,44 @@
 script.
 	import api from '../../../api/index.js'
 	
+	import Error from '../shared/Error.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
 
 	export name = null
 	
+	error = null
+	loading = null
 	rules = null
 	
-	api.loadWatch(api.ID('subreddit_rules', name), (x) -> { data: rules } = x)
+	api.loadWatch(api.ID('subreddit_rules', name), (x) ->
+		{ data: combined_rules, error, loading } = x
+		rules = combined_rules?.rules # get only subreddit rules, not global rules
+		if rules
+			rules.sort((a, b) -> a.priority - b.priority) # ensure rules are in order
+	)
 
-{#if rules}
-	{#if rules.rules.length > 0}
-		ol.subreddit-rules
-			{#each rules.rules as rule}
-				details.subreddit-rule(open={true})
-					summary.subreddit-rule-summary
-						data.subreddit-rule-number {rule.priority + 1}
-						.subreddit-rule-name {rule.short_name}
-					.subreddit-rule-description
-						{#if rule.description_html}
-							FormattedHTML(html={rule.description_html})
-						{:else}
-							p [ No description provided. ]
-	{:else}
-		p This subreddit has no rules listed.
+{#if error}
+	Error(message='Error loading rules.')
+{:else if rules}
+	ol.subreddit-rules
+		{#each rules as rule}
+			li.subreddit-rule
+				h1.subreddit-rule-short-description {rule.short_name}
+				{#if rule.description_html}
+					FormattedHTML(html={rule.description_html})
+		{:else}
+			h1 No rules on record.
+{:else if loading}
+	p Loading...
 
 style.
 	.subreddit-rule
-		padding 5px
-	.subreddit-rule-description
-		border-left 1px solid var(--c-text-weak)
-		font-size 12px
-		margin 1em 22px
-		padding 0 3em
-	.subreddit-rule-number
-		color var(--c-text-weak)
-		font-size 2.5em
-		line-height 1
-		text-align right
-	.subreddit-rule-summary
-		align-items flex-end
-		display grid
-		gap 30px
-		grid-template-columns 30px 1fr
-	.subreddit-rule-name
-		font-size 1.25em
+		margin 0 0 1.333em
+	.subreddit-rule-short-description
+		font-size inherit
+		font-feature-settings 'calt', 'cpsp', 'ss01'
+		text-transform uppercase
+	.subreddit-rules
+		list-style auto
+		margin-top 3em
+		padding-left 1em

@@ -42,11 +42,8 @@ form.report-menu
 	{#if site_rules && subreddit}
 		{#if subreddit.free_form_reports}
 			fieldset.report-menu-subreddit-freeform-report
-				TextInput(autofocus={true} placeholder='Enter custom reason' type_action={value => freeform_input_value = value})
-				Button(action={() => freeform_input_value.length && dispatch('submit', freeform_input_value)} text='Submit')
+				TextInput(autofocus={true} enter_action={value => value && dispatch('submit', value)} placeholder='Enter custom reason')
 				span.report-menu-hint ...or click a reason below:
-		{:else}
-			span Click on reason to send report:
 		{#if subreddit_rules.length}
 			fieldset.report-menu-subreddit-rules
 				{#each subreddit_rules as rule}
@@ -87,7 +84,7 @@ style.
 	.report-menu-rule-button
 		display none
 	.report-menu-rule-gradient-fade
-		background linear-gradient(to top, white 0px, transparent)
+		background linear-gradient(to top, var(--c-subreddit-theme) 0px, transparent)
 		bottom 0
 		height 37%
 		left 0

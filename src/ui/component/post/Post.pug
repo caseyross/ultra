@@ -2,15 +2,16 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../api/index.js'
-	import { Time } from '../../../lib/index.js'
+	import { HexColor, Time } from '../../../lib/index.js'
 	import { format_url, relativize_url } from '../../routing/url.coffee'
-	import StatTracker from '../shared/StatTracker.coffee'
+	import AccountData from '../shared/AccountData.coffee'
 	import html_embeds from './embeds/html_embeds.coffee'
 	import iframe_embeds from './embeds/iframe_embeds.coffee'
 
 	import BanDialog from '../dialog/BanDialog.pug'
 	import Button from '../shared/Button.pug'
 	import CommentEditor from '../comment/CommentEditor.pug'
+	import Error from '../shared/Error.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
 	import LiveTime from '../shared/LiveTime.pug'
 	import MediaPlayer from '../shared/MediaPlayer.pug'
@@ -22,6 +23,7 @@ script.
 	import ReportDialog from '../dialog/ReportDialog.pug'
 	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
 	import UserByline from '../user/UserByline.pug'
+	import Warning from '../shared/Warning.pug'
 	
 	export comments_initial_count = 25
 	export comments_sort = null
@@ -29,6 +31,7 @@ script.
 	export focus_comment_id = null
 	export focus_comment_parent_count = null
 	export id = null
+	export show_subreddit = false
 
 	banning = false
 	comments_sort_options = [
@@ -47,7 +50,28 @@ script.
 		{ label: 'Random (Contest Mode)', value: 'random' }
 	]
 	error = null
+	image_normalized_width = (media) ->
+		if media.aspect_ratio <= 1 then 480
+		else Math.sqrt(media.aspect_ratio) * 480
 	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
+	link_domain = (href) ->
+		if href.startsWith('/')
+			return ''
+		url = new URL(href)
+		if url.hostname.startsWith('www')
+			return url.hostname[4..]
+		else
+			return url.hostname
+	link_path = (href) ->
+		if href.startsWith('/')
+			return href
+		url = new URL(href)
+		path = url.pathname
+		if url.search
+			path = path + '?' + url.search
+		if url.hash
+			path = path + '#' + url.hash
+		return path
 	loading = false
 	post = null
 	replying = false
@@ -63,6 +87,14 @@ script.
 		when Math.log10(post.score) > 1 then 'var(--c-score-2)'
 		when Math.log10(post.score) > 0 then 'var(--c-score-1)'
 		else 'var(--c-score-0)'
+	score_text_color = (post) -> switch
+		when post.distinguished is 'admin' then 'white'
+		when post.distinguished is 'moderator' then 'white'
+		when post.hide_score or !Number.isFinite(post.score) then 'black'
+		when Math.log10(post.score) > 3 then 'white'
+		when Math.log10(post.score) > 2 then 'white'
+		else 'black'
+	set_theme_colors = getContext('set_theme_colors')
 	title_text = (post) ->
 		score_text = switch
 			when post.hide_score or !Number.isFinite(post.score) then 'score hidden'
@@ -82,17 +114,18 @@ script.
 					if status.success
 						api.submit(api.ID('post_ignore_reports', id))
 				)
-			when 'ban_user'
-				banning = true
-			when 'ban_user_finish'
-				api.submit(api.ID('user_ban', data.user_name, data.subreddit_name), { days: data.days, message_to_user: data.message_to_user, violation_reason: data.violation_reason })
-				banning = false
 			when 'downvote'
 				api.submit(api.ID('post_vote', id), { numerical_vote: if post.likes == false then 0 else -1 })
 			when 'edit'
 				window.open('https://reddit.com/' + id)
 			when 'remove'
 				api.submit(api.ID('post_remove', id))
+			when 'remove_and_ban_user'
+				banning = true
+			when 'remove_and_ban_user_finish'
+				api.submit(api.ID('user_ban', data.user_name, data.subreddit_name), { days: data.days, message_to_user: data.message_to_user, violation_reason: data.violation_reason })
+				interact('remove')
+				banning = false
 			when 'reply'
 				replying = true
 			when 'reply_finish'
@@ -114,84 +147,90 @@ script.
 			when 'upvote'
 				api.submit(api.ID('post_vote', id), { numerical_vote: if post.likes == true then 0 else 1 })
 
-	if expanded
-		StatTracker.mark_post_read(id)
 	api.loadWatch(api.ID('post', id), (x) ->
 		{ data: post, error, loading } = x
 		if post?.suggested_sort && !comments_sort
 			comments_sort = post.suggested_sort
+		if expanded and post?.subreddit
+			api.loadWatch(api.ID('subreddit', post.subreddit), (x) ->
+				{ data: subreddit } = x
+				set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
+			)
 	)
 	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
+	if expanded
+		AccountData.mark_post_read(id)
 
 svelte:head
-	{#if post}
-		title {post.subreddit} / {post.title}
+	{#if expanded && post}
+		title {post.subreddit.toLowerCase()} / {post.title}
 {#if error}
-	article.post.post-unavailable
-		{#if error.reason}
-			| Post unavailable: {error.reason}
-		{:else if error.code === 404}
-			| Post or comment not found.
-		{:else if error.code === 403}
-			| Post unavailable because subreddit is banned.
-		{:else}
-			| Post unavailable.
+	{#if error.code === 403}
+		Error(message="This post is in a private subreddit which you are not approved to access." title="Private subreddit")
+	{:else if error.code === 404}
+		Error(message="This subreddit was closed permanently by Reddit admins." title="Subreddit banned")
+	{:else if error.reason}
+		Error(message="An error occurred. This is the best description we have of the error." title="Error: {error.reason}")
+	{:else}
+		Error(message="An unknown error occurred." title="Unknown error")
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-expanded={expanded} class:post-spoiler={post.spoiler}class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1})
-		header.post-header(data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title={title_text(post)})
-			data.post-subreddit
-				SubredditAvatar(name={post.subreddit} size='medium')
+	article.post(class:post-downvoted={post.likes === false} class:post-expanded={expanded} class:post-spoiler={post.spoiler}class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title={title_text(post)})
+		header.post-header
+			{#if show_subreddit}
+				data.post-subreddit
+					SubredditAvatar(name={post.subreddit} size='medium')
 			ol.post-tags
+				{#if post.link_flair_text}
+					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} subreddit_name={post.subreddit} text={post.link_flair_text})
+				{#if post.spoiler}
+					PostTag(name='spoiler')
+				{#if post.is_original_content}
+					PostTag(name='oc')
 				{#if post.over_18}
 					PostTag(name='nsfw')
 				{#if post.stickied}
 					PostTag(name='sticky')
 				{#if post.locked}
 					PostTag(name='locked')
-				{#if post.original_content}
-					PostTag(name='oc')
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} subreddit_name={post.subreddit} text={post.link_flair_text})
-			h1.post-title(style='color: {score_color(post)}') {post.title}
-			aside.post-metadata
-				LiveTime(create_s={post.created_utc} edit_s={post.edited})
-				{#if false}
-					UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
+			.post-header-body
+				h1.post-title {post.title}
+				.post-date
+					LiveTime(create_s={post.created_utc} edit_s={post.edited})
+			figure.post-visual-metrics(title="{post.hide_score ? '???' : post.score} points, {post.num_comments} comments")
+				figure.post-visual-metrics-comments(style='height: {8 * Math.log10(1 + post.num_comments)}px')
+				figure.post-visual-metrics-score(style='height: {8 * Math.log10(1 + post.score)}px')
+			{#if false}
+				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 		{#if expanded}
 			section.post-content
 				{#if post.removed_by_category}
-					.post-content-unavailable
-						{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
-							| Deleted by post author.
-						{:else if post.removed_by_category === 'automod_filtered'}
-							| Removed by AutoModerator.
-						{:else if post.removed_by_category === 'content_takedown'}
-							| Removed by Reddit due to violating site policy.
-						{:else if post.removed_by_category === 'copyright_takedown'}
-							| Removed by Reddit due to a copyright notice.
-						{:else if post.removed_by_category === 'moderator'}
-							| Removed by a moderator.
-						{:else if post.removed_by_category === 'reddit'}
-							| Removed by Reddit's spam filter.
-						{:else}
-							| Removed by Reddit (reason not specified).
+					{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
+						Error(message="Post deleted by author.")
+					{:else if post.removed_by_category === 'automod_filtered'}
+						Error(message="Post removed by AutoModerator.")
+					{:else if post.removed_by_category === 'content_takedown'}
+						Error(message="Post removed by Reddit due to site policy violation(s).")
+					{:else if post.removed_by_category === 'copyright_takedown'}
+						Error(message="Post removed by Reddit due to a copyright notice.")
+					{:else if post.removed_by_category === 'moderator'}
+						Error(message="Post removed by a moderator.")
+					{:else if post.removed_by_category === 'reddit'}
+						Error(message="Post removed by Reddit's spam filter.")
+					{:else}
+						Error(message="Post removed by Reddit (reason not specified).")
 				{:else if focus_comment_id}
-					.post-content-incomplete
-						| Viewing a single comment.
+					Warning(message="Viewing a single comment.")
 						Button(link={format_url({ post_id: id, subreddit_name: post.subreddit })} text='View full post')
 				{:else if post.format === 'talk'}
-					.post-content-unavailable
-						| Reddit Talks are only available on the official app.
+					Error(message="Reddit Talks are only available on the official site.")
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
-				{:else if post.format === 'self' && !post.selftext.length}
-					.post-content-empty
 				{:else}
 					{#if post.selftext_html}
 						.post-selftext
 							FormattedHTML(html={post.selftext_html})
 					{#if post.format === 'crosspost'}
-						a(href={format_url({ post_id: post.crosspost_parent, subreddit_name: post.subreddit })})
-							svelte:self(id={post.crosspost_parent})
+						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent, subreddit_name: post.subreddit })})
+							svelte:self(expanded={false} id={post.crosspost_parent})
 					{:else if post.format === 'image'}
 						ol.post-gallery
 							{#each post.media as media, i}
@@ -199,9 +238,11 @@ svelte:head
 									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 										picture
 											{#if !media.is_gif}
-												source(srcset={media.image_url_960})
-												source(srcset={media.image_url_640})
-											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+												{#if image_normalized_width(media) > 640}
+													source(srcset={media.image_url_960})
+												{:else if image_normalized_width(media) > 320}
+													source(srcset={media.image_url_640})
+											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {image_normalized_width(media)}px")
 									{#if media.caption_text || media.caption_url}
 										figcaption.post-gallery-image-caption
 											{#if media.caption_text}
@@ -223,8 +264,9 @@ svelte:head
 									<!-- svelte-ignore a11y-missing-attribute -->
 									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}")
 							{:else}
-								.md.post-link
-									a(href={relativize_url(post.url)} rel='external noopener preconnect') {relativize_url(post.url)}
+								a.post-link(href={relativize_url(post.url)} rel='external noopener preconnect')
+									span.post-link-domain {link_domain(relativize_url(post.url))}
+									span.post-link-path {link_path(relativize_url(post.url))}
 					{:else if post.format === 'prediction'}
 						ol.md.post-predictions
 							{#each post.tournament_data.predictions as prediction}
@@ -239,7 +281,7 @@ svelte:head
 							Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
 					{:else if post.format === 'video'}
 						{@const media = post.media[0]}
-							MediaPlayer(audio_url={media.video_audio_url} height={360 * (1 / Math.sqrt(media.aspect_ratio))} mimic_gif={media.video_is_gif} video_url={media.video_url} width={480})
+							MediaPlayer(audio_url={media.video_audio_url} height={315} video_url={media.video_url} width={560})
 			section.post-comments
 				menu.post-comments-sort-controls
 					Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
@@ -251,7 +293,7 @@ svelte:head
 					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_id={focus_comment_id} initial_count={comments_initial_count} post_id={id} sort={comments_sort})
 		{#if banning}
 			Popup(on:close={() => banning = false})
-				BanDialog(on:submit={e => interact('ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: post.subreddit, user_name: post.author })})
+				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: post.subreddit, user_name: post.author })})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
@@ -265,25 +307,20 @@ style.
 			display flex
 			flex-flow column nowrap
 			gap 1.666em
-			width 720px
+			width 100%
 		&.post-loading
 			padding 10px
-		&.post-unavailable
-			background salmon
-			border-radius 10px
-			color white
-			padding 10px
 	.post-comments
-		width 480px
+		padding-left calc(50% - 240px)
+		width 100%
 	.post-content
-		align-items flex-start
+		align-items center
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
-		width 480px
 		:global(& .twitter-tweet)
 			margin 0 !important
-			width 100% !important
+			width 560px !important
 		:global(& iframe[id^=twitter-widget])
 			border-radius 12px
 	.post-content-actions
@@ -292,33 +329,21 @@ style.
 		gap 0.666em
 		justify-content space-between
 		width 100%
-	.post-content-incomplete
-		align-items center
-		background darkkhaki
-		border-radius 10px
-		color white
-		display flex
-		flex-flow row nowrap
-		justify-content space-between
-		padding 10px
-		width 360px
-	.post-content-unavailable
-		align-items center
-		background salmon
-		border-radius 10px
-		color white
-		display flex
-		flex-flow row nowrap
-		justify-content space-between
-		padding 10px
-		width 360px
+	.post-crosspost-link
+		border-radius 1em
+		border 1px solid var(--c-text-faint)
+		padding 2em
+	.post-date
+		left calc(100% + 1em)
+		position absolute
+		top 0
 	.post-gallery
+		align-items center
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
+		gap 1em
 	.post-gallery-image
 		display flex
-		flex 0 0 auto
 		flex-flow column nowrap
 		gap 6px
 	.post-gallery-image-caption
@@ -326,26 +351,29 @@ style.
 		font-size 13px
 		letter-spacing 0.375pt
 	.post-header
-		align-items flex-start
-		display flex
-		flex-flow column nowrap
-		gap 6px
-		padding 1em 0
+		max-width 560px
 		position relative
-		.post-expanded &
-			border-bottom 1px solid var(--c-text-faint)
-			padding 1em 100px
-			width 680px
+	.post-header-body
+		padding 8px 0
+		position relative
 	.post-iframe
-		border-radius 12px
-		width 480px
+		border-radius 5px
+		width 560px
 	.post-image
-		width 480px
-	.post-metadata
-		align-items center
-		color var(--c-text-weak)
-		display flex
-		gap 0.666em
+		border-radius 5px
+	.post-link
+		color var(--c-link)
+		display block
+		font-size 1.25em
+		word-break break-all
+		&:hover
+			text-decoration underline
+	.post-link-domain
+		font-weight bold
+	.post-link-path
+		opacity 0.5
+		* ~ &
+			margin-left -4px
 	.post-predictions
 		display flex
 		flex-flow column nowrap
@@ -355,27 +383,45 @@ style.
 		display flex
 		gap 1em
 		& meter
-			width 200px
+			width 240px
 	.post-selftext
-		width 480px
+		width 560px
 	.post-subreddit
 		aspect-ratio 1
+		display inline-block
 		height 32px
 		position absolute
-		right calc(100% + 1em)
+		right calc(100% + 2em)
+		top 0
 		.post-expanded &
 			position unset
 	.post-tags
 		display flex
-		gap 3px
+		flex-flow row wrap
+		gap 5px
 	.post-title
-		font-size 1.5em
-		font-weight 600
-		letter-spacing -1px
+		border-radius 6px
+		font-size 20px
+		font-weight var(--f-wght-xstrong)
+		letter-spacing -0.333px
+		line-height 1.4
 		overflow-wrap anywhere
-		.post-spoiler:not(.post-expanded) &
-			background black
-			border-radius 0.5em
-			color black !important
-		.post-stickied &
-			color darkseagreen
+	.post-visual-metrics
+		align-items center
+		aspect-ratio 1
+		display flex
+		justify-content center
+		height 48px
+		position absolute
+		right calc(100% + 2em)
+		top 0
+	.post-visual-metrics-comments
+		aspect-ratio 1
+		background var(--c-subreddit-theme-text)
+		border-radius 999px
+		position absolute
+	.post-visual-metrics-score
+		aspect-ratio 1
+		border 1px solid var(--c-subreddit-theme-text)
+		border-radius 999px
+		position absolute

@@ -4,23 +4,15 @@ script.
 	export action = null
 	export options = []
 	export selected = null
-	export title = null
 
-fieldset
-	{#if title}
-		legend {title}
-	{#each options as option}
+fieldset.button-group
+	{#each options as option, i}
 		Button(action={() => action ? action(option.value) : option.action(option.value)} activated={selected === option.value} disabled={option.disabled} link={option.link} text={option.label})
 
 style.
-	fieldset
+	.button-group
 		border 0
-		display flex
+		display inline-flex
 		flex-flow row wrap
 		gap 2px
 		padding 0
-	legend
-		color var(--c-text-weak)
-		font-size 10px
-		padding 3px 0
-		text-transform uppercase

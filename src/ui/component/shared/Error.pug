@@ -1,0 +1,24 @@
+script.
+	export message = null
+	export title = null
+
+.error
+	{#if title}
+		h1 {title}
+	.error-body
+		| {message}
+		slot
+
+style.
+	.error
+		background salmon
+		border-radius 12px
+		color white
+		max-width 560px
+		padding 1em
+		width 100%
+	.error-body
+		align-items center
+		display flex
+		justify-content space-between
+		width 100%

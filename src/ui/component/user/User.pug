@@ -1,94 +1,128 @@
 script.
+	import { getContext } from 'svelte'
+
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
+	import { format_url } from '../../routing/url.coffee'
 
 	import ButtonGroup from '../shared/ButtonGroup.pug'
+	import Error from '../shared/Error.pug'
 	import Feed from '../feed/Feed.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
 	import UserAvatar from './UserAvatar.pug'
 	
+	export after_id = null
+	export filter = null
 	export name = null
 	export sort = null
-	export tab = 'comments'
+	export tab = null
 	export time_range = null
+	if !name?
+		name = api.getUser() # fill in name for tabs that use logged-in user account
 
-	tabs = [
-		{ label: 'Comments', value: 'comments'}
-		{ label: 'Posts', value: 'posts'}
-	]
-	tabs_account = [
-		{ label: 'Comments', value: 'comments'}
-		{ label: 'Posts', value: 'posts'}
-		{ label: 'Saved', value: 'saved'}
-		{ label: 'Messages', value: 'messages'}
-	]
+	error = null
+	loading = null
+	set_theme_colors = getContext('set_theme_colors')
+	tabs =
+		_order: ({ is_account }) ->
+			if is_account
+				['comments', 'posts', 'saved', 'messages']
+			else 
+				['comments', 'posts']
+		comments:
+			label: 'Comments'
+		messages:
+			label: 'Messages'
+			filters:
+				_order: -> ['unread', 'inbox', 'sent']
+				inbox:
+					label: 'All'
+				sent:
+					label: 'Sent'
+				unread:
+					label: 'Unread'
+		posts:
+			label: 'Posts'
+		saved:
+			label: 'Saved'
+			filters:
+				_order: -> ['posts', 'comments']
+				comments:
+					label: 'Comments'
+				posts:
+					label: 'Posts'
+	tabs_array = (tabs, is_account) ->
+		tabs._order({ is_account }).map((x) -> { ...tabs[x], value: x })
 	trophies = null
 	user = null
 	
-	api.loadWatch(api.ID('user', name), (x) -> { data: user } = x)
+	api.loadWatch(api.ID('user', name), (x) -> { data: user, error, loading } = x)
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
+	set_theme_colors()
 
 svelte:head
-	title {user ? user.name : name.toLowerCase()} (user)
-{#if user}
+	title {name.toLowerCase()}
+{#if error}
+	{#if error.code === 404}
+		Error(message="This user may be suspended or banned, or there may not be an account with that name." title="User not found")
+	{:else if error.reason}
+		Error(message="An error occurred. This is the best description we have of the error." title="Error: {error.reason}")
+	{:else}
+		Error(message="An unknown error occurred." title="Unknown error")
+{:else if loading}
+	span Loading...
+{:else if user}
 	article.user
 		section.user-basic-info
-			div(style='text-align: center')
-				UserAvatar(name={name} size='large')
-				h1.user-name {user.name}
-				{#if user.created_utc}
-					time.user-age(title='account created {Time.sToAbsTimeStr(user.created_utc)}') {Time.sToRelTimeStr(user.created_utc)}
-			div
-				{#if trophies}
-					ol.user-trophies
-						{#each trophies as trophy}
-							li.user-trophy(title={trophy.description ? trophy.name + ' (' + trophy.description + ')' : trophy.name})
-								img.user-trophy-icon(alt='' src={trophy.icon_40})
+			UserAvatar(name={name} size='large')
+			{#if trophies}
+				ol.user-trophies
+					{#each trophies as trophy}
+						li.user-trophy(title={trophy.description ? trophy.name + ' (' + trophy.description + ')' : trophy.name})
+							img.user-trophy-icon(alt='' src={trophy.icon_40})
 		{#if user.is_suspended}
-			.user-unavailable-notice User suspended.
+			Error(message="This user is suspended.")
 		{:else if user.is_blocked}
-			.user-unavailable-notice You blocked this user.
+			Error(message="You blocked this user.")
 		{:else}
-			ButtonGroup(action={value => tab = value} options={api.getUser() === name ? tabs_account : tabs} selected={tab})
+			ButtonGroup(options={tabs_array(tabs, api.getUser() === name).map(x => ({ ...x, link: format_url({ subpage: x.value, user_name: name })}))} selected={tab})
+			hr
 			{#if tab === 'comments'}
 				{#key sort}
 					{#key time_range}
-						Feed(sort={sort} time_range={time_range} type='user_comments' user_name={name})
+						{#key after_id}
+							Feed(after_id={after_id} sort={sort} time_range={time_range} type='user_comments' user_name={name})
+			{:else if tab === 'messages'}
+				ButtonGroup(options={tabs_array(tabs.messages.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'messages', user_name: name }) }))} selected={filter})
+				{#key filter}
+					{#key after_id}
+						Feed(after_id={after_id} filter={filter} subpage='messages' type='account_messages' user_name={name})
 			{:else if tab === 'posts'}
 				{#key sort}
 					{#key time_range}
-						Feed(sort={sort} time_range={time_range} type='user_posts' user_name={name})
+						{#key after_id}
+							Feed(after_id={after_id} sort={sort} subpage='posts' time_range={time_range} type='user_posts' user_name={name})
 			{:else if tab === 'saved'}
-				{#key sort}
-					{#key time_range}
-						Feed(sort={sort} time_range={time_range} type='account_saved_comments' user_name={name})
-						Feed(sort={sort} time_range={time_range} type='account_saved_posts' user_name={name})
-			{:else if tab === 'messages'}
-				{#key sort}
-					Feed(sort={sort} type='account_messages' user_name={name})
+				ButtonGroup(options={tabs_array(tabs.saved.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'saved', user_name: name }) }))} selected={filter})
+				{#if filter === 'posts'}
+					{#key after_id}
+						Feed(after_id={after_id} filter={filter} subpage='saved' type='account_saved_posts' user_name={name})
+				{:else if filter === 'comments'}
+					{#key after_id}
+						Feed(after_id={after_id} filter={filter} subpage='saved' type='account_saved_comments' user_name={name})
 
 style.
 	.user
 		width 480px
-	.user-age
-		color var(--c-text-weak)
-		font-size 12pt
 	.user-basic-info
 		display grid
-		gap 30px
+		gap 32px
 		grid-template-columns 64px 1fr
-	.user-name
-		font-size 12pt
+		margin-bottom 2em
 	.user-trophies
 		display flex
 		flex-flow row wrap
-		gap 5px
+		gap 3px
 	.user-trophy
 		height 41px
 		width 41px
-	.user-unavailable-notice
-		background salmon
-		border-radius 10px
-		color white
-		margin-top 10px
-		padding 10px

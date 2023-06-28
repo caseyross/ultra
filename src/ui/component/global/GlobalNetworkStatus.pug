@@ -1,42 +1,49 @@
 script.
+	import { onMount, onDestroy } from 'svelte'
+
 	import api from '../../../api/index.js'
+	import { Time, TimeSource } from '../../../lib/index.js'
 
 	offline = false
-	ratelimit_exhausted = false
-	ratelimit_low = false
+	ratelimit_remaining_ratio = 1
+	ratelimit_seconds_until_reset = 600
+	timer_id = null
 
-	setInterval(
-		->
-			if navigator.onLine is false
-				offline = true
-			else
-				offline = false
-			{ estimatedMaxRequests, remainingRequests } = api.getRatelimitStatus()
-			if remainingRequests < 1
-				ratelimit_exhausted = true
-			else
-				ratelimit_exhausted = false
-			if remainingRequests / estimatedMaxRequests < 0.2
-				ratelimit_low = true
-			else
-				ratelimit_low = false
-		5000
-	)
+	update_status = ->
+		offline = navigator.onLine == false
+		{ estimatedMaxRequests, remainingRequests, resetTimestampMs } = api.getRatelimitStatus()
+		ratelimit_remaining_ratio = remainingRequests / estimatedMaxRequests
+		ratelimit_seconds_until_reset = Math.trunc(Time.msToS(resetTimestampMs - Time.unixMs()))
+
+	onMount ->
+		timer_id = TimeSource.onTick(-> update_status())
+
+	onDestroy ->
+		TimeSource.deregister(timer_id)
+
+	update_status()
 
 slot
 {#if offline}
-	.network-status-warning Offline
-{:else if ratelimit_exhausted}
-	.network-status-warning Ratelimit exhausted
-{:else if ratelimit_low}
-	.network-status-warning Ratelimit low
+	#network-status.network-status-error OFFLINE
+{:else if ratelimit_remaining_ratio === 0}
+	#network-status.network-status-error RATELIMIT EXHAUSTED ({ratelimit_seconds_until_reset}S)
+{:else if ratelimit_remaining_ratio < 0.125}
+	#network-status.network-status-warning RATELIMIT VERY LOW
+{:else if ratelimit_remaining_ratio < 0.25}
+	#network-status.network-status-warning RATELIMIT LOW
 
 style.
-	.network-status-warning
-		color salmon
-		font-weight var(--f-wght-strong)
+	#network-status
+		font-size 2em
+		font-weight bold
 		left 0
 		padding 10px
 		position fixed
-		text-transform uppercase
+		text-align center
 		top 0
+		width 100%
+		&.network-status-error
+			color salmon
+		&.network-status-warning
+			color darkkhaki

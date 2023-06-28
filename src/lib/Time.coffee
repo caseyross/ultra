@@ -19,7 +19,7 @@ units =
 		name: 'year'
 		value: 1000 * 60 * 60 * 24 * 366
 	month:
-		abbr: 'mo'
+		abbr: 'n'
 		name: 'month'
 		value: 1000 * 60 * 60 * 24 * 31
 	week:
@@ -85,16 +85,10 @@ Time = {
 		for id, unit of units
 			if ms > unit.value
 				count = ms / unit.value
-				if opt.trunc
-					return {
-						count: Math.trunc(count),
-						unit
-					}
-				else
-					return {
-						count,
-						unit
-					}
+				return {
+					count: if opt.trunc then Math.trunc(count) else count,
+					unit
+				}
 		return {
 			count: 0
 			unit: units.millisecond

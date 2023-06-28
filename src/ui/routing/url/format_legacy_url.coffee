@@ -1,4 +1,6 @@
 export default ({
+	after_id
+	after_type
 	collection_id
 	feed_search
 	feed_sort
@@ -6,8 +8,8 @@ export default ({
 	multireddit_name
 	page_type
 	post_comments_sort
-	post_focus_comment_parent_count
 	post_focus_comment_id
+	post_focus_comment_parent_count
 	post_id
 	subreddit_name
 	user_name
@@ -64,6 +66,13 @@ export default ({
 				query.set('sort', feed_sort) # note: ignored for subs & multis
 			if feed_time_range
 				query.set('t', feed_time_range)
+			if after_id and after_type
+				after_fullname = switch after_type
+					when 'comment' then 't1_' + after_id
+					when 'post' then 't3_' + after_id
+					when 'message' then 't4_' + after_id
+					when 'subreddit' then 't5_' + after_id
+				query.set('after', after_fullname)
 	path_string = path.join('/')
 	if query.toString()
 		path_string = path_string + '?' + query.toString()

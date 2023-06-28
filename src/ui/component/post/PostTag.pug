@@ -6,28 +6,21 @@ script.
 		when 'locked' then 'This post has been locked by a moderator. No new comments can be added.'
 		when 'nsfw' then 'This post is marked as Not Safe For Work.'
 		when 'oc' then 'This post is marked as Original Content.'
-		when 'quarantined' then 'This post is quarantined. The average user cannot view it.'
+		when 'spoiler' then 'This post contains spoilers.'
 		when 'sticky' then 'This post has been stickied by a moderator. It will remain here until unstickied.'
 		else ''
-	text = switch name
-		when 'archived' then 'archived'
-		when 'locked' then 'locked'
-		when 'nsfw' then 'nsfw'
-		when 'oc' then 'oc'
-		when 'quarantined' then 'quarantined'
-		when 'sticky' then 'sticky'
-		else name
 
-data.post-tag(class='post-tag-{name}' title={description}) {text}
+data.post-tag(class='post-tag-{name}' title={description}) {name}
 
 style.
 	.post-tag
-		border-radius 6px
+		border-radius 999px
+		font-feature-settings 'cpsp', 'ss01'
 		font-size 10px
 		font-weight bold
 		line-height 1
 		letter-spacing 1px
-		padding 3px 6px
+		padding 5px 10px
 		text-transform uppercase
 		user-select none
 	.post-tag-archived
@@ -40,10 +33,11 @@ style.
 		background pink
 		color white
 	.post-tag-oc
-		background orange
+		background cornflowerblue
 		color white
-	.post-tag-quarantined
-		background lime
+	.post-tag-spoiler
+		background black
+		color white
 	.post-tag-sticky
 		background darkseagreen
 		color white

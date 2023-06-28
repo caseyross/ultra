@@ -3,12 +3,13 @@ import { get, post } from '../../net/http.coffee'
 export default {
 	account: ->
 		get("/api/v1/me")
-	account_messages: (sort, max_messages, after_type, after_id) ->
-		get("/message/#{sort}", {
+	account_messages: (filter, max_messages, after_type, after_id) ->
+		get("/message/#{filter}", {
 			after: after_type and after_id and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
 			limit: max_messages
 			mark: false
 			show: 'all'
+			sr_detail: true
 		})
 	account_multireddits_owned:  ->
 		get("/api/multi/mine", {
@@ -16,20 +17,16 @@ export default {
 		})
 	account_preferences: ->
 		get("/api/v1/me/prefs")
-	account_saved_comments: (user_name, comments_time_range, comments_sort, max_comments, after_comment_id) ->
+	account_saved_comments: (user_name, max_comments, after_comment_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_comment_id and "t1_#{after_comment_id}"
 			limit: max_comments
-			sort: comments_sort
-			t: comments_time_range
 			type: 'comments'
 		})
-	account_saved_posts: (user_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
+	account_saved_posts: (user_name, max_posts, after_post_id) ->
 		get("/user/#{user_name}/saved", {
 			after: after_post_id and "t3_#{after_post_id}"
 			limit: max_posts
-			sort: posts_sort
-			t: posts_time_range
 			type: 'links'
 		})
 	account_subreddits_approved_to_submit: (max_subreddits) ->
@@ -65,7 +62,7 @@ export default {
 	multireddit_posts: (user_name, multireddit_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get(
 			switch
-				when user_name is 'r' and multireddit_name is 'subscriptions' then "/#{posts_sort}"
+				when multireddit_name is 'subscriptions' then "/#{posts_sort}"
 				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort}"
 				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort}"
 			{
@@ -132,6 +129,20 @@ export default {
 		})
 	subreddit: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about")
+	subreddit_modqueue_comments: (subreddit_name, max_comments, after_comment_id) ->
+		get("/r/#{subreddit_name}/about/modqueue", {
+			after: after_comment_id and "t1_#{after_comment_id}"
+			limit: max_comments
+			only: 'comments'
+			show: 'all'
+		})
+	subreddit_modqueue_posts: (subreddit_name, max_posts, after_post_id) ->
+		get("/r/#{subreddit_name}/about/modqueue", {
+			after: after_post_id and "t3_#{after_post_id}"
+			limit: max_posts
+			only: 'links'
+			show: 'all'
+		})
 	subreddit_posts: (subreddit_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get("/r/#{subreddit_name}/#{posts_sort}", {
 			after: after_post_id and "t3_#{after_post_id}"
@@ -185,6 +196,8 @@ export default {
 		get("/r/#{subreddit_name}/wiki/#{page_name}", {
 			v: version_id
 		})
+	wiki_pages: (subreddit_name) ->
+		get("/r/#{subreddit_name}/wiki/pages")
 	wiki_versions: (subreddit_name, page_name, max_versions, after_version_id) ->
 		get("/r/#{subreddit_name}/wiki/revisions/#{page_name}", {
 			after: after_wikipage_version_id and "WikiRevision_#{after_wikipage_version_id}"

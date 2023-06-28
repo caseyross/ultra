@@ -1,24 +1,26 @@
 script.
 	import { setContext } from 'svelte'
 	
-	import { Color } from '../../../lib/index.js'
+	import { HexColor } from '../../../lib/index.js'
 
 	set_theme_colors = (main_color, secondary_color) ->
-		document.body.classList.add('color-strategy-black-text') # whole-page color schemes TODO
 		if !main_color
 			main_color = secondary_color
 			secondary_color = null
 		text_color =
 			if main_color
-				if (new Color({ hex: main_color })).isLight()
-					'black'
-				else
-					'white'
+				HexColor.contrast(main_color)
 			else
 				null
 		document.body.style.setProperty('--c-subreddit-theme', main_color or 'var(--c-subreddit-theme-default)')
 		document.body.style.setProperty('--c-subreddit-theme-secondary', secondary_color or 'var(--c-subreddit-theme-secondary-default)')
 		document.body.style.setProperty('--c-subreddit-theme-text', text_color or 'var(--c-subreddit-theme-text-default)')
+		if text_color is '#ffffff'
+			document.body.classList.remove('color-strategy-black-text')
+			document.body.classList.add('color-strategy-white-text')
+		else
+			document.body.classList.remove('color-strategy-white-text')
+			document.body.classList.add('color-strategy-black-text')
 
 	setContext('set_theme_colors', set_theme_colors)
 	

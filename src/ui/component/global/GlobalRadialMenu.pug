@@ -17,7 +17,7 @@ script.
 	menu = null
 	menu_variant = null
 	position = null
-	radius = 21
+	radius = 17
 	target_element = null
 	x_correction = document.documentElement.offsetLeft # adjust for broken fixed positioning when using scrollbar-gutter: stable (Chromium bug #1251856)
 
@@ -25,13 +25,14 @@ script.
 		(event) ->
 			if active
 				event.preventDefault()
-				if choice != 0
-					menu_direction = switch choice
-						when 1 then 'N'
-						when 2 then 'E'
-						when 3 then 'S'
-						when 4 then 'W'
-					final_choice = menu[menu_variant]?(target_element.dataset)?[menu_direction]
+				menu_direction = switch choice
+					when 0 then 'C'
+					when 1 then 'N'
+					when 2 then 'E'
+					when 3 then 'S'
+					when 4 then 'W'
+				final_choice = menu[menu_variant]?(target_element.dataset)?[menu_direction]
+				if final_choice
 					target_element.dispatchEvent(new CustomEvent('radialmenu', { detail: final_choice?.action }))
 				choice = null
 				menu_variant = null
@@ -90,7 +91,7 @@ slot
 {#if active && menu[menu_variant]?.(target_element.dataset)}
 	{@const choices = menu[menu_variant](target_element.dataset)}
 		menu.radial-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px')
-			span.radial-menu-graphic-center 🗙
+			figure.radial-menu-icon.radial-menu-icon-center 🗙
 			figure.radial-menu-icon.radial-menu-icon-north(class:radial-menu-icon-selected={choice === 1}) {choices.N?.icon || ''}
 			figure.radial-menu-icon.radial-menu-icon-west(class:radial-menu-icon-selected={choice === 4}) {choices.W?.icon || ''}
 			figure.radial-menu-icon.radial-menu-icon-east(class:radial-menu-icon-selected={choice === 2}) {choices.E?.icon || ''}
@@ -104,8 +105,6 @@ style.
 		font-size 1.5em
 		justify-content center
 		position fixed
-	.radial-menu-graphic-center
-		color var(--c-hint-normal)
 	.radial-menu-icon
 		align-items center
 		display flex
@@ -115,6 +114,8 @@ style.
 		width 100%
 		&.radial-menu-icon-selected
 			font-size 2em
+	.radial-menu-icon-center
+		opacity 0.5
 	.radial-menu-icon-east
 		left 100%
 	.radial-menu-icon-north

@@ -1,10 +1,11 @@
 script.
-	import { tick } from 'svelte'
+	import { getContext, tick } from 'svelte'
 
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
+	import { format_url } from '../../routing/url.coffee'
 	
-	import ErrorMessage from '../shared/ErrorMessage.pug'
+	import Error from '../shared/Error.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
 	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
 	
@@ -15,22 +16,38 @@ script.
 	error = null
 	loading = false
 	page = null
+	set_theme_colors = getContext('set_theme_colors')
 
-	api.loadWatch(api.ID('wiki', subreddit_name, page_name, revision_id),
-		(x) ->
-			{ data: page, error, loading } = x
-			if location.hash and page
-				# a common wiki use case is to load a wiki page directly at a specific heading
-				# since the heading may not exist at the time the browser would normally do the scroll, we need to handle it
-				# it's not worth it to support this handling for other views, but this is a special case
-				await tick()
-				document.getElementById(location.hash[1..])?.scrollIntoView()
+	if page_name == 'pages'
+		api.loadWatch(api.ID('wiki_pages', subreddit_name),
+			(x) ->
+				{ data: page, error, loading } = x
+		)
+	else
+		api.loadWatch(api.ID('wiki', subreddit_name, page_name, revision_id),
+			(x) ->
+				{ data: page, error, loading } = x
+				if location.hash and page
+					# a common wiki use case is to load a wiki page directly at a specific heading
+					# since the heading may not exist at the time the browser would normally do the scroll, we need to handle it
+					# it's not worth it to support this handling for other views, but this is a special case
+					await tick()
+					document.getElementById(location.hash[1..])?.scrollIntoView()
+		)
+	api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
+		{ data: subreddit } = x
+		set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
 	)
 
 svelte:head
-	title {subreddit_name} (wiki) / {page_name}
+	title {subreddit_name.toLowerCase()} wiki: {page_name.toLowerCase()}
 {#if error}
-	ErrorMessage(error={error} object='wiki' scope='total')
+	{#if error?.code === 403}
+		Error(message="You must be a moderator to access this wiki page." title="Mod-only wiki")
+	{:else if error.reason}
+		Error(message="An error occurred. This is the best description we have of the error." title="Error: {error.reason}")
+	{:else}
+		Error(message="An unknown error occurred." title="Unknown error")
 {:else if loading}
 	p Loading...
 {:else if page}
@@ -42,15 +59,25 @@ svelte:head
 				| >
 				a(class:wiki-path-segment-current={i === page_name.split('/').length - 1} href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
 		section.wiki-info
-			date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised {Time.sToRelTimeStr(page.revision_date)} ago
+			{#if page.revision_date}
+				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised {Time.sToRelTimeStr(page.revision_date)} ago
 		section.wiki-body
-			FormattedHTML(html={page.content_html})
+			{#if page_name === 'pages'}
+				ol.wiki-all-pages-list.md
+					{#each page as page_name}
+						li
+							a(href={format_url({ subreddit_name, wikipage_name: page_name })}) {page_name}
+			{:else}
+				{#if page.content_html}
+					FormattedHTML(html={page.content_html})
+				{:else if page.content_css}
+					pre.md {page.content_css}
 
 style.
 	.wiki
-		width 480px
+		width 680px
 	.wiki-body
-		margin-top 3em
+		margin-top 2em
 	.wiki-info
 		align-items center
 		display flex
@@ -60,6 +87,7 @@ style.
 		opacity 0.5
 	.wiki-path
 		color var(--c-text-weak)
+		margin-top 2em
 		text-transform uppercase
 		& > a
 			text-decoration underline
@@ -68,24 +96,30 @@ style.
 			font-weight var(--f-wght-strong)
 			text-decoration none
 	:global(.wiki .toc)
-		font-size 12px
-		left 0
-		letter-spacing 0.25pt
+		color var(--c-text-weak)
+		display none
 		max-height 100vh
 		overflow auto
-		padding 4rem 0
+		padding 4em 0
 		position fixed
+		right 60px
 		scrollbar-width none
 		top 0
-		width 320px
+		width 240px
 		&::-webkit-scrollbar
 			display none
-	:global(.wiki .toc ~ *)
-		margin-top 0
+		@media (min-width: 1360px)
+			display initial
 	:global(.wiki .toc a)
+		border 0
+		color inherit
 		text-decoration none
-		&:hover
-			text-decoration underline
+	:global(.wiki .toc a:hover)
+		color var(--c-subreddit-theme-text)
+	:global(.wiki .toc li)
+		margin-bottom 0.666em
+	:global(.wiki .toc li::marker)
+		content none
 	:global(.wiki .toc ol ol)
 	:global(.wiki .toc ol ul)
 	:global(.wiki .toc ul ol)

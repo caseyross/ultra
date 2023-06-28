@@ -1,0 +1,58 @@
+script.
+	import { format_url } from '../../routing/url.coffee'
+
+	export collection_id = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export type = null
+	export user_name = null
+
+	label = switch type
+		when 'collection' then collection_id
+		when 'multireddit' then user_name + '/' + multireddit_name
+		when 'subreddit' then subreddit_name
+		when 'user' then user_name
+
+a.feed-link(class="feed-link-{type}" href={format_url({ collection_id, multireddit_name, subreddit_name, user_name })}) {label}
+
+style.
+	.feed-link
+		align-items center
+		border-radius 12px
+		display inline-flex
+		padding-right 0.7em
+		text-transform lowercase
+		&.feed-link-collection:hover
+			background wheat
+		&.feed-link-multireddit:hover
+			background darkseagreen
+			color white
+		&.feed-link-subreddit:hover
+			background coral
+			color white
+		&.feed-link-user:hover
+			background lightskyblue
+			color white
+	.feed-link::before
+		border-radius 999px
+		color white
+		display inline
+		font-size 0.8em
+		height 1.25em
+		line-height 1.25
+		margin-left 0.2em
+		margin-right 0.4em
+		padding 0 0.5em
+	.feed-link-collection::before
+		background wheat
+		color black
+		content 'c/'
+	.feed-link-multireddit::before
+		background darkseagreen
+		content 'm/'
+	.feed-link-subreddit::before
+		background coral
+		content 'r/'
+	.feed-link-user::before
+		background lightskyblue
+		content 'u/'

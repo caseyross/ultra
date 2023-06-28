@@ -1,0 +1,21 @@
+script.
+	export url = null
+	
+	redirect_url = new URL(url)
+	redirect_url.protocol = 'https:'
+	redirect_url.hostname = 'www.reddit.com'
+	redirect_url.port = ''
+
+a#unsupported-page(href={redirect_url})
+	h1 Unsupported page
+	hr
+	p Sorry, this page isn't supported (or can't be supported via the API).
+	p Click anywhere in this message to view the official Reddit version.
+
+style.
+	#unsupported-page
+		background #ffdd5d
+		border-radius 12px
+		color black
+		padding 1em
+		width 480px

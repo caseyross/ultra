@@ -12,12 +12,12 @@ ratelimit = {
 		remaining = Number localStorage['api.ratelimit.remaining']
 		reset = Number localStorage['api.ratelimit.reset']
 		if not Number.isFinite(reset) or reset < Time.unixMs()
-			localStorage['api.ratelimit.reset'] = Time.unixMs() + Time.sToMs(60)
-			localStorage['api.ratelimit.remaining'] = 60
-			localStorage['api.ratelimit.max'] = 60
+			localStorage['api.ratelimit.reset'] = Time.unixMs() + Time.sToMs(600)
+			localStorage['api.ratelimit.remaining'] = 100
+			localStorage['api.ratelimit.max'] = 100
 		else if not Number.isFinite(remaining)
-			localStorage['api.ratelimit.remaining'] = 60
-			localStorage['api.ratelimit.max'] = 60
+			localStorage['api.ratelimit.remaining'] = 100
+			localStorage['api.ratelimit.max'] = 100
 
 	# Update the known ratelimit parameters with authoritative server feedback, or, failing that, with a simple count of requests sent.
 	update: ({ count, remaining, secondsUntilReset }) ->
@@ -57,5 +57,5 @@ export getRatelimitStatus = ->
 	return {
 		estimatedMaxRequests: Number localStorage['api.ratelimit.max']
 		remainingRequests: Number localStorage['api.ratelimit.remaining']
-		resetDate: new Date(localStorage['api.ratelimit.reset'])
+		resetTimestampMs: Number localStorage['api.ratelimit.reset']
 	}

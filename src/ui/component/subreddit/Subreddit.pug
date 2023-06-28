@@ -5,122 +5,199 @@ script.
 	import { Time } from '../../../lib/index.js'
 	import { format_url } from '../../routing/url.coffee'
 
+	import AccountData from '../shared/AccountData.coffee'
 	import Button from '../shared/Button.pug'
 	import ButtonGroup from '../shared/ButtonGroup.pug'
-	import ErrorMessage from '../shared/ErrorMessage.pug'
+	import Error from '../shared/Error.pug'
 	import Feed from '../feed/Feed.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
+	import Popup from '../shared/Popup.pug'
 	import SubredditAvatar from './SubredditAvatar.pug'
+	import SubredditInfo from './SubredditInfo.pug'
 	import SubredditRules from './SubredditRules.pug'
-	import SubredditSidebar from './SubredditSidebar.pug'
+	import SubredditWidget from './SubredditWidget.pug'
 	import TextInput from '../shared/TextInput.pug'
 	
+	export after_id = null
+	export current_page = 1
+	export expanded = false
+	export filter = 'unread'
 	export name = null
 	export search = null
 	export sort = null
-	export tab = 'posts'
+	export tab = null
 	export time_range = null
 
 	error = null
-	filter_options = [
-		{ label: 'Unread', value: 'unread' }
+	internal_navigate = getContext('internal_navigate')
+	search_flair_widget = null
+	search_picking_flair = false
+	set_theme_colors = getContext('set_theme_colors')
+	subreddit = null
+	tabs =
+		_order: ({ is_moderator }) ->
+			if is_moderator
+				['posts', 'mod', 'search', 'rules', 'about']
+			else
+				['posts', 'search', 'rules', 'about']
+		about:
+			label: 'About'
+		mod:
+			filters:
+				_order: -> ['posts', 'comments']
+				comments:
+					label: 'Comments'
+				posts:
+					label: 'Posts'
+			label: 'Modqueue'
+		posts:
+			filters:
+				_order: -> ['unread', 'all']
+				all:
+					label: 'All'
+				unread:
+					label: 'Unread Only'
+			label: 'Posts'
+		rules:
+			label: 'Rules'
+		search:
+			label: 'Search'
+			sorts:
+				_order: -> ['new', 'comments', 'top', 'relevance']
+				comments:
+					label: 'Most Comments'
+				new:
+					label: 'Most Recent'
+				relevance:
+					label: 'Closest Match'
+				top:
+					label: 'Highest Score'
+	tabs_array = (tabs, is_moderator) ->
+		tabs._order({ is_moderator }).map((x) -> { ...tabs[x], value: x })
+	time_range_options = [
+		{ label: '24h', value: 'day' }
+		{ label: '7d', value: 'week' }
+		{ label: '30d', value: 'month' }
+		{ label: '1y', value: 'year' }
 		{ label: 'All', value: 'all' }
 	]
-	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
-	local_filter = 'all'
-	local_search = search
-	local_sort = sort
-	local_time_range = time_range
-	search_mode_active = search?
-	subreddit = null
-	sort_options = [
-		{ label: 'New', show_time_ranges: false, value: 'new' }
-		{ label: 'Hot', show_time_ranges: false, value: 'hot' }
-		{ label: 'Top', show_time_ranges: true, value: 'top' }
-	]
-	search_sort_options = [
-		{ label: 'Match %', value: 'relevance' }
-		{ label: 'Score', value: 'top' }
-		{ label: 'Date', value: 'new' }
-		{ label: 'Num. Comments', value: 'comments' }
-	]
-	tabs = [
-		{ label: 'Posts', value: 'posts'}
-		{ label: 'Rules', value: 'rules'}
-		{ label: 'About', value: 'about'}
-	]
-	time_range_options = [
-		{ label: 'Any time', value: 'all' }
-		{ label: 'Y', value: 'year' }
-		{ label: 'M', value: 'month' }
-		{ label: 'W', value: 'week' }
-		{ label: 'D', value: 'day' }
-		{ label: 'H', value: 'hour' }
-	]
 
-	activate_search_mode = ->
-		local_time_range = 'all'
-		local_sort = 'relevance'
-		search_mode_active = true
-	
-	api.loadWatch(api.ID('subreddit', name), (x) -> { data: subreddit, error } = x)
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit, error } = x
+		if expanded
+			set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
+	)
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+		search_flair_widget = widgets?.sidebar.find((x) => x.kind == 'post-flair')
+	)
+	if expanded
+		AccountData.increment_subreddit_viewcount(name.toLowerCase())
 
 svelte:head
-	title {subreddit ? subreddit.display_name : name.toLowerCase()}
+	{#if expanded}
+		title {name.toLowerCase()}
 {#if error}
-	ErrorMessage(error={error} object='subreddit' scope='total')
+	{#if error.code === 403}
+		Error(message="Only approved users can access this subreddit." title="Private subreddit")
+	{:else if error.code === 404}
+		Error(message="This subreddit was closed permanently by Reddit admins." title="Subreddit banned")
+	{:else if error.reason}
+		Error(message="An error occurred. This is the best description we have of the error." title="Error: {error.reason}")
+	{:else}
+		Error(message="An unknown error occurred." title="Unknown error")
 {:else if subreddit}
 	article.subreddit
-		section.subreddit-basic-info
-			div(style='text-align: center')
-				SubredditAvatar(name={name} size='large')
-				h1.subreddit-name {subreddit.display_name}
-				{#if subreddit.created_utc}
-					time.subreddit-age(title='account created {Time.sToAbsTimeStr(subreddit.created_utc)}') {Time.sToRelTimeStr(subreddit.created_utc)}
-			div
-		{#if subreddit.is_suspended}
-			.subreddit-unavailable-notice User suspended.
-		{:else if subreddit.is_blocked}
-			.subreddit-unavailable-notice You blocked this subreddit.
-		{:else}
-			ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
-			hr
+		section.subreddit-header
+			SubredditAvatar(name={name} size='large')
+			nav.subreddit-header-options
+				menu.subreddit-tabs
+					ButtonGroup(options={tabs_array(tabs, subreddit?.user_is_moderator).map(x => ({ ...x, link: format_url({ subpage: x.value, subreddit_name: name }) }))} selected={tab})
+				{#if subreddit.wiki_enabled}
+					Button(link={format_url({ subreddit_name: name, wikipage_name: 'index' })} text='Wiki')
+		{#if expanded}
 			{#if tab === 'about'}
-				SubredditSidebar(name={name})
+				SubredditInfo(name={name})
+			{:else if tab === 'mod'}
+				ButtonGroup(options={tabs_array(tabs.mod.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'mod', subreddit_name: name }) }))} selected={filter})
+				{#if filter === 'comments'}
+					{#key after_id}
+						Feed(after_id={after_id} filter={filter} subpage='mod' subreddit_name={name} type='subreddit_modqueue_comments')
+				{:else if filter === 'posts'}
+					{#key after_id}
+						Feed(after_id={after_id} filter={filter} subpage='mod' subreddit_name={name} type='subreddit_modqueue_posts')
 			{:else if tab === 'rules'}
 				SubredditRules(name={name})
 			{:else if tab === 'posts'}
-				{#if search_mode_active}
-					TextInput(initial_value={search} type_action={value => local_search = value})
-					Button(action={value => local_sort = value} options={search_sort_options} selected={local_sort})
-					Button(action={value => local_time_range = value} options={time_range_options} selected={local_time_range})
-					Button(disabled={!local_search?.length} key='Enter' link={format_url({ feed_search: local_search, feed_sort: local_sort, feed_time_range: local_time_range, page_type: 'subreddit', subreddit_name: name })} text='Search')
-				{:else}
-					ButtonGroup(options={sort_options.map(x => ({ ...x, link: format_url({ feed_sort: x.value, feed_time_range: time_range, page_type: 'subreddit', subreddit_name: name })}))} selected={sort})
-					{#if sort_options.find(x => x.value === sort)?.show_time_ranges}
-						Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_sort: sort, feed_time_range: value, page_type: 'subreddit', subreddit_name: name }) })} options={time_range_options} selected={time_range})
-					ButtonGroup(action={value => local_filter = value} options={filter_options} selected={local_filter})
-				{#key local_filter}
+				nav.subreddit-posts-header
+					data.subreddit-posts-current-page {current_page}
+					menu.subreddit-posts-options
+						menu.subreddit-posts-options-sort
+							Button(activated={sort === 'hot'} link={format_url({ feed_filter: filter, feed_sort: 'hot', subreddit_name: name })} text='Hot')
+							Button(activated={sort === 'new'} link={format_url({ feed_filter: filter, feed_sort: 'new', subreddit_name: name })} text='New')
+							Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_filter: filter, feed_sort: 'top', feed_time_range: value, subreddit_name: name }) })} activated={sort === 'top'} options={time_range_options.map(x => ({ ...x, label: 'Top (' + x.label + ')' }))} selected={time_range})
+						ButtonGroup(options={tabs_array(tabs.posts.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, feed_sort: sort, feed_time_range: time_range, subreddit_name: name }) }))} selected={filter})
+				{#key sort}
+					{#key time_range}
+						{#key after_id}
+							{#key filter}
+								Feed(after_id={after_id} filter={filter} sort={sort} subreddit_name={name} time_range={time_range} type='subreddit_posts')
+			{:else if tab === 'search'}
+				menu.subreddit-posts-options-search
+					Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search: search, feed_sort: value, subpage: 'search', subreddit_name: name }) }) } activated={true} options={tabs_array(tabs.search.sorts)} selected={sort})
+					{#key search}
+						TextInput(autofocus={true} enter_action={value => internal_navigate({ href: location.origin + format_url({ feed_search: value, feed_sort: sort, subpage: 'search', subreddit_name: name }) })} initial_value={search})
+					Button(action={() => search_picking_flair = true} description={search_flair_widget ? '' : "This subreddit doesn't support the UI for flair searches. You can still type flair searches manually."} disabled={!search_flair_widget} text='Flairs...')
+					{#if search_picking_flair}
+						.subreddit-flair-search-close-handler(on:click={() => search_picking_flair = false} on:keydown={e => { if(e.key === 'Enter') { search_picking_flair = false } } })
+							Popup(on:close={() => search_picking_flair = false})
+								SubredditWidget(widget={search_flair_widget})
+				{#if search}
 					{#key search}
 						{#key sort}
-							{#key time_range}
-								Feed(filter={local_filter} sort={sort} time_range={time_range} type='subreddit_posts' subreddit_name={name})
+							{#key after_id}
+								Feed(after_id={after_id} filter='all' search={search} sort={sort} subpage='search' subreddit_name={name} type='subreddit_posts')
 
 style.
 	.subreddit
-		width 480px
-	.subreddit-age
-		color var(--c-text-weak)
-		font-size 12pt
-	.subreddit-basic-info
+		width 560px
+	.subreddit-flair-search-close-handler
+		position absolute
+	.subreddit-header
+		align-items flex-end
 		display grid
-		gap 30px
+		gap 32px
 		grid-template-columns 64px 1fr
-	.subreddit-name
-		font-size 12pt
-	.subreddit-unavailable-notice
-		background salmon
-		border-radius 10px
-		color white
+		justify-items flex-start
+	.subreddit-header-options
+		align-items center
+		display flex
+		gap 10px
+	.subreddit-posts-current-page
+		align-items center
+		display flex
+		height 100%
+		justify-content center
+		width 100%
+	.subreddit-posts-header
+		align-items flex-start
+		display grid
+		gap 32px
+		grid-template-columns 64px 1fr
+		justify-items flex-start
 		margin-top 10px
+	.subreddit-posts-options
+		background var(--c-con-normal)
+		border-radius 7px
+		display flex
+		gap 30px
+		padding 10px
+	.subreddit-posts-options-search
+		display flex
+		justify-content space-between
+		margin-top 2em
+	.subreddit-tabs
+		background var(--c-con-normal)
+		border-radius 7px
+		display flex
 		padding 10px

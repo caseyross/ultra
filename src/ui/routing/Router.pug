@@ -6,17 +6,18 @@ script.
 	import AllGlobals from '../component/global/AllGlobals.pug'
 	import Collection from '../component/collection/Collection.pug'
 	import Directory from '../component/directory/Directory.pug'
-	import Messages from '../component/message/Messages.pug'
 	import Multireddit from '../component/multireddit/Multireddit.pug'
 	import Post from '../component/post/Post.pug'
-	import Redirect from './Redirect.pug'
 	import Subreddit from '../component/subreddit/Subreddit.pug'
+	import Unsupported from './Unsupported.pug'
 	import User from '../component/user/User.pug'
 	import Wiki from '../component/wiki/Wiki.pug'
 
 	feed = null
 	page = null
 	post = null
+	scroll_cache = {}
+	subpage = null
 	wiki = null
 	
 	external_navigate =
@@ -41,8 +42,21 @@ script.
 		(event) -> not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
 	is_unmodified_left_click =
 		(event) -> is_unmodified_event(event) and event.button is 0 and event.detail > 0
-	set_route_from_current_url = ->
-		{ feed, page, post, wiki } = parse_url(location)
+	restore_scroll_for_current_url =
+		->
+			window.scrollTo({
+				behavior: 'instant'
+				top: scroll_cache[scroll_cache_key(location)] or 0 # still needs to be reset to 0 if no cached position (because SPA)
+			})
+	save_scroll_for_current_url =
+		->
+			scroll_cache[scroll_cache_key(location)] = window.scrollY
+	scroll_cache_key =
+		(url) -> url.pathname + '?' + url.search + '#' + url.hash
+	set_route_from_current_url =
+		->
+			{ feed, page, post, subpage, wiki } = parse_url(location)
+			restore_scroll_for_current_url()
 
 	document.addEventListener('mousedown',
 		(event) ->
@@ -80,6 +94,12 @@ script.
 		(event) ->
 			set_route_from_current_url()
 	)
+	window.addEventListener('scroll',
+		(event) ->
+			requestIdleCallback(->
+				save_scroll_for_current_url()
+			)
+	)
 
 	setContext('internal_navigate', internal_navigate) # only for use in rare situations where link tags cannot be used
 	set_route_from_current_url()
@@ -87,30 +107,28 @@ script.
 AllGlobals
 	{#if page === 'collection'}
 		{#key feed.collection_id}
-			Collection(id={feed.collection_id})
+			Collection(expanded={true} filter={feed.filter} id={feed.collection_id} tab={subpage})
 	{:else if page === 'directory'}
 		Directory
-	{:else if page === 'messages'}
-		Messages
 	{:else if page === 'multireddit'}
 		{#key feed.multireddit_name}
 			{#key feed.user_name}
-				Multireddit(name={feed.multireddit_name} search={feed.search} sort={feed.sort} time_range={feed.time_range} user_name={feed.user_name})
+				Multireddit(after_id={feed.after_id} expanded={true} filter={feed.filter} name={feed.multireddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range} user_name={feed.user_name})
 	{:else if page === 'post'}
 		{#key post.id}
 			{#key post.focus_comment_id}
 				{#key post.focus_comment_parent_count}
-					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
+					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id} show_subreddit={true})
 	{:else if page === 'subreddit'}
 		{#key feed.subreddit_name}
-			Subreddit(name={feed.subreddit_name} search={feed.search} sort={feed.sort} time_range={feed.time_range})
+			Subreddit(after_id={feed.after_id} expanded={true} filter={feed.filter} name={feed.subreddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range})
 	{:else if page === 'user'}
-		{#key feed.user_name}
-			User(name={feed.user_name} sort={feed.sort} time_range={feed.time_range})
+		{#key feed?.user_name}
+			User(after_id={feed?.after_id} filter={feed?.filter} name={feed?.user_name} sort={feed?.sort} tab={subpage} time_range={feed?.time_range})
 	{:else if page === 'wiki'}
 		{#key wiki.subreddit_name}
 			{#key wiki.page_name}
 				{#key wiki.page_version}
 					Wiki(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
 	{:else}
-		Redirect(to_url={location})
+		Unsupported(url={location})

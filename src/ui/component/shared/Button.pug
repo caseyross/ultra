@@ -2,7 +2,6 @@ script.
 	import { hotkey } from './actions/hotkeys.coffee'
 
 	import HotkeyLabel from './HotkeyLabel.pug'
-	import Popup from './Popup.pug'
 	
 	export action = ->
 	export activated = false
@@ -15,14 +14,8 @@ script.
 	export loading_text = 'Loading...'
 	export new_tab = false
 	export options = null
-	export popup = false
 	export selected = null
 	export text = ''
-
-	popup_open = false
-	
-	if popup
-		action = -> popup_open = true
 
 {#if options}
 	select.button.button-dropdown(class:button-activated={activated} class:disabled={disabled || loading} on:change={e => action(e.target.value)} title={description} use:hotkey={key})
@@ -47,10 +40,6 @@ script.
 				| {text}
 			{#if badge}
 				span.button-badge {badge}
-{#if popup_open}
-	Popup(on:close={() => popup_open = false})
-		slot
-
 
 style.
 	.button
@@ -65,15 +54,15 @@ style.
 		position relative
 		text-align left
 		user-select none
+		&:disabled
+		&.button-disabled
+			cursor auto
+			opacity 0.5
 		&:hover:not(:disabled):not(.disabled):not(.button-dropdown)
 		&.button-activated
 			background #333
 			border-color var(--c-hint-normal)
 			color var(--c-hint-normal)
-		&.button-disabled
-		&:disabled
-			cursor normal
-			opacity 0.5
 	.button-badge
 		border-radius 10px
 		background var(--c-con-strong)
@@ -82,3 +71,7 @@ style.
 		padding 0 1ch
 	.button-dropdown
 		font inherit
+		padding-top 2px
+	.button-dropdown-option
+		background var(--c-subreddit-theme)
+		color var(--c-subreddit-theme-text)

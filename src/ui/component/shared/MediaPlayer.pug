@@ -3,11 +3,12 @@ script.
 
 	import { Time } from '../../../lib/index.js'
 	import { virtual_hotkeys } from './actions/hotkeys.coffee'
+
+	import AccountData from '../shared/AccountData.coffee'
 	import Button from './Button.pug'
 	
 	export audio_url = null
 	export height = 480
-	export mimic_gif = false
 	export video_url = null
 	export width = 480
 
@@ -46,7 +47,7 @@ script.
 			audio?.currentTime = video.currentTime
 	set_volume = (value) ->
 		audio.volume = clamp(0, 1, value)
-		localStorage['ui.media.volume'] = audio.volume
+		AccountData.set_media_volume(audio.volume)
 	scrobbler = null
 	toggle_fullscreen = ->
 		document.activeElement.blur() # prevent browser from forcing focus style for buttons on fullscreen change
@@ -66,11 +67,6 @@ script.
 		)
 
 	additional_hotkeys =
-		' ': ->
-			if fullscreen
-				play_pause()
-			else
-				false
 		ArrowDown: ->
 			set_volume(audio.volume - 0.25)
 		ArrowLeft: ->
@@ -87,13 +83,13 @@ script.
 			set_time(video.currentTime + 10)
 		m: ->
 			if audio.volume > 0
-				localStorage['media.premute_volume'] = audio.volume
+				AccountData.set_media_premute_volume(audio.volume)
 				set_volume(0)
 			else
-				set_volume(Number(localStorage['media.premute_volume']) or 1)
+				set_volume(AccountData.get_media_premute_volume() or 0.5)
 
 	onMount ->
-		audio.volume = Number(localStorage['ui.media.volume']) or 0
+		audio.volume = AccountData.get_media_volume() or 0
 		player.addEventListener('fullscreenchange', (e) ->
 			if document.fullscreenElement? and document.fullscreenElement is player
 				fullscreen = true
@@ -147,15 +143,15 @@ script.
 				e.preventDefault()
 		)
 
-figure.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' use:virtual_hotkeys={additional_hotkeys})
+figure.media-player(bind:this={player} class:color-strategy-white-text={fullscreen} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' title='' use:virtual_hotkeys={additional_hotkeys})
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	<!-- svelte-ignore a11y-media-has-caption -->
-	video(autoplay={mimic_gif} bind:buffered={buffer_regions} bind:duration={duration} bind:ended={ended} bind:paused={paused} bind:this={video} loop={mimic_gif} style='height: {height}px; width: {width}px')
+	video(bind:buffered={buffer_regions} bind:duration={duration} bind:ended={ended} bind:paused={paused} bind:this={video} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} description='Play / pause' key='p' text="{ended ? '↻' : paused ? '▶' : '■'} {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
+		Button(action={play_pause} activated={!paused} description='Play / pause' key='p' text="▶／◼ {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
 			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
@@ -176,7 +172,7 @@ style.
 		&::-webkit-media-controls
 			display none
 		:fullscreen &
-			border-radius none
+			border-radius 0
 			height 100% !important
 			width 100% !important
 		.media-player-controls-hidden &
@@ -237,16 +233,16 @@ style.
 		width 100%
 		&::-moz-range-thumb
 			appearance none
-			background var(--c-text-strong)
+			background var(--c-hint-normal)
 			border-radius 3px
-			height 2em
-			width 3px
+			height 24px
+			width 4px
 		&::-webkit-slider-thumb
 			appearance none
-			background var(--c-text-strong)
+			background var(--c-hint-normal)
 			border-radius 3px
-			height 2em
-			width 3px
+			height 24px
+			width 4px
 	.media-volume
 		background var(--c-blend-normal)
 		border-radius 6px

@@ -32,6 +32,7 @@ export default {
 	comment_remove: (comment_id) -> () ->
 		post("/api/remove", {
 			id: "t1_#{comment_id}"
+			spam: false
 		})
 	comment_reply: (parent_comment_id) -> ({ text }) ->
 		post("/api/comment", {
@@ -90,6 +91,7 @@ export default {
 	post_remove: (post_id) -> () ->
 		post("/api/remove", {
 			id: "t3_#{post_id}"
+			spam: false
 		})
 	# note: requires additional comments parameters after post ID (as in `post` route) for the new reply to be automatically synced locally
 	post_reply: (post_id) -> ({ text }) ->

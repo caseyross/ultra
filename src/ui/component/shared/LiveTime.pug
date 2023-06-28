@@ -1,37 +1,52 @@
 script.
 	import { onMount, onDestroy } from 'svelte'
 	
-	import { Time } from '../../../lib/index.js'
+	import { Time, TimeSource } from '../../../lib/index.js'
 	
 	export create_s = null
 	export edit_s = null
 
-	live_create_text = null
-	live_edit_text = null
+	create_ago = null
+	edit_ago = null
 	timer_id = null
 
-	update_text = ->
-		live_create_text = Time.sToRelTimeStr(create_s)
+	update_agos = ->
+		create_ago = Time.msToTopDuration(Time.unixMs() - Time.sToMs(create_s))
 		if edit_s
-			live_edit_text = Time.sToRelTimeStr(edit_s)
+			edit_ago = Time.msToTopDuration(Time.unixMs() - Time.sToMs(edit_s))
 
 	onMount ->
-		interval = if Time.unixMs() - Time.sToMs(create_s) < 60000 then 1000 else 60000
-		timer_id = setInterval(
-			-> update_text()
-			(0.9 * interval) + (0.1 * interval * Math.random()) # fuzz interval to avoid workload spikes from groups of timers instantiated at the same time
-		)
+		timer_id = TimeSource.onTick(-> update_agos())
 
 	onDestroy ->
-		clearInterval(timer_id)
+		TimeSource.deregister(timer_id)
 
-	update_text()
+	update_agos()
 
-time.livetime(datetime={create_s} title={Time.sToAbsTimeStr(create_s)}) {live_create_text} ago
-	{#if live_edit_text}
-		span(title='last edited {live_edit_text} ago') *
+time.live-time(class:live-time-edited={edit_ago} datetime={create_s} title={edit_ago ? (Time.sToAbsTimeStr(create_s) + ', edited ' + Time.sToAbsTimeStr(edit_s)) : Time.sToAbsTimeStr(create_s)})
+	span.live-time-value {create_ago.count}
+	span.live-time-unit {create_ago.unit.abbr}
 
 style.
-	.livetime
+	.live-time
+		align-items center
 		color var(--c-text-weak)
-		font-size 17px
+		display inline-flex
+		justify-content flex-end
+		gap 4px
+		position relative
+		width 32px
+		&.live-time-edited::after
+			content '*'
+			left calc(100% + 4px)
+			position absolute
+			top -2px
+	.live-time-unit
+		align-items center
+		aspect-ratio 1
+		background darkseagreen
+		border-radius 999px
+		color white
+		display inline-flex
+		justify-content center
+		height 16px

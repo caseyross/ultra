@@ -1,0 +1,51 @@
+script.
+	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
+
+	import Button from '../shared/Button.pug'
+	import FormattedHTML from '../shared/FormattedHTML.pug'
+	import SubredditWidget from './SubredditWidget.pug'
+
+	export name = null
+	
+	subreddit = null
+	widgets = null
+
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit } = x
+	)
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+	)
+
+aside.subreddit-info
+	{#if subreddit}
+		{#if subreddit.public_description_html}
+			FormattedHTML(html={subreddit.public_description_html})
+		{#if false}
+			section.subreddit-info-metrics
+				{#if subreddit.accounts_active}
+					data 🟢 {subreddit.accounts_active.toLocaleString('en-US')}
+				{#if subreddit.subscribers}
+					data 👂 {subreddit.subscribers.toLocaleString('en-US')}
+				data 🔑 {subreddit.subreddit_type[0].toUpperCase() + subreddit.subreddit_type.slice(1)}
+				time(title={Time.sToAbsTimeStr(subreddit.created_utc)}) 🏗️ {new Date(Time.sToMs(subreddit.created_utc)).getFullYear()}
+	{#if widgets}
+		ol.subreddit-info-widgets
+			{#each widgets.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')) as widget}
+				SubredditWidget(widget={widget})
+
+style.
+	.subreddit-info
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		margin-top 2em
+	.subreddit-info-metrics
+		display flex
+		font-feature-settings 'ss01', 'tnum'
+		gap 1em
+	.subreddit-info-widgets
+		display flex
+		flex-flow column nowrap
+		gap 0.666em

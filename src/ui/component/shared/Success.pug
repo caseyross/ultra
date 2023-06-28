@@ -1,0 +1,23 @@
+script.
+	export message = null
+	export title = null
+
+.success
+	{#if title}
+		h1 {title}
+	.success-body
+		| {message}
+		slot
+
+style.
+	.success
+		background mediumseagreen
+		border-radius 12px
+		color white
+		max-width 560px
+		padding 10px
+	.success-body
+		align-items center
+		display flex
+		justify-content space-between
+		width 100%

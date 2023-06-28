@@ -28,11 +28,13 @@ label.text-input-label
 		HotkeyLabel(key={key})
 	| {label}
 	<!-- svelte-ignore a11y-autofocus -->
-	input.text-input(autofocus={autofocus} bind:this={input} on:change={e => enter_action(e.target.value)} on:keydown={e => (e.key === 'Enter') || e.stopPropagation()} on:input={e => type_action(e.target.value)} placeholder={placeholder} use:virtual_hotkeys={hotkeys})
+	input.text-input(autofocus={autofocus} bind:this={input} on:keydown|stopPropagation={e => { if(e.key === 'Enter') { enter_action(e.target.value) } } } on:input={e => type_action(e.target.value)} placeholder={placeholder})
 
 style.
 	.text-input
 		border-bottom 2px solid var(--c-text-faint)
+		flex 1 1 auto
+		font-size 18px
 		&:focus
 			border-color var(--c-hint-normal)
 			outline none
