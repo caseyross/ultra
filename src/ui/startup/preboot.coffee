@@ -26,4 +26,4 @@ if api.hasPendingLogin()
 route = parse_url(location)
 if route.preload
 	for id in route.preload
-		api.preload(id)
+		api.load(id)

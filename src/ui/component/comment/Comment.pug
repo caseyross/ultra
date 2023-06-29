@@ -138,7 +138,7 @@ script.
 				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
 		{#if out_of_context}
 			cite.comment-source-link
-				Button(link={format_url({ post_focus_comment_parent_count: 3, post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View →')
+				Button(link={format_url({ post_focus_comment_id: id, post_focus_comment_parent_count: 3, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View →')
 		{:else}
 			ol.comment-replies
 				{#if replying}
@@ -150,7 +150,7 @@ script.
 						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="{comment.num_more_replies} more")
 				{#if comment.deeper_replies}
 					menu.comment-more-replies
-						Button(link='/r/{comment.subreddit}/post/{comment.link_id.slice(3)}/comment/{id}' text='Continue thread...')
+						Button(link={format_url({ post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='Continue thread...')
 
 style.
 	.comment
