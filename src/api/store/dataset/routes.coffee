@@ -3,9 +3,9 @@ import { get, post } from '../../net/http.coffee'
 export default {
 	account: ->
 		get("/api/v1/me")
-	account_messages: (filter, max_messages, after_type, after_id) ->
+	account_messages: (filter, max_messages, after_id, after_id_type) ->
 		get("/message/#{filter}", {
-			after: after_type and after_id and "#{if after_type is 'comment' then 't1' else 't4'}_#{after_id}"
+			after: after_id and after_id_type and "#{if after_id_type is 'comment' then 't1' else 't4'}_#{after_id}"
 			limit: max_messages
 			mark: false
 			show: 'all'

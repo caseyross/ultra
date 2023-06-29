@@ -12,6 +12,7 @@ script.
 	import Success from '../shared/Success.pug'
 
 	export after_id = null
+	export after_id_type = null
 	export collection_id = null
 	export multireddit_name = null
 	export filter = null
@@ -66,10 +67,15 @@ script.
 	loading = null
 	next_after_id = (items) ->
 		items.at(-1)?.id or items.at(-1)
+	next_after_id_type = (items) ->
+		switch items.at(-1)?.was_comment
+			when true then 'comment'
+			when false then 'message'
+			else null
 	items = []
 	read = []
 
-	api.loadWatch(api.ID(base_page_id, after_id), (x) ->
+	api.loadWatch(api.ID(base_page_id, after_id, after_id_type), (x) ->
 		{ error, data, loading } = x
 		if !error and !loading and data
 			items = data?.posts or data
@@ -110,7 +116,7 @@ nav.feed
 									Subreddit(expanded={false} name={item})
 	menu.feed-actions
 		{#if has_next_page(items)}
-			Button(link={format_url({ after_id: next_after_id(items), collection_id, feed_filter: filter, feed_search: search, feed_sort: sort, feed_time_range: time_range, multireddit_name, subreddit_name, subpage, user_name })} loading={loading} text='More')
+			Button(link={format_url({ after_id: next_after_id(items), after_id_type: next_after_id_type(items), collection_id, feed_filter: filter, feed_search: search, feed_sort: sort, feed_time_range: time_range, multireddit_name, subreddit_name, subpage, user_name })} loading={loading} text='More')
 
 style.
 	.feed

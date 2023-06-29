@@ -1,6 +1,6 @@
 export default ({
 	after_id
-	after_type
+	after_id_type
 	collection_id
 	feed_search
 	feed_sort
@@ -66,8 +66,8 @@ export default ({
 				query.set('sort', feed_sort) # note: ignored for subs & multis
 			if feed_time_range
 				query.set('t', feed_time_range)
-			if after_id and after_type
-				after_fullname = switch after_type
+			if after_id and after_id_type
+				after_fullname = switch after_id_type
 					when 'comment' then 't1_' + after_id
 					when 'post' then 't3_' + after_id
 					when 'message' then 't4_' + after_id

@@ -1,5 +1,6 @@
 export default ({
 	after_id
+	after_id_type
 	collection_id
 	feed_filter
 	feed_search
@@ -61,6 +62,8 @@ export default ({
 		query.set('t', feed_time_range)
 	if after_id
 		query.set('after', after_id)
+	if after_id_type
+		query.set('after_type', after_id_type)
 	path_string = path.join('/')
 	if query.toString()
 		path_string = path_string + '?' + query.toString()

@@ -123,8 +123,8 @@ AllGlobals
 		{#key feed.subreddit_name}
 			Subreddit(after_id={feed.after_id} expanded={true} filter={feed.filter} name={feed.subreddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range})
 	{:else if page === 'user'}
-		{#key feed?.user_name}
-			User(after_id={feed?.after_id} filter={feed?.filter} name={feed?.user_name} sort={feed?.sort} tab={subpage} time_range={feed?.time_range})
+		{#key feed.user_name}
+			User(after_id={feed.after_id} after_id_type={feed.after_id_type} filter={feed.filter} name={feed.user_name} sort={feed.sort} tab={subpage} time_range={feed.time_range})
 	{:else if page === 'wiki'}
 		{#key wiki.subreddit_name}
 			{#key wiki.page_name}

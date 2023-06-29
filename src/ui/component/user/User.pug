@@ -12,6 +12,7 @@ script.
 	import UserAvatar from './UserAvatar.pug'
 	
 	export after_id = null
+	export after_id_type = null
 	export filter = null
 	export name = null
 	export sort = null
@@ -94,7 +95,7 @@ svelte:head
 				ButtonGroup(options={tabs_array(tabs.messages.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'messages', user_name: name }) }))} selected={filter})
 				{#key filter}
 					{#key after_id}
-						Feed(after_id={after_id} filter={filter} subpage='messages' type='account_messages' user_name={name})
+						Feed(after_id={after_id} after_id_type={after_id_type} filter={filter} subpage='messages' type='account_messages' user_name={name})
 			{:else if tab === 'posts'}
 				{#key sort}
 					{#key time_range}

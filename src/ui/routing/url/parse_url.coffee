@@ -1,7 +1,6 @@
 import api from '../../../api/index.js'
 
 FEED_PAGE_SIZE = 10
-FEED_PAGE_SIZE_MESSAGES = 100
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 POST_COMMENTS_INITIAL_SIZE = 25
@@ -43,6 +42,7 @@ export default (url) ->
 	feed.after_id = query.get('after')
 	if feed.after_id?[2] is '_'
 		feed.after_id = feed.after_id.slice(3)
+	feed.after_id_type = query.get('after_type')
 	feed.filter = query.get('filter')
 	feed_flair_search = query.get('f')?.replaceAll('flair_name', 'flair')
 	feed_text_search = query.get('q')
@@ -122,7 +122,7 @@ export default (url) ->
 					feed.filter = 'unread'
 			if !feed.filter
 				feed.filter = 'unread'
-			feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE_MESSAGES)
+			feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE)
 		when 'p', 'post'
 			page = 'post'
 			post.id = b
@@ -247,7 +247,7 @@ export default (url) ->
 					subpage = 'messages'
 					if !feed.filter
 						feed.filter = 'unread'
-					feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE_MESSAGES)
+					feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE)
 				when 'posts', 'submitted'
 					subpage = 'posts'
 					feed.sort = d if d in SORT_OPTIONS_FEED_USER
