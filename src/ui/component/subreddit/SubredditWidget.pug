@@ -1,4 +1,5 @@
 script.
+	import { Time } from '../../../lib/index.js'
 	import { format_url, relativize_url } from '../../routing/url.coffee'
 	
 	import Button from '../shared/Button.pug'
@@ -15,12 +16,30 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 			{#each widget.buttons as button}
 				li.subreddit-widget-link
 					a(href={relativize_url(button.url)}) {button.text}
+	{:else if widget.kind === 'calendar'}
+		h1.subreddit-widget-title {widget.shortName}
+		{#if widget.data.length > 0}
+			.md
+				table.subreddit-widget-calendar-events
+					tr
+						th In
+						th Event
+					{#each widget.data as event}
+						tr.subreddit-widget-calendar-event(title='{Time.sToAbsTimeStr(event.startTime)} to {Time.sToAbsTimeStr(event.endTime)}')
+							td {Time.msToRelTimeStr(Time.unixMs(), { abbr: true, endMs: Time.sToMs(event.startTime) })}
+							td
+								FormattedHTML(html={event.titleHtml})
+		{:else}
+			span.subreddit-widget-calendar-events-empty (No events.)
 	{:else if widget.kind === 'community-list'}
 		h1.subreddit-widget-title {widget.shortName}
 		ol.subreddit-widget-related-subreddits
 			{#each widget.data as subreddit}
 				li.subreddit-widget-related-subreddit
 					FeedLink(subreddit_name={subreddit.name} type='subreddit')
+	{:else if widget.kind === 'custom'}
+		h1.subreddit-widget-title {widget.shortName}
+		FormattedHTML(html={widget.textHtml})
 	{:else if widget.kind === 'image'}
 		{@const image = widget.data[0]}
 			{#if image.linkUrl}
@@ -48,6 +67,8 @@ style.
 		background var(--c-con-normal)
 		border-radius 5px
 		padding 1em
+	.subreddit-widget-calendar-events-empty
+		color var(--c-text-weak)
 	.subreddit-widget-image
 		border-radius 5px
 	.subreddit-widget-link
