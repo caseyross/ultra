@@ -9,6 +9,8 @@
 *
 	box-sizing border-box
 	margin 0
+	&:first-child
+		margin-top 0 !important
 	&:focus
 		outline-color gold
 	&::-webkit-scrollbar
@@ -21,7 +23,7 @@
 html
 	font 15px 'Inter'
 	font-feature-settings 'ss01'
-	line-height 1.5
+	line-height calc(5/3)
 	scrollbar-gutter stable both-edges // doesn't work on <body>
 body
 	background-color var(--c-subreddit-theme)
@@ -51,6 +53,7 @@ body
 	--c-bg white
 	--c-blend-weak rgba(0,0,0,0.05)
 	--c-blend-normal rgba(0,0,0,0.10)
+	--c-blend-strong rgba(0,0,0,0.50)
 	--c-con-weak rgba(255,255,255,0.05)
 	--c-con-normal rgba(255,255,255,0.10)
 	--c-con-strong rgba(255,255,255,0.50)
@@ -68,6 +71,7 @@ body
 	--c-bg #333
 	--c-blend-weak rgba(255,255,255,0.05)
 	--c-blend-normal rgba(255,255,255,0.10)
+	--c-blend-strong rgba(255,255,255,0.50)
 	--c-con-weak rgba(0,0,0,0.05)
 	--c-con-normal rgba(0,0,0,0.10)
 	--c-con-strong rgba(0,0,0,0.50)
@@ -86,22 +90,23 @@ a
 	color inherit
 	text-decoration none
 	.md &
-		color var(--c-link)
-		border-bottom 1px solid
+		background var(--c-blend-strong)
+		color var(--c-subreddit-theme)
+		border-radius 3px
+		padding 1px 6px
+		&:empty
+			display none
 		&:hover
-			color var(--c-hint-normal)
-		&:visited
-			color var(--c-link-visited)
+			background var(--c-subreddit-theme-text)
 address
 	font-style normal
 blockquote
 	border-left 2px solid var(--c-text-xfaint)
 	color var(--c-text-weak)
 	font-size 13px
-	margin 0 0 1rem
-	padding-left 0.666em
-	& > :last-child
-		margin-bottom 0
+	line-height 1.333
+	margin 1rem 0 0
+	padding-left 1ch
 cite
 	font-style normal
 code
@@ -109,23 +114,24 @@ code
 kbd
 	font inherit
 pre
-	margin 0 0 1em
+	margin 1em 0 0
 	overflow auto
 	white-space pre-line
 sub
 sup
 	line-height 0
 .md
+	overflow-wrap anywhere
 	h1
 	h2
 	h3
 	h4
 	h5
 	h6
+		font-family 'Arial'
+		font-feature-settings normal
 		font-weight var(--f-wght-xstrong)
-		margin 1em 0
-		&:first-child
-			margin-top 0
+		margin 1em 0 0
 	h1
 		font-size 32px
 		line-height 40px
@@ -145,6 +151,10 @@ sup
 	b
 	strong
 		font-weight var(--f-wght-xstrong)
+		letter-spacing 0.333px
+	img
+		border-radius 5px
+		margin 1em 0 0
 .md-spoiler-text
 	background black
 	border-radius 5px
@@ -159,20 +169,12 @@ sup
 			opacity 1
 
 // General layout
-.md
-	overflow-wrap anywhere
-	& > :last-child
-		margin-bottom 0
-	img
-		border-radius 5px
-		margin 0 0 1em
 p
-	margin 0 0 1em
+	margin 1em 0 0
 hr
 	border 0
 	border-bottom 1px solid
-	margin 1em auto
-	opacity 0.8
+	margin 1em auto 0
 	width 100%
 menu
 	padding 0
@@ -184,31 +186,36 @@ fieldset
 ol
 ul
 	list-style none
-	margin 0
 	padding 0
 .md
 	ol
 	ul
-		margin 0 0 1em
-	ol
 		counter-reset list
-		& li
-			counter-increment list
+		margin 1.333em 0 0
 	li
-		margin 0 1ch 0.333em
-		padding-inline-start 1ch
-		&::marker
-			content '-'
-		&:last-child
-			margin-bottom 0
-		& > ol
-		& > ul
-			margin 0.333em 0
-		ol > &
-			margin-left 2ch
-		ol > &::marker
-			color var(--c-text-weak)
+		counter-increment list
+		margin 1.333em 0 0
+		margin-left 2ch
+		padding-left 2ch
+		position relative
+		&::before
+			align-items center
+			background var(--c-blend-normal)
+			border-radius 999px
 			content counter(list)
+			display inline-flex
+			font-feature-settings 'ss01', 'tnum'
+			font-size 12px
+			font-weight bold
+			justify-content center
+			padding 0 5px
+			position absolute
+			right 100%
+			top 0
+			white-space pre
+	ul > li::before
+		content '•'
+
 
 // Tables
 .md
@@ -216,20 +223,20 @@ ul
 		border-collapse collapse
 		font-feature-settings 'ss01', 'tnum'
 		font-size 12px
-		letter-spacing 0.5px
-		margin 0 0 1em
+		letter-spacing 0.666px
+		line-height 1.333
+		margin 1.333rem 0 0
 		overflow-wrap normal
 	td
 	th
-		padding 0.5em 0
-		padding-right 1em
+		padding 0.5em
 		text-align left
-		&:last-child
-			padding-right 0
 	td
-		border-top 1px solid var(--c-text-faint)
+		border 1px solid var(--c-text-faint)
 		vertical-align top
 	th
+		border 1px solid transparent
+		border-bottom 0
 		font-weight var(--f-wght-strong)
 		font-size 10px
 		letter-spacing 1px
@@ -253,7 +260,7 @@ summary
 	user-select none
 	word-spacing inherit
 details
-	margin 0 0 0.5em
+	margin 1em 0 0
 summary
 	&:hover::marker
 		color var(--c-hint-normal)

@@ -55,9 +55,10 @@ svelte:head
 		SubredditAvatar(name={subreddit_name})
 		section.wiki-path
 			a(href='/{subreddit_name}/wiki') Wiki
-			{#each page_name.split('/') as path_segment, i}
-				| >
-				a(class:wiki-path-segment-current={i === page_name.split('/').length - 1} href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
+			{#each page_name.split('/').slice(0, page_name.split('/').length - 1) as path_segment, i}
+				| →
+				a(href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
+			h1.wiki-path-current-page {page_name.split('/').at(-1)}
 		section.wiki-info
 			{#if page.revision_date}
 				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised {Time.sToRelTimeStr(page.revision_date)} ago
@@ -80,21 +81,17 @@ style.
 		margin-top 2em
 	.wiki-info
 		align-items center
+		color var(--c-text-weak)
 		display flex
 		font-size 12px
 		gap 1ch
 		margin-top 1em
-		opacity 0.5
 	.wiki-path
 		color var(--c-text-weak)
-		margin-top 2em
-		text-transform uppercase
-		& > a
-			text-decoration underline
-		.wiki-path-segment-current
+		.wiki-path-current-page
 			color var(--c-text-strong)
+			font-size 4em
 			font-weight var(--f-wght-strong)
-			text-decoration none
 	:global(.wiki .toc)
 		color var(--c-text-weak)
 		display none
@@ -102,24 +99,24 @@ style.
 		overflow auto
 		padding 4em 0
 		position fixed
-		right 60px
+		right 6em
 		scrollbar-width none
 		top 0
-		width 240px
+		width 320px
 		&::-webkit-scrollbar
 			display none
 		@media (min-width: 1360px)
 			display initial
 	:global(.wiki .toc a)
-		border 0
+		background none
 		color inherit
-		text-decoration none
+		padding 0
 	:global(.wiki .toc a:hover)
 		color var(--c-subreddit-theme-text)
 	:global(.wiki .toc li)
-		margin-bottom 0.666em
-	:global(.wiki .toc li::marker)
-		content none
+		margin-top 0.666em
+	:global(.wiki .toc li::before)
+		display none
 	:global(.wiki .toc ol ol)
 	:global(.wiki .toc ol ul)
 	:global(.wiki .toc ul ol)

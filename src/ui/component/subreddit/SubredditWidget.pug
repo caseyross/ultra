@@ -40,6 +40,9 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 
 style.
 	.subreddit-widget
+		display flex
+		flex-flow column nowrap
+		gap 0.666em
 		width 320px
 	.subreddit-widget:not(.subreddit-widget-type-image)
 		background var(--c-con-normal)
@@ -48,15 +51,14 @@ style.
 	.subreddit-widget-image
 		border-radius 5px
 	.subreddit-widget-link
-		margin-bottom 0.333em
+		margin-top 0.333em
 	.subreddit-widget-post-flairs
 		display flex
 		flex-flow row wrap
 		gap 10px
 	.subreddit-widget-related-subreddit
-		margin-bottom 0.333em
+		margin-top 0.333em
 	.subreddit-widget-title
 		font-size inherit
 		font-feature-settings 'calt', 'cpsp', 'ss01'
-		margin-bottom 0.666em
 		text-transform uppercase
