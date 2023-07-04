@@ -229,7 +229,7 @@ svelte:head
 						.post-selftext
 							FormattedHTML(html={post.selftext_html})
 					{#if post.format === 'crosspost'}
-						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent, subreddit_name: post.subreddit })})
+						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 							svelte:self(expanded={false} id={post.crosspost_parent})
 					{:else if post.format === 'image'}
 						ol.post-gallery
