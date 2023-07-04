@@ -20,7 +20,6 @@ script.
 	
 	export after_id = null
 	export current_page = 1
-	export expanded = false
 	export filter = 'unread'
 	export name = null
 	export search = null
@@ -84,19 +83,16 @@ script.
 
 	api.loadWatch(api.ID('subreddit', name), (x) ->
 		{ data: subreddit, error } = x
-		if expanded
-			set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
+		set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
 	)
 	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
 		{ data: widgets } = x
 		search_flair_widget = widgets?.sidebar.find((x) => x.kind == 'post-flair')
 	)
-	if expanded
-		AccountData.increment_subreddit_viewcount(name.toLowerCase())
+	AccountData.increment_subreddit_viewcount(name.toLowerCase())
 
 svelte:head
-	{#if expanded}
-		title {name.toLowerCase()}
+	title {subreddit?.display_name || name.toLowerCase()}
 {#if error}
 	{#if error.code === 403}
 		Error(message="Only approved users can access this subreddit." title="Private subreddit")
@@ -115,49 +111,48 @@ svelte:head
 					ButtonGroup(options={tabs_array(tabs, subreddit?.user_is_moderator).map(x => ({ ...x, link: format_url({ subpage: x.value, subreddit_name: name }) }))} selected={tab})
 				{#if subreddit.wiki_enabled}
 					Button(link={format_url({ subreddit_name: name, wikipage_name: 'index' })} text='Wiki')
-		{#if expanded}
-			{#if tab === 'about'}
-				SubredditInfo(name={name})
-			{:else if tab === 'mod'}
-				ButtonGroup(options={tabs_array(tabs.mod.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'mod', subreddit_name: name }) }))} selected={filter})
-				{#if filter === 'comments'}
+		{#if tab === 'about'}
+			SubredditInfo(name={name})
+		{:else if tab === 'mod'}
+			ButtonGroup(options={tabs_array(tabs.mod.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'mod', subreddit_name: name }) }))} selected={filter})
+			{#if filter === 'comments'}
+				{#key after_id}
+					Feed(after_id={after_id} filter={filter} subpage='mod' subreddit_name={name} type='subreddit_modqueue_comments')
+			{:else if filter === 'posts'}
+				{#key after_id}
+					Feed(after_id={after_id} filter={filter} subpage='mod' subreddit_name={name} type='subreddit_modqueue_posts')
+		{:else if tab === 'rules'}
+			SubredditRules(name={name})
+		{:else if tab === 'posts'}
+			nav.subreddit-posts-header
+				data.subreddit-posts-current-page {current_page}
+				menu.subreddit-posts-options
+					menu.subreddit-posts-options-sort
+						Button(activated={sort === 'hot'} link={format_url({ feed_filter: filter, feed_sort: 'hot', subreddit_name: name })} text='Hot')
+						Button(activated={sort === 'new'} link={format_url({ feed_filter: filter, feed_sort: 'new', subreddit_name: name })} text='New')
+						Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_filter: filter, feed_sort: 'top', feed_time_range: value, subreddit_name: name }) })} activated={sort === 'top'} options={time_range_options.map(x => ({ ...x, label: 'Top (' + x.label + ')' }))} selected={time_range})
+					ButtonGroup(options={tabs_array(tabs.posts.filters).map(x => ({ ...x, link: format_url({ after_id, feed_filter: x.value, feed_sort: sort, feed_time_range: time_range, subreddit_name: name }) }))} selected={filter})
+			{#key sort}
+				{#key time_range}
 					{#key after_id}
-						Feed(after_id={after_id} filter={filter} subpage='mod' subreddit_name={name} type='subreddit_modqueue_comments')
-				{:else if filter === 'posts'}
-					{#key after_id}
-						Feed(after_id={after_id} filter={filter} subpage='mod' subreddit_name={name} type='subreddit_modqueue_posts')
-			{:else if tab === 'rules'}
-				SubredditRules(name={name})
-			{:else if tab === 'posts'}
-				nav.subreddit-posts-header
-					data.subreddit-posts-current-page {current_page}
-					menu.subreddit-posts-options
-						menu.subreddit-posts-options-sort
-							Button(activated={sort === 'hot'} link={format_url({ feed_filter: filter, feed_sort: 'hot', subreddit_name: name })} text='Hot')
-							Button(activated={sort === 'new'} link={format_url({ feed_filter: filter, feed_sort: 'new', subreddit_name: name })} text='New')
-							Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_filter: filter, feed_sort: 'top', feed_time_range: value, subreddit_name: name }) })} activated={sort === 'top'} options={time_range_options.map(x => ({ ...x, label: 'Top (' + x.label + ')' }))} selected={time_range})
-						ButtonGroup(options={tabs_array(tabs.posts.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, feed_sort: sort, feed_time_range: time_range, subreddit_name: name }) }))} selected={filter})
-				{#key sort}
-					{#key time_range}
+						{#key filter}
+							Feed(after_id={after_id} filter={filter} sort={sort} subreddit_name={name} time_range={time_range} type='subreddit_posts')
+		{:else if tab === 'search'}
+			menu.subreddit-posts-options-search
+				Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search: search, feed_sort: value, subpage: 'search', subreddit_name: name }) }) } activated={true} options={tabs_array(tabs.search.sorts)} selected={sort})
+				{#key search}
+					TextInput(autofocus={true} enter_action={value => internal_navigate({ href: location.origin + format_url({ feed_search: value, feed_sort: sort, subpage: 'search', subreddit_name: name }) })} initial_value={search})
+				Button(action={() => search_picking_flair = true} description={search_flair_widget ? '' : "This subreddit doesn't support the UI for flair searches. You can still type flair searches manually."} disabled={!search_flair_widget} text='Flairs...')
+				{#if search_picking_flair}
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
+					.subreddit-flair-search-close-handler(on:click={() => search_picking_flair = false} on:keydown={e => { if(e.key === 'Enter') { search_picking_flair = false } } })
+						Popup(on:close={() => search_picking_flair = false})
+							SubredditWidget(widget={search_flair_widget})
+			{#if search}
+				{#key search}
+					{#key sort}
 						{#key after_id}
-							{#key filter}
-								Feed(after_id={after_id} filter={filter} sort={sort} subreddit_name={name} time_range={time_range} type='subreddit_posts')
-			{:else if tab === 'search'}
-				menu.subreddit-posts-options-search
-					Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search: search, feed_sort: value, subpage: 'search', subreddit_name: name }) }) } activated={true} options={tabs_array(tabs.search.sorts)} selected={sort})
-					{#key search}
-						TextInput(autofocus={true} enter_action={value => internal_navigate({ href: location.origin + format_url({ feed_search: value, feed_sort: sort, subpage: 'search', subreddit_name: name }) })} initial_value={search})
-					Button(action={() => search_picking_flair = true} description={search_flair_widget ? '' : "This subreddit doesn't support the UI for flair searches. You can still type flair searches manually."} disabled={!search_flair_widget} text='Flairs...')
-					{#if search_picking_flair}
-						<!-- svelte-ignore a11y-no-static-element-interactions -->
-						.subreddit-flair-search-close-handler(on:click={() => search_picking_flair = false} on:keydown={e => { if(e.key === 'Enter') { search_picking_flair = false } } })
-							Popup(on:close={() => search_picking_flair = false})
-								SubredditWidget(widget={search_flair_widget})
-				{#if search}
-					{#key search}
-						{#key sort}
-							{#key after_id}
-								Feed(after_id={after_id} filter='all' search={search} sort={sort} subpage='search' subreddit_name={name} type='subreddit_posts')
+							Feed(after_id={after_id} filter='all' search={search} sort={sort} subpage='search' subreddit_name={name} type='subreddit_posts')
 
 style.
 	.subreddit
