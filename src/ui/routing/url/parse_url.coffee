@@ -83,7 +83,7 @@ export default (url) ->
 	if path[0] is 'r' and path[1] in ['all', 'popular']
 		path.splice(0, 0, 'u')
 	# Normalize subreddit post paths.
-	if path[0] is 'r' and path[2]? and path[2] not in RECOGNIZED_SUBREDDIT_PATH_SEGMENTS
+	if path[0] is 'r' and path[2]? and path[2] not in RECOGNIZED_SUBREDDIT_PATH_SEGMENTS and path[2] not in SORT_OPTIONS_FEED
 		path.splice(2, 0, 'p')
 		if path[4]?
 			path.splice(4, 0, '_')
