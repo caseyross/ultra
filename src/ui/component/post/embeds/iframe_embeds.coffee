@@ -9,14 +9,6 @@ export default (source_url) ->
 				iframe_url: "https://clips.twitch.tv/embed?clip=#{descriptor}&parent=#{location.hostname}"
 			else
 				null
-		when 'gfycat.com'
-			descriptor = source_url.pathname.split('/')[1]
-			if descriptor?.length
-				iframe_action_description: 'View (Gfycat)'
-				iframe_aspect_ratio: 4/3
-				iframe_url: "https://gfycat.com/ifr/#{descriptor}"
-			else
-				null
 		when 'm.twitch.tv'
 			descriptor = source_url.pathname.split('/')[2]
 			if descriptor?.length

@@ -254,9 +254,7 @@ svelte:head
 							{#if html_embeds(post)}
 								{@const embed = html_embeds(post)}
 									{@html embed.html}
-									{#if embed.script === 'imgur'}
-										script(defer='true' src='https://s.imgur.com/min/embed.js')
-									{:else if embed.script === 'twitter'}
+									{#if embed.script === 'twitter'}
 										script(defer='true' src='https://platform.twitter.com/widgets.js')
 							{:else if iframe_embeds(post.url)}
 								{@const embed = iframe_embeds(post.url)}
