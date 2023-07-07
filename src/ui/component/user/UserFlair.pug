@@ -6,14 +6,13 @@ script.
 	export rich_text = null
 	export text = null
 	
-	if !color then color = 'var(--c-subreddit-theme)'
-	text_color =
-		if color
-			HexColor.contrast(color)
-		else
-			'inherit'
+	if color
+		text_color = HexColor.contrast(color)
+	else
+		color = 'var(--c-subreddit-theme)'
+		text_color = 'var(--c-subreddit-theme-text)'
 
-span.user-flair(class:user-flair-colored={color !== null} style="background: {color}; color: {text_color}" title={text})
+span.user-flair(style="background: {color}; color: {text_color}" title={text})
 	{#if rich_text && rich_text.length}
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}
@@ -28,13 +27,14 @@ span.user-flair(class:user-flair-colored={color !== null} style="background: {co
 
 style.
 	.user-flair
+		border-radius 1em
 		display inline-flex
+		flex 0 1 auto
 		overflow hidden
+		padding 0 1em
 		white-space pre
-		&.user-flair-colored
-			border-radius 3px
-			padding 0 6px
 	.user-flair-emoji
 		border-radius 0
 		display inline-block
 		height 16px
+		margin-top 2px !important

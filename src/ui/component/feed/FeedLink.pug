@@ -22,15 +22,16 @@ style.
 		display inline-flex
 		padding-right 0.7em
 		text-transform lowercase
-		&.feed-link-collection:hover
+		&.feed-link-collection
 			background wheat
-		&.feed-link-multireddit:hover
+			color black
+		&.feed-link-multireddit
 			background darkseagreen
 			color white
-		&.feed-link-subreddit:hover
+		&.feed-link-subreddit
 			background coral
 			color white
-		&.feed-link-user:hover
+		&.feed-link-user
 			background lightskyblue
 			color white
 	.feed-link::before
@@ -44,15 +45,10 @@ style.
 		margin-right 0.4em
 		padding 0 0.5em
 	.feed-link-collection::before
-		background wheat
-		color black
 		content 'c/'
 	.feed-link-multireddit::before
-		background darkseagreen
 		content 'm/'
 	.feed-link-subreddit::before
-		background coral
 		content 'r/'
 	.feed-link-user::before
-		background lightskyblue
 		content 'u/'

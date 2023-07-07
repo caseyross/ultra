@@ -107,13 +107,13 @@ script.
 AllGlobals
 	{#if page === 'collection'}
 		{#key feed.collection_id}
-			Collection(expanded={true} filter={feed.filter} id={feed.collection_id} tab={subpage})
+			Collection(filter={feed.filter} id={feed.collection_id} tab={subpage})
 	{:else if page === 'directory'}
 		Directory
 	{:else if page === 'multireddit'}
 		{#key feed.multireddit_name}
 			{#key feed.user_name}
-				Multireddit(after_id={feed.after_id} expanded={true} filter={feed.filter} name={feed.multireddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range} user_name={feed.user_name})
+				Multireddit(after_id={feed.after_id} filter={feed.filter} name={feed.multireddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range} user_name={feed.user_name})
 	{:else if page === 'post'}
 		{#key post.id}
 			{#key post.focus_comment_id}
@@ -121,7 +121,7 @@ AllGlobals
 					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id} show_subreddit={true})
 	{:else if page === 'subreddit'}
 		{#key feed.subreddit_name}
-			Subreddit(after_id={feed.after_id} expanded={true} filter={feed.filter} name={feed.subreddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range})
+			Subreddit(after_id={feed.after_id} filter={feed.filter} name={feed.subreddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range})
 	{:else if page === 'user'}
 		{#key feed.user_name}
 			User(after_id={feed.after_id} after_id_type={feed.after_id_type} filter={feed.filter} name={feed.user_name} sort={feed.sort} tab={subpage} time_range={feed.time_range})

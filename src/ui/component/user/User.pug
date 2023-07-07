@@ -5,6 +5,7 @@ script.
 	import { Time } from '../../../lib/index.js'
 	import { format_url } from '../../routing/url.coffee'
 
+	import ButtonFrame from '../shared/ButtonFrame.pug'
 	import ButtonGroup from '../shared/ButtonGroup.pug'
 	import Error from '../shared/Error.pug'
 	import Feed from '../feed/Feed.pug'
@@ -74,19 +75,19 @@ svelte:head
 	article.user
 		section.user-basic-info
 			UserAvatar(name={name} size='large')
-			{#if trophies}
-				ol.user-trophies
-					{#each trophies as trophy}
-						li.user-trophy(title={trophy.description ? trophy.name + ' (' + trophy.description + ')' : trophy.name})
-							img.user-trophy-icon(alt='' src={trophy.icon_40})
+			ButtonFrame
+				ButtonGroup(options={tabs_array(tabs, api.getUser() === name).map(x => ({ ...x, link: format_url({ subpage: x.value, user_name: name })}))} selected={tab})
+			{#if false}
+				{#if trophies}
+					ol.user-trophies
+						{#each trophies as trophy}
+							li.user-trophy(title={trophy.description ? trophy.name + ' (' + trophy.description + ')' : trophy.name})
+								img.user-trophy-icon(alt='' src={trophy.icon_40})
 		{#if user.is_suspended}
 			Error(message="This user is suspended.")
 		{:else if user.is_blocked}
 			Error(message="You blocked this user.")
 		{:else}
-			menu.user-tab-options
-				ButtonGroup(options={tabs_array(tabs, api.getUser() === name).map(x => ({ ...x, link: format_url({ subpage: x.value, user_name: name })}))} selected={tab})
-			hr
 			section.user-content
 				{#if tab === 'comments'}
 					{#key sort}
@@ -94,7 +95,9 @@ svelte:head
 							{#key after_id}
 								Feed(after_id={after_id} sort={sort} time_range={time_range} type='user_comments' user_name={name})
 				{:else if tab === 'messages'}
-					ButtonGroup(options={tabs_array(tabs.messages.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'messages', user_name: name }) }))} selected={filter})
+					.user-content-options
+						ButtonFrame
+							ButtonGroup(options={tabs_array(tabs.messages.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'messages', user_name: name }) }))} selected={filter})
 					{#key filter}
 						{#key after_id}
 							Feed(after_id={after_id} after_id_type={after_id_type} filter={filter} subpage='messages' type='account_messages' user_name={name})
@@ -104,7 +107,9 @@ svelte:head
 							{#key after_id}
 								Feed(after_id={after_id} sort={sort} subpage='posts' time_range={time_range} type='user_posts' user_name={name})
 				{:else if tab === 'saved'}
-					ButtonGroup(options={tabs_array(tabs.saved.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'saved', user_name: name }) }))} selected={filter})
+					.user-content-options
+						ButtonFrame
+							ButtonGroup(options={tabs_array(tabs.saved.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'saved', user_name: name }) }))} selected={filter})
 					{#if filter === 'posts'}
 						{#key after_id}
 							Feed(after_id={after_id} filter={filter} subpage='saved' type='account_saved_posts' user_name={name})
@@ -116,11 +121,15 @@ style.
 	.user
 		width 480px
 	.user-basic-info
+		align-items flex-end
 		display grid
 		gap 32px
 		grid-template-columns 64px 1fr
-	.user-tab-options
-		margin-top 3em
+		justify-items flex-start
+	.user-content
+		margin-top 10px
+	.user-content-options
+		margin-left 96px
 	.user-trophies
 		display flex
 		flex-flow row wrap

@@ -8,32 +8,39 @@ script.
 	export name = null
 
 span.user-byline
+	section.user-byline-basic-info
+		a.user-byline-name(href='/u/{name}') {name}
+		{#if distinguish === 'submitter'}
+			span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') OP
+		{:else if distinguish === 'moderator'}
+			span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') MOD
+		{:else if distinguish === 'admin'}
+			span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') ADMIN
+		{:else if distinguish === 'special'}
+			span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') EX-ADMIN
 	{#if flair_text}
 		UserFlair(color={flair_color} emoji_style='image' rich_text={flair_rich_text} text={flair_text})
-	a.user-byline-name(href='/u/{name}') {name}
-	{#if distinguish === 'submitter'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') OP
-	{:else if distinguish === 'moderator'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') MOD
-	{:else if distinguish === 'admin'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') ADMIN
-	{:else if distinguish === 'vip'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') VIP
 
 style.
 	.user-byline
-		align-items baseline
+		align-items center
 		color var(--c-text-weak)
 		display flex
 		font-size 12px
-		gap 1rem
+		justify-content space-between
+		letter-spacing calc(2px/3)
+		gap 1em
+	.user-byline-basic-info
+		display flex
+		gap 1em
+		flex 0 0 auto
 	.user-byline-distinguish
 		font-weight bold
 	.user-byline-distinguish-admin
-		color orangered
+		color red
 	.user-byline-distinguish-moderator
 		color darkseagreen
 	.user-byline-distinguish-submitter
 		color dodgerblue
-	.user-byline-distinguish-vip
-		color rebeccapurple
+	.user-byline-distinguish-special
+		color red

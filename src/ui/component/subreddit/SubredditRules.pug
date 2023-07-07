@@ -20,14 +20,15 @@ script.
 {#if error}
 	Error(message='Error loading rules.')
 {:else if rules}
-	ol.subreddit-rules
-		{#each rules as rule}
-			li.subreddit-rule
-				h1.subreddit-rule-short-description {rule.short_name}
-				{#if rule.description_html}
-					FormattedHTML(html={rule.description_html})
-		{:else}
-			h1 No rules on record.
+	.md
+		ol.subreddit-rules
+			{#each rules as rule}
+				li.subreddit-rule
+					h1.subreddit-rule-short-description {rule.short_name}
+					{#if rule.description_html}
+						FormattedHTML(html={rule.description_html})
+			{:else}
+				h1 No rules on record.
 {:else if loading}
 	p Loading...
 
@@ -37,8 +38,6 @@ style.
 	.subreddit-rule-short-description
 		font-size inherit
 		font-feature-settings 'calt', 'cpsp', 'ss01'
+		line-height 1.25
+		margin-bottom 0.5em
 		text-transform uppercase
-	.subreddit-rules
-		list-style auto
-		margin-top 3em
-		padding-left 1em

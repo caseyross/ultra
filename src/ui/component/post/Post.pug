@@ -10,6 +10,7 @@ script.
 
 	import BanDialog from '../dialog/BanDialog.pug'
 	import Button from '../shared/Button.pug'
+	import ButtonFrame from '../shared/ButtonFrame.pug'
 	import CommentEditor from '../comment/CommentEditor.pug'
 	import Error from '../shared/Error.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
@@ -50,9 +51,6 @@ script.
 		{ label: 'Random (Contest Mode)', value: 'random' }
 	]
 	error = null
-	image_normalized_width = (media) ->
-		if media.aspect_ratio <= 1 then 480
-		else Math.sqrt(media.aspect_ratio) * 480
 	internal_navigate = getContext('internal_navigate') # would prefer not to need this, but browsers don't support <a> in <select>
 	link_domain = (href) ->
 		if href.startsWith('/')
@@ -95,6 +93,8 @@ script.
 		when Math.log10(post.score) > 2 then 'white'
 		else 'black'
 	set_theme_colors = getContext('set_theme_colors')
+	time_color = (post) ->
+		return 'darkseagreen'
 	title_text = (post) ->
 		score_text = switch
 			when post.hide_score or !Number.isFinite(post.score) then 'score hidden'
@@ -179,27 +179,29 @@ svelte:head
 			{#if show_subreddit}
 				data.post-subreddit
 					SubredditAvatar(name={post.subreddit} size='medium')
-			ol.post-tags
-				{#if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} subreddit_name={post.subreddit} text={post.link_flair_text})
-				{#if post.spoiler}
-					PostTag(name='spoiler')
-				{#if post.is_original_content}
-					PostTag(name='oc')
-				{#if post.over_18}
-					PostTag(name='nsfw')
-				{#if post.stickied}
-					PostTag(name='sticky')
-				{#if post.locked}
-					PostTag(name='locked')
-			.post-header-body
-				h1.post-title {post.title}
+			{#if post.link_flair_text || post.locked || post.over_18 || post.spoiler || post.stickied}
+				ol.post-tags
+					{#if post.link_flair_text}
+						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} subreddit_name={post.subreddit} text={post.link_flair_text})
+					{#if post.spoiler}
+						PostTag(name='spoiler')
+					{#if post.over_18}
+						PostTag(name='nsfw')
+					{#if post.stickied}
+						PostTag(name='sticky')
+					{#if post.locked}
+						PostTag(name='locked')
+			h1.post-title {post.title}
+			{#if false}
 				.post-date
 					LiveTime(create_s={post.created_utc} edit_s={post.edited})
-			figure.post-visual-metrics(title="{post.hide_score ? '???' : post.score} points, {post.num_comments} comments")
-				figure.post-visual-metrics-comments(style='height: {8 * Math.log10(1 + post.num_comments)}px')
-				figure.post-visual-metrics-score(style='height: {8 * Math.log10(1 + post.score)}px')
+			.post-metrics
+				.post-score(style='background: {score_color(post)}; color: {score_text_color(post)}') {Number.isFinite(post.score) ? post.score : '???'}
+				.post-time(style='background: {time_color(post)}; color: white') {Time.sToRelTimeStr(post.created_utc, { abbr : true })}
 			{#if false}
+				figure.post-visual-metrics(title="{post.hide_score ? '???' : post.score} points, {post.num_comments} comments")
+					figure.post-visual-metrics-comments(style='height: {8 * Math.log10(1 + post.num_comments)}px')
+					figure.post-visual-metrics-score(style='height: {8 * Math.log10(1 + post.score)}px')
 				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 		{#if expanded}
 			section.post-content
@@ -228,6 +230,8 @@ svelte:head
 					{#if post.selftext_html}
 						.post-selftext
 							FormattedHTML(html={post.selftext_html})
+					{:else if post.format === 'self'}
+						.post-selftext-none (No post text.)
 					{#if post.format === 'crosspost'}
 						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 							svelte:self(expanded={false} id={post.crosspost_parent})
@@ -238,11 +242,9 @@ svelte:head
 									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 										picture
 											{#if !media.is_gif}
-												{#if image_normalized_width(media) > 640}
-													source(srcset={media.image_url_960})
-												{:else if image_normalized_width(media) > 320}
-													source(srcset={media.image_url_640})
-											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {image_normalized_width(media)}px")
+												source(srcset={media.image_url_960})
+												source(srcset={media.image_url_640})
+											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 									{#if media.caption_text || media.caption_url}
 										figcaption.post-gallery-image-caption
 											{#if media.caption_text}
@@ -260,7 +262,7 @@ svelte:head
 								{@const embed = iframe_embeds(post.url)}
 									<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 									<!-- svelte-ignore a11y-missing-attribute -->
-									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url} style="aspect-ratio: {embed.iframe_aspect_ratio}")
+									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url})
 							{:else}
 								a.post-link(href={relativize_url(post.url)} rel='external noopener preconnect')
 									span.post-link-domain {link_domain(relativize_url(post.url))}
@@ -279,7 +281,7 @@ svelte:head
 							Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
 					{:else if post.format === 'video'}
 						{@const media = post.media[0]}
-							MediaPlayer(audio_url={media.video_audio_url} height={315} video_url={media.video_url} width={560})
+							MediaPlayer(audio_url={media.video_audio_url} height={480} video_url={media.video_url} width={480})
 			section.post-comments
 				menu.post-comments-sort-controls
 					Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
@@ -299,26 +301,49 @@ svelte:head
 	article.post.post-loading Loading...
 
 style.
+	.post-metrics
+		border 2px solid var(--c-bg)
+		border-radius 7px
+		display grid
+		font-feature-settings 'ss01', 'tnum'
+		font-size 12px
+		font-weight bold
+		gap 2px
+		grid-template-columns 1fr
+		grid-template-rows 20px 20px
+		position absolute
+		right calc(100% + 32px)
+		top 0
+	.post-score
+		border-radius 5px 5px 0 0
+		padding 0 7px
+		text-align center
+	.post-time
+		border-radius 0 0 5px 5px
+		padding 0 7px
+		text-align center
 	.post
+		padding 1em 0
+		width 480px
 		&.post-expanded
-			align-items center
-			display flex
-			flex-flow column nowrap
-			gap 1.666em
-			width 100%
+			padding 0 80px
+			width 640px
 		&.post-loading
 			padding 10px
 	.post-comments
+		margin-top 3em
 		padding-left calc(50% - 240px)
 		width 100%
 	.post-content
-		align-items center
+		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
+		margin-top 2em
+		width 100%
 		:global(& .twitter-tweet)
 			margin 0 !important
-			width 560px !important
+			width 480px !important
 		:global(& iframe[id^=twitter-widget])
 			border-radius 12px
 	.post-content-actions
@@ -339,7 +364,7 @@ style.
 		align-items center
 		display flex
 		flex-flow column nowrap
-		gap 1em
+		gap 1.333em
 	.post-gallery-image
 		display flex
 		flex-flow column nowrap
@@ -349,16 +374,18 @@ style.
 		font-size 13px
 		letter-spacing 0.375pt
 	.post-header
-		max-width 560px
-		position relative
-	.post-header-body
-		padding 8px 0
 		position relative
 	.post-iframe
-		border-radius 5px
-		width 560px
+		aspect-ratio 1
+		border 1px solid
+		border-radius 1em
+		margin-inline-start -1px
+		width 480px
 	.post-image
-		border-radius 5px
+		border 1px solid
+		border-radius 1em
+		margin-inline-start -1px
+		width 480px
 	.post-link
 		color var(--c-link)
 		display block
@@ -369,7 +396,6 @@ style.
 	.post-link-domain
 		font-weight bold
 	.post-link-path
-		opacity 0.5
 		* ~ &
 			margin-left -4px
 	.post-predictions
@@ -383,7 +409,12 @@ style.
 		& meter
 			width 240px
 	.post-selftext
-		width 560px
+		background var(--c-bg-component)
+		border-radius 1em
+		display inline-block
+		padding 10px 1em
+	.post-selftext-none
+		color var(--c-text-faint)
 	.post-subreddit
 		aspect-ratio 1
 		display inline-block
@@ -392,17 +423,18 @@ style.
 		right calc(100% + 2em)
 		top 0
 		.post-expanded &
-			position unset
+			left calc(100% + 2em)
+			right unset
 	.post-tags
 		display flex
 		flex-flow row wrap
 		gap 5px
+		margin-bottom 0.5em
 	.post-title
-		border-radius 6px
-		font-size 20px
+		font-size 1.6em
 		font-weight var(--f-wght-xstrong)
-		letter-spacing -0.333px
-		line-height 1.4
+		letter-spacing calc(-1px/3)
+		line-height 1.25
 		overflow-wrap anywhere
 	.post-visual-metrics
 		align-items center

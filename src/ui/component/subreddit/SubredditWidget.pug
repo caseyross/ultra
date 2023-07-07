@@ -12,10 +12,11 @@ script.
 article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 	{#if widget.kind === 'button'}
 		h1.subreddit-widget-title {widget.shortName}
-		ol.subreddit-widget-links
-			{#each widget.buttons as button}
-				li.subreddit-widget-link
-					a(href={relativize_url(button.url)}) {button.text}
+		.md
+			ul.subreddit-widget-links
+				{#each widget.buttons as button}
+					li.subreddit-widget-link
+						a(href={relativize_url(button.url)}) {button.text}
 	{:else if widget.kind === 'calendar'}
 		h1.subreddit-widget-title {widget.shortName}
 		{#if widget.data.length > 0}
@@ -33,7 +34,7 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 			span.subreddit-widget-calendar-events-empty (No events.)
 	{:else if widget.kind === 'community-list'}
 		h1.subreddit-widget-title {widget.shortName}
-		ol.subreddit-widget-related-subreddits
+		ul.subreddit-widget-related-subreddits
 			{#each widget.data as subreddit}
 				li.subreddit-widget-related-subreddit
 					FeedLink(subreddit_name={subreddit.name} type='subreddit')
@@ -49,7 +50,7 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 				img.subreddit-widget-image(alt={widget.shortName} src={image.url} style='aspect-ratio: {image.width}/{image.height}')
 	{:else if widget.kind === 'post-flair'}
 		h1.subreddit-widget-title Flair Filter
-		ol.subreddit-widget-post-flairs
+		ul.subreddit-widget-post-flairs
 			{#each widget.order.map(x => widget.templates[x]) as flair}
 				a(href={format_url({ feed_search: 'flair:"' + flair.text + '"', feed_sort: 'new', subreddit_name: widget.subreddit })})
 					PostFlair(color={flair.backgroundColor} emoji_style='image' rich_text={flair.richtext} text={flair.text})
@@ -61,16 +62,16 @@ style.
 	.subreddit-widget
 		display flex
 		flex-flow column nowrap
-		gap 0.666em
+		gap 1em
 		width 320px
 	.subreddit-widget:not(.subreddit-widget-type-image)
-		background var(--c-con-normal)
-		border-radius 5px
+		background var(--c-blend-normal)
+		border-radius 7px
 		padding 1em
 	.subreddit-widget-calendar-events-empty
 		color var(--c-text-weak)
 	.subreddit-widget-image
-		border-radius 5px
+		border-radius 7px
 	.subreddit-widget-link
 		margin-top 0.333em
 	.subreddit-widget-post-flairs

@@ -124,11 +124,10 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} role='comment' title={title_text(comment)})
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title={title_text(comment)})
 			section.comment-meta
-				data.comment-author
-					UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
-			section.comment-body(data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} style='border-color: {score_color(comment)}')
+				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
+			section.comment-body
 				FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
@@ -154,13 +153,13 @@ script.
 
 style.
 	.comment
-		margin-top 0.666em
-		position relative
-	.comment-body
-		border-left 1px solid
 		display inline-block
-		max-width 420px
-		padding 10px 12px
+		max-width 100%
+	.comment-body
+		background var(--c-bg-component)
+		border-radius 1em
+		display inline-block
+		padding 10px 1em
 		.comment-deleted > &
 			opacity 0.25
 			pointer-events none
@@ -169,19 +168,13 @@ style.
 		.comment-with-low-score:not(.comment-deleted) > &
 			opacity 0.5
 		:global(& img)
-			border-radius 5px
+			border-radius 10px
+			display inline-block
 			max-height 5em
 			width auto
 	.comment-clip
 		display flex
 		justify-content space-between
-	.comment-meta
-		align-items center
-		display flex
-		gap 6px
-		opacity 0
-		.comment:hover &
-			opacity 1
 	.comment-more-replies
 		padding 0.666em 0
 	.comment-replies

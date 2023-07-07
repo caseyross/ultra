@@ -1,8 +1,11 @@
 script.
 	import { createEventDispatcher } from 'svelte'
 	
+	import api from '../../../api/index.js'
+
 	import Button from '../shared/Button.pug'
 	import Label from '../shared/Label.pug'
+	import UserByline from '../user/UserByline.pug'
 
 	export error = null
 	export initial_text = ''
@@ -18,6 +21,7 @@ script.
 	textbox = null
 
 form.comment-editor
+	UserByline(name={api.getUser()})
 	<!-- svelte-ignore a11y-autofocus -->
 	.comment-editor-text-field(aria-multiline={true} autofocus bind:this={textbox} contenteditable role='textbox') {initial_text}
 	menu.comment-editor-actions
@@ -25,13 +29,10 @@ form.comment-editor
 			Button(action={() => submit()} loading={sending} loading_text='Sending...' text='Submit')
 
 style.
-	.comment-editor
-		align-items flex-end
-		display inline-flex
-		flex-flow column nowrap
-		gap 6px
-		margin-top 0.666em
-		position relative
+	.comment-editor-actions
+		display flex
+		justify-content flex-end
+		margin-top 6px
 	.comment-editor-text-field
 		border 1px solid var(--c-score-0)
 		border-radius 1em
@@ -39,4 +40,3 @@ style.
 		line-height inherit
 		padding 1em
 		resize none
-		width 360px

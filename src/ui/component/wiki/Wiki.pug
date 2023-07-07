@@ -58,7 +58,7 @@ svelte:head
 			{#each page_name.split('/').slice(0, page_name.split('/').length - 1) as path_segment, i}
 				| →
 				a(href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
-			h1.wiki-path-current-page {page_name.split('/').at(-1)}
+			h1.wiki-path-current-page {page_name.split('/').at(-1).toLowerCase()}
 		section.wiki-info
 			{#if page.revision_date}
 				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised {Time.sToRelTimeStr(page.revision_date)} ago
@@ -76,7 +76,7 @@ svelte:head
 
 style.
 	.wiki
-		width 680px
+		width 560px
 	.wiki-body
 		margin-top 2em
 	.wiki-info
@@ -90,8 +90,10 @@ style.
 		color var(--c-text-weak)
 		.wiki-path-current-page
 			color var(--c-text-strong)
-			font-size 4em
+			font-size 5em
 			font-weight var(--f-wght-strong)
+			line-height 1
+			overflow-wrap anywhere
 	:global(.wiki .toc)
 		color var(--c-text-weak)
 		display none
@@ -113,6 +115,8 @@ style.
 		padding 0
 	:global(.wiki .toc a:hover)
 		color var(--c-subreddit-theme-text)
+	:global(.wiki .toc + *)
+		margin-top 0
 	:global(.wiki .toc li)
 		margin-top 0.666em
 	:global(.wiki .toc li::before)

@@ -6,9 +6,9 @@ script.
 	import Button from '../shared/Button.pug'
 	import Comment from '../comment/Comment.pug'
 	import Error from '../shared/Error.pug'
+	import FeedLink from '../feed/FeedLink.pug'
 	import Message from '../message/Message.pug'
 	import Post from '../post/Post.pug'
-	import Subreddit from '../subreddit/Subreddit.pug'
 	import Success from '../shared/Success.pug'
 
 	export after_id = null
@@ -113,7 +113,7 @@ nav.feed
 									Post(expanded={false} id={item})
 							{:else if type.endsWith('_subreddits')}
 								a(href={format_url({ subreddit_name: item })})
-									Subreddit(expanded={false} name={item})
+									FeedLink(subreddit_name={item} type='subreddit')
 	menu.feed-actions
 		{#if has_next_page(items)}
 			Button(link={format_url({ after_id: next_after_id(items), after_id_type: next_after_id_type(items), collection_id, feed_filter: filter, feed_search: search, feed_sort: sort, feed_time_range: time_range, multireddit_name, subreddit_name, subpage, user_name })} loading={loading} text='More')
@@ -124,8 +124,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 2em
-		margin-top 2em
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 0.666em
+		gap 2px

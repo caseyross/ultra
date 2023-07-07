@@ -67,6 +67,11 @@ script.
 		)
 
 	additional_hotkeys =
+		' ': ->
+			if fullscreen
+				play_pause()
+			else
+				false
 		ArrowDown: ->
 			set_volume(audio.volume - 0.25)
 		ArrowLeft: ->
@@ -77,8 +82,6 @@ script.
 			set_volume(audio.volume + 0.25)
 		j: ->
 			set_time(video.currentTime - 10)
-		k: ->
-			play_pause()
 		l: ->
 			set_time(video.currentTime + 10)
 		m: ->
@@ -151,7 +154,7 @@ figure.media-player(bind:this={player} class:color-strategy-white-text={fullscre
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} activated={!paused} description='Play / pause' key='p' text="▶／◼ {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
+		Button(action={play_pause} activated={!paused} description='Play / pause' key='k' text="▶／◼ {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
 			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
 			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
@@ -168,7 +171,7 @@ style.
 		display none
 	video
 		background black
-		border-radius 12px
+		border-radius 1em
 		&::-webkit-media-controls
 			display none
 		:fullscreen &

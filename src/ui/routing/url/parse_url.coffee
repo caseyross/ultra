@@ -5,7 +5,7 @@ GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 POST_COMMENTS_INITIAL_SIZE = 25
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
-	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'live', 'message', 'p', 'poll', 'post', 'prefs', 'r', 'reddits', 'report', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
+	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'live', 'login', 'message', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
 RECOGNIZED_SUBREDDIT_PATH_SEGMENTS =
 	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'posts', 'rules', 'search', 'submit', 'w', 'wiki']
 RECOGNIZED_USER_PATH_SEGMENTS =

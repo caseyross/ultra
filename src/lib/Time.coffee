@@ -19,7 +19,7 @@ units =
 		name: 'year'
 		value: 1000 * 60 * 60 * 24 * 366
 	month:
-		abbr: 'n'
+		abbr: 'mo'
 		name: 'month'
 		value: 1000 * 60 * 60 * 24 * 31
 	week:

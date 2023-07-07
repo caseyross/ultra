@@ -19,20 +19,22 @@
 		background var(--c-blend-normal)
 		border-radius 12px
 
-// Base layout & theme
+// Page structure & theme
 html
-	font 15px 'Inter'
-	font-feature-settings 'ss01'
-	line-height calc(5/3)
-	scrollbar-gutter stable both-edges // doesn't work on <body>
+	font-size 15px // declared here for em/rem sizing
 body
-	background-color var(--c-subreddit-theme)
-	color var(--c-subreddit-theme-text)
+	background-color var(--c-bg)
+	color var(--c-text-strong)
 	display grid
+	font-family 'Inter'
+	font-feature-settings 'ss01'
 	font-weight var(--f-wght-normal)
 	grid-auto-flow row
 	grid-template-columns 1fr
-	padding 4em 2em
+	letter-spacing calc(1px/6)
+	line-height calc(5/3)
+	margin-inline-start calc(100vw - 100%) // compensate for scrollbar offset (would prefer `scrollbar-gutter` but it has big issues)
+	padding 48px 24px
 	place-items center
 	--c-admin red
 	--c-hint-normal wheat
@@ -45,12 +47,13 @@ body
 	--c-score-2 wheat
 	--c-score-3 lightsalmon
 	--c-score-4 coral
-	--c-subreddit-theme-default white
+	--c-subreddit-theme-default coral
 	--c-subreddit-theme-secondary-default coral
-	--c-subreddit-theme-text-default black
+	--c-subreddit-theme-text-default white
 .color-strategy-black-text
 	color-scheme light
 	--c-bg white
+	--c-bg-component var(--c-op)
 	--c-blend-weak rgba(0,0,0,0.05)
 	--c-blend-normal rgba(0,0,0,0.10)
 	--c-blend-strong rgba(0,0,0,0.50)
@@ -61,14 +64,15 @@ body
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
-	--c-text-strong #333
+	--c-text-strong black
 	--c-text-reverse white
 	--f-wght-normal 450
 	--f-wght-strong 650
-	--f-wght-xstrong 700
+	--f-wght-xstrong 750
 .color-strategy-white-text
 	color-scheme dark
-	--c-bg #333
+	--c-bg #222
+	--c-bg-component #333
 	--c-blend-weak rgba(255,255,255,0.05)
 	--c-blend-normal rgba(255,255,255,0.10)
 	--c-blend-strong rgba(255,255,255,0.50)
@@ -83,21 +87,19 @@ body
 	--c-text-reverse black
 	--f-wght-normal 400
 	--f-wght-strong 600
-	--f-wght-xstrong 650
+	--f-wght-xstrong 750
 
-// Typography
+// General layout & typography
 a
 	color inherit
 	text-decoration none
 	.md &
-		background var(--c-blend-strong)
-		color var(--c-subreddit-theme)
+		background var(--c-subreddit-theme)
 		border-radius 3px
+		color var(--c-subreddit-theme-text)
 		padding 1px 6px
 		&:empty
 			display none
-		&:hover
-			background var(--c-subreddit-theme-text)
 address
 	font-style normal
 blockquote
@@ -106,13 +108,25 @@ blockquote
 	font-size 13px
 	line-height 1.333
 	margin 1rem 0 0
-	padding-left 1ch
+	padding-left 1em
 cite
 	font-style normal
 code
 	word-break break-all
+fieldset
+	border 0
+	padding 0
 kbd
 	font inherit
+hr
+	border 0
+	border-bottom 1px solid
+	margin 1em auto 0
+	width 100%
+menu
+	padding 0
+p
+	margin 1em 0 0
 pre
 	margin 1em 0 0
 	overflow auto
@@ -128,33 +142,25 @@ sup
 	h4
 	h5
 	h6
-		font-family 'Arial'
-		font-feature-settings normal
-		font-weight var(--f-wght-xstrong)
-		margin 1em 0 0
+		margin 1.5em 0 0
 	h1
-		font-size 32px
-		line-height 40px
+		font-size 2em
+		font-weight 500
+		line-height 1
 	h2
-		font-size 30px
-		line-height 40px
+		font-size 1.5em
+		font-weight 450
+		line-height 1.1666
 	h3
-		font-size 24px
-		line-height 32px
+		font-size 1.25em
+		font-weight 400
+		line-height 1.333
 	h4
-		font-size 20px
-		line-height 28px
 	h5
 	h6
-		font-size 18px
-		line-height 26px
 	b
 	strong
-		font-weight var(--f-wght-xstrong)
-		letter-spacing 0.333px
-	img
-		border-radius 5px
-		margin 1em 0 0
+		font-weight var(--f-wght-strong)
 .md-spoiler-text
 	background black
 	border-radius 5px
@@ -168,20 +174,6 @@ sup
 		*
 			opacity 1
 
-// General layout
-p
-	margin 1em 0 0
-hr
-	border 0
-	border-bottom 1px solid
-	margin 1em auto 0
-	width 100%
-menu
-	padding 0
-fieldset
-	border 0
-	padding 0
-
 // Lists
 ol
 ul
@@ -191,10 +183,10 @@ ul
 	ol
 	ul
 		counter-reset list
-		margin 1.333em 0 0
+		margin 1em 0 0
 	li
 		counter-increment list
-		margin 1.333em 0 0
+		margin 1em 0 0
 		margin-left 2ch
 		padding-left 2ch
 		position relative
@@ -208,14 +200,17 @@ ul
 			font-size 12px
 			font-weight bold
 			justify-content center
-			padding 0 5px
+			padding 0 0.5em
 			position absolute
 			right 100%
 			top 0
 			white-space pre
+	ul > li
+		margin-left 1em
+		padding-left 1em
 	ul > li::before
+		background none
 		content '•'
-
 
 // Tables
 .md
@@ -223,6 +218,7 @@ ul
 		border-collapse collapse
 		font-feature-settings 'ss01', 'tnum'
 		font-size 12px
+		font-weight 350
 		letter-spacing 0.666px
 		line-height 1.333
 		margin 1.333rem 0 0
@@ -275,3 +271,8 @@ video
 	box-sizing content-box
 	display block
 	max-width 100%
+.md img
+	border 1px solid var(--c-text-strong)
+	border-radius 1em
+	margin 1em 0 0
+	margin-inline-start -1px
