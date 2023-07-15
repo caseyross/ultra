@@ -87,6 +87,9 @@ export default (url) ->
 		path.splice(2, 0, 'p')
 		if path[4]?
 			path.splice(4, 0, '_')
+	# Normalize "user subreddit" post paths.
+	if path[0] in ['u', 'user'] and path[2] is 'comments' and path[3]?
+		path.splice(0, 2, 'r', 'u_' + path[1])
 	# For user paths, treat third-level paths as multireddit names unless we know otherwise.
 	if path[0] in ['u', 'user'] and path[2]? and path[2] not in RECOGNIZED_USER_PATH_SEGMENTS
 		path.splice(2, 0, 'm')
