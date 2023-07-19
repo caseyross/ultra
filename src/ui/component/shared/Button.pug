@@ -44,8 +44,8 @@ script.
 style.
 	.button
 		align-items center
-		background none
-		border 1px solid
+		background var(--c-blend-weak)
+		border 1px solid transparent
 		border-radius 0.5em
 		display inline-flex
 		gap 5px
@@ -63,13 +63,11 @@ style.
 			background #333
 			border-color var(--c-hint-normal)
 			color var(--c-hint-normal)
-		:global(.button-frame &)
-			border-color transparent
 	.button-badge
 		border-radius 10px
 		background var(--c-con-strong)
 		font-size 0.5em
-		font-weight bold
+		font-weight var(--f-wght-strong)
 		padding 0 1ch
 	.button-dropdown
 		font inherit

@@ -56,12 +56,17 @@ style.
 		gap 6px
 		margin-top 0.666em
 		max-width 360px
+		position relative
 	:global(.message > .md)
 		background var(--c-subreddit-theme)
 		border-radius 12px
 		color var(--c-subreddit-theme-text)
 		display inline-block
 		padding 12px
+	.message-author
+		right calc(100% + 1em)
+		position absolute
+		top 2px
 	.message-meta
 		align-items flex-end
 		display flex

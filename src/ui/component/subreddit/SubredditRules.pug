@@ -24,20 +24,25 @@ script.
 		ol.subreddit-rules
 			{#each rules as rule}
 				li.subreddit-rule
-					h1.subreddit-rule-short-description {rule.short_name}
+					h1.subreddit-rule-name {rule.short_name}
 					{#if rule.description_html}
-						FormattedHTML(html={rule.description_html})
+						.subreddit-rule-description
+							FormattedHTML(html={rule.description_html})
 			{:else}
-				h1 No rules on record.
+				.subreddit-rules-empty No rules on record.
 {:else if loading}
 	p Loading...
 
 style.
 	.subreddit-rule
-		margin 1.333em 0 0
-	.subreddit-rule-short-description
+		margin-top 2em
+	.subreddit-rule-description
+		margin-top 0.333em
+	.subreddit-rule-name
 		font-size inherit
 		font-feature-settings 'calt', 'cpsp', 'ss01'
-		line-height 1.25
-		margin-bottom 0.5em
+		letter-spacing 0
+		line-height inherit
 		text-transform uppercase
+	.subreddit-rules-empty
+		color var(--c-text-weak)

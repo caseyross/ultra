@@ -43,7 +43,10 @@ svelte:head
 	title {subreddit_name.toLowerCase()} wiki: {page_name.toLowerCase()}
 {#if error}
 	{#if error?.code === 403}
-		Error(message="You must be a moderator to access this wiki page." title="Mod-only wiki")
+		{#if error.reason === 'private'}
+			Error(message="Only approved users can access this subreddit." title="Private subreddit")
+		{:else}
+			Error(message="Only moderators of this subreddit can access the wiki." title="Mod-only wiki")
 	{:else if error.reason}
 		Error(message="An error occurred. This is the best description we have of the error." title="Error: {error.reason}")
 	{:else}
@@ -76,7 +79,7 @@ svelte:head
 
 style.
 	.wiki
-		width 560px
+		width 640px
 	.wiki-body
 		margin-top 2em
 	.wiki-info
@@ -89,9 +92,10 @@ style.
 	.wiki-path
 		color var(--c-text-weak)
 		.wiki-path-current-page
-			color var(--c-text-strong)
+			color var(--c-subreddit-theme-text)
 			font-size 5em
 			font-weight var(--f-wght-strong)
+			letter-spacing -5px
 			line-height 1
 			overflow-wrap anywhere
 	:global(.wiki .toc)
@@ -101,7 +105,7 @@ style.
 		overflow auto
 		padding 4em 0
 		position fixed
-		right 6em
+		right calc((100vw - 1360px) / 8)
 		scrollbar-width none
 		top 0
 		width 320px
@@ -110,7 +114,6 @@ style.
 		@media (min-width: 1360px)
 			display initial
 	:global(.wiki .toc a)
-		background none
 		color inherit
 		padding 0
 	:global(.wiki .toc a:hover)

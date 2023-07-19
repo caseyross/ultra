@@ -76,36 +76,7 @@ script.
 	reply_error = null
 	reply_sending = false
 	reporting = false
-	score_color = (post) -> switch
-		when post.distinguished is 'admin' then 'var(--c-admin)'
-		when post.distinguished is 'moderator' then 'var(--c-mod)'
-		when post.hide_score or !Number.isFinite(post.score) then 'var(--c-score-0)'
-		when Math.log10(post.score) > 3 then 'var(--c-score-4)'
-		when Math.log10(post.score) > 2 then 'var(--c-score-3)'
-		when Math.log10(post.score) > 1 then 'var(--c-score-2)'
-		when Math.log10(post.score) > 0 then 'var(--c-score-1)'
-		else 'var(--c-score-0)'
-	score_text_color = (post) -> switch
-		when post.distinguished is 'admin' then 'white'
-		when post.distinguished is 'moderator' then 'white'
-		when post.hide_score or !Number.isFinite(post.score) then 'black'
-		when Math.log10(post.score) > 3 then 'white'
-		when Math.log10(post.score) > 2 then 'white'
-		else 'black'
 	set_theme_colors = getContext('set_theme_colors')
-	time_color = (post) ->
-		return 'darkseagreen'
-	title_text = (post) ->
-		score_text = switch
-			when post.hide_score or !Number.isFinite(post.score) then 'score hidden'
-			when post.score > 0 then '+' + post.score
-			else post.score
-		time_text = Time.sToAbsTimeStr(post.created_utc) +
-			if post.edited
-				' (edited ' + Time.sToAbsTimeStr(post.edited) + ')'
-			else
-				''
-		return "#{score_text}, #{time_text}"
 	
 	interact = (action_type, data) ->
 		switch action_type
@@ -174,10 +145,10 @@ svelte:head
 	{:else}
 		Error(message="An unknown error occurred." title="Unknown error")
 {:else if post}
-	article.post(class:post-downvoted={post.likes === false} class:post-expanded={expanded} class:post-spoiler={post.spoiler}class:post-stickied={post.stickied} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title={title_text(post)})
+	article.post(class:post-downvoted={post.likes === false} class:post-expanded={expanded} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
 		header.post-header
 			{#if show_subreddit}
-				data.post-subreddit
+				.post-subreddit
 					SubredditAvatar(name={post.subreddit} size='medium')
 			{#if post.link_flair_text || post.locked || post.over_18 || post.spoiler || post.stickied}
 				ol.post-tags
@@ -193,16 +164,9 @@ svelte:head
 						PostTag(name='locked')
 			h1.post-title {post.title}
 			{#if false}
-				.post-date
-					LiveTime(create_s={post.created_utc} edit_s={post.edited})
-			.post-metrics
-				.post-score(style='background: {score_color(post)}; color: {score_text_color(post)}') {Number.isFinite(post.score) ? post.score : '???'}
-				.post-time(style='background: {time_color(post)}; color: white') {Time.sToRelTimeStr(post.created_utc, { abbr : true })}
-			{#if false}
 				figure.post-visual-metrics(title="{post.hide_score ? '???' : post.score} points, {post.num_comments} comments")
 					figure.post-visual-metrics-comments(style='height: {8 * Math.log10(1 + post.num_comments)}px')
 					figure.post-visual-metrics-score(style='height: {8 * Math.log10(1 + post.score)}px')
-				UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
 		{#if expanded}
 			section.post-content
 				{#if post.removed_by_category}
@@ -227,11 +191,6 @@ svelte:head
 					Error(message="Reddit Talks are only available on the official site.")
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else}
-					{#if post.selftext_html}
-						.post-selftext
-							FormattedHTML(html={post.selftext_html})
-					{:else if post.format === 'self'}
-						.post-selftext-none (No post text.)
 					{#if post.format === 'crosspost'}
 						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 							svelte:self(expanded={false} id={post.crosspost_parent})
@@ -262,10 +221,10 @@ svelte:head
 								{@const embed = iframe_embeds(post.url)}
 									<!-- svelte wants iframe "title" attribute, which interferes with fullscreen playback (tooltip obscuring screen) and anyway provides no additional info here beyond what's in the URL -->
 									<!-- svelte-ignore a11y-missing-attribute -->
-									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' src={embed.iframe_url})
+									iframe.post-iframe(allow={embed.iframe_allow} allowfullscreen='true' style='aspect-ratio: {embed.iframe_aspect_ratio || 1}' src={embed.iframe_url})
 							{:else}
-								a.post-link(href={relativize_url(post.url)} rel='external noopener preconnect')
-									span.post-link-domain {link_domain(relativize_url(post.url))}
+								a.post-link(href={relativize_url(post.url)} rel='external noopener preconnect') 
+									strong.post-link-domain {link_domain(relativize_url(post.url))}
 									span.post-link-path {link_path(relativize_url(post.url))}
 					{:else if post.format === 'prediction'}
 						ol.md.post-predictions
@@ -277,11 +236,18 @@ svelte:head
 											dt
 												meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
 											dd {option.text}
-						menu.post-content-actions
-							Button(key='e' link={post.url} new_tab={true} text='Vote on Reddit')
+						Warning(message="Voting is only available on the official site.")
+							Button(link={post.url} text='View on Reddit')
 					{:else if post.format === 'video'}
 						{@const media = post.media[0]}
-							MediaPlayer(audio_url={media.video_audio_url} height={480} video_url={media.video_url} width={480})
+							MediaPlayer(audio_url={media.video_audio_url} height={315} video_url={media.video_url} width={560})
+					{#if post.selftext_html}
+						.color-strategy-black-text.post-selftext
+							FormattedHTML(html={post.selftext_html})
+			{#if false}
+				section.post-author
+					UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
+					LiveTime(create_s={post.created_utc} edit_s={post.edited})
 			section.post-comments
 				menu.post-comments-sort-controls
 					Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
@@ -301,70 +267,42 @@ svelte:head
 	article.post.post-loading Loading...
 
 style.
-	.post-metrics
-		border 2px solid var(--c-bg)
-		border-radius 7px
-		display grid
-		font-feature-settings 'ss01', 'tnum'
-		font-size 12px
-		font-weight bold
-		gap 2px
-		grid-template-columns 1fr
-		grid-template-rows 20px 20px
-		position absolute
-		right calc(100% + 32px)
-		top 0
-	.post-score
-		border-radius 5px 5px 0 0
-		padding 0 7px
-		text-align center
-	.post-time
-		border-radius 0 0 5px 5px
-		padding 0 7px
-		text-align center
 	.post
-		padding 1em 0
-		width 480px
-		&.post-expanded
-			padding 0 80px
-			width 640px
+		padding-left 80px
+		width 640px
+		&:not(.post-expanded)
+			background var(--c-comment-bg)
+			border-radius 1em
+			color var(--c-comment-text)
+			padding 1em
+			width 480px
 		&.post-loading
 			padding 10px
 	.post-comments
-		margin-top 3em
-		padding-left calc(50% - 240px)
+		margin-top 2em
 		width 100%
 	.post-content
 		align-items flex-start
+		background var(--c-comment-bg)
+		border-radius 1em
+		color var(--c-comment-text)
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
-		margin-top 2em
-		width 100%
+		font-weight 500
+		gap 1em
+		margin-top 1em
+		padding 10px 1em
+		width 480px
 		:global(& .twitter-tweet)
 			margin 0 !important
 			width 480px !important
 		:global(& iframe[id^=twitter-widget])
 			border-radius 12px
-	.post-content-actions
-		align-items center
-		display flex
-		gap 0.666em
-		justify-content space-between
-		width 100%
-	.post-crosspost-link
-		border-radius 1em
-		border 1px solid var(--c-text-faint)
-		padding 2em
-	.post-date
-		left calc(100% + 1em)
-		position absolute
-		top 0
 	.post-gallery
 		align-items center
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
+		gap 1em
 	.post-gallery-image
 		display flex
 		flex-flow column nowrap
@@ -372,32 +310,24 @@ style.
 	.post-gallery-image-caption
 		color var(--c-text-weak)
 		font-size 13px
-		letter-spacing 0.375pt
-	.post-header
-		position relative
+		letter-spacing 0.5px
 	.post-iframe
-		aspect-ratio 1
-		border 1px solid
+		background var(--c-con-weak)
 		border-radius 1em
-		margin-inline-start -1px
 		width 480px
 	.post-image
-		border 1px solid
+		background var(--c-con-weak)
 		border-radius 1em
-		margin-inline-start -1px
 		width 480px
 	.post-link
-		color var(--c-link)
-		display block
+		display flex
+		flex-flow row nowrap
 		font-size 1.25em
 		word-break break-all
-		&:hover
-			text-decoration underline
 	.post-link-domain
-		font-weight bold
+		flex 0 0 auto
 	.post-link-path
-		* ~ &
-			margin-left -4px
+		color var(--c-text-weak)
 	.post-predictions
 		display flex
 		flex-flow column nowrap
@@ -408,31 +338,17 @@ style.
 		gap 1em
 		& meter
 			width 240px
-	.post-selftext
-		background var(--c-bg-component)
-		border-radius 1em
-		display inline-block
-		padding 10px 1em
-	.post-selftext-none
-		color var(--c-text-faint)
 	.post-subreddit
-		aspect-ratio 1
-		display inline-block
-		height 32px
 		position absolute
-		right calc(100% + 2em)
-		top 0
-		.post-expanded &
-			left calc(100% + 2em)
-			right unset
+		right calc(100% + 1em)
 	.post-tags
 		display flex
 		flex-flow row wrap
 		gap 5px
 		margin-bottom 0.5em
 	.post-title
-		font-size 1.6em
-		font-weight var(--f-wght-xstrong)
+		font-size 1.5em
+		font-weight var(--f-wght-strong)
 		letter-spacing calc(-1px/3)
 		line-height 1.25
 		overflow-wrap anywhere

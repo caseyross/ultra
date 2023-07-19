@@ -88,6 +88,14 @@ svelte:head
 		{:else if user.is_blocked}
 			Error(message="You blocked this user.")
 		{:else}
+			{#if tab === 'messages'}
+				section.user-content-options
+					ButtonFrame
+						ButtonGroup(options={tabs_array(tabs.messages.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'messages', user_name: name }) }))} selected={filter})
+			{:else if tab === 'saved'}
+				section.user-content-options
+					ButtonFrame
+						ButtonGroup(options={tabs_array(tabs.saved.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'saved', user_name: name }) }))} selected={filter})
 			section.user-content
 				{#if tab === 'comments'}
 					{#key sort}
@@ -95,9 +103,6 @@ svelte:head
 							{#key after_id}
 								Feed(after_id={after_id} sort={sort} time_range={time_range} type='user_comments' user_name={name})
 				{:else if tab === 'messages'}
-					.user-content-options
-						ButtonFrame
-							ButtonGroup(options={tabs_array(tabs.messages.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'messages', user_name: name }) }))} selected={filter})
 					{#key filter}
 						{#key after_id}
 							Feed(after_id={after_id} after_id_type={after_id_type} filter={filter} subpage='messages' type='account_messages' user_name={name})
@@ -107,9 +112,6 @@ svelte:head
 							{#key after_id}
 								Feed(after_id={after_id} sort={sort} subpage='posts' time_range={time_range} type='user_posts' user_name={name})
 				{:else if tab === 'saved'}
-					.user-content-options
-						ButtonFrame
-							ButtonGroup(options={tabs_array(tabs.saved.filters).map(x => ({ ...x, link: format_url({ feed_filter: x.value, subpage: 'saved', user_name: name }) }))} selected={filter})
 					{#if filter === 'posts'}
 						{#key after_id}
 							Feed(after_id={after_id} filter={filter} subpage='saved' type='account_saved_posts' user_name={name})
@@ -127,9 +129,10 @@ style.
 		grid-template-columns 64px 1fr
 		justify-items flex-start
 	.user-content
-		margin-top 10px
+		margin-top 2em
 	.user-content-options
 		margin-left 96px
+		margin-top 10px
 	.user-trophies
 		display flex
 		flex-flow row wrap

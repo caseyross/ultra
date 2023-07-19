@@ -14,92 +14,87 @@
 	&:focus
 		outline-color gold
 	&::-webkit-scrollbar
-		background var(--c-blend-weak)
+		background var(--c-blend-faint)
 	&::-webkit-scrollbar-thumb
-		background var(--c-blend-normal)
+		background var(--c-blend-weak)
 		border-radius 12px
 
 // Page structure & theme
 html
 	font-size 15px // declared here for em/rem sizing
 body
-	background-color var(--c-bg)
-	color var(--c-text-strong)
+	background-color var(--c-subreddit-theme)
+	color var(--c-subreddit-theme-text)
 	display grid
 	font-family 'Inter'
 	font-feature-settings 'ss01'
-	font-weight var(--f-wght-normal)
+	font-weight var(--f-wght-weak)
 	grid-auto-flow row
 	grid-template-columns 1fr
 	letter-spacing calc(1px/6)
 	line-height calc(5/3)
 	margin-inline-start calc(100vw - 100%) // compensate for scrollbar offset (would prefer `scrollbar-gutter` but it has big issues)
-	padding 48px 24px
+	padding 64px
 	place-items center
-	--c-admin red
+	--c-author-admin red
+	--c-author-mod darkseagreen
+	--c-author-op cornflowerblue
+	--c-comment-bg white
+	--c-comment-text var(--c-subreddit-theme)
 	--c-hint-normal wheat
-	--c-link mediumslateblue
-	--c-link-visited mediumpurple
-	--c-mod darkseagreen
-	--c-op #c3e0ff
 	--c-score-0 #e3e6eb
 	--c-score-1 antiquewhite
 	--c-score-2 wheat
 	--c-score-3 lightsalmon
 	--c-score-4 coral
+	--c-shade-weak rgba(0,0,0,0.125)
+	--c-shade-strong rgba(0,0,0,0.50)
 	--c-subreddit-theme-default coral
-	--c-subreddit-theme-secondary-default coral
+	--c-subreddit-theme-secondary-default cornflowerblue
 	--c-subreddit-theme-text-default white
 .color-strategy-black-text
 	color-scheme light
-	--c-bg white
-	--c-bg-component var(--c-op)
-	--c-blend-weak rgba(0,0,0,0.05)
-	--c-blend-normal rgba(0,0,0,0.10)
+	--c-blend-faint rgba(0,0,0,0.0625)
+	--c-blend-weak rgba(0,0,0,0.125)
+	--c-blend-normal rgba(0,0,0,0.25)
 	--c-blend-strong rgba(0,0,0,0.50)
-	--c-con-weak rgba(255,255,255,0.05)
-	--c-con-normal rgba(255,255,255,0.10)
+	--c-blend-xstrong rgba(0,0,0,0.75)
+	--c-con-weak rgba(255,255,255,0.125)
+	--c-con-normal rgba(255,255,255,0.25)
 	--c-con-strong rgba(255,255,255,0.50)
-	--c-con-xstrong rgba(255,255,255,0.80)
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong black
-	--c-text-reverse white
-	--f-wght-normal 450
+	--f-wght-weak 450
 	--f-wght-strong 650
-	--f-wght-xstrong 750
 .color-strategy-white-text
 	color-scheme dark
-	--c-bg #222
-	--c-bg-component #333
-	--c-blend-weak rgba(255,255,255,0.05)
-	--c-blend-normal rgba(255,255,255,0.10)
+	--c-blend-faint rgba(255,255,255,0.0625)
+	--c-blend-weak rgba(255,255,255,0.125)
+	--c-blend-normal rgba(255,255,255,0.25)
 	--c-blend-strong rgba(255,255,255,0.50)
-	--c-con-weak rgba(0,0,0,0.05)
-	--c-con-normal rgba(0,0,0,0.10)
+	--c-blend-xstrong rgba(255,255,255,0.75)
+	--c-con-weak rgba(0,0,0,0.125)
+	--c-con-normal rgba(0,0,0,0.25)
 	--c-con-strong rgba(0,0,0,0.50)
-	--c-con-xstrong rgba(0,0,0,0.80)
 	--c-text-xfaint rgba(255,255,255,0.125)
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong white
-	--c-text-reverse black
-	--f-wght-normal 400
+	--f-wght-weak 400
 	--f-wght-strong 600
-	--f-wght-xstrong 750
 
 // General layout & typography
 a
 	color inherit
 	text-decoration none
-	.md &
-		background var(--c-subreddit-theme)
-		border-radius 3px
-		color var(--c-subreddit-theme-text)
-		padding 1px 6px
+	.md &:not(:has(img))
+		text-decoration underline
 		&:empty
 			display none
+		&:hover
+			color var(--c-subreddit-theme)
 address
 	font-style normal
 blockquote
@@ -142,25 +137,27 @@ sup
 	h4
 	h5
 	h6
-		margin 1.5em 0 0
-	h1
-		font-size 2em
-		font-weight 500
+		font-weight var(--f-wght-strong)
 		line-height 1
+		margin 2rem 0 0
+	h1
+		font-size 2.333em
+		letter-spacing -2px
 	h2
-		font-size 1.5em
-		font-weight 450
-		line-height 1.1666
+		font-size 2em
+		letter-spacing -1.333px
 	h3
-		font-size 1.25em
-		font-weight 400
-		line-height 1.333
+		font-size 1.333em
+		letter-spacing -0.333px
 	h4
 	h5
 	h6
+		font-size 1em
+		line-height inherit
 	b
 	strong
 		font-weight var(--f-wght-strong)
+		letter-spacing -0.1666px
 .md-spoiler-text
 	background black
 	border-radius 5px
@@ -169,7 +166,7 @@ sup
 	*
 		opacity 0
 	&:hover
-		background var(--c-con-normal)
+		background var(--c-con-weak)
 		color inherit
 		*
 			opacity 1
@@ -187,38 +184,35 @@ ul
 	li
 		counter-increment list
 		margin 1em 0 0
-		margin-left 2ch
-		padding-left 2ch
+		margin-left 20px
+		padding-left 1em
 		position relative
 		&::before
 			align-items center
-			background var(--c-blend-normal)
+			background var(--c-blend-weak)
 			border-radius 999px
 			content counter(list)
 			display inline-flex
 			font-feature-settings 'ss01', 'tnum'
-			font-size 12px
-			font-weight bold
+			font-size 0.8em
+			font-weight var(--f-wght-strong)
 			justify-content center
+			margin 0.25em 0
 			padding 0 0.5em
 			position absolute
 			right 100%
 			top 0
 			white-space pre
-	ul > li
-		margin-left 1em
-		padding-left 1em
 	ul > li::before
-		background none
-		content '•'
+		content '⁃'
+		width 1ch
 
 // Tables
 .md
 	table
 		border-collapse collapse
 		font-feature-settings 'ss01', 'tnum'
-		font-size 12px
-		font-weight 350
+		font-size 0.8em
 		letter-spacing 0.666px
 		line-height 1.333
 		margin 1.333rem 0 0
@@ -232,7 +226,7 @@ ul
 		vertical-align top
 	th
 		border 1px solid transparent
-		border-bottom 0
+		border-bottom-color var(--c-text-faint)
 		font-weight var(--f-wght-strong)
 		font-size 10px
 		letter-spacing 1px
@@ -272,7 +266,5 @@ video
 	display block
 	max-width 100%
 .md img
-	border 1px solid var(--c-text-strong)
 	border-radius 1em
 	margin 1em 0 0
-	margin-inline-start -1px

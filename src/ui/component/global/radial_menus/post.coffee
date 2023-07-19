@@ -49,14 +49,9 @@ export default
 	shift: (data) ->
 		if data.canInteract
 			N:
-				if data.saved
-					action: 'unsave'
-					icon: '💔'
-					label: 'Unsave'
-				else
-					action: 'save'
-					icon: '❤️'
-					label: 'Save'
+				action: ''
+				icon: ''
+				label: ''
 			W:
 				action: ''
 				icon: ''
@@ -72,18 +67,23 @@ export default
 	unmodified: (data) ->
 		if data.canInteract
 			N:
-				action: 'upvote'
-				icon: '👍'
-				label: 'Upvote'
+				action: ''
+				icon: ''
+				label: ''
 			W:
 				action: 'report'
 				icon: '🚩'
 				label: 'Report'
 			E:
-				action: 'reply'
-				icon: '🗨️'
-				label: 'Reply'
+				if data.saved
+					action: 'unsave'
+					icon: '🚮'
+					label: 'Unsave'
+				else
+					action: 'save'
+					icon: '💾'
+					label: 'Save'
 			S:
-				action: 'downvote'
-				icon: '👎'
-				label: 'Downvote'
+				action: 'reply'
+				icon: '💬'
+				label: 'Reply'

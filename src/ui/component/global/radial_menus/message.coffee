@@ -9,10 +9,10 @@ export default
 			icon: '🚩'
 			label: 'Report'
 		E:
-			action: 'reply'
-			icon: '💬'
-			label: 'Reply'
-		S:
 			action: ''
 			icon: ''
 			label: ''
+		S:
+			action: 'reply'
+			icon: '💬'
+			label: 'Reply'

@@ -114,17 +114,21 @@ nav.feed
 							{:else if type.endsWith('_subreddits')}
 								a(href={format_url({ subreddit_name: item })})
 									FeedLink(subreddit_name={item} type='subreddit')
-	menu.feed-actions
-		{#if has_next_page(items)}
-			Button(link={format_url({ after_id: next_after_id(items), after_id_type: next_after_id_type(items), collection_id, feed_filter: filter, feed_search: search, feed_sort: sort, feed_time_range: time_range, multireddit_name, subreddit_name, subpage, user_name })} loading={loading} text='More')
+	{#if has_next_page(items)}
+		menu.feed-actions
+			Button(link={format_url({ after_id: next_after_id(items), after_id_type: next_after_id_type(items), collection_id, feed_filter: filter, feed_search: search, feed_sort: sort, feed_time_range: time_range, multireddit_name, subreddit_name, subpage, user_name })} loading={loading} text='Next page →')
 
 style.
 	.feed
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 2em
+		gap 1em
+	.feed-actions
+		display flex
+		justify-content flex-end
+		width 100%
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 2px
+		gap 10px

@@ -27,32 +27,6 @@ script.
 	reply_error = null
 	reply_sending = false
 	reporting = false
-	score_color = (comment) -> switch
-		when comment.distinguished is 'admin' then 'var(--c-admin)'
-		when comment.distinguished is 'moderator' then 'var(--c-mod)'
-		when comment.is_submitter then 'var(--c-op)'
-		when comment.score_hidden or !Number.isFinite(comment.score) then 'var(--c-score-0)'
-		when Math.log10(comment.score) > 3 then 'var(--c-score-4)'
-		when Math.log10(comment.score) > 2 then 'var(--c-score-3)'
-		when Math.log10(comment.score) > 1 then 'var(--c-score-2)'
-		when Math.log10(comment.score) > 0 then 'var(--c-score-1)'
-		else 'var(--c-score-0)'
-	score_text_color = (comment) -> switch
-		when comment.distinguished is 'admin' then 'white'
-		when comment.distinguished is 'moderator' then 'white'
-		when Math.log10(comment.score) > 2 then 'white'
-		else 'black'
-	title_text = (comment) ->
-		score_text = switch
-			when comment.score_hidden or !Number.isFinite(comment.score) then 'score hidden'
-			when comment.score > 0 then '+' + comment.score
-			else comment.score
-		time_text = switch
-			when comment.edited
-				Time.sToAbsRelTimeStr(comment.created_utc) + ' (edited ' + Time.sToAbsRelTimeStr(comment.edited) + ')'
-			else
-				Time.sToAbsRelTimeStr(comment.created_utc)
-		return "#{score_text}, #{time_text}"
 	
 	interact = (action_type, data) ->
 		switch action_type
@@ -124,10 +98,11 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title={title_text(comment)})
-			section.comment-meta
-				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
-			section.comment-body
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment')
+			{#if false}
+				section.comment-meta
+					UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
+			section.color-strategy-black-text.comment-body
 				FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
@@ -136,8 +111,8 @@ script.
 			Popup(on:close={() => banning = false})
 				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
 		{#if out_of_context}
-			cite.comment-source-link
-				Button(link={format_url({ post_focus_comment_id: id, post_focus_comment_parent_count: 3, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='View →')
+			cite.comment-source
+				Button(link={format_url({ post_focus_comment_id: id, post_focus_comment_parent_count: 3, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='in {comment.subreddit} →')
 		{:else}
 			ol.comment-replies
 				{#if replying}
@@ -145,40 +120,48 @@ script.
 				{#each comment.replies as reply_id (reply_id)}
 					svelte:self(id={reply_id})
 				{#if comment.num_more_replies > 0}
-					menu.comment-more-replies
+					.comment-more-replies
 						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="{comment.num_more_replies} more")
 				{#if comment.deeper_replies}
-					menu.comment-more-replies
+					.comment-more-replies
 						Button(link={format_url({ post_focus_comment_id: id, post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })} text='Continue thread...')
 
 style.
 	.comment
 		display inline-block
-		max-width 100%
 	.comment-body
-		background var(--c-bg-component)
+		background var(--c-comment-bg)
 		border-radius 1em
+		color var(--c-comment-text)
 		display inline-block
+		font-weight 500
+		width 480px
 		padding 10px 1em
+		position relative
 		.comment-deleted > &
 			opacity 0.25
 			pointer-events none
 		.comment-highlighted > &
-			background-color lightgoldenrodyellow
+			outline 1px solid
 		.comment-with-low-score:not(.comment-deleted) > &
 			opacity 0.5
 		:global(& img)
-			border-radius 10px
-			display inline-block
-			max-height 5em
+			background var(--c-con-weak)
+			border-radius 0.5em
+			max-height 128px
 			width auto
 	.comment-clip
-		display flex
-		justify-content space-between
+		position relative
 	.comment-more-replies
-		padding 0.666em 0
+		margin-top 1.333em
 	.comment-replies
 		border-left 1px solid var(--c-blend-normal)
-		padding-left 24px
-	.comment-source-link
-		margin-top 0.666em
+		margin-top 1.333em
+		padding-left 23px
+	.comment-source
+		left calc(100% + 1em)
+		position absolute
+		top 0
+		white-space pre
+	.comment-tree
+		margin-top 1.333em
