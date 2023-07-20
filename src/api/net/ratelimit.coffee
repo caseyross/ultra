@@ -1,5 +1,8 @@
 import { Time } from '../../lib/index.js'
 
+DEFAULT_QUOTA = 1000
+DEFAULT_RESET_S = 600
+
 ratelimit = {
 
 	forget: ->
@@ -12,12 +15,12 @@ ratelimit = {
 		remaining = Number localStorage['api.ratelimit.remaining']
 		reset = Number localStorage['api.ratelimit.reset']
 		if not Number.isFinite(reset) or reset < Time.unixMs()
-			localStorage['api.ratelimit.reset'] = Time.unixMs() + Time.sToMs(600)
-			localStorage['api.ratelimit.remaining'] = 100
-			localStorage['api.ratelimit.max'] = 100
+			localStorage['api.ratelimit.reset'] = Time.unixMs() + Time.sToMs(DEFAULT_RESET_S)
+			localStorage['api.ratelimit.remaining'] = DEFAULT_QUOTA
+			localStorage['api.ratelimit.max'] = DEFAULT_QUOTA
 		else if not Number.isFinite(remaining)
-			localStorage['api.ratelimit.remaining'] = 100
-			localStorage['api.ratelimit.max'] = 100
+			localStorage['api.ratelimit.remaining'] = DEFAULT_QUOTA
+			localStorage['api.ratelimit.max'] = DEFAULT_QUOTA
 
 	# Update the known ratelimit parameters with authoritative server feedback, or, failing that, with a simple count of requests sent.
 	update: ({ count, remaining, secondsUntilReset }) ->
