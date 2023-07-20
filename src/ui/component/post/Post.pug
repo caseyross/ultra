@@ -134,7 +134,7 @@ script.
 
 svelte:head
 	{#if expanded && post}
-		title {post.subreddit.toLowerCase()} / {post.title}
+		title {post.subreddit.toLowerCase()} → {post.title}
 {#if error}
 	{#if error.code === 403}
 		Error(message="This post is in a private subreddit which you are not approved to access." title="Private subreddit")
@@ -163,13 +163,9 @@ svelte:head
 					{#if post.locked}
 						PostTag(name='locked')
 			h1.post-title {post.title}
-			{#if false}
-				figure.post-visual-metrics(title="{post.hide_score ? '???' : post.score} points, {post.num_comments} comments")
-					figure.post-visual-metrics-comments(style='height: {8 * Math.log10(1 + post.num_comments)}px')
-					figure.post-visual-metrics-score(style='height: {8 * Math.log10(1 + post.score)}px')
 		{#if expanded}
-			section.post-content
-				{#if post.removed_by_category}
+			{#if post.removed_by_category}
+				section.post-content-empty
 					{#if post.removed_by_category === 'author' || post.removed_by_category === 'deleted'}
 						Error(message="Post deleted by author.")
 					{:else if post.removed_by_category === 'automod_filtered'}
@@ -184,13 +180,16 @@ svelte:head
 						Error(message="Post removed by Reddit's spam filter.")
 					{:else}
 						Error(message="Post removed by Reddit (reason not specified).")
-				{:else if focus_comment_id}
+			{:else if focus_comment_id}
+				section.post-content-empty
 					Warning(message="Viewing a single comment.")
-						Button(link={format_url({ post_id: id, subreddit_name: post.subreddit })} text='View full post')
-				{:else if post.format === 'talk'}
+						Button(link={format_url({ post_id: id, subreddit_name: post.subreddit })} text='View full post →')
+			{:else if post.format === 'talk'}
+				section.post-content-empty
 					Error(message="Reddit Talks are only available on the official site.")
 						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
-				{:else}
+			{:else if post.selftext || post.format !== 'self'}
+				section.color-strategy-black-text.post-content
 					{#if post.format === 'crosspost'}
 						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 							svelte:self(expanded={false} id={post.crosspost_parent})
@@ -201,7 +200,6 @@ svelte:head
 									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 										picture
 											{#if !media.is_gif}
-												source(srcset={media.image_url_960})
 												source(srcset={media.image_url_640})
 											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 									{#if media.caption_text || media.caption_url}
@@ -237,17 +235,14 @@ svelte:head
 												meter(max={prediction.total_stake_amount} min={0} value={option.total_amount})
 											dd {option.text}
 						Warning(message="Voting is only available on the official site.")
-							Button(link={post.url} text='View on Reddit')
+							Button(link={post.url} new_tab={true} text='View on Reddit')
 					{:else if post.format === 'video'}
 						{@const media = post.media[0]}
-							MediaPlayer(audio_url={media.video_audio_url} height={315} video_url={media.video_url} width={560})
+							.post-video
+								MediaPlayer(audio_url={media.video_audio_url} height={253} video_url={media.video_url} width={450})
 					{#if post.selftext_html}
-						.color-strategy-black-text.post-selftext
+						.post-selftext
 							FormattedHTML(html={post.selftext_html})
-			{#if false}
-				section.post-author
-					UserByline(distinguish={post.distinguished} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
-					LiveTime(create_s={post.created_utc} edit_s={post.edited})
 			section.post-comments
 				menu.post-comments-sort-controls
 					Button(action={value => internal_navigate({ href: location.origin + format_url({ post_comments_sort: value, post_id: id, subreddit_name: post.subreddit }) })} disabled={!post.num_comments} options={post.discussion_type === 'CHAT' ? comments_sort_options_chat : post.contest_mode ? comments_sort_options_contest : comments_sort_options} selected={comments_sort})
@@ -264,20 +259,20 @@ svelte:head
 			Popup(on:close={() => reporting = false})
 				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
 {:else if loading}
-	article.post.post-loading Loading...
+	.post-loading Loading...
 
 style.
 	.post
-		padding-left 80px
-		width 640px
+		padding-left 96px
+		width 672px
 		&:not(.post-expanded)
 			background var(--c-comment-bg)
 			border-radius 1em
 			color var(--c-comment-text)
 			padding 1em
 			width 480px
-		&.post-loading
-			padding 10px
+		:global(.post-crosspost-link > &)
+			width auto !important
 	.post-comments
 		margin-top 2em
 		width 100%
@@ -289,40 +284,46 @@ style.
 		display flex
 		flex-flow column nowrap
 		font-weight 500
-		gap 1em
+		gap calc(2em/3)
 		margin-top 1em
 		padding 10px 1em
 		width 480px
 		:global(& .twitter-tweet)
 			margin 0 !important
-			width 480px !important
-		:global(& iframe[id^=twitter-widget])
-			border-radius 12px
+			padding 0.5em 0
+			width 450px !important
+	.post-content-empty
+		margin-top 1em
 	.post-gallery
 		align-items center
 		display flex
 		flex-flow column nowrap
 		gap 1em
+		padding 0.5em 0
 	.post-gallery-image
 		display flex
 		flex-flow column nowrap
-		gap 6px
+		gap 5px
 	.post-gallery-image-caption
 		color var(--c-text-weak)
 		font-size 13px
 		letter-spacing 0.5px
+	.post-header
+		.post-expanded > &
+			width 480px
 	.post-iframe
 		background var(--c-con-weak)
 		border-radius 1em
-		width 480px
+		padding 0.5em 0
+		width 100%
 	.post-image
 		background var(--c-con-weak)
-		border-radius 1em
-		width 480px
+		border-radius 10px
 	.post-link
 		display flex
 		flex-flow row nowrap
 		font-size 1.25em
+		line-height 1.5
 		word-break break-all
 	.post-link-domain
 		flex 0 0 auto
@@ -352,22 +353,5 @@ style.
 		letter-spacing calc(-1px/3)
 		line-height 1.25
 		overflow-wrap anywhere
-	.post-visual-metrics
-		align-items center
-		aspect-ratio 1
-		display flex
-		justify-content center
-		height 48px
-		position absolute
-		right calc(100% + 2em)
-		top 0
-	.post-visual-metrics-comments
-		aspect-ratio 1
-		background var(--c-subreddit-theme-text)
-		border-radius 999px
-		position absolute
-	.post-visual-metrics-score
-		aspect-ratio 1
-		border 1px solid var(--c-subreddit-theme-text)
-		border-radius 999px
-		position absolute
+	.post-video
+		padding 0.5em 0

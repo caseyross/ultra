@@ -106,7 +106,7 @@ script.
 	AccountData.increment_subreddit_viewcount(name.toLowerCase())
 
 svelte:head
-	title {subreddit?.display_name || name.toLowerCase()}
+	title {name.toLowerCase()}
 {#if error}
 	{#if error.code === 403}
 		Error(message="Only approved users can access this subreddit." title="Private subreddit")

@@ -40,7 +40,7 @@ script.
 	)
 
 svelte:head
-	title {subreddit_name.toLowerCase()} wiki: {page_name.toLowerCase()}
+	title {subreddit_name.toLowerCase()} wiki → {page_name.toLowerCase()}
 {#if error}
 	{#if error?.code === 403}
 		{#if error.reason === 'private'}
@@ -82,6 +82,11 @@ style.
 		width 640px
 	.wiki-body
 		margin-top 2em
+		:global(& > .md)
+			background var(--c-comment-bg)
+			border-radius 1em
+			color var(--c-comment-text)
+			padding 10px 1em
 	.wiki-info
 		align-items center
 		color var(--c-text-weak)

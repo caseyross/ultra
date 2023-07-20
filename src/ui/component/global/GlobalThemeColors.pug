@@ -13,9 +13,11 @@ script.
 		document.body.style.setProperty('--c-subreddit-theme-text', text_color or 'var(--c-subreddit-theme-text-default)')
 		switch text_color
 			when '#000000'
+				document.body.style.setProperty('--c-comment-text', '#333')
 				document.body.classList.remove('color-strategy-white-text')
 				document.body.classList.add('color-strategy-black-text')
 			else
+				document.body.style.setProperty('--c-comment-text', 'var(--c-subreddit-theme)')
 				document.body.classList.remove('color-strategy-black-text')
 				document.body.classList.add('color-strategy-white-text')
 

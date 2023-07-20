@@ -98,12 +98,8 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment')
-			{#if false}
-				section.comment-meta
-					UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
-			section.color-strategy-black-text.comment-body
-				FormattedHTML(html={comment.body_html})
+		article.color-strategy-black-text.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment')
+			FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
@@ -128,8 +124,6 @@ script.
 
 style.
 	.comment
-		display inline-block
-	.comment-body
 		background var(--c-comment-bg)
 		border-radius 1em
 		color var(--c-comment-text)
@@ -138,12 +132,12 @@ style.
 		width 480px
 		padding 10px 1em
 		position relative
-		.comment-deleted > &
+		&.comment-deleted
 			opacity 0.25
 			pointer-events none
-		.comment-highlighted > &
+		&.comment-highlighted
 			outline 1px solid
-		.comment-with-low-score:not(.comment-deleted) > &
+		&.comment-with-low-score:not(&.comment-deleted)
 			opacity 0.5
 		:global(& img)
 			background var(--c-con-weak)
