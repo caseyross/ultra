@@ -62,7 +62,7 @@ export default {
 	multireddit_posts: (user_name, multireddit_name, posts_time_range, posts_sort, max_posts, after_post_id) ->
 		get(
 			switch
-				when multireddit_name is 'subscriptions' then "/#{posts_sort}"
+				when user_name is 'r' and multireddit_name is 'subscribed' then "/#{posts_sort}"
 				when user_name is 'r' then "/r/#{multireddit_name}/#{posts_sort}"
 				else "/user/#{user_name}/m/#{multireddit_name}/#{posts_sort}"
 			{

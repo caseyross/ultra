@@ -235,7 +235,7 @@ export default (url) ->
 								feed.base_page_id = api.ID('search_posts', "multireddit=#{feed.user_name}-#{feed.multireddit_name}+#{feed.search}", 'all', feed.sort, FEED_PAGE_SIZE)
 						else
 							subpage = 'posts'
-							if feed.multireddit_name is 'subscriptions'
+							if feed.user_name is 'r' and feed.multireddit_name is 'subscribed'
 								feed.sort = e if e in SORT_OPTIONS_FEED_FRONTPAGE
 								if !feed.sort
 									feed.sort = 'best'
