@@ -2,7 +2,25 @@ export default
 	alt: (data) ->
 		if data.canEdit
 			N:
-				if data.canMod
+				action: ''
+				icon: ''
+				label: ''
+			W:
+				action: ''
+				icon: ''
+				label: ''
+			E:
+				action: ''
+				icon: ''
+				label: ''
+			S:
+				action: 'edit'
+				icon: '✏️'
+				label: 'Edit'
+	ctrl: (data) ->
+		if data.canMod
+			N:
+				if data.canEdit
 					if data.distinguish is 'moderator'
 						action: 'undistinguish'
 						icon: '🗙'
@@ -12,28 +30,20 @@ export default
 						icon: '🟢'
 						label: 'Distinguish as Mod'
 			W:
-				action: 'edit'
-				icon: '✏️'
-				label: 'Edit'
+				action: 'remove'
+				icon: '❎'
+				label: 'Remove'
 			E:
-				action: ''
-				icon: ''
-				label: ''
+				action: 'approve'
+				icon: '✅'
+				label: 'Approve'
 			S:
 				action: ''
 				icon: ''
 				label: ''
-	ctrl: (data) ->
+	ctrl_shift: (data) ->
 		if data.canMod
 			N:
-				action: 'approve'
-				icon: '✅'
-				label: 'Approve'
-			W:
-				action: 'ban_user'
-				icon: '💀'
-				label: 'Ban User'
-			E:
 				if data.pinned
 					action: 'unpin'
 					icon: '❌'
@@ -42,20 +52,10 @@ export default
 					action: 'pin'
 					icon: '📌'
 					label: 'Pin'
-			S:
-				action: 'remove'
-				icon: '❎'
-				label: 'Remove'
-	shift: (data) ->
-		if data.canInteract
-			N:
-				action: ''
-				icon: ''
-				label: ''
 			W:
-				action: ''
-				icon: ''
-				label: ''
+				action: 'remove_and_ban_user'
+				icon: '💀'
+				label: 'Remove & Ban User'
 			E:
 				action: ''
 				icon: ''

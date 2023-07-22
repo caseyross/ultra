@@ -29,6 +29,8 @@ form.comment-editor
 			Button(action={() => submit()} loading={sending} loading_text='Sending...' text='Submit')
 
 style.
+	.comment-editor
+		width 480px
 	.comment-editor-actions
 		display flex
 		justify-content flex-end
@@ -36,7 +38,7 @@ style.
 	.comment-editor-text-field
 		border 1px solid
 		border-radius 1em
-		font 13px monospace
+		font-family monospace
 		line-height inherit
 		padding 1em
 		resize none

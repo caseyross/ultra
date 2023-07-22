@@ -34,8 +34,10 @@ body
 	letter-spacing calc(1px/6)
 	line-height calc(5/3)
 	margin-inline-start calc(100vw - 100%) // compensate for scrollbar offset (would prefer `scrollbar-gutter` but it has big issues)
-	padding 64px
+	padding 24px
 	place-items center
+	@media (min-width: 960px)
+		padding 64px
 	--c-author-admin red
 	--c-author-mod darkseagreen
 	--c-author-op cornflowerblue
@@ -50,7 +52,7 @@ body
 	--c-shade-weak rgba(0,0,0,0.125)
 	--c-shade-strong rgba(0,0,0,0.50)
 	--c-subreddit-theme-default coral
-	--c-subreddit-theme-secondary-default cornflowerblue
+	--c-subreddit-theme-secondary-default darkseagreen
 	--c-subreddit-theme-text-default white
 .color-strategy-black-text
 	color-scheme light
@@ -93,8 +95,6 @@ a
 		text-decoration underline
 		&:empty
 			display none
-		&:hover
-			color var(--c-subreddit-theme)
 address
 	font-style normal
 blockquote

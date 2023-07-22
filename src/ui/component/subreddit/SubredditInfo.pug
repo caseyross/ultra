@@ -1,8 +1,6 @@
 script.
 	import api from '../../../api/index.js'
-	import { Time } from '../../../lib/index.js'
 
-	import Button from '../shared/Button.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
 	import SubredditWidget from './SubredditWidget.pug'
 
@@ -22,14 +20,6 @@ aside.subreddit-info
 	{#if subreddit}
 		{#if subreddit.public_description_html}
 			FormattedHTML(html={subreddit.public_description_html})
-		{#if false}
-			section.subreddit-info-metrics
-				data 🔑 {subreddit.subreddit_type[0].toUpperCase() + subreddit.subreddit_type.slice(1)}
-				time(title={Time.sToAbsTimeStr(subreddit.created_utc)}) 🏗️ {new Date(Time.sToMs(subreddit.created_utc)).getFullYear()}
-				{#if subreddit.subscribers}
-					data 👂 {subreddit.subscribers.toLocaleString('en-US')}
-				{#if subreddit.accounts_active}
-					data 🟢 {subreddit.accounts_active.toLocaleString('en-US')}
 	{#if widgets}
 		ol.subreddit-info-widgets
 			{#each widgets.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')) as widget}
@@ -41,10 +31,6 @@ style.
 		flex-flow column nowrap
 		gap 2em
 		width 480px
-	.subreddit-info-metrics
-		display flex
-		font-feature-settings 'ss01', 'tnum'
-		gap 1em
 	.subreddit-info-widgets
 		display flex
 		flex-flow column nowrap

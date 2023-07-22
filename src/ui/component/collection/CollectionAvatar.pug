@@ -1,0 +1,24 @@
+script.
+	export id = null
+	export size = 'medium'
+
+a.collection-avatar(class='collection-avatar-size-{size}' href='/c/{id}' title='/c/{id}')
+	picture
+		img.collection-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/logo.svg')
+
+style.
+	.collection-avatar
+		aspect-ratio 1
+		display inline-block
+		user-select none
+	.collection-avatar-image
+		border-radius 50%
+		height 100%
+		object-fit cover
+		width 100%
+	.collection-avatar-size-large
+		height 64px
+	.collection-avatar-size-medium
+		height 32px
+	.collection-avatar-size-small
+		height 16px

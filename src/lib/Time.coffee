@@ -35,7 +35,7 @@ units =
 		name: 'hour'
 		value: 1000 * 60 * 60
 	minute:
-		abbr: 'm'
+		abbr: 'min'
 		name: 'minute'
 		value: 1000 * 60
 	second:
@@ -140,11 +140,10 @@ Time = {
 				daysBack = 0
 		if duration.count < 0
 			daysBack = 0
+		monthsBack = currentDate.getMonth() + (12 * (currentDate.getFullYear() - targetDate.getFullYear()) - targetDate.getMonth())
 		switch
-			when daysBack < 1
-				targetDate.getHours() + ':' + String(targetDate.getMinutes()).padStart(2, '0')
-			when targetDate.getFullYear() == currentDate.getFullYear()
-				months[targetDate.getMonth()].short_name + ' ' + targetDate.getDate()
+			when monthsBack < 7
+				Time.msToRelTimeStr(ms, { abbr: true })
 			else
 				months[targetDate.getMonth()].short_name + ' ' + targetDate.getFullYear()
 	

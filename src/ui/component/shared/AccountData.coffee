@@ -33,6 +33,20 @@ export default {
 		else
 			endIndex = localStorage[key].indexOf(' ', index + 3)
 			return Number(localStorage[key].slice(index + name.length + 1, endIndex))
+	get_subreddit_viewcounts: ->
+		key = key_prefix + 'subreddit_viewcount'
+		if !localStorage[key]?
+			return []
+		else
+			viewcounts = localStorage[key].split(' ').map((x) ->
+				[name, count] = x.split(':')
+				return {
+					name,
+					count,
+				}
+			)
+			viewcounts.sort((a, b) -> b.count - a.count)
+			return viewcounts
 	increment_subreddit_viewcount: (name) ->
 		key = key_prefix + 'subreddit_viewcount'
 		index = localStorage[key]?.indexOf(name + ':')

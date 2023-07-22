@@ -2,39 +2,108 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../api/index.js'
+	import { StringMatch } from '../../../lib/index.js'
+	import { format_url } from '../../routing/url.coffee'
+	import { virtual_hotkeys } from '../shared/actions/hotkeys.coffee'
 
-	import ButtonGroup from '../shared/ButtonGroup.pug'
-	import Feed from '../feed/Feed.pug'
+	import AccountData from '../shared/AccountData.coffee'
 	import LoginButton from '../shared/LoginButton.pug'
-	import UserAvatar from '../user/UserAvatar.pug'
+	import LogoutButton from '../shared/LogoutButton.pug'
+	import TextInput from '../shared/TextInput.pug'
 
-	export tab = 'subscribed'
-
-	account_username = api.getUser()
+	internal_navigate = getContext('internal_navigate')
+	multireddits = []
+	predictions = []
+	selection = 0
 	set_theme_colors = getContext('set_theme_colors')
-	tabs = [
-		{ label: 'Subscriptions', value: 'subscribed'}
-		{ label: 'Trending', value: 'popular'}
-	]
+	subscriptions = []
+	viewed = AccountData.get_subreddit_viewcounts()?.map((x) -> x.name)
+	
+	hotkeys =
+		ArrowDown: ->
+			selection = Math.min(9, selection + 1)
+		ArrowUp: ->
+			selection = Math.max(0, selection - 1)
+	
+	commit_prediction = ->
+		if predictions.length > 0
+			chosen = predictions[selection].string
+			if chosen.indexOf('-') > -1
+				href = location.origin + format_url({ multireddit_name: chosen.split('-')[1], user_name: chosen.split('-')[0] })
+			else
+				href = location.origin + format_url({ subreddit_name: chosen })
+			internal_navigate({ href })
+	update_predictions = (query) ->
+		if query.length < 1
+			predictions = []
+			selection = 0
+		else if api.isLoggedIn()
+			candidates = [...new Set(multireddits.concat(subscriptions).concat(viewed))]
+			predictions = StringMatch.match(candidates, query)
+			selection = 0
+		else
+			api.loadWatch(api.ID('search_subreddits', query, 10), (x) ->
+				if x?.data?.length
+					predictions = x.data.map((name) -> ({ string: name }))
+				else
+					predictions = []
+				selection = 0
+			)
 
+	if api.isLoggedIn()
+		api.loadWatch(api.ID('account_multireddits_owned', 100), (x) ->
+			if x?.data?.length
+				multireddits = x.data
+		)
+		api.loadWatch(api.ID('account_subreddits_subscribed', 100), (x) ->
+			if x?.data?.length
+				subscriptions = x.data
+		)
 	set_theme_colors()
 
 nav.directory
-	section.directory-basic-info
-		div
-		{#if account_username}
-			UserAvatar(name={account_username} size='medium')
+	header.directory-welcome
+		span R3 v0.7.0
+	section.directory-content
+		menu.directory-input
+			TextInput(autofocus={true} enter_action={() => commit_prediction()} size='large' type_action={query => update_predictions(query)})
+		ol.directory-predictions(use:virtual_hotkeys={hotkeys})
+			{#each predictions.slice(0, 10) as prediction, i (prediction.string)}
+				li.directory-prediction(class:directory-prediction-selected={selection === i}) {prediction.string}
+	footer.directory-account-options
+		{#if api.isLoggedIn()}
+			LogoutButton
 		{:else}
 			LoginButton
-	ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
-	hr
-	{#if tab === 'subscribed'}
-		Feed(page_size={100} type='account_subscribed_subreddits')
-	{:else if tab === 'popular'}
-		Feed(page_size={25} type='popular_subreddits')
+		
 
 style.
-	.directory-basic-info
+	.directory
 		display flex
-		gap 30px
+		flex-flow column nowrap
+		gap 2em
+		height 80dvh
 		justify-content space-between
+	.directory-account-options
+		display flex
+		justify-content flex-end
+		padding 0 40px
+	.directory-content
+		display grid
+		flex 1 1 auto
+		gap 2em
+		grid-template-rows 50% 50%
+		grid-template-columns 1fr
+		overflow hidden
+		padding 0 40px
+	.directory-input
+		align-self flex-end
+	.directory-prediction
+		font-weight 500
+		position relative
+		&.directory-prediction-selected::before
+			content '▶'
+			left -2em
+			position absolute
+	.directory-welcome
+		padding 0 40px

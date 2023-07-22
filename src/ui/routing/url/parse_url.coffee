@@ -101,7 +101,8 @@ export default (url) ->
 		when undefined
 			page = 'directory'
 			if api.getUser()
-				feed.base_page_id = api.ID('account_subreddits_subscribed', 100)
+				preload.push(api.ID('account_subreddits_subscribed', 100))
+				preload.push(api.ID('account_multireddits_owned', 100))
 			else
 				feed.base_page_id = api.ID('subreddits_popular', 25)
 		when 'c', 'collection'
@@ -109,6 +110,8 @@ export default (url) ->
 			feed.collection_id = b
 			if c is 'about'
 				subpage = 'about'
+			else
+				subpage = 'posts'
 			feed.base_page_id = api.ID('collection', feed.collection_id)
 		when 'message'
 			page = 'user'
@@ -162,6 +165,8 @@ export default (url) ->
 						feed.collection_id = d
 						if e is 'about'
 							subpage = 'about'
+						else
+							subpage = 'posts'
 						feed.base_page_id = api.ID('collection', feed.collection_id)
 					when 'comments', 'p', 'post'
 						page = 'post'

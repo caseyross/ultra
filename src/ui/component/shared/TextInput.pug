@@ -1,15 +1,15 @@
 script.
 	import { onMount } from 'svelte'
 	
-	import { virtual_hotkeys } from './actions/hotkeys.coffee'
 	import HotkeyLabel from './HotkeyLabel.pug'
 
 	export autofocus = false
-	export enter_action = ->
+	export enter_action = null
 	export initial_value = ''
 	export key = null
 	export label = ''
 	export placeholder = ''
+	export size = 'medium'
 	export type_action = ->
 
 	input = null
@@ -18,6 +18,15 @@ script.
 		hotkeys[key] = ->
 			input?.focus()
 			input?.select()
+
+	process_keydown = (e) -> switch
+		when enter_action and e.key == 'Enter'
+			enter_action(e.target.value)
+		when e.key.length > 1 # non-typographic character
+			return
+		else
+			e.stopPropagation()
+			return
 
 	onMount ->
 		if initial_value
@@ -28,15 +37,12 @@ label.text-input-label
 		HotkeyLabel(key={key})
 	| {label}
 	<!-- svelte-ignore a11y-autofocus -->
-	input.text-input(autofocus={autofocus} bind:this={input} on:keydown|stopPropagation={e => { if(e.key === 'Enter') { enter_action(e.target.value) } } } on:input={e => type_action(e.target.value)} placeholder={placeholder})
+	input.text-input(autofocus={autofocus} bind:this={input} class='text-input-size-{size}' on:keydown={process_keydown} on:input={e => type_action(e.target.value)} placeholder={placeholder})
 
 style.
 	.text-input
 		border-bottom 2px solid var(--c-text-faint)
-		font-size 18px
 		font-weight var(--f-wght-strong)
-		line-height calc(5rem/3)
-		width 240px
 		&:focus
 			border-color var(--c-text-strong)
 			outline none
@@ -46,3 +52,11 @@ style.
 		gap 5px
 		margin-right 3px
 		user-select none
+	.text-input-size-medium
+		font-size 18px
+		line-height calc(5rem/3)
+		width 240px
+	.text-input-size-large
+		border-bottom-width 4px
+		font-size 2em
+		width 480px

@@ -60,6 +60,8 @@ script.
 	has_next_page = (items) ->
 		if type.endsWith('_subreddits') # workaround for subreddit names not being valid `after` identifiers
 			false
+		else if type is 'collection_posts'
+			false
 		else if items.length < page_size
 			false
 		else
@@ -74,7 +76,7 @@ script.
 			else null
 	items = []
 	read = []
-
+	
 	api.loadWatch(api.ID(base_page_id, after_id, after_id_type), (x) ->
 		{ error, data, loading } = x
 		if !error and !loading and data

@@ -2,7 +2,6 @@ script.
 	import { getContext } from 'svelte'
 	
 	import api from '../../../api/index.js'
-	import { Time } from '../../../lib/index.js'
 	import { format_url } from '../../routing/url.coffee'
 
 	import BanDialog from '../dialog/BanDialog.pug'
@@ -11,7 +10,6 @@ script.
 	import FormattedHTML from '../shared/FormattedHTML.pug'
 	import Popup from '../shared/Popup.pug'
 	import ReportDialog from '../dialog/ReportDialog.pug'
-	import UserByline from '../user/UserByline.pug'
 
 	export id = null
 	export out_of_context = false

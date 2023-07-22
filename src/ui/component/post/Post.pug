@@ -2,7 +2,7 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../api/index.js'
-	import { HexColor, Time } from '../../../lib/index.js'
+	import { Time } from '../../../lib/index.js'
 	import { format_url, relativize_url } from '../../routing/url.coffee'
 	import AccountData from '../shared/AccountData.coffee'
 	import html_embeds from './embeds/html_embeds.coffee'
@@ -10,11 +10,9 @@ script.
 
 	import BanDialog from '../dialog/BanDialog.pug'
 	import Button from '../shared/Button.pug'
-	import ButtonFrame from '../shared/ButtonFrame.pug'
 	import CommentEditor from '../comment/CommentEditor.pug'
 	import Error from '../shared/Error.pug'
 	import FormattedHTML from '../shared/FormattedHTML.pug'
-	import LiveTime from '../shared/LiveTime.pug'
 	import MediaPlayer from '../shared/MediaPlayer.pug'
 	import Popup from '../shared/Popup.pug'
 	import PostComments from './PostComments.pug'
@@ -23,7 +21,6 @@ script.
 	import PostTag from './PostTag.pug'
 	import ReportDialog from '../dialog/ReportDialog.pug'
 	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
-	import UserByline from '../user/UserByline.pug'
 	import Warning from '../shared/Warning.pug'
 	
 	export comments_initial_count = 25
@@ -32,7 +29,6 @@ script.
 	export focus_comment_id = null
 	export focus_comment_parent_count = null
 	export id = null
-	export show_subreddit = false
 
 	banning = false
 	comments_sort_options = [
@@ -147,9 +143,8 @@ svelte:head
 {:else if post}
 	article.post(class:post-downvoted={post.likes === false} class:post-expanded={expanded} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
 		header.post-header
-			{#if show_subreddit}
-				.post-subreddit
-					SubredditAvatar(name={post.subreddit} size='medium')
+			.post-subreddit
+				SubredditAvatar(name={post.subreddit} size='medium')
 			{#if post.link_flair_text || post.locked || post.over_18 || post.spoiler || post.stickied}
 				ol.post-tags
 					{#if post.link_flair_text}
@@ -163,6 +158,7 @@ svelte:head
 					{#if post.locked}
 						PostTag(name='locked')
 			h1.post-title {post.title}
+			date(datetime={post.created_utc}) {Time.sToAbsRelTimeStr(post.created_utc)}
 		{#if expanded}
 			{#if post.removed_by_category}
 				section.post-content-empty
@@ -187,9 +183,9 @@ svelte:head
 			{:else if post.format === 'talk'}
 				section.post-content-empty
 					Error(message="Reddit Talks are only available on the official site.")
-						Button(key='e' link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
+						Button(link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 			{:else if post.selftext || post.format !== 'self'}
-				section.color-strategy-black-text.post-content
+				section.post-content(class:color-strategy-black-text={!(post.format === 'video')} class:post-content-with-bg={!(post.format === 'video') && !(post.format === 'link' && (html_embeds(post) || iframe_embeds(post.url)))})
 					{#if post.format === 'crosspost'}
 						a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 							svelte:self(expanded={false} id={post.crosspost_parent})
@@ -201,7 +197,7 @@ svelte:head
 										picture
 											{#if !media.is_gif}
 												source(srcset={media.image_url_640})
-											img.post-image(alt='{i + 1} of {post.media.length}' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
+											img.post-image(alt='{i + 1} of {post.media.length}' class:post-image-fixed-width={media.image_url_640} src={media.image_url} style="aspect-ratio: {media.aspect_ratio}")
 									{#if media.caption_text || media.caption_url}
 										figcaption.post-gallery-image-caption
 											{#if media.caption_text}
@@ -239,7 +235,7 @@ svelte:head
 					{:else if post.format === 'video'}
 						{@const media = post.media[0]}
 							.post-video
-								MediaPlayer(audio_url={media.video_audio_url} height={253} video_url={media.video_url} width={450})
+								MediaPlayer(audio_url={media.video_audio_url} height={270} video_url={media.video_url} width={480})
 					{#if post.selftext_html}
 						.post-selftext
 							FormattedHTML(html={post.selftext_html})
@@ -278,52 +274,54 @@ style.
 		width 100%
 	.post-content
 		align-items flex-start
-		background var(--c-comment-bg)
 		border-radius 1em
-		color var(--c-comment-text)
 		display flex
 		flex-flow column nowrap
 		font-weight 500
 		gap calc(2em/3)
 		margin-top 1em
-		padding 10px 1em
 		width 480px
+		&.post-content-with-bg
+			background var(--c-comment-bg)
+			color var(--c-comment-text)
+			padding 10px 1em
 		:global(& .twitter-tweet)
 			margin 0 !important
-			padding 0.5em 0
-			width 450px !important
+			width 480px !important
 	.post-content-empty
 		margin-top 1em
 	.post-gallery
-		align-items center
 		display flex
 		flex-flow column nowrap
-		gap 1em
-		padding 0.5em 0
+		gap 1.333em
+		padding 0.666em 0.5em
 	.post-gallery-image
 		display flex
 		flex-flow column nowrap
-		gap 5px
+		gap 0.333em
 	.post-gallery-image-caption
 		color var(--c-text-weak)
 		font-size 13px
 		letter-spacing 0.5px
 	.post-header
 		.post-expanded > &
+			position relative
 			width 480px
 	.post-iframe
 		background var(--c-con-weak)
 		border-radius 1em
-		padding 0.5em 0
-		width 100%
+		width 480px
 	.post-image
 		background var(--c-con-weak)
 		border-radius 10px
+	.post-image-fixed-width
+		width 435px
 	.post-link
 		display flex
 		flex-flow row nowrap
 		font-size 1.25em
 		line-height 1.5
+		text-decoration underline
 		word-break break-all
 	.post-link-domain
 		flex 0 0 auto
@@ -341,7 +339,7 @@ style.
 			width 240px
 	.post-subreddit
 		position absolute
-		right calc(100% + 1em)
+		right calc(100% + 2em)
 	.post-tags
 		display flex
 		flex-flow row wrap

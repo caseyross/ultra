@@ -2,7 +2,6 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../api/index.js'
-	import { Time } from '../../../lib/index.js'
 	import { format_url } from '../../routing/url.coffee'
 
 	import AccountData from '../shared/AccountData.coffee'
@@ -11,7 +10,6 @@ script.
 	import ButtonGroup from '../shared/ButtonGroup.pug'
 	import Error from '../shared/Error.pug'
 	import Feed from '../feed/Feed.pug'
-	import FormattedHTML from '../shared/FormattedHTML.pug'
 	import Popup from '../shared/Popup.pug'
 	import SubredditAvatar from './SubredditAvatar.pug'
 	import SubredditInfo from './SubredditInfo.pug'
@@ -98,12 +96,13 @@ script.
 	api.loadWatch(api.ID('subreddit', name), (x) ->
 		{ data: subreddit, error } = x
 		set_theme_colors(subreddit?.primary_color, subreddit?.key_color)
+		if subreddit?.display_name
+			AccountData.increment_subreddit_viewcount(subreddit.display_name)
 	)
 	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
 		{ data: widgets } = x
 		search_flair_widget = widgets?.sidebar.find((x) => x.kind == 'post-flair')
 	)
-	AccountData.increment_subreddit_viewcount(name.toLowerCase())
 
 svelte:head
 	title {name.toLowerCase()}
@@ -143,7 +142,7 @@ svelte:head
 				SubredditRules(name={name})
 		{:else if tab === 'posts'}
 			nav.subreddit-posts-header
-				data.subreddit-posts-current-page {subreddit.accounts_active}
+				data.subreddit-posts-current-page
 				menu.subreddit-posts-options
 					ButtonFrame
 						menu.subreddit-posts-options-sort
@@ -160,7 +159,7 @@ svelte:head
 								Feed(after_id={after_id} filter={filter} sort={sort} subreddit_name={name} time_range={time_range} type='subreddit_posts')
 		{:else if tab === 'search'}
 			nav.subreddit-posts-header
-				data.subreddit-posts-current-page {subreddit.accounts_active}
+				data.subreddit-posts-current-page
 				ButtonFrame
 					menu.subreddit-posts-options-search
 						Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search: search, feed_sort: value, subpage: 'search', subreddit_name: name }) }) } activated={true} options={tabs_array(tabs.search.sorts)} selected={sort})
