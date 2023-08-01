@@ -152,8 +152,11 @@ export default extract = (rawData, sourceID) ->
 					video_url = new URL(video.fallback_url)
 					post.media[0].video_url = video_url
 					audio_url = new URL(video_url)
-					if /DASH_[0-9]+\./.test(audio_url.pathname)
-						# Newer videos.
+					if post.created_utc >= 1690502400
+						# Newest videos (uploaded after approx. 2023-7-27)
+						audio_url.pathname = audio_url.pathname.replaceAll(/DASH_[0-9]+/g, 'DASH_AUDIO_64')
+					else if /DASH_[0-9]+\./.test(audio_url.pathname)
+						# Somewhat older videos (uploaded approx. 2020 to 2023-7-27)
 						audio_url.pathname = audio_url.pathname.replaceAll(/DASH_[0-9]+/g, 'DASH_audio')
 					else
 						# Older videos.
