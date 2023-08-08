@@ -28,8 +28,11 @@ script.
 	multireddit = null
 	set_theme_colors = getContext('set_theme_colors')
 	tabs =
-		_order: ->
-			['posts', 'search', 'about']
+		_order: (user_name) ->
+			if user_name is 'r'
+				['posts', 'search']
+			else
+				['posts', 'search', 'about']
 		about:
 			label: 'About'
 		posts:
@@ -74,7 +77,7 @@ script.
 				top:
 					label: 'Highest Score'
 	tabs_array = (tabs) ->
-		tabs._order().map((x) -> { ...tabs[x], value: x })
+		tabs._order(user_name).map((x) -> { ...tabs[x], value: x })
 
 	api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) ->
 		{ data: multireddit, error } = x
@@ -84,7 +87,7 @@ script.
 	)
 
 svelte:head
-	title {user_name.toLowerCase()}-{multireddit_name.toLowerCase()}
+	title {user_name.toLowerCase()}/{multireddit_name.toLowerCase()}
 {#if error}
 	{#if error.code === 403}
 		Error(message="Only approved users can access this multireddit." title="Private multireddit")

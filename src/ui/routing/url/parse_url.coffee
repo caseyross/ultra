@@ -73,11 +73,17 @@ export default (url) ->
 		path.shift()
 	if path.at(-1) is ''
 		path.pop()
+	# If no path parameters, treat as r/popular or user's subscribed listing depending on whether user is logged in.
+	if !path[0]?
+		if api.getUser()
+			path.splice(0, 3, 'u', 'r', 'subscribed')
+		else
+			path.splice(0, 2, 'r', 'popular')
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?
 		path.shift()
 	# Treat top-level paths as subreddit names unless we know otherwise.
-	if path[0]? and path[0] not in RECOGNIZED_PRIMARY_PATH_SEGMENTS
+	if path[0] not in RECOGNIZED_PRIMARY_PATH_SEGMENTS
 		path.splice(0, 0, 'r')
 	# Convert r/all and r/popular to normal multireddit format.
 	if path[0] is 'r' and path[1] in ['all', 'popular']
@@ -98,13 +104,6 @@ export default (url) ->
 		path.splice(0, 0, 'r', 'reddit.com')
 	[ a, b, c, d, e, f, g ] = path
 	switch a
-		when undefined
-			page = 'directory'
-			if api.getUser()
-				preload.push(api.ID('account_subreddits_subscribed', 100))
-				preload.push(api.ID('account_multireddits_owned', 100))
-			else
-				feed.base_page_id = api.ID('subreddits_popular', 25)
 		when 'c', 'collection'
 			page = 'collection'
 			feed.collection_id = b
@@ -217,7 +216,8 @@ export default (url) ->
 		when 'u', 'user'
 			page = 'user'
 			feed.user_name = b
-			preload.push(api.ID('user', feed.user_name))
+			if feed.user_name != 'r'
+				preload.push(api.ID('user', feed.user_name))
 			switch c
 				when undefined, 'comments'
 					subpage = 'comments'

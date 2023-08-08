@@ -5,7 +5,6 @@ script.
 
 	import AllGlobals from '../component/global/AllGlobals.pug'
 	import Collection from '../component/collection/Collection.pug'
-	import Directory from '../component/directory/Directory.pug'
 	import Multireddit from '../component/multireddit/Multireddit.pug'
 	import Post from '../component/post/Post.pug'
 	import Subreddit from '../component/subreddit/Subreddit.pug'
@@ -108,8 +107,6 @@ AllGlobals
 	{#if page === 'collection'}
 		{#key feed.collection_id}
 			Collection(id={feed.collection_id} subreddit_name={feed.subreddit_name} tab={subpage})
-	{:else if page === 'directory'}
-		Directory
 	{:else if page === 'multireddit'}
 		{#key feed.multireddit_name}
 			{#key feed.user_name}
