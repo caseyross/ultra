@@ -21,21 +21,28 @@ export default extract = (rawData, sourceID) ->
 			if !Array.isArray(repliesListing) then repliesListing = []
 			# Detect and process a "more comments" object in the comment's replies.
 			if repliesListing.at(-1)?.kind is 'more'
+				comments_sort =
+					switch ID.type(sourceID)
+						when 'post' then ID.var(sourceID, 2) ? 'confidence'
+						when 'post_more_replies' then ID.var(sourceID, 2)
+						else 'confidence'
 				more = repliesListing.pop().data
 				if more.id is '_'
 					comment.deeper_replies = true
+					comment.deeper_replies_id = ID(
+						'post',
+						comment.link_id[3..],
+						comments_sort,
+						ID.var(sourceID, 3),
+						comment.id
+					)
 				else if more.count
 					comment.num_more_replies = more.count
 					comment.more_replies = if more.children.length then more.children else [more.id]
-					more_replies_sort =
-						switch ID.type(sourceID)
-							when 'post' then ID.var(sourceID, 2) ? 'confidence'
-							when 'post_more_replies' then ID.var(sourceID, 2)
-							else 'confidence'
 					comment.more_replies_id = ID(
 						'post_more_replies',
 						comment.link_id[3..],
-						more_replies_sort,
+						comments_sort,
 						ID.var(sourceID, 3),
 						comment.id,
 						comment.more_replies.join(',')
