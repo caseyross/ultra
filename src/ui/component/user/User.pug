@@ -60,7 +60,7 @@ script.
 	set_theme_colors()
 
 svelte:head
-	title {name.toLowerCase()}
+	title u/{user?.name || name}
 {#if error}
 	{#if error.code === 404}
 		Error(message="This user may be suspended or banned, or there may not be an account with that name." title="User not found")
@@ -120,17 +120,17 @@ svelte:head
 
 style.
 	.user
-		width 480px
+		width 520px
 	.user-basic-info
 		align-items flex-end
 		display grid
-		gap 32px
+		gap 16px
 		grid-template-columns 64px 1fr
 		justify-items flex-start
 	.user-content
 		margin-top 2em
 	.user-content-options
-		margin-left 96px
+		margin-left 80px
 		margin-top 10px
 	.user-trophies
 		display flex

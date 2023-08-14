@@ -1,9 +1,14 @@
 // Imports
 @font-face
-	font-family 'Inter'
-	font-style normal italic
-	font-weight 100 900
-	src url('../../../vendor/inter_100_900.woff2')
+	font-family 'Arimo'
+	font-style normal
+	font-weight 400 700
+	src url('../../../vendor/arimo_400_700.woff2')
+@font-face
+	font-family 'Arimo'
+	font-style italic
+	font-weight 400 700
+	src url('../../../vendor/arimo_400_700_i.woff2')
 
 // Baseline resets
 *
@@ -23,16 +28,14 @@
 html
 	font-size 15px // declared here for em/rem sizing
 body
-	background-color var(--c-subreddit-theme)
-	color var(--c-subreddit-theme-text)
+	background-color var(--c-page-bg)
+	color var(--c-page-text)
 	display grid
-	font-family 'Inter'
-	font-feature-settings 'ss01'
-	font-weight var(--f-wght-weak)
+	font-family Arimo, Arial, sans-serif
 	grid-auto-flow row
 	grid-template-columns 1fr
 	letter-spacing calc(1px/6)
-	line-height calc(5/3)
+	line-height 1.4
 	margin-inline-start calc(100vw - 100%) // compensate for scrollbar offset (would prefer `scrollbar-gutter` but it has big issues)
 	padding 24px
 	place-items center
@@ -41,9 +44,9 @@ body
 	--c-author-admin red
 	--c-author-mod darkseagreen
 	--c-author-op cornflowerblue
-	--c-comment-bg white
-	--c-comment-text var(--c-subreddit-theme)
 	--c-hint-normal wheat
+	--c-page-bg white
+	--c-page-text black
 	--c-score-0 #e3e6eb
 	--c-score-1 antiquewhite
 	--c-score-2 wheat
@@ -51,9 +54,9 @@ body
 	--c-score-4 coral
 	--c-shade-weak rgba(0,0,0,0.125)
 	--c-shade-strong rgba(0,0,0,0.50)
-	--c-subreddit-theme-default coral
-	--c-subreddit-theme-secondary-default darkseagreen
+	--c-subreddit-theme-default lightsalmon
 	--c-subreddit-theme-text-default white
+	--c-theme #c6ecff
 .color-strategy-black-text
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -102,7 +105,7 @@ blockquote
 	color var(--c-text-weak)
 	font-size 13px
 	line-height 1.333
-	margin 1rem 0 0
+	margin 0.666rem 0 0
 	padding-left 1em
 cite
 	font-style normal
@@ -116,14 +119,14 @@ kbd
 hr
 	border 0
 	border-bottom 1px solid
-	margin 1em auto 0
+	margin 0.666em auto 0
 	width 100%
 menu
 	padding 0
 p
-	margin 1em 0 0
+	margin 0.666em 0 0
 pre
-	margin 1em 0 0
+	margin 0.666em 0 0
 	overflow auto
 	white-space pre-line
 sub
@@ -141,19 +144,22 @@ sup
 		line-height 1
 		margin 2rem 0 0
 	h1
-		font-size 2.333em
+		font-size 2.25em
 		letter-spacing -2px
 	h2
-		font-size 2em
+		font-size 1.8em
 		letter-spacing -1.333px
 	h3
-		font-size 1.333em
-		letter-spacing -0.333px
+		font-size 1.5em
+		letter-spacing -1px
 	h4
+		font-size 1.2em
+		letter-spacing -0.333px
 	h5
 	h6
-		font-size 1em
-		line-height inherit
+		font-size inherit
+	h5
+	h6
 	b
 	strong
 		font-weight var(--f-wght-strong)
@@ -180,13 +186,19 @@ ul
 	ol
 	ul
 		counter-reset list
-		margin 1em 0 0
+		margin 0.333em 0 0
 	li
 		counter-increment list
-		margin 1em 0 0
-		margin-left 20px
-		padding-left 1em
+		margin 0.333em 0 0
+		padding-left 1ch
 		position relative
+		&::before
+			position absolute
+			right 100%
+			top 0
+			white-space pre
+	ol > li
+		margin-left 2ch
 		&::before
 			align-items center
 			background var(--c-blend-weak)
@@ -199,33 +211,34 @@ ul
 			justify-content center
 			margin 0.25em 0
 			padding 0 0.5em
-			position absolute
-			right 100%
-			top 0
-			white-space pre
-	ul > li::before
-		content '⁃'
-		width 1ch
+	ul > li
+		margin-left 1ch
+		&::before
+			content '–'
 
 // Tables
 .md
 	table
 		border-collapse collapse
+		font-family monospace
 		font-feature-settings 'ss01', 'tnum'
 		font-size 0.8em
 		letter-spacing 0.666px
 		line-height 1.333
 		margin 1.333rem 0 0
 		overflow-wrap normal
+		word-break break-all
+	tbody tr:nth-child(odd)
+		background var(--c-blend-faint)
 	td
 	th
 		padding 0.5em
 		text-align left
 	td
-		border 1px solid var(--c-text-faint)
+		border-left 1px solid var(--c-text-faint)
 		vertical-align top
 	th
-		border 1px solid transparent
+		border-left 1px solid transparent
 		border-bottom-color var(--c-text-faint)
 		font-weight var(--f-wght-strong)
 		font-size 10px
@@ -250,7 +263,7 @@ summary
 	user-select none
 	word-spacing inherit
 details
-	margin 1em 0 0
+	margin 0.666em 0 0
 summary
 	&:hover::marker
 		color var(--c-hint-normal)
@@ -266,5 +279,5 @@ video
 	display block
 	max-width 100%
 .md img
-	border-radius 1em
-	margin 1em 0 0
+	border-radius 12px
+	margin 0.666em 0 0

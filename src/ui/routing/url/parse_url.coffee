@@ -3,11 +3,11 @@ import api from '../../../api/index.js'
 FEED_PAGE_SIZE = 10
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
-POST_COMMENTS_INITIAL_SIZE = 25
+POST_COMMENTS_INITIAL_SIZE = 200
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
-	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'live', 'login', 'message', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
+	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'live', 'login', 'media', 'message', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
 RECOGNIZED_SUBREDDIT_PATH_SEGMENTS =
-	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'posts', 'rules', 'search', 'submit', 'w', 'wiki']
+	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'posts', 'rules', 's', 'search', 'submit', 'w', 'wiki']
 RECOGNIZED_USER_PATH_SEGMENTS =
 	['comments', 'downvoted', 'gilded', 'hidden', 'm', 'messages', 'overview', 'posts', 'saved', 'submitted', 'upvoted']
 SORT_OPTIONS_FEED = 
@@ -198,6 +198,8 @@ export default (url) ->
 						page = 'subreddit'
 						subpage = 'rules'
 						preload.push(api.ID('subreddit_rules', feed.subreddit_name))
+					when 's'
+						page = 'external'
 					when 'search'
 						page = 'subreddit'
 						subpage = 'search'

@@ -23,7 +23,7 @@ export default ({
 		if subreddit_name
 			path.push(subreddit_name)
 		else
-			path.push('p')
+			path.push('post')
 		path.push(post_id)
 		if post_comments_sort
 			query.set('comment_sort', post_comments_sort)
@@ -33,13 +33,13 @@ export default ({
 			query.set('context', post_focus_comment_parent_count)
 	else if wikipage_name
 		path.push(subreddit_name)
-		path.push('w')
+		path.push('wiki')
 		for segment in wikipage_name.split('/')
 			path.push(segment)
 		if wikipage_version
 			query.set('v', wikipage_version)
 	else if collection_id
-		path.push('c')
+		path.push('collection')
 		path.push(collection_id)
 	else if multireddit_name
 		path.push('u')

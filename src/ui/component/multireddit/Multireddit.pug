@@ -41,7 +41,7 @@ script.
 				all:
 					label: 'All'
 				unread:
-					label: 'Unread Only'
+					label: 'Unread'
 			label: 'Posts'
 			sorts:
 				_order: -> ['hot', 'new', 'other']
@@ -87,7 +87,15 @@ script.
 	)
 
 svelte:head
-	title {user_name.toLowerCase()}/{multireddit_name.toLowerCase()}
+	{#if user_name === 'r'}
+		{#if multireddit_name === 'all'}
+			title r/all
+		{:else if multireddit_name === 'popular'}
+			title r/popular
+		{:else if multireddit_name === 'subscribed'}
+			title your frontpage
+	{:else}
+		title {user_name}/{multireddit_name}
 {#if error}
 	{#if error.code === 403}
 		Error(message="Only approved users can access this multireddit." title="Private multireddit")
@@ -141,15 +149,15 @@ svelte:head
 
 style.
 	.multireddit
-		padding-right 96px
-		width 672px
+		padding-right 80px
+		width 520px
 	.multireddit-content
 		margin-top 2em
-		padding-left 96px
+		padding-left 80px
 	.multireddit-header
 		align-items flex-end
 		display grid
-		gap 32px
+		gap 16px
 		grid-template-columns 64px 1fr
 		justify-items flex-start
 	.multireddit-header-options
@@ -165,13 +173,15 @@ style.
 	.multireddit-posts-header
 		align-items flex-start
 		display grid
-		gap 32px
+		gap 16px
 		grid-template-columns 64px 1fr
 		justify-items flex-start
 		margin-top 10px
 	.multireddit-posts-options
+		align-items flex-start
 		display flex
 		gap 5px
 	.multireddit-posts-options-sort
+		align-items flex-start
 		display flex
 		gap 2px

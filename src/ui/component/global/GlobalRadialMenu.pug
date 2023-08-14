@@ -62,6 +62,8 @@ script.
 				if element
 					target_element = element
 					menu = available_menus[target_element.dataset.radialMenu]
+					if !menu
+						return
 					menu_variant = get_modifier_keys(event)
 					choice = 0
 					position = [event.x - x_correction, event.y] 
@@ -91,7 +93,7 @@ slot
 {#if active && menu[menu_variant]?.(target_element.dataset)}
 	{@const choices = menu[menu_variant](target_element.dataset)}
 		menu.radial-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px')
-			figure.radial-menu-icon.radial-menu-icon-center 🗙
+			figure.radial-menu-icon.radial-menu-icon-center •
 			figure.radial-menu-icon.radial-menu-icon-north(class:radial-menu-icon-selected={choice === 1}) {choices.N?.icon || ''}
 			figure.radial-menu-icon.radial-menu-icon-west(class:radial-menu-icon-selected={choice === 4}) {choices.W?.icon || ''}
 			figure.radial-menu-icon.radial-menu-icon-east(class:radial-menu-icon-selected={choice === 2}) {choices.E?.icon || ''}
@@ -100,6 +102,8 @@ slot
 style.
 	.radial-menu
 		align-items center
+		border 1px solid orangered
+		border-radius 50%
 		cursor default
 		display flex
 		font-size 1.5em
@@ -115,7 +119,7 @@ style.
 		&.radial-menu-icon-selected
 			font-size 2em
 	.radial-menu-icon-center
-		color salmon
+		color orangered
 	.radial-menu-icon-east
 		left 100%
 	.radial-menu-icon-north
