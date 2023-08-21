@@ -80,10 +80,10 @@ module.exports = {
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
-			favicon: './src/ui/component/shared/icons/logo.svg',
+			favicon: './src/ui/icon/logo.svg',
 			inject: false, // manual script placement in template
 			publicPath: '/',
-			template: './src/ui/component/global/index.html',
+			template: './src/ui/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
 			scriptMatchPattern: [/^runtime/, /^preboot/] // avoid add'l network roundtrip on critical path

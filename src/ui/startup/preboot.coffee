@@ -1,5 +1,5 @@
 import api from '../../api/index.js'
-import { parse_url } from '../routing/url.coffee'
+import { parse_url } from '../url/index.js'
 
 # Set the API config from environment vars and query params.
 query = new URLSearchParams(location.search)

@@ -1,0 +1,44 @@
+script.
+	import { createEventDispatcher } from 'svelte'
+	
+	import { virtual_hotkeys } from '../../action/hotkeys.coffee'
+
+	dispatch = createEventDispatcher()
+	hotkeys =
+		'Escape': -> dispatch('close')
+
+.popup(role='dialog' use:virtual_hotkeys={hotkeys})
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	.popup-overlay(on:mousedown={() => dispatch('close')})
+	<!-- svelte-ignore a11y-autofocus -->
+	.popup-body(autofocus)
+		slot
+
+style.
+	.popup
+		align-items center
+		display flex
+		justify-content center
+		height 100dvh
+		left 0
+		position fixed
+		top 0
+		width 100dvw
+		z-index 10
+	.popup-body
+		background var(--c-subreddit-theme)
+		border-radius 12px
+		box-shadow 0 0 24px var(--c-blend-weak)
+		color var(--c-subreddit-theme-text)
+		max-height 96dvh
+		max-width 700px
+		overflow auto
+		padding 2em
+		position relative
+	.popup-overlay
+		background var(--c-shade-strong)
+		height 100%
+		left 0
+		position absolute
+		top 0
+		width 100%

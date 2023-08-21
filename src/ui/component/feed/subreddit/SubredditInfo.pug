@@ -1,0 +1,37 @@
+script.
+	import api from '../../../../api/index.js'
+
+	import FormattedHTML from '../../common/FormattedHTML.pug'
+	import SubredditWidget from './SubredditWidget.pug'
+
+	export name = null
+	
+	subreddit = null
+	widgets = null
+
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit } = x
+	)
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+	)
+
+aside.subreddit-info
+	{#if subreddit}
+		{#if subreddit.public_description_html}
+			FormattedHTML(html={subreddit.public_description_html})
+	{#if widgets}
+		ol.subreddit-info-widgets
+			{#each widgets.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')) as widget}
+				SubredditWidget(widget={widget})
+
+style.
+	.subreddit-info
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		width 320px
+	.subreddit-info-widgets
+		display flex
+		flex-flow column nowrap
+		gap 0.666em

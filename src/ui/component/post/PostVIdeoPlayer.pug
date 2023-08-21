@@ -1,0 +1,286 @@
+script.
+	import { onMount } from 'svelte'
+
+	import { Time } from '../../../lib/index.js'
+	import { virtual_hotkeys } from '../../action/hotkeys.coffee'
+	import AccountState from '../../state/AccountState.coffee'
+	
+	import Button from '../common/Button.pug'
+	
+	export audio_url = null
+	export height = 480
+	export video_url = null
+	export width = 480
+
+	audio = null
+	buffer_gradient_params = (buffer_regions) ->
+		params = 'transparent 0%,'
+		for region in buffer_regions
+			start = (region.start / duration * 100) + '%'
+			end = (region.end / duration * 100) + '%'
+			params += " transparent #{start}, var(--c-text-faint) #{start}, var(--c-text-faint) #{end}, transparent #{end},"
+		params = params + ' transparent 100%'
+	buffer_regions = []
+	clamp = (min, max, value) ->
+		if value < min then return min
+		if value > max then return max
+		return value
+	duration = 0
+	ended = false
+	fullscreen = false
+	mouse_idle = false
+	mouse_idle_timer_id = null
+	paused = true
+	play_pause = ->
+		if ended
+			set_time(0)
+			video.play().catch(-> null)
+		else if paused
+			video.play().catch(-> null)
+		else
+			video.pause()
+	player = null
+	reactive_time = 0
+	set_time = (value) ->
+		if !waiting_for_seek
+			video.currentTime = clamp(0, duration, value)
+			audio?.currentTime = video.currentTime
+	set_volume = (value) ->
+		audio.volume = clamp(0, 1, value)
+		AccountState.set_media_volume(audio.volume)
+	scrobbler = null
+	toggle_fullscreen = ->
+		document.activeElement.blur() # prevent browser from forcing focus style for buttons on fullscreen change
+		if fullscreen
+			document.exitFullscreen()
+		else
+			player.requestFullscreen()
+	volume_mixer = null
+	video = null
+	waiting_for_seek = false
+	wake_mouse = ->
+		mouse_idle = false
+		clearTimeout(mouse_idle_timer_id)
+		mouse_idle_timer_id = setTimeout(
+			-> mouse_idle = true
+			200
+		)
+
+	additional_hotkeys =
+		' ': ->
+			if fullscreen
+				play_pause()
+			else
+				false
+		ArrowDown: ->
+			set_volume(audio.volume - 0.25)
+		ArrowLeft: ->
+			set_time(video.currentTime - 5)
+		ArrowRight: ->
+			set_time(video.currentTime + 5)
+		ArrowUp: ->
+			set_volume(audio.volume + 0.25)
+		j: ->
+			set_time(video.currentTime - 10)
+		l: ->
+			set_time(video.currentTime + 10)
+		m: ->
+			if audio.volume > 0
+				AccountState.set_media_premute_volume(audio.volume)
+				set_volume(0)
+			else
+				set_volume(AccountState.get_media_premute_volume() or 0.5)
+
+	onMount ->
+		audio.volume = AccountState.get_media_volume() or 0
+		player.addEventListener('fullscreenchange', (e) ->
+			if document.fullscreenElement? and document.fullscreenElement is player
+				fullscreen = true
+				mouse_idle = true
+			else
+				fullscreen = false
+		)
+		scrobbler.addEventListener('keydown', (e) ->
+			if e.key != 'Tab'
+				e.preventDefault()
+		)
+		video.addEventListener('ended', (e) ->
+			if fullscreen
+				document.exitFullscreen()
+		)
+		video.addEventListener('mousedown', (e) ->
+			if e.button is 0
+				if fullscreen
+					play_pause()
+					wake_mouse()
+				else
+					player.requestFullscreen()
+					if paused
+						play_pause()
+		)
+		video.addEventListener('mousemove', (e) ->
+			if fullscreen
+				wake_mouse()
+		)
+		video.addEventListener('pause', (e) ->
+			audio?.pause()
+		)
+		video.addEventListener('playing', (e) ->
+			audio?.play().catch(-> null) # ignore useless errors from bad API design
+		)
+		video.addEventListener('seeking', (e) ->
+			waiting_for_seek = true
+		)
+		video.addEventListener('seeked', (e) ->
+			waiting_for_seek = false
+		)
+		video.addEventListener('timeupdate', (e) ->
+			scrobbler?.value = video?.currentTime # note: conditionals needed because event can trigger after element unmount (!)
+			reactive_time = video?.currentTime
+		)
+		video.addEventListener('waiting', (e) ->
+			audio?.pause()
+		)
+		volume_mixer.addEventListener('keydown', (e) ->
+			if e.key != 'Tab'
+				e.preventDefault()
+		)
+
+figure.media-player(bind:this={player}class:color-strategy-white-text={fullscreen} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' title='' use:virtual_hotkeys={additional_hotkeys})
+	audio(bind:this={audio})
+		source(src={audio_url} type='audio/mp4')
+	<!-- svelte-ignore a11y-media-has-caption -->
+	video(bind:buffered={buffer_regions} bind:duration={duration} bind:ended={ended} bind:paused={paused} bind:this={video} style='height: {height}px; width: {width}px')
+		source(src={video_url} type='video/mp4')
+	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
+	menu.media-player-controls
+		Button(action={play_pause} activated={!paused} description='Play / pause' key='k' text="▶／◼ {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
+		.media-scrobbler(title='Drag left or right to change playback position')
+			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
+			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
+		.media-volume(title='Drag left or right to change volume')
+			figure.media-volume-graphics
+				span.media-volume-bar.media-volume-bar-mute(class:media-volume-bar-filled={audio?.volume == 0}) x
+				{#each [0.25, 0.5, 0.75, 1] as value}
+					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
+			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
+		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text='⟷')
+
+style.
+	audio
+		display none
+	video
+		background black
+		&::-webkit-media-controls
+			display none
+		:fullscreen &
+			height 100% !important
+			width 100% !important
+		.media-player-controls-hidden &
+			cursor none
+	.media-player
+		position relative
+		&:fullscreen
+			height 100%
+			width 100%
+	.media-player-controls
+		display flex
+		font-feature-settings 'calt', 'ss01', 'tnum'
+		gap 8px
+		padding 8px
+		:fullscreen &
+			bottom 0
+			left 0
+			padding 1em 25vw
+			position fixed
+			transition opacity 0.5s
+			width 100vw
+		.media-player-controls-hidden &:not(:hover)
+			opacity 0
+	.media-player-video-hint-overlay
+		align-items center
+		background rgba(0,0,0,0.5)
+		color white
+		display flex
+		justify-content center
+		left 0
+		opacity 0
+		pointer-events none
+		position absolute
+		top 0
+		.media-player:not(:fullscreen) video:hover + &
+			opacity 1
+	.media-scrobbler
+		align-items center
+		background var(--c-blend-weak)
+		border-radius 6px
+		display flex
+		flex 1
+		position relative
+	.media-scrobbler-graphics
+		border-radius inherit
+		height 100%
+		user-select none
+		width 100%
+	.media-scrobbler-input
+		appearance none
+		background transparent
+		height 100%
+		left 0
+		padding inherit
+		position absolute
+		top 0
+		width 100%
+		&::-moz-range-thumb
+			appearance none
+			background var(--c-hint-normal)
+			border-radius 3px
+			height 24px
+			width 4px
+		&::-webkit-slider-thumb
+			appearance none
+			background var(--c-hint-normal)
+			border-radius 3px
+			height 24px
+			width 4px
+	.media-volume
+		background var(--c-blend-weak)
+		border-radius 6px
+		padding 0 6px
+		position relative
+	.media-volume-bar
+		background var(--c-text-faint)
+		border-radius 3px
+		width 6px
+	.media-volume-bar-filled
+		background var(--c-text-strong)
+		color var(--c-text-strong) !important
+	.media-volume-bar-mute
+		align-self flex-start
+		background none !important
+		color var(--c-text-faint)
+		font-weight var(--f-wght-strong)
+		left 1px
+		line-height 1
+		position relative
+		top -5px
+	.media-volume-graphics
+		align-items flex-end
+		display flex
+		gap 3px
+		height 100%
+		padding 5px 0
+		user-select none
+	.media-volume-input
+		appearance none
+		background transparent
+		left 0
+		height 100%
+		padding 0 4px
+		position absolute
+		top 0
+		width 100%
+		&::-moz-range-thumb
+			visibility hidden
+		&::-webkit-slider-thumb
+			visibility hidden

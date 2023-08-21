@@ -1,0 +1,50 @@
+script.
+	import api from '../../../../api/index.js'
+	
+	import Error from '../../common/Error.pug'
+	import FormattedHTML from '../../common/FormattedHTML.pug'
+
+	export name = null
+	
+	error = null
+	loading = null
+	rules = null
+	
+	api.loadWatch(api.ID('subreddit_rules', name), (x) ->
+		{ data: combined_rules, error, loading } = x
+		rules = combined_rules?.rules # get only subreddit rules, not global rules
+		if rules
+			rules.sort((a, b) -> a.priority - b.priority) # ensure rules are in order
+	)
+
+{#if error}
+	Error(message='Error loading rules.')
+{:else if rules}
+	.md
+		ol.subreddit-rules
+			{#each rules as rule}
+				li.subreddit-rule
+					h1.subreddit-rule-name {rule.short_name}
+					{#if rule.description_html}
+						.subreddit-rule-description
+							FormattedHTML(html={rule.description_html})
+			{:else}
+				.subreddit-rules-empty No rules on record.
+{:else if loading}
+	p Loading...
+
+style.
+	.subreddit-rule
+		margin-top 2em
+	.subreddit-rule-description
+		margin-top 0.333em
+	.subreddit-rule-name
+		font-size inherit
+		font-feature-settings 'calt', 'cpsp', 'ss01'
+		letter-spacing 0
+		line-height inherit
+		text-transform uppercase
+	.subreddit-rules
+		width 320px
+	.subreddit-rules-empty
+		color var(--c-text-weak)

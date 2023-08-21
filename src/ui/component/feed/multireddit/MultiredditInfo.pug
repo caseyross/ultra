@@ -1,0 +1,28 @@
+script.
+	import api from '../../../../api/index.js'
+
+	import FormattedHTML from '../../common/FormattedHTML.pug'
+	import SubredditWidget from '../subreddit/SubredditWidget.pug'
+
+	export multireddit_name = null
+	export user_name = null
+	
+	multireddit = null
+
+	api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) ->
+		{ data: multireddit } = x
+	)
+
+aside.multireddit-info
+	{#if multireddit}
+		{#if multireddit.description_html}
+			FormattedHTML(html={multireddit.description_html})
+		{#if multireddit.subreddits}
+			SubredditWidget(widget={{ data: multireddit.subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Subreddits in this multireddit' }})
+
+style.
+	.multireddit-info
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		width 480px

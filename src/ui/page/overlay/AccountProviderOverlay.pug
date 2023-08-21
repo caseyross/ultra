@@ -1,0 +1,27 @@
+script.
+	import api from '../../../api/index.js'
+
+	import Crash from '../../Crash.pug'
+	
+	status = api.getLoginStatus()
+	user_loaded = false
+	user_load_error = null
+
+	if status is 'logged-in'
+		if api.getUser()
+			user_loaded = true
+		else
+			api.loadWatch('account',
+				(x) ->
+					if x?.error
+						user_load_error = x.error
+						user_load_error.message = "Could not retrieve your user details. This is likely an issue on Reddit's side --- try again later."
+					else if x?.data?.name
+						api.setUser(x.data.name)
+						user_loaded = true
+			)
+
+{#if user_load_error}
+	Crash(error={user_load_error})
+{:else if (status === 'logged-in' && user_loaded) || (status === 'logged-out')}
+	slot

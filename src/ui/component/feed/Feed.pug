@@ -1,15 +1,15 @@
 script.
 	import api from '../../../api/index.js'
-	import { format_url } from '../../routing/url.coffee'
-	import AccountData from '../shared/AccountData.coffee'
+	import { format_url } from '../../url/index.js'
+	import AccountState from '../../state/AccountState.coffee'
 	
-	import Button from '../shared/Button.pug'
-	import Comment from '../comment/Comment.pug'
-	import Error from '../shared/Error.pug'
-	import FeedLink from '../feed/FeedLink.pug'
+	import Button from '../common/Button.pug'
+	import Comment from '../post/Comment.pug'
+	import Error from '../common/Error.pug'
+	import FeedLink from './FeedLink.pug'
 	import Message from '../message/Message.pug'
 	import Post from '../post/Post.pug'
-	import Success from '../shared/Success.pug'
+	import Success from '../common/Success.pug'
 
 	export after_id = null
 	export after_id_type = null
@@ -82,7 +82,7 @@ script.
 		if !error and !loading and data
 			items = data?.posts or data
 			if type.endsWith('_posts')
-				read = items.map((x) -> AccountData.check_post_read(x))
+				read = items.map((x) -> AccountState.check_post_read(x))
 			else
 				read = items.map((x) -> false)
 	)

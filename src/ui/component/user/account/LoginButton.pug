@@ -1,0 +1,23 @@
+script.
+	import api from '../../../../api/index.js'
+
+	import Button from '../../common/Button.pug'
+
+	scopes = [
+		'account'
+		'edit'
+		'history'
+		'identity'
+		'modposts'
+		'mysubreddits'
+		'privatemessages'
+		'read'
+		'report'
+		'save'
+		'structuredstyles'
+		'subscribe'
+		'vote'
+		'wikiread'
+	]
+
+Button(link={api.getLoginURL({ memoString: location.pathname, scopeArray: scopes })} text='Login → ')

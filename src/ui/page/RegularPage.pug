@@ -1,0 +1,37 @@
+script.
+	import Collection from '../component/feed/collection/Collection.pug'
+	import Multireddit from '../component/feed/multireddit/Multireddit.pug'
+	import Post from '../component/post/Post.pug'
+	import Subreddit from '../component/feed/subreddit/Subreddit.pug'
+	import SubredditWikiPage from '../component/feed/subreddit/SubredditWikiPage.pug'
+	import User from '../component/user/User.pug'
+
+	export feed = null
+	export page = null
+	export post = null
+	export subpage = null
+	export wiki = null
+
+{#if page === 'collection'}
+	{#key feed.collection_id}
+		Collection(id={feed.collection_id} subreddit_name={feed.subreddit_name} tab={subpage})
+{:else if page === 'multireddit'}
+	{#key feed.multireddit_name}
+		{#key feed.user_name}
+			Multireddit(after_id={feed.after_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range} user_name={feed.user_name})
+{:else if page === 'post'}
+	{#key post.id}
+		{#key post.focus_comment_id}
+			{#key post.focus_comment_parent_count}
+				Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
+{:else if page === 'subreddit'}
+	{#key feed.subreddit_name}
+		Subreddit(after_id={feed.after_id} filter={feed.filter} name={feed.subreddit_name} search={feed.search} sort={feed.sort} tab={subpage} time_range={feed.time_range})
+{:else if page === 'user'}
+	{#key feed.user_name}
+		User(after_id={feed.after_id} after_id_type={feed.after_id_type} filter={feed.filter} name={feed.user_name} sort={feed.sort} tab={subpage} time_range={feed.time_range})
+{:else if page === 'wiki'}
+	{#key wiki.subreddit_name}
+		{#key wiki.page_name}
+			{#key wiki.page_version}
+				SubredditWikiPage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
