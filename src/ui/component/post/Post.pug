@@ -146,7 +146,7 @@ svelte:head
 		article.post(class:post-downvoted={post.likes === false} class:post-upvoted={post.likes === true} class:post-with-low-score={post.score < 1} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)})
 			header.post-header
 				{#if api.isLoggedIn()}
-					button.post-score(data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null}) {post.hide_score ? '?' : post.score}
+					button.post-score(data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null}) {post.hide_score ? '?' : post.score}
 				{:else}
 					data.post-score {post.hide_score ? '?' : post.score}
 				.post-subreddit
