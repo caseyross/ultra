@@ -5,9 +5,11 @@ script.
 	# Line 3: Display pictures instead of links where New Reddit does so.
 	# Line 4: Normalize problematic <li>[TEXT NODE]<[ANY TAG]></li> markup from server (breaks CSS `:first-child` expectation).
 	formatted = html
+	# Line 5: Remove paragraphs containing only empty spaces.
 		.replace(/<a href="https?:\/\/redd\.it\/(?<path>[^"]*)"[^>]*>/g, '<a href="/post/$<path>">')
 		.replace(/<a href="https?:\/\/(?:(?:new|np|old|www)\.)?reddit\.com\/(?<path>[^"]*)"[^>]*>/g, '<a href="/$<path>">')
 		.replace(/<a href="https:\/\/(?<subdomain>preview)\.redd\.it\/(?<filepath>[^"]+)">(?<linktext>[^<]*)<\/a>/g, '<a href="https://$<subdomain>.redd.it/$<filepath>" target="_blank"><img decoding="async" loading="eager" src="https://$<subdomain>.redd.it/$<filepath>"></a>')
 		.replace(/<li>(?<text>[^<]+)/g, '<li><span>$<text></span>')
+		.replace(/<p>&#x200B;<\/p>/g, '')
 
 {@html formatted}
