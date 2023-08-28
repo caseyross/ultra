@@ -4,8 +4,8 @@ import { parse_url } from '../url/index.js'
 # Set the API config from environment vars and query params.
 query = new URLSearchParams(location.search)
 clientID = process.env.API_CLIENT_ID
-debug = String(query.get('debug') or query.get('log') or process.env.API_DEBUG).toLowerCase() in ['1', 'true']
-redirectURI = process.env.API_REDIRECT_URI
+debug = query.get('debug')? or query.get('log')? or process.env.API_DEBUG?
+redirectURI = location.origin
 api.configure({
 	clientID,
 	debug,
