@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html>
 	<head>
-		<!-- basic info -->
 		<meta charset='utf-8'>
-		<meta name='viewport' content='width=720'>
-		<title>r3</title>
-		<!-- webpack bundle -->
+		<link rel='preconnect' href='https://oauth.reddit.com'>
+		<link rel='dns-prefetch' href='https://i.redd.it'>
+		<link rel='dns-prefetch' href='https://preview.redd.it'>
+		<link rel='dns-prefetch' href='https://v.redd.it'>
+		<title>Arc: a Reddit web client</title>
 		<%= htmlWebpackPlugin.tags.headTags %>
 	</head>
 	<body>
-		<noscript>Turn on JavaScript to connect to Reddit.</noscript>
+		<noscript>Sorry, we can't download any data from Reddit unless you enable Javascript in your web browser.</noscript>
 	</body>
 </html>
