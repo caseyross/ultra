@@ -1,4 +1,4 @@
-export default ({
+export configure = ({
 	clientID,
 	debug,
 	preloadThreshold,
@@ -10,3 +10,6 @@ export default ({
 	localStorage['api.config.preload_threshold'] = preloadThreshold ? 0.5
 	if redirectURI?
 		localStorage['api.config.redirect_uri'] = redirectURI
+
+export hasClientID = ->
+	localStorage['api.config.client_id']?
