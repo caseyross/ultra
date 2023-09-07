@@ -9,7 +9,7 @@ export put = (endpoint, content) -> call('PUT', endpoint, { content })
 
 call = (method, endpoint, { query = {}, content = {} }) ->
 	new Promise (fulfill) ->
-		if not credentials.valid then throw new errors.NeedCredentials({ message: 'no valid credentials for request' })
+		if not credentials.valid then throw new errors.NeedCredentials({ description: 'no valid credentials for request' })
 		fulfill()
 	.catch ->
 		credentials.renew()
@@ -41,23 +41,26 @@ call = (method, endpoint, { query = {}, content = {} }) ->
 			secondsUntilReset: Number response.headers.get('X-Ratelimit-Reset')
 		})
 		code = response.status
-		if 100 <= code <= 299
-			response.json()
-		else
-			response.json().then (data) ->
-				# Parse "reddit standard" error objects if present.
-				message = data?.json?.errors?[0][1] or data.message
-				reason = data?.json?.errors?[0][0] or data.reason
-				switch
-					when 300 <= code <= 399
-						# Note: GET responses in this range are generally handled pre-emptively by browsers.
-						throw new errors.DataLocationChanged({ code, description: message, reason })
-					when 400 <= code <= 499
-						throw new errors.DataNotAvailable({ code, description: message, reason })
-					when 500 <= code <= 599
-						throw new errors.ServerFailure({ code, description: message, reason })
+		response.json().then (data) ->
+			# Parse "reddit standard" error objects if present.
+			message = data?.json?.errors?[0]?[1] or data.message
+			reason = data?.json?.errors?[0]?[0] or data.reason
+			# NOTE: Almost all API error responses use non-success HTTP codes. However, for at least one endpoint, it's possible to get a 200 code with an error response.
+			switch
+				when 100 <= code <= 299
+					if message or reason
+						throw new errors.Unknown({ description: message, reason })
 					else
-						throw new errors.DataNotAvailable({ code, description: message, reason })
+						return data
+				when 300 <= code <= 399
+					# NOTE: GET responses in this range are generally handled pre-emptively by browsers.
+					throw new errors.DataLocationChanged({ code, description: message, reason })
+				when 400 <= code <= 499
+					throw new errors.DataNotAvailable({ code, description: message, reason })
+				when 500 <= code <= 599
+					throw new errors.ServerFailure({ code, description: message, reason })
+				else
+					throw new errors.Unknown({ description: message, reason })
 	.catch (error) ->
 		if error instanceof errors.Base then throw error
 		throw new errors.Unknown({ cause: error })

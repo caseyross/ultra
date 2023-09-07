@@ -73,7 +73,7 @@ credentials = {
 				if data.refresh_token? then localStorage['api.credentials.exchange_token'] = data.refresh_token
 		.finally ->
 			localStorage['api.credentials.renewing'] = 'FALSE'
-			if not credentials.valid then throw new errors.NeedCredentials({ message: 'failed to acquire valid credentials' })
+			if not credentials.valid then throw new errors.NeedCredentials({ description: 'failed to acquire valid credentials' })
 
 }
 

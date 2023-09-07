@@ -1,3 +1,11 @@
+# These classes wrap API and client code errors so that they can be easily classified and handled.
+#
+# Various properties that may appear on errors:
+#
+# - cause: an Error object that is responsible for triggering the current error
+# - description: a text string describing the error (human-readable)
+# - reason: a text string describing the error (machine-readable)
+
 import { Time } from '../../lib/index.js'
 
 class Base extends Error
@@ -5,8 +13,15 @@ class Base extends Error
 		super(message)
 		@.name = @.constructor.name
 class Unknown extends Base
-	constructor: ({ cause }) ->
-		super(cause.message)
+	constructor: ({ cause, description, reason }) ->
+		if description or reason
+			super([reason, description].join(' / '))
+			@.description = description
+			@.reason = reason
+		else if cause
+			super(cause.message)
+		else
+			super('An unknown error occurred.')
 
 class DataLocationChanged extends Base
 	constructor: ({ code, description, reason }) ->
@@ -34,8 +49,9 @@ class MalformedID extends Base
 		super('"' + id + '"')
 		@.id = id
 class NeedCredentials extends Base
-	constructor: ({ message }) ->
-		super(message)
+	constructor: ({ description }) ->
+		super(description)
+		@.description = description
 class NetworkFailure extends Base
 	constructor: ({ cause }) ->
 		super(cause.message)
