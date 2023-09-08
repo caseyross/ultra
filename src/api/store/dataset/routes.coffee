@@ -129,6 +129,12 @@ export default {
 		})
 	subreddit: (subreddit_name) ->
 		get("/r/#{subreddit_name}/about")
+	subreddit_comments: (subreddit_name, max_comments, after_comment_id) ->
+		get("/r/#{subreddit_name}/comments", {
+			after: after_comment_id and "t1_#{after_comment_id}"
+			limit: max_comments
+			show: 'all'
+		})
 	subreddit_modqueue_comments: (subreddit_name, max_comments, after_comment_id) ->
 		get("/r/#{subreddit_name}/about/modqueue", {
 			after: after_comment_id and "t1_#{after_comment_id}"
