@@ -17,11 +17,7 @@ units =
 	year:
 		abbr: 'y'
 		name: 'year'
-		value: 1000 * 60 * 60 * 24 * 366
-	month:
-		abbr: 'mo'
-		name: 'month'
-		value: 1000 * 60 * 60 * 24 * 31
+		value: 1000 * 60 * 60 * 24 * 365
 	week:
 		abbr: 'w'
 		name: 'week'
@@ -35,7 +31,7 @@ units =
 		name: 'hour'
 		value: 1000 * 60 * 60
 	minute:
-		abbr: 'min'
+		abbr: 'm'
 		name: 'minute'
 		value: 1000 * 60
 	second:
