@@ -156,6 +156,19 @@ export default {
 		get("/r/#{subreddit_name}/api/widgets", {
 			progressive_images: true
 		})
+	subreddit_wikipage: (subreddit_name, page_name, version_id) ->
+		get("/r/#{subreddit_name}/wiki/#{page_name}", {
+			v: version_id
+		})
+	subreddit_wikipage_versions: (subreddit_name, page_name, max_versions, after_version_id) ->
+		get("/r/#{subreddit_name}/wiki/revisions/#{page_name}", {
+			after: after_wikipage_version_id and "WikiRevision_#{after_wikipage_version_id}"
+			limit: max_versions
+			show: 'all'
+		})
+	subreddit_wikipages_all: (subreddit_name) ->
+		get("/r/#{subreddit_name}/wiki/pages")
+
 	subreddits_popular: (max_subreddits) ->
 		get("/subreddits/popular", {
 			limit: Number(max_subreddits) + 1 # first result is always r/home
@@ -192,17 +205,4 @@ export default {
 		get("/api/user_data_by_account_ids", {
 			ids: user_ids.split(',').map((id) -> "t2_#{id}")
 		})
-	wiki: (subreddit_name, page_name, version_id) ->
-		get("/r/#{subreddit_name}/wiki/#{page_name}", {
-			v: version_id
-		})
-	wiki_pages: (subreddit_name) ->
-		get("/r/#{subreddit_name}/wiki/pages")
-	wiki_versions: (subreddit_name, page_name, max_versions, after_version_id) ->
-		get("/r/#{subreddit_name}/wiki/revisions/#{page_name}", {
-			after: after_wikipage_version_id and "WikiRevision_#{after_wikipage_version_id}"
-			limit: max_versions
-			show: 'all'
-		})
-
 }
