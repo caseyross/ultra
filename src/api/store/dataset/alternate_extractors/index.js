@@ -1,5 +1,6 @@
 // Special extractor functions for API routes that need data restructuring beyond what the general extractor can provide.
 import account from './account.coffee'
+import account_subreddits_subscribed from './account_subreddits_subscribed.coffee'
 import collection from './collection.coffee'
 import comment from './comment.coffee'
 import post from './post.coffee'
@@ -11,6 +12,7 @@ import users from './users.coffee'
 
 export default {
 	account,
+	account_subreddits_subscribed,
 	collection,
 	comment,
 	post,
