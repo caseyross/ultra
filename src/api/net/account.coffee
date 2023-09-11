@@ -89,7 +89,7 @@ export finishPendingLogin = ->
 
 # Check whether the current credentials represent a user account (as opposed to representing a "logged out" user).
 export isLoggedIn = ->
-	localStorage['api.credentials.exchange_code'] or localStorage['api.credentials.exchange_token']
+	localStorage['api.credentials.exchange_code']? or localStorage['api.credentials.exchange_token']?
 
 # There are 3 possible states here, each corresponding to one stage of the login process.
 # 1. `logged-out`: No account is being used.
