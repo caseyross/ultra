@@ -1,6 +1,6 @@
 import { Time } from '../../lib/index.js'
 
-DEFAULT_QUOTA = 1000
+DEFAULT_QUOTA = 600
 DEFAULT_RESET_S = 600
 
 ratelimit = {
