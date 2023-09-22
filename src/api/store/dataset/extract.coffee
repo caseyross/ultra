@@ -54,6 +54,7 @@ export default extract = (rawData, sourceID) ->
 			result.main =
 				id: ID('comment', rawData.data.id) # At the top level of the API response, we don't need the ID, as we already know which ID the data was requested for. However, identifying the ID becomes necessary when an object is nested.
 				data: comment
+				merge: true # Merge this dataset with previous versions of the same dataset, instead of simply overwriting like normal.
 			result.sub = repliesListingDatasets.sub
 		when 't2'
 			user = rawData.data

@@ -77,8 +77,8 @@ export reload = (id) ->
 		})
 		for dataset in datasets.sub
 			if !cache[dataset.id] or (cache[dataset.id].partial is true) or !dataset.partial
-				setData(dataset.id, dataset.data, dataset.partial)
-		setData(id, datasets.main.data, datasets.main.partial)
+				setData(dataset.id, dataset.data, dataset.partial, dataset.merge)
+		setData(id, datasets.main.data, datasets.main.partial, datasets.main.merge)
 		updater = datasetUpdaters[ID.type(id)]
 		if updater
 			targetID = updater.targetID(...ID.varArray(id)[1..])
@@ -94,10 +94,20 @@ export reload = (id) ->
 	.finally ->
 		return cache[id]
 
-setData = (id, data, partial = false) ->
+setData = (id, data, partial = false, merge = false) ->
 	if !cache[id] then cache[id] = {}
 	cache[id].asOf = Time.unixMs()
-	cache[id].data = data
+	# For most datasets, we will simply overwrite the entire object. However, certain datasets (e.g. comments from differing endpoints) need to be handled with more scrutiny, as they may not represent straight sub- or super-sets of the same object.
+	if cache[id].data and merge
+		for newKey, newValue of data
+			# Write or overwrite keys where the new value is non-trivial. Merge paired arrays at surface level.
+			if newValue and !(Array.isArray(newValue) and newValue.length < 1)
+				if Array.isArray(newValue) and Array.isArray(cache[id].data[newKey])
+					cache[id].data[newKey] = [...new Set(cache[id].data[newKey].concat(newValue))]
+				else
+					cache[id].data[newKey] = newValue
+	else
+		cache[id].data = data
 	cache[id].error = false
 	cache[id].loading = false
 	cache[id].partial = partial
@@ -162,9 +172,9 @@ export submit = (id, payload, reportStatus = ->) ->
 			datasets = extract(response)
 			for dataset in datasets.sub
 				if !cache[dataset.id] or (cache[dataset.id].partial is true) or !dataset.partial
-					setData(dataset.id, dataset.data, dataset.partial)
+					setData(dataset.id, dataset.data, dataset.partial, dataset.merge)
 			if datasets.main.id
-				setData(datasets.main.id, datasets.main.data, datasets.main.partial)
+				setData(datasets.main.id, datasets.main.data, datasets.main.partial, datasets.main.merge)
 				updater = interactionUpdaters[ID.type(id)]
 				if updater
 					targetID = updater.targetID(...ID.varArray(id)[1..])
