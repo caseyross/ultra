@@ -1,10 +1,22 @@
 script.
+	import api from '../../../../api/index.js'
+
 	export id = null
 	export size = 'medium'
 
+	subreddit = null
+	api.loadWatch(api.ID('collection', id), (x) ->
+		if x.data?.subreddit
+			api.loadWatch(api.ID('subreddit', x.data.subreddit), (x) ->
+				{ data: subreddit } = x
+			)
+	)
+
 a.collection-avatar(class='collection-avatar-size-{size}' href='/c/{id}' title='/c/{id}')
 	picture
-		img.collection-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/logo.svg')
+		source(srcset={subreddit?.community_icon})
+		source(srcset={subreddit?.icon_img})
+		img.collection-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/brand_circle.svg')
 
 style.
 	.collection-avatar

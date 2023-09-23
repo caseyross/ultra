@@ -1,0 +1,146 @@
+script.
+	import api from '../api/index.js'
+
+	import AppRouteUnsupported from './AppRouteUnsupported.pug'
+	
+	import CollectionAvatar from './component/feed/collection/CollectionAvatar.pug'
+	import CollectionInfo from './component/feed/collection/CollectionInfo.pug'
+	import Feed from './component/feed/Feed.pug'
+	import FeedFilterOptions from './component/feed/FeedFilterOptions.pug'
+	import FeedSearchOptions from './component/feed/FeedSearchOptions.pug'
+	import FeedSortOptions from './component/feed/FeedSortOptions.pug'
+	import FeedSummary from './component/feed/FeedSummary.pug'
+	import MultiredditAvatar from './component/feed/multireddit/MultiredditAvatar.pug'
+	import MultiredditInfo from './component/feed/multireddit/MultiredditInfo.pug'
+	import Post from './component/post/Post.pug'
+	import SubredditAvatar from './component/feed/subreddit/SubredditAvatar.pug'
+	import SubredditInfo from './component/feed/subreddit/SubredditInfo.pug'
+	import SubredditWikipage from './component/feed/subreddit/SubredditWikipage.pug'
+	import UserAvatar from './component/user/UserAvatar.pug'
+	import UserInfo from './component/user/UserInfo.pug'
+
+	export feed = null
+	export post = null
+	export wiki = null
+
+main#app-main-content
+	{#if wiki}
+		{#key wiki.subreddit_name}
+			{#key wiki.page_name}
+				{#key wiki.page_version}
+					SubredditWikipage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
+	{:else if post}
+		{#key post.id}
+			{#key post.focus_comment_id}
+				{#key post.focus_comment_parent_count}
+					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
+	{:else if feed}
+		{#key feed.collection_id}
+			{#key feed.multireddit_name}
+				{#key feed.subreddit_name}
+					{#key feed.user_name}
+						FeedSummary(collection_id={feed.collection_id} multireddit_name={feed.multireddit_name} subreddit_name={feed.subreddit_name} user_name={feed.user_name})
+	{:else}
+		AppRouteUnsupported(url={location})
+{#if !wiki}
+	aside#app-secondary-content
+		{#if post?.id}
+			{#key post.id}
+				SubredditInfo(post_id={post.id})
+		{:else if feed?.multireddit_name}
+			{#key feed.multireddit_name}
+				{#key feed.user_name}
+					MultiredditInfo(multireddit_name={feed.multireddit_name} user_name={feed.user_name})
+		{:else if feed?.collection_id}
+			{#key feed.collection_id}
+				CollectionInfo(id={feed.collection_id})
+		{:else if feed?.subreddit_name}
+			{#key feed.subreddit_name}
+				SubredditInfo(name={feed.subreddit_name})
+		{:else if feed?.user_name}
+			{#key feed.user_name}
+				UserInfo(name={feed.user_name})
+nav#app-main-navigation
+	menu#app-feed-navigation
+		{#if feed?.type === 'multireddit_posts' || feed?.type === 'subreddit_posts' || feed?.type === 'user_posts' || wiki?.page_name}
+			{#if feed.type === 'collection_posts'}
+				{#key feed.collection_id}
+					CollectionAvatar(id={feed.collection_id})
+			{#if feed.type === 'multireddit_posts'}
+				{#key feed.user_name}
+					{#key feed.multireddit_name}
+						MultiredditAvatar(multireddit_name={feed.multireddit_name} user_name={feed.user_name})
+			{:else if feed.type === 'subreddit_posts' || wiki?.page_name}
+				{#key feed.subreddit_name}
+					SubredditAvatar(name={feed.subreddit_name})
+			{:else if feed.type === 'user_posts'}
+				{#key feed.user_name}
+					UserAvatar(name={feed.user_name})
+			{#key feed.type}
+				{#key feed.subreddit_name}
+					FeedSortOptions(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name} wikipage_name={wiki?.page_name})
+	{#if feed}
+		{#if feed.sort === 'search'}
+			{#key feed.subreddit_name}
+				FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
+		{:else if feed.type.endsWith('posts')}
+			FeedFilterOptions(filter={feed.filter})
+		{#key feed.collection_id}
+			{#key feed.filter}
+				{#key feed.multireddit_name}
+					{#key feed.search_sort}
+						{#key feed.search_text}
+							{#key feed.sort}
+								{#key feed.subreddit_name}
+									{#key feed.time_range}
+										{#key feed.user_name}
+											Feed(align='end' collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
+
+style.
+	#app-feed-navigation
+		align-items center
+		display flex
+		gap 1em
+		justify-content flex-end
+	#app-main-content
+		padding 2em 0
+		width calc(480px + 2 * 1em)
+	#app-main-navigation
+		align-items flex-end
+		display none
+		flex-flow column nowrap
+		gap 2em
+		height 100dvh
+		opacity 0.75
+		overflow auto
+		padding 64px 0
+		position fixed
+		right calc(50% + 315px)
+		scrollbar-width 0
+		transition opacity 1s
+		top 0
+		width 200px
+		&::-webkit-scrollbar
+			display none
+		&:hover
+			opacity 1
+		@media (min-width 1024px)
+			display flex
+	#app-secondary-content
+		display none
+		left calc(50% + 315px)
+		height 100dvh
+		opacity 0.75
+		overflow auto
+		padding 64px 0
+		position fixed
+		scrollbar-width 0
+		transition opacity 1s
+		top 0
+		width 200px
+		&::-webkit-scrollbar
+			display none
+		&:hover
+			opacity 1
+		@media (min-width 1024px)
+			display block

@@ -1,7 +1,7 @@
 script.
 	import api from '../../../../api/index.js'
 	
-	import Error from '../../common/Error.pug'
+	import Status from '../../common/Status.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 
 	export name = null
@@ -18,10 +18,10 @@ script.
 	)
 
 {#if error}
-	Error(message='Error loading rules.')
+	Status(type='error' message='Error loading rules.')
 {:else if rules}
-	.md
-		ol.subreddit-rules
+	article.md.subreddit-rules
+		ol
 			{#each rules as rule}
 				li.subreddit-rule
 					h1.subreddit-rule-name {rule.short_name}
@@ -31,20 +31,18 @@ script.
 			{:else}
 				.subreddit-rules-empty No rules on record.
 {:else if loading}
-	p Loading...
+	span.subreddit-rules-loading Loading...
 
 style.
 	.subreddit-rule
-		margin-top 2em
+		margin-top 1.333em
 	.subreddit-rule-description
 		margin-top 0.333em
 	.subreddit-rule-name
 		font-size inherit
-		font-feature-settings 'calt', 'cpsp', 'ss01'
 		letter-spacing 0
 		line-height inherit
-		text-transform uppercase
-	.subreddit-rules
-		width 320px
 	.subreddit-rules-empty
+		color var(--c-text-weak)
+	.subreddit-rules-loading
 		color var(--c-text-weak)

@@ -38,7 +38,7 @@ export default (source_url) ->
 			descriptor = source_url.pathname.split('/')[1]
 			if descriptor?.length
 				iframe_action_description: 'Watch (Streamable)'
-				iframe_aspect_ratio: 4/3
+				iframe_aspect_ratio: 16/9
 				iframe_url: "https://streamable.com/o/#{descriptor}"
 			else
 				null

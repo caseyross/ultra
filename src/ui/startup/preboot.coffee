@@ -6,7 +6,7 @@ DEMO_API_CLIENT_ID = 'uhWd025AEIHZjUg3vESPAA' # public
 query = new URLSearchParams(location.search)
 clientID = process.env.API_CLIENT_ID
 if !clientID? and !api.hasClientID()
-	clientID = window.prompt('Since July 2023, Reddit heavily limits the amount of data that applications like Arc can access. \n\nClick "OK" to use the app in demo mode --- DATA MAY BE UNAVAILABLE AT TIMES. \n\nIf you have your own Reddit "installed app" Client ID, enter it below and the Reddit server should give you more access.', DEMO_API_CLIENT_ID)
+	clientID = DEMO_API_CLIENT_ID
 debug = query.get('debug')? or query.get('log')? or process.env.API_DEBUG?
 redirectURI = location.origin
 api.configure({

@@ -44,27 +44,25 @@ script.
 style.
 	.button
 		align-items center
-		background var(--c-blend-weak)
-		border 1px solid transparent
-		border-radius 6px
+		background var(--c-con-weak)
+		border-radius 11px
 		display inline-flex
-		font-size 15px
+		font-weight bold
 		gap 5px
 		letter-spacing 0.333px
-		line-height 18px
-		padding 4px 6px
+		padding 3px 9px
 		position relative
 		text-align left
 		user-select none
+		&.button-activated
+			background var(--c-brand-gradient)
+			color black
 		&:disabled
 		&.button-disabled
 			cursor auto
 			opacity 0.5
-		&:hover:not(:disabled):not(.disabled):not(.button-dropdown)
-		&.button-activated
-			background #333
-			border-color var(--c-hint-normal)
-			color var(--c-hint-normal)
+		&:hover:not(.button-activated)
+			background var(--c-con-normal)
 	.button-badge
 		border-radius 10px
 		background var(--c-con-strong)
@@ -73,4 +71,8 @@ style.
 		padding 0 1ch
 	.button-dropdown
 		font inherit
-		padding-top 3px
+		font-weight bold
+		padding-bottom 4px
+	.button-dropdown-option
+		font inherit
+		background var(--c-bg)

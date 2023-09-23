@@ -9,8 +9,8 @@ script.
 	export key = null
 	export label = ''
 	export placeholder = ''
-	export size = 'medium'
 	export type_action = ->
+	export width = 240
 
 	input = null
 	hotkeys = {}
@@ -37,26 +37,18 @@ label.text-input-label
 		HotkeyLabel(key={key})
 	| {label}
 	<!-- svelte-ignore a11y-autofocus -->
-	input.text-input(autofocus={autofocus} bind:this={input} class='text-input-size-{size}' on:keydown={process_keydown} on:input={e => type_action(e.target.value)} placeholder={placeholder})
+	input.text-input(autofocus={autofocus} bind:this={input} on:keydown={process_keydown} on:input={e => type_action(e.target.value)} placeholder={placeholder} style='width: {width}px')
 
 style.
 	.text-input
 		border-bottom 2px solid var(--c-text-faint)
 		font-weight var(--f-wght-strong)
+		width 100%
 		&:focus
-			border-color var(--c-text-strong)
 			outline none
 	.text-input-label
 		align-items center
 		display inline-flex
-		gap 5px
-		margin-right 3px
+		gap 1ch
 		user-select none
-	.text-input-size-medium
-		font-size 18px
-		line-height calc(5rem/3)
-		width 240px
-	.text-input-size-large
-		border-bottom-width 4px
-		font-size 2em
-		width 480px
+		width 100%

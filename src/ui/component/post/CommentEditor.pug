@@ -30,8 +30,7 @@ form.comment-editor
 
 style.
 	.comment-editor
-		margin 0 1em
-		width 360px
+		max-width 48ch
 	.comment-editor-actions
 		display flex
 		justify-content flex-end
@@ -39,7 +38,8 @@ style.
 	.comment-editor-text-field
 		border 1px solid
 		border-radius 12px
-		font-family monospace
+		font-family var(--f-family-mono)
+		font-size 12px
 		line-height inherit
 		padding 9px
 		resize none

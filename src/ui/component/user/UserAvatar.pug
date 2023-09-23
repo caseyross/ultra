@@ -4,7 +4,7 @@ script.
 	
 	export batch_id = null
 	export name = null
-	export size = 'small'
+	export size = 'medium'
 	
 	user = null
 	
@@ -30,18 +30,19 @@ script.
 		a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
 			{#if user.profile_img}
 				img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
-			{#if user.comment_karma + user.link_karma < 0}
-				figure.user-avatar-badge.user-avatar-badge-negative-karma-user(title='Low karma user')
-					span.user-avatar-badge-backdrop −
-					span.user-avatar-badge-text −
-			{:else if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
-				figure.user-avatar-badge.user-avatar-badge-new-user(title='New user')
-					span.user-avatar-badge-backdrop ✗
-					span.user-avatar-badge-text ✗
-			{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
-				figure.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
-					span.user-avatar-badge-backdrop ⌃
-					span.user-avatar-badge-text ⌃
+			{#if size === 'small' || size === 'medium'}
+				{#if user.comment_karma + user.link_karma < 0}
+					figure.user-avatar-badge.user-avatar-badge-negative-karma-user(title='Low karma user')
+						span.user-avatar-badge-backdrop −
+						span.user-avatar-badge-text −
+				{:else if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
+					figure.user-avatar-badge.user-avatar-badge-new-user(title='New user')
+						span.user-avatar-badge-backdrop ✗
+						span.user-avatar-badge-text ✗
+				{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
+					figure.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
+						span.user-avatar-badge-backdrop ⌃
+						span.user-avatar-badge-text ⌃
 
 style.
 	.user-avatar
@@ -87,3 +88,7 @@ style.
 		width 32px
 	.user-avatar-size-large
 		width 64px
+	.user-avatar-size-xlarge
+		width 128px
+	.user-avatar-size-xxlarge
+		width 256px

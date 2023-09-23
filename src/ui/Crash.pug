@@ -1,21 +1,25 @@
 script.
 	export error = null
 
-main#crash
-	h1 Whoops!
-	p There was an error. We didn't expect this.
-	{#if error}
-		p Error message:
-		pre {error.message}
-		p Technical details:
-		pre {error.stack}
+#crash
+	main#crash-message
+		h1 Whoops!
+		p There was an error. We didn't expect this.
+		{#if error}
+			p Error message:
+			pre {error.message}
+			p Technical details:
+			pre {error.stack}
 
 style.
 	#crash
-		align-items center
+		display grid
+		height 100dvh
+		place-content center
+		width 100dvw
+	#crash-message
+		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		height 100dvh
-		justify-content center
-		width 100%
+		width 640px

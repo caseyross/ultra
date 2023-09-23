@@ -4,11 +4,10 @@ script.
 	import TextInput from '../../common/TextInput.pug'
 
 	ban_lengths = [
-		{ label: '1 day', value: 1 }
-		{ label: '3 days', value: 3 }
-		{ label: '7 days', value: 7 }
-		{ label: '1 month', value: 30 }
-		{ label: '1 year', value: 365 }
+		{ label: 'A day', value: 1 }
+		{ label: 'A week', value: 7 }
+		{ label: 'A month', value: 28 }
+		{ label: 'A year', value: 364 }
 		{ label: 'Permanent', value: 999 }
 	]
 	dispatch = createEventDispatcher()
@@ -31,7 +30,7 @@ style.
 		gap 1em
 	.ban-menu-duration
 		aspect-ratio 1
-		border 1px solid
+		background var(--c-con-weak)
 		border-radius 6px
 		cursor pointer
 		display inline-flex
@@ -51,7 +50,7 @@ style.
 		display grid
 		font-size 0.75em
 		grid-auto-flow row
-		grid-template-columns 1fr 1fr
+		grid-template-columns repeat(5, 1fr)
 		gap 9px
 	.ban-menu-message-to-user
 		align-items center

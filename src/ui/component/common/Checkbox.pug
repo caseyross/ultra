@@ -1,0 +1,32 @@
+script.
+	export action = ->
+	export checked = false
+	export text = null
+
+<!-- we want to use `checked` attribute for the state, but it doesn't appear in the output HTML for some reason (!?) -->
+label.checkbox(class:checkbox-activated={checked})
+	input.checkbox-input(on:change={e => action(e.target.checked)} type='checkbox')
+	| {text}
+
+style.
+	.checkbox
+		align-items center
+		cursor pointer
+		display inline-flex
+		font-weight bold
+		gap 0.666em
+		letter-spacing 0.333px
+		user-select none
+		&::before
+			aspect-ratio 1
+			background-clip content-box
+			border 0.25em solid var(--c-blend-weak)
+			border-radius 50%
+			box-sizing border-box
+			content ''
+			display inline-block
+			width 1em
+		:global(&.checkbox-activated::before)
+			background-image var(--c-brand-gradient)
+	.checkbox-input
+		display none

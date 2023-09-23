@@ -7,13 +7,11 @@ POST_COMMENTS_INITIAL_SIZE = 200
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
 	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
 RECOGNIZED_SUBREDDIT_PATH_SEGMENTS =
-	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'posts', 'rules', 's', 'search', 'submit', 'w', 'wiki']
+	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'rules', 's', 'search', 'submit', 'w', 'wiki']
 RECOGNIZED_USER_PATH_SEGMENTS =
 	['comments', 'downvoted', 'gilded', 'hidden', 'm', 'messages', 'overview', 'posts', 'saved', 'submitted', 'upvoted']
 SORT_OPTIONS_FEED = 
-	['controversial', 'hot', 'new', 'rising', 'top']
-SORT_OPTIONS_FEED_FRONTPAGE =
-	['best', 'controversial', 'hot', 'new', 'rising', 'top']
+	['best', 'controversial', 'hot', 'new', 'rising', 'search', 'top']
 SORT_OPTIONS_FEED_SEARCH =
 	['comments', 'relevance', 'new', 'top']
 SORT_OPTIONS_FEED_USER =
@@ -25,65 +23,59 @@ TIMERANGE_OPTIONS =
 
 export default (url) ->
 
-	page = 'external'
-	subpage = null
-
 	feed = {}
 	post = {}
 	wiki = {}
 	
 	preload = []
 	
-	#
-	# Parse URL query:
-	#
+	unsupported = false
+	
+	#################
+	# Parse URL query
+	
 	query = new URLSearchParams(decodeURI(url.search))
-	# Feed parameters:
-	feed.after_id = query.get('after')
-	if feed.after_id?[2] is '_'
-		feed.after_id = feed.after_id.slice(3)
-	feed.after_id_type = query.get('after_type')
+	feed.collection_id = query.get('c')
 	feed.filter = query.get('filter')
+	feed.multireddit_name = query.get('m')
+	if query.get('search_sort') in SORT_OPTIONS_FEED_SEARCH
+		feed.search_sort = query.get('search_sort')
 	feed_flair_search = query.get('f')?.replaceAll('flair_name', 'flair')
-	feed_text_search = query.get('q')
+	feed_text_search = query.get('search_text') or query.get('q')
 	feed_combined_search = [feed_flair_search, feed_text_search].filter((x) -> x).join('+').replaceAll(':', '=').replaceAll(' ', '+')
 	if feed_combined_search.length > 0
-		feed.search = feed_combined_search
-	if query.get('sort') in SORT_OPTIONS_FEED or query.get('sort') in SORT_OPTIONS_FEED_SEARCH
+		feed.search_text = feed_combined_search
+	if query.get('sort') in SORT_OPTIONS_FEED
 		feed.sort = query.get('sort')
 	feed.time_range =
 		if query.get('t') in TIMERANGE_OPTIONS
 			query.get('t')
 		else
 			'all'
-	# Post parameters:
+	feed.user_name = query.get('u')
 	if query.get('comment_sort') in SORT_OPTIONS_POST_COMMENTS
 		post.comments_sort = query.get('comment_sort')
 	post.focus_comment_id = query.get('comment')
 	post.focus_comment_parent_count = query.get('context')
-	# Wiki parameters:
 	wiki.page_version = query.get('v')
 	
-	#
-	# Normalize and parse URL path:
-	#
+	################
+	# Parse URL path
+
 	path = url.pathname.split('/').map((x) -> decodeURIComponent(x).replaceAll(' ', '_'))
 	# Strip empty leading/trailing segments.
 	if path[0] is ''
 		path.shift()
 	if path.at(-1) is ''
 		path.pop()
-	# If no path parameters, treat as r/popular or user's subscribed listing depending on whether user is logged in.
+	# Treat empty path as r/all.
 	if !path[0]?
-		if api.getUser()
-			path.splice(0, 3, 'u', 'r', 'subscribed')
-		else
-			path.splice(0, 2, 'r', 'popular')
+		path.splice(0, 0, 'r', 'all')
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?
 		path.shift()
 	# Treat top-level paths as subreddit names unless we know otherwise.
-	if path[0] not in RECOGNIZED_PRIMARY_PATH_SEGMENTS
+	if path[0]? and path[0] not in RECOGNIZED_PRIMARY_PATH_SEGMENTS
 		path.splice(0, 0, 'r')
 	# Convert r/all and r/popular to normal multireddit format.
 	if path[0] is 'r' and path[1] in ['all', 'popular']
@@ -105,198 +97,143 @@ export default (url) ->
 	[ a, b, c, d, e, f, g ] = path
 	switch a
 		when 'c', 'collection'
-			page = 'collection'
 			feed.collection_id = b
-			if c is 'about'
-				subpage = 'about'
-			else
-				subpage = 'posts'
-			feed.base_page_id = api.ID('collection', feed.collection_id)
 		when 'message'
-			page = 'user'
-			subpage = 'messages'
-			feed.user_name = api.getUser()
+			feed.type = 'account_messages'
 			switch b
-				when 'compose'
-					page = 'external'
-				when 'inbox'
-					feed.filter = 'inbox'
-				when 'sent'
-					feed.filter = 'sent'
-				when 'unread'
-					feed.filter = 'unread'
-			if !feed.filter
-				feed.filter = 'unread'
+				when 'compose' then unsupported = true
+				when 'inbox' then feed.filter = 'inbox'
+				when 'sent' then feed.filter = 'sent'
+				when 'unread' then feed.filter = 'unread'
+			feed.filter = 'unread' unless feed.filter
 			feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE)
 		when 'p', 'post'
-			page = 'post'
 			post.id = b
-			if c?
-				post.focus_comment_id = c
-			if !post.focus_comment_id?
-				delete post.focus_comment_parent_count
+			post.focus_comment_id = c if c?
+			delete post.focus_comment_parent_count unless post.focus_comment_id?
 			preload.push(api.ID('post', post.id, post.comments_sort or 'confidence', POST_COMMENTS_INITIAL_SIZE, post.focus_comment_id, post.focus_comment_parent_count))
 		when 'r', 'subreddit'
-			if b in ['friends', 'mod']
-				page = 'external'
+			if b in ['friends', 'mod'] then unsupported = true
 			else
 				feed.subreddit_name = b
-				preload.push(api.ID('subreddit', feed.subreddit_name))
 				if c is undefined or c in SORT_OPTIONS_FEED
-					page = 'subreddit'
-					subpage = 'posts'
 					feed.sort = c if c in SORT_OPTIONS_FEED
-					if !feed.filter
-						feed.filter = 'unread'
-					if !feed.sort
-						feed.sort = 'hot'
-					feed.base_page_id = api.ID('subreddit_posts', feed.subreddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 				else switch c
-					when 'about'
-						page = 'subreddit'
-						if d is 'rules'
-							subpage = 'rules'
-							preload.push(api.ID('subreddit_rules', feed.subreddit_name))
-						else
-							subpage = 'about'
 					when 'c', 'collection'
-						page = 'collection'
 						feed.collection_id = d
-						if e is 'about'
-							subpage = 'about'
-						else
-							subpage = 'posts'
-						feed.base_page_id = api.ID('collection', feed.collection_id)
 					when 'comments', 'p', 'post'
-						page = 'post'
 						post.id = d
-						if f?
-							post.focus_comment_id = f
-						if !post.focus_comment_id?
-							delete post.focus_comment_parent_count
-						# handle overloaded `sort` param on legacy post page
-						delete feed.sort
-						if query.get('sort') in SORT_OPTIONS_POST_COMMENTS
-							post.comments_sort = query.get('sort')
+						post.focus_comment_id = f if f?
+						delete post.focus_comment_parent_count unless post.focus_comment_id?
 						# best guess preload ID; we prefer to use `post.suggested_sort` but that's unknown at this stage
 						preload.push(api.ID('post', post.id, post.comments_sort or 'confidence', POST_COMMENTS_INITIAL_SIZE, post.focus_comment_id, post.focus_comment_parent_count))
 					when 'mod'
-						page = 'subreddit'
-						subpage = 'mod'
-						if !feed.filter
-							feed.filter = 'posts'
-						feed.base_page_id = api.ID("subreddit_modqueue_#{filter}", feed.subreddit_name, FEED_PAGE_SIZE)
-					when 'posts'
-						page = 'subreddit'
-						subpage = 'posts'
-						if !feed.filter
-							feed.filter = 'unread'
-						if !feed.sort
-							feed.sort = 'hot'
-						feed.base_page_id = api.ID('subreddit_posts', feed.subreddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
-					when 'rules'
-						page = 'subreddit'
-						subpage = 'rules'
-						preload.push(api.ID('subreddit_rules', feed.subreddit_name))
+						feed.sort = 'modqueue'
 					when 's'
-						page = 'external'
+						unsupported = true
 					when 'search'
-						page = 'subreddit'
-						subpage = 'search'
-						if !feed.sort
-							feed.sort = 'relevance'
-						if feed.search
-							feed.base_page_id = api.ID('search_posts', "subreddit=#{feed.subreddit_name}+#{feed.search}", 'all', feed.sort, FEED_PAGE_SIZE)
+						feed.sort = 'search'
 					when 'w', 'wiki'
-						page = 'wiki'
+						feed.type = 'subreddit_wikipages'
 						wiki.subreddit_name = b
 						wiki.page_name = [d, e, f, g].filter((x) -> x).join('/') or 'index'
-						if wiki.page_name == 'pages'
-							preload.push(api.ID('wiki_pages', wiki.subreddit_name))
-						else
-							preload.push(api.ID('wiki', wiki.subreddit_name, wiki.page_name, wiki.page_version))
+						if wiki.page_name == 'pages' then wiki.page_name = 'index'
+						preload.push(api.ID('subreddit_wikipage', wiki.subreddit_name, wiki.page_name, wiki.page_version))
 		when 'u', 'user'
-			page = 'user'
 			feed.user_name = b
-			if feed.user_name != 'r'
-				preload.push(api.ID('user', feed.user_name))
 			switch c
-				when undefined, 'comments'
-					subpage = 'comments'
+				when 'comments'
+					feed.type = 'user_comments'
 					feed.sort = d if d in SORT_OPTIONS_FEED_USER
 					if !feed.sort
-						feed.sort = 'top'
+						feed.sort = 'new'
 					feed.base_page_id = api.ID('user_comments', feed.user_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 				when 'm'
-					page = 'multireddit'
 					feed.multireddit_name = d
-					preload.push(api.ID('multireddit', feed.user_name, feed.multireddit_name))
 					switch e
-						when 'about'
-							subpage = 'about'
-						when 'search'
-							subpage = 'search'
-							if !feed.sort
-								feed.sort = 'relevance'
-							if feed.search
-								feed.base_page_id = api.ID('search_posts', "multireddit=#{feed.user_name}-#{feed.multireddit_name}+#{feed.search}", 'all', feed.sort, FEED_PAGE_SIZE)
-						else
-							subpage = 'posts'
-							if feed.user_name is 'r' and feed.multireddit_name is 'subscribed'
-								feed.sort = e if e in SORT_OPTIONS_FEED_FRONTPAGE
-								if !feed.sort
-									feed.sort = 'best'
-							else
-								feed.sort = e if e in SORT_OPTIONS_FEED
-								if !feed.sort
-									feed.sort = 'hot'
-							if !feed.filter
-								feed.filter = 'unread'
-							feed.base_page_id = api.ID('multireddit_posts', feed.user_name, feed.multireddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
+						when 'search' then feed.sort = 'search'
+						else feed.sort = e if e in SORT_OPTIONS_FEED
 				when 'messages'
-					subpage = 'messages'
-					if !feed.filter
-						feed.filter = 'unread'
+					feed.type = 'account_messages'
+					feed.filter = 'unread' unless feed.filter
 					feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE)
 				when 'posts', 'submitted'
-					subpage = 'posts'
 					feed.sort = d if d in SORT_OPTIONS_FEED_USER
-					if !feed.sort
-						feed.sort = 'top'
-					feed.base_page_id = api.ID('user_posts', feed.user_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 				when 'saved'
-					subpage = 'saved'
 					switch d
-						when 'comments'
-							feed.filter = 'comments'
-						when 'posts'
-							feed.filter = 'posts'
-					if !feed.filter
-						feed.filter = 'posts'
-					feed.base_page_id = api.ID("account_saved_#{feed.filter}", feed.user_name, FEED_PAGE_SIZE)
+						when 'comments' then feed.type = 'account_saved_comments'
+						else feed.type = 'account_saved_posts'
+					feed.base_page_id = api.ID(feed.type, feed.user_name, FEED_PAGE_SIZE)
 
-	#
-	# Return aggregate route object, removing empty variables:
-	#
-	route = {
-		page
-	}
-	if subpage
-		route.subpage = subpage
-	for object in [feed, post, wiki]
-		for k, v of object
-			if !v? then delete object[k]
-	if feed.collection_id or feed.subreddit_name or feed.user_name
-		route.feed = feed
-	if post.id
-		route.post = post
-	if wiki.page_name and wiki.subreddit_name
-		route.wiki = wiki
-	if feed.base_page_id
-		preload.unshift(feed.base_page_id)
-	if preload.length > 0
-		route.preload = preload
-	if page is 'external'
-		delete route.preload
+	#############################################
+	# Calculate derived parameters for post feeds
+
+	if !feed?.type?
+		if feed.collection_id
+			feed.type = 'collection_posts'
+		else if feed.multireddit_name
+			feed.type = 'multireddit_posts'
+		else if feed.user_name
+			feed.type = 'user_posts'
+		else if feed.subreddit_name
+			feed.type = 'subreddit_posts'
+	switch feed.type
+		when 'collection_posts'
+			feed.base_page_id = api.ID('collection', feed.collection_id)
+		when 'multireddit_posts'
+			switch
+				when feed.user_name is 'r' and feed.multireddit_name is 'subscribed'
+					feed.sort = 'best' unless feed.sort
+					preload.push(api.ID('account_subscribed_subreddits', 25))
+					preload.push(api.ID('subreddits_popular', 25))
+				else
+					feed.sort = 'hot' unless feed.sort
+			switch feed.sort
+				when 'search'
+					feed.search_sort = 'relevance' unless feed.search_sort
+					if feed.search_text?
+						feed.base_page_id = api.ID('search_posts', "multireddit=#{feed.user_name}-#{feed.multireddit_name}+#{feed.search_text}", 'all', feed.search_sort, FEED_PAGE_SIZE)
+				else
+					feed.filter = 'unread' unless feed.filter
+					feed.base_page_id = api.ID('multireddit_posts', feed.user_name, feed.multireddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
+			preload.push(api.ID('multireddit', feed.user_name, feed.multireddit_name))
+		when 'subreddit_posts'
+			feed.sort = 'hot' unless feed.sort
+			switch feed.sort
+				when 'modqueue'
+					feed.filter = 'posts' unless feed.filter
+					feed.base_page_id = api.ID("subreddit_modqueue_#{feed.filter}", feed.subreddit_name, FEED_PAGE_SIZE)
+				when 'search'
+					feed.search_sort = 'relevance' unless feed.search_sort
+					if feed.sort is 'search' and feed.search_text?
+						feed.base_page_id = api.ID('search_posts', "subreddit=#{feed.subreddit_name}+#{feed.search_text}", 'all', feed.search_sort, FEED_PAGE_SIZE)
+				else
+					feed.filter = 'unread' unless feed.filter
+					feed.base_page_id = api.ID('subreddit_posts', feed.subreddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
+			preload.push(api.ID('subreddit', feed.subreddit_name))
+		when 'user_posts'
+			feed.sort = 'new' unless feed.sort
+			feed.base_page_id = api.ID('user_posts', feed.user_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
+			preload.push(api.ID('user', feed.user_name))
+
+	##############################
+	# Construct final route object
 	
-	return route
+	if unsupported
+		return {}
+	else
+		route = {}
+		for object in [feed, post, wiki]
+			for k, v of object
+				if !v? then delete object[k]
+		if feed.type
+			route.feed = feed
+			if feed.base_page_id
+				preload.unshift(feed.base_page_id)
+		if post.id
+			route.post = post
+		if wiki.page_name and wiki.subreddit_name
+			route.wiki = wiki
+		if preload.length > 0
+			route.preload = preload
+		return route

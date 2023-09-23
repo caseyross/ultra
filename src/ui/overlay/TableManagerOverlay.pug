@@ -1,0 +1,25 @@
+script.
+	is_unmodified_event =
+		(event) -> not (event.altKey or event.ctrlKey or event.metaKey or event.shiftKey)
+	is_unmodified_left_click =
+		(event) -> is_unmodified_event(event) and event.button is 0 and event.detail > 0
+
+	document.addEventListener('mousedown',
+		(event) ->
+			if is_unmodified_left_click(event)
+				row = event.target.closest('tr')
+				if row
+					link = event.target.closest('a')
+					if !link
+						row.classList.toggle('tr-expanded')
+	)
+
+slot
+
+style.
+	:global(tr)
+		cursor ns-resize
+		&:hover
+			outline 1px solid var(--c-text-weak)
+	:global(.tr-expanded)
+		white-space initial

@@ -1,0 +1,22 @@
+script.
+	import { setContext } from 'svelte'
+	import { HexColor } from '../../lib/index.js'
+
+	themes = [
+		'dark'
+		'light'
+		'night'
+	]
+
+	set_theme = (new_theme_name) ->
+		if !new_theme_name
+			return
+		# Remove all other themes
+		document.body.classList.remove(themes.filter((x) -> x != new_theme_name).map((x) -> 'theme-' + x))
+		# Add theme
+		document.body.classList.add('theme-' + new_theme_name)
+
+	setContext('set_theme', set_theme)
+	set_theme('night')
+
+slot

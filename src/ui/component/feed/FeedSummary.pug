@@ -1,0 +1,118 @@
+script.
+	import api from '../../../api/index.js'
+	
+	import Feed from './Feed.pug'
+	import LoginButton from '../user/account/LoginButton.pug'
+	import LogoutButton from '../user/account/LogoutButton.pug'
+	import Status from '../common/Status.pug'
+
+	export collection_id = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export user_name = null
+
+	error = false
+	loading = false
+	info = null
+
+	switch
+		when collection_id
+			api.loadWatch(api.ID('collection', collection_id), (x) ->
+				{ data: info, error, loading } = x
+			)
+		when multireddit_name
+			api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) ->
+				{ data: info, error, loading } = x
+			)
+		when subreddit_name
+			api.loadWatch(api.ID('subreddit', subreddit_name), (x) ->
+				{ data: info, error, loading } = x
+			)
+		when user_name
+			api.loadWatch(api.ID('user', user_name), (x) ->
+				{ data: info, error, loading } = x
+			)
+
+svelte:head
+	{#key info}
+		{#if collection_id}
+			title {info?.title || collection_id}
+		{:else if multireddit_name}
+			title {info?.display_name || multireddit_name}
+		{:else if subreddit_name}
+			title {info?.display_name || subreddit_name}
+		{:else if user_name}
+			title u/{info?.name || user_name}
+article.feed-summary
+	{#if loading}
+		p Loading...
+	{:else if error}
+		{#if error.code === 403}
+			{#if multireddit_name}
+				Status(type='error' message="Only approved users can access this multireddit." title="Private multireddit")
+			{:else if subreddit_name}
+				Status(type='error' message="Only approved users can access this subreddit." title="Private subreddit")
+			{:else}
+				Status(type='error' message="Your account does not have permission to view this page." title="Access denied")
+		{#if error.code === 404}
+			{#if collection_id}
+				Status(type='error' message="There is no collection available at this ID." title="Collection not found")
+			{:else if multireddit_name}
+				Status(type='error' message="There is no multireddit available under this name." title="Multireddit not found")
+			{:else if subreddit_name}
+				Status(type='error' message="This subreddit was permanently closed by Reddit management." title="Subreddit banned")
+			{:else if user_name}
+				Status(type='error' message="This user may be banned or suspended, or there may not be an account with that name." title="User not found")
+			{:else}
+				Status(type='error' message="The requested page was not found." title="Page not found")
+		{:else if error instanceof api.errors.NetworkFailure}
+			Status(type='error' message="The Reddit server may be unreachable, or the requested page may not exist." title="Page unreachable")
+		{:else if error.description || error.reason}
+			Status(type='error' message="An error occurred. We don't have any further details." title="Error: {error.reason || error.description}")
+		{:else}
+			Status(type='error' message="An unknown error occurred. We don't know what to do about it." title="Unknown error")
+	{:else if info}
+		{#if info.banner_background_image}
+			img.feed-summary-banner-image(alt='Feed banner' src={info.banner_background_image})
+		hr
+		{#if subreddit_name}
+			{#key subreddit_name}
+				h1.feed-summary-heading Latest comments
+				Feed(page_size={100} sort='new' subreddit_name={subreddit_name} time_range='all' type='subreddit_comments')
+		{:else if multireddit_name}
+			section#app-welcome-message
+				header
+					{#if api.isLoggedIn()}
+						h1 Welcome
+							code {api.getUser()}
+						hr
+						p
+							strong Left click
+							| on post and comment scores to upvote.
+							strong Right click
+							| to downvote.
+						p
+							strong Right click and hold
+							| anywhere on a post or comment for additional actions.
+						hr
+						LogoutButton
+					{:else}
+						LoginButton
+			h1 Your subreddits
+			Feed(page_size={100} type='account_subscribed_subreddits')
+		{:else if user_name}
+			{#key user_name}
+				h1.feed-summary-heading Latest comments
+				Feed(page_size={100} sort='new' time_range='all' type='user_comments' user_name={user_name})
+
+style.
+	.feed-summary
+		display flex
+		flex-flow column nowrap
+		gap 2em
+	.feed-summary-banner-image
+		min-height 60px
+		max-height 80px
+		object-fit cover
+	.feed-summary-heading
+		font-size 1em

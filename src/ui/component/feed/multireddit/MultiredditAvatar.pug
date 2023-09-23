@@ -6,7 +6,7 @@ script.
 	export size = 'medium'
 	export user_name = null
 
-	if !icon_url?
+	if !icon_url? and user_name != 'r'
 		multireddit = null
 		api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) ->
 			{ data: multireddit } = x
@@ -16,7 +16,7 @@ a.multireddit-avatar(class='multireddit-avatar-size-{size}' href='/u/{multireddi
 	picture
 		source(srcset={icon_url})
 		source(srcset={multireddit?.icon_url})
-		img.multireddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/logo.svg')
+		img.multireddit-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/brand_circle.svg')
 
 style.
 	.multireddit-avatar

@@ -1,0 +1,33 @@
+script.
+	export message = null
+	export title = null
+	export type = null
+
+.status(class='status-type-{type}')
+	{#if title}
+		h1 {title}
+	.status-body
+		| {message}
+		slot
+
+style.
+	.status
+		border-radius 1em
+		font-weight var(--f-wght-strong)
+		max-width 480px
+		padding 1em
+		width 100%
+	.status-body
+		align-items center
+		display flex
+		justify-content space-between
+		width 100%
+	.status-type-error
+		background salmon
+		color white
+	.status-type-success
+		background mediumseagreen
+		color white
+	.status-type-warning
+		background #ffdd5d
+		color black

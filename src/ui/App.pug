@@ -3,14 +3,13 @@ script.
 
 	import { parse_url } from './url/index.js'
 	
-	import AccountProviderOverlay from './page/overlay/AccountProviderOverlay.pug'
-	import NetworkStatusOverlay from './page/overlay/NetworkStatusOverlay.pug'
-	import RadialMenuOverlay from './page/overlay/RadialMenuOverlay.pug'
-	import ThemeProviderOverlay from './page/overlay/ThemeProviderOverlay.pug'
+	import AccountProviderOverlay from './overlay/AccountProviderOverlay.pug'
+	import NetworkStatusOverlay from './overlay/NetworkStatusOverlay.pug'
+	import RadialMenuOverlay from './overlay/RadialMenuOverlay.pug'
+	import TableManagerOverlay from './overlay/TableManagerOverlay.pug'
+	import ThemeProviderOverlay from './overlay/ThemeProviderOverlay.pug'
+	import AppRoute from './AppRoute.pug'
 	
-	import RegularPage from './page/RegularPage.pug'
-	import UnsupportedPage from './page/UnsupportedPage.pug'
-
 	route = {}
 	scroll_cache = {}
 	
@@ -46,7 +45,7 @@ script.
 		->
 			scroll_cache[scroll_cache_key(location)] = window.scrollY
 	scroll_cache_key =
-		(url) -> url.pathname + '?' + url.search + '#' + url.hash
+		(url) -> url.pathname + '#' + url.hash
 	set_route_from_current_url =
 		->
 			route = parse_url(location)
@@ -102,7 +101,5 @@ AccountProviderOverlay
 	ThemeProviderOverlay
 		NetworkStatusOverlay
 			RadialMenuOverlay
-				{#if ['collection', 'multireddit', 'post', 'subreddit', 'user', 'wiki'].includes(route.page)}
-					RegularPage(feed={route.feed} page={route.page} post={route.post} subpage={route.subpage} wiki={route.wiki})
-				{:else}
-					UnsupportedPage(url={location})
+				TableManagerOverlay
+					AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})

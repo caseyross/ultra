@@ -4,13 +4,29 @@
 	font-family 'Arimo'
 	font-style normal
 	font-weight 400 700
-	src url('./font/arimo_400_700.woff2')
+	src url('./font/arimo.woff2')
 @font-face
 	font-display swap
 	font-family 'Arimo'
 	font-style italic
 	font-weight 400 700
-	src url('./font/arimo_400_700_i.woff2')
+	src url('./font/arimo_i.woff2')
+@font-face
+	font-family 'Roboto Flex'
+	font-stretch 25% 151%
+	font-style normal oblique
+	font-weight 100 1000
+	src url('./font/roboto_flex.woff2')
+@font-face
+	font-family 'Roboto Mono'
+	font-style normal
+	font-weight 100 700
+	src url('./font/roboto_mono.woff2')
+@font-face
+	font-family 'Roboto Mono'
+	font-style italic
+	font-weight 100 700
+	src url('./font/roboto_mono_i.woff2')
 
 // Baseline resets
 *
@@ -18,37 +34,36 @@
 	margin 0
 	&:first-child
 		margin-top 0 !important
-	&:focus
-		outline-color gold
 	&::-webkit-scrollbar
 		background var(--c-blend-faint)
+		border-radius 1em
 	&::-webkit-scrollbar-thumb
 		background var(--c-blend-weak)
-		border-radius 12px
+		border-radius 1em
 
 // Page structure & theme
 html
 	font-size 15px // declared here for em/rem sizing
 body
-	background-color var(--c-page-bg)
-	color var(--c-page-text)
+	background-color var(--c-bg)
+	color var(--c-text-strong)
 	display grid
-	font-family Arimo, Arial, sans-serif
+	font-family var(--f-family-prop)
 	font-weight var(--f-wght-normal)
 	grid-auto-flow row
 	grid-template-columns 1fr
-	line-height 1.333
-	margin-inline-start calc(100vw - 100%) // compensate for scrollbar offset (would prefer `scrollbar-gutter` but it has big issues)
-	padding 24px
+	line-height 20px
+	overflow-y scroll
 	place-items center
-	@media (min-width: 960px)
-		padding 64px
+	scrollbar-width 0
+	word-spacing 0.5px
+	&::-webkit-scrollbar
+		display none
 	--c-author-admin red
 	--c-author-mod darkseagreen
 	--c-author-op cornflowerblue
-	--c-hint-normal wheat
-	--c-page-bg white
-	--c-page-text black
+	--c-author-vip rebeccapurple
+	--c-brand-gradient linear-gradient(120deg, #CEE3F8, orangered)
 	--c-score-0 #e3e6eb
 	--c-score-1 antiquewhite
 	--c-score-2 wheat
@@ -58,25 +73,30 @@ body
 	--c-shade-strong rgba(0,0,0,0.50)
 	--c-subreddit-theme-default lightsalmon
 	--c-subreddit-theme-text-default white
-	--c-theme #c6ecff
-.color-strategy-black-text
+	--c-vote-down steelblue
+	--c-vote-up var(--c-brand-gradient)
+	--f-family-mono 'Roboto Mono', monospace
+	--f-family-prop 'Helvetica', 'Arial', sans-serif
+.theme-light
 	color-scheme light
+	--c-bg #f0f1f4
 	--c-blend-faint rgba(0,0,0,0.0625)
 	--c-blend-weak rgba(0,0,0,0.125)
 	--c-blend-normal rgba(0,0,0,0.25)
 	--c-blend-strong rgba(0,0,0,0.50)
 	--c-blend-xstrong rgba(0,0,0,0.75)
-	--c-con-weak rgba(255,255,255,0.125)
-	--c-con-normal rgba(255,255,255,0.25)
-	--c-con-strong rgba(255,255,255,0.50)
+	--c-con-weak rgba(255,255,255,0.5)
+	--c-con-normal white
+	--c-con-strong white
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
-	--c-text-strong black
+	--c-text-strong #222222
 	--f-wght-normal 450
 	--f-wght-strong 650
-.color-strategy-white-text
+.theme-night
 	color-scheme dark
+	--c-bg #24242b
 	--c-blend-faint rgba(255,255,255,0.0625)
 	--c-blend-weak rgba(255,255,255,0.125)
 	--c-blend-normal rgba(255,255,255,0.25)
@@ -88,7 +108,24 @@ body
 	--c-text-xfaint rgba(255,255,255,0.125)
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
-	--c-text-strong white
+	--c-text-strong #e1e5e5
+	--f-wght-normal 400
+	--f-wght-strong 600
+.theme-dark
+	color-scheme dark
+	--c-bg black
+	--c-blend-faint rgba(255,255,255,0.0625)
+	--c-blend-weak rgba(255,255,255,0.125)
+	--c-blend-normal rgba(255,255,255,0.25)
+	--c-blend-strong rgba(255,255,255,0.50)
+	--c-blend-xstrong rgba(255,255,255,0.75)
+	--c-con-weak rgba(0,0,0,0.125)
+	--c-con-normal rgba(0,0,0,0.25)
+	--c-con-strong rgba(0,0,0,0.50)
+	--c-text-xfaint rgba(255,255,255,0.125)
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong #ccc
 	--f-wght-normal 400
 	--f-wght-strong 600
 
@@ -97,38 +134,44 @@ a
 	color inherit
 	overflow-wrap anywhere
 	text-decoration none
-	.md &:not(:has(img))
+	.md &
 		text-decoration underline
 		&:empty
 			display none
+		&:has(img)
+			text-decoration none
 address
 	font-style normal
 blockquote
 	border-left 2px solid var(--c-text-xfaint)
 	color var(--c-text-weak)
-	font-size 13px
-	line-height 1.333
-	margin 0.666rem 0 0
+	margin 0.666em 0 0
 	padding-left 1em
 cite
 	font-style normal
 code
+	color palegreen
+	background black
+	font-family var(--f-family-mono)
+	font-size 12px
 	word-break break-all
 fieldset
 	border 0
 	padding 0
 kbd
-	font inherit
+	font-family var(--f-family-mono)
 hr
 	border 0
-	border-bottom 1px solid
-	margin 0.666em auto 0
+	border-bottom 1px solid var(--c-text-xfaint)
+	margin 1.333em 0
 	width 100%
 menu
 	padding 0
 p
 	margin 0.666em 0 0
 pre
+	font-family var(--f-family-mono)
+	font-size 12px
 	margin 0.666em 0 0
 	overflow auto
 	white-space pre-line
@@ -144,29 +187,25 @@ sup
 	h5
 	h6
 		font-weight var(--f-wght-strong)
-		line-height 1
-		margin 2rem 0 0
+		line-height 1.333
+		margin 1rem 0 0
 	h1
-		font-size 2.25em
-		letter-spacing -2px
-	h2
-		font-size 1.8em
-		letter-spacing -1.333px
-	h3
 		font-size 1.5em
-		letter-spacing -1px
+		letter-spacing -0.666px
+		line-height 1.25
+	h2
+		font-size 1.25em
+		letter-spacing -0.5px
+	h3
 	h4
-		font-size 1.2em
+		font-size 1.1666em
 		letter-spacing -0.333px
-	h5
-	h6
-		font-size inherit
 	h5
 	h6
 	b
 	strong
+		font-size inherit
 		font-weight var(--f-wght-strong)
-		letter-spacing -0.1666px
 .md-spoiler-text
 	background black
 	border-radius 5px
@@ -201,19 +240,18 @@ ul
 			top 0
 			white-space pre
 	ol > li
-		margin-left 2ch
+		margin-left 1.5em
 		&::before
 			align-items center
 			background var(--c-blend-weak)
 			border-radius 999px
 			content counter(list)
 			display inline-flex
-			font-feature-settings 'ss01', 'tnum'
-			font-size 0.8em
+			font-feature-settings 'tnum'
+			font-size 0.75rem
 			font-weight var(--f-wght-strong)
 			justify-content center
-			margin 0.25em 0
-			padding 0 0.5em
+			width 1.333rem
 	ul > li
 		margin-left 1ch
 		&::before
@@ -223,20 +261,23 @@ ul
 .md
 	table
 		border-collapse collapse
-		font-family monospace
-		font-feature-settings 'ss01', 'tnum'
-		font-size 0.8em
-		letter-spacing 0.666px
-		line-height 1.333
-		margin 1.333rem 0 0
-		overflow-wrap normal
-		word-break break-all
+		font inherit
+		font-feature-settings 'tnum'
+		font-size 13px
+		letter-spacing 0.333px
+		line-height 1.5
+		margin 1rem 0 0
+		table-layout fixed
+		white-space pre
+		width 100%
 	tbody tr:nth-child(odd)
 		background var(--c-blend-faint)
 	td
 	th
 		padding 0.5em
+		overflow hidden
 		text-align left
+		text-overflow ellipsis
 	td
 		border-left 1px solid var(--c-text-faint)
 		vertical-align top
@@ -265,13 +306,6 @@ summary
 	text-transform inherit
 	user-select none
 	word-spacing inherit
-details
-	margin 0.666em 0 0
-summary
-	&:hover::marker
-		color var(--c-hint-normal)
-	details[open] &
-		color var(--c-text-weak)
 
 // Media
 iframe
@@ -282,5 +316,4 @@ video
 	display block
 	max-width 100%
 .md img
-	border-radius 12px
 	margin 0.666em 0 0

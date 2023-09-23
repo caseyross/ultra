@@ -7,16 +7,8 @@ script.
 	export flair_text = null
 	export name = null
 
-span.user-byline
+span.user-byline(class='user-byline-distinguish-{distinguish}')
 	a.user-byline-name(href='/u/{name}') {name}
-	{#if distinguish === 'submitter'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') OP
-	{:else if distinguish === 'moderator'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') MOD
-	{:else if distinguish === 'admin'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') ADMIN
-	{:else if distinguish === 'special'}
-		span.user-byline-distinguish(class='user-byline-distinguish-{distinguish}') EX-ADMIN
 	{#if flair_text}
 		UserFlair(color={flair_color} emoji_style='image' rich_text={flair_rich_text} text={flair_text})
 
@@ -26,19 +18,23 @@ style.
 		color var(--c-text-weak)
 		display flex
 		font-size 12px
-		letter-spacing calc(2px/3)
-		gap 1em
-	.user-byline-basic-info
-		display flex
-		gap 1em
-		flex 0 0 auto
-	.user-byline-distinguish
-		font-weight var(--f-wght-strong)
-	.user-byline-distinguish-admin
-		color red
-	.user-byline-distinguish-moderator
-		color darkseagreen
-	.user-byline-distinguish-submitter
-		color dodgerblue
-	.user-byline-distinguish-special
-		color red
+		letter-spacing 0.666px
+		line-height 1
+		gap 1ch
+		max-width 100%
+		padding 1px 7px
+		white-space nowrap
+	.user-byline-name
+		font-weight bold
+		.user-byline-distinguish-admin &
+			color var(--c-author-admin)
+			font-weight var(--f-wght-strong)
+		.user-byline-distinguish-moderator &
+			color var(--c-author-mod)
+			font-weight var(--f-wght-strong)
+		.user-byline-distinguish-special &
+			color var(--c-author-vip)
+			font-weight var(--f-wght-strong)
+		.user-byline-distinguish-submitter &
+			color var(--c-author-op)
+			font-weight var(--f-wght-strong)

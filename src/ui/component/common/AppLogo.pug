@@ -1,0 +1,20 @@
+script.
+	export size = 'medium'
+
+a.app-logo(class='app-logo-size-{size}' href='/')
+	img.app-logo-graphic(alt='Arc logo icon' src='/brand_triangle.svg')
+
+style.
+	.app-logo-graphic
+		aspect-ratio 1
+		transition all 0.1s
+		&:active
+			filter saturate(200%)
+		&:hover
+			filter saturate(150%)
+		.app-logo-size-small &
+			width 18px
+		.app-logo-size-medium &
+			width 30px
+		.app-logo-size-large &
+			width 48px

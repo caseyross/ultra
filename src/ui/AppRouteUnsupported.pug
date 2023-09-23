@@ -6,16 +6,17 @@ script.
 	redirect_url.hostname = 'www.reddit.com'
 	redirect_url.port = ''
 
-a#unsupported-page(href={redirect_url})
+a#app-route-unsupported(href={redirect_url})
 	h1 Unsupported page
 	hr
 	p Sorry, this page isn't supported (or can't be supported via the API).
 	p Click anywhere in this message to view the official Reddit version.
 
 style.
-	#unsupported-page
+	#app-route-unsupported
 		background #ffdd5d
-		border-radius 12px
+		border-radius 1em
 		color black
+		display block
 		padding 1em
 		width 480px

@@ -14,12 +14,14 @@ script.
 
 	audio = null
 	buffer_gradient_params = (buffer_regions) ->
-		params = 'transparent 0%,'
+		color_unbuffered = 'var(--c-text-faint)'
+		color_buffered = 'var(--c-text-weak)'
+		params = "#{color_unbuffered} 0%,"
 		for region in buffer_regions
 			start = (region.start / duration * 100) + '%'
 			end = (region.end / duration * 100) + '%'
-			params += " transparent #{start}, var(--c-text-faint) #{start}, var(--c-text-faint) #{end}, transparent #{end},"
-		params = params + ' transparent 100%'
+			params += " #{color_unbuffered} #{start}, #{color_buffered} #{start}, #{color_buffered} #{end}, #{color_unbuffered} #{end},"
+		params = params + " #{color_unbuffered} 100%"
 	buffer_regions = []
 	clamp = (min, max, value) ->
 		if value < min then return min
@@ -82,6 +84,8 @@ script.
 			set_volume(audio.volume + 0.25)
 		j: ->
 			set_time(video.currentTime - 10)
+		k: ->
+			play_pause()
 		l: ->
 			set_time(video.currentTime + 10)
 		m: ->
@@ -146,7 +150,7 @@ script.
 				e.preventDefault()
 		)
 
-figure.media-player(bind:this={player}class:color-strategy-white-text={fullscreen} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' title='' use:virtual_hotkeys={additional_hotkeys})
+figure.media-player(bind:this={player} class:media-player-controls-hidden={fullscreen && mouse_idle} style='width: {width}px' title='' use:virtual_hotkeys={additional_hotkeys})
 	audio(bind:this={audio})
 		source(src={audio_url} type='audio/mp4')
 	<!-- svelte-ignore a11y-media-has-caption -->
@@ -154,16 +158,16 @@ figure.media-player(bind:this={player}class:color-strategy-white-text={fullscree
 		source(src={video_url} type='video/mp4')
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
-		Button(action={play_pause} activated={!paused} description='Play / pause' key='k' text="▶／◼ {Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
-		.media-scrobbler(title='Drag left or right to change playback position')
-			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
-			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
+		Button(action={play_pause} activated={!paused} description='Play / pause' key='p' text="{Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-volume(title='Drag left or right to change volume')
 			figure.media-volume-graphics
 				span.media-volume-bar.media-volume-bar-mute(class:media-volume-bar-filled={audio?.volume == 0}) x
 				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
 			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
+		.media-scrobbler(title='Drag left or right to change playback position')
+			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
+			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
 		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text='⟷')
 
 style.
@@ -171,9 +175,11 @@ style.
 		display none
 	video
 		background black
+		border-radius 1em
 		&::-webkit-media-controls
 			display none
 		:fullscreen &
+			border-radius 0
 			height 100% !important
 			width 100% !important
 		.media-player-controls-hidden &
@@ -185,21 +191,24 @@ style.
 			width 100%
 	.media-player-controls
 		display flex
-		font-feature-settings 'calt', 'ss01', 'tnum'
-		gap 8px
-		padding 8px
+		font-feature-settings 'calt', 'tnum'
+		gap 0.333em
+		margin-top 0.666em
 		:fullscreen &
-			bottom 0
-			left 0
-			padding 1em 25vw
+			background var(--c-bg)
+			border-radius 27px
+			bottom 1em
+			left 25vw
+			padding 0.666em 1em
 			position fixed
-			transition opacity 0.5s
-			width 100vw
+			transition opacity 0.4s
+			width 50vw
 		.media-player-controls-hidden &:not(:hover)
 			opacity 0
 	.media-player-video-hint-overlay
 		align-items center
-		background rgba(0,0,0,0.5)
+		background var(--c-shade-strong)
+		border-radius 1em
 		color white
 		display flex
 		justify-content center
@@ -213,13 +222,14 @@ style.
 	.media-scrobbler
 		align-items center
 		background var(--c-blend-weak)
-		border-radius 6px
+		border-radius 11px
 		display flex
 		flex 1
+		padding 0 9px
 		position relative
 	.media-scrobbler-graphics
 		border-radius inherit
-		height 100%
+		height 7px
 		user-select none
 		width 100%
 	.media-scrobbler-input
@@ -233,27 +243,29 @@ style.
 		width 100%
 		&::-moz-range-thumb
 			appearance none
-			background var(--c-hint-normal)
+			background var(--c-brand-gradient)
 			border-radius 3px
-			height 24px
+			height 23px
+			margin-top 2px
 			width 4px
 		&::-webkit-slider-thumb
 			appearance none
-			background var(--c-hint-normal)
+			background var(--c-brand-gradient)
 			border-radius 3px
-			height 24px
+			height 23px
+			margin-top 2px
 			width 4px
 	.media-volume
 		background var(--c-blend-weak)
-		border-radius 6px
-		padding 0 6px
+		border-radius 11px
+		padding 0 9px
 		position relative
 	.media-volume-bar
 		background var(--c-text-faint)
 		border-radius 3px
 		width 6px
 	.media-volume-bar-filled
-		background var(--c-text-strong)
+		background var(--c-brand-gradient)
 		color var(--c-text-strong) !important
 	.media-volume-bar-mute
 		align-self flex-start
