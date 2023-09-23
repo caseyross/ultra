@@ -138,7 +138,7 @@ Time = {
 			daysBack = 0
 		monthsBack = currentDate.getMonth() + (12 * (currentDate.getFullYear() - targetDate.getFullYear()) - targetDate.getMonth())
 		switch
-			when monthsBack < 7
+			when monthsBack < 12
 				Time.msToRelTimeStr(ms, { abbr: true })
 			else
 				months[targetDate.getMonth()].short_name + ' ' + targetDate.getFullYear()
