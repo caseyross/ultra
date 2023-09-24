@@ -160,28 +160,31 @@ svelte:head
 							{#key filter}
 								Feed(after_id={after_id} filter={filter} sort={sort} subreddit_name={name} time_range={time_range} type='subreddit_posts')
 		{:else if tab === 'search'}
-			nav.subreddit-posts-header
-				data.subreddit-posts-current-page
-				ButtonFrame
-					menu.subreddit-posts-options-search
-						Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search: search, feed_sort: value, subpage: 'search', subreddit_name: name }) }) } activated={true} options={tabs_array(tabs.search.sorts)} selected={sort})
+			{#if subreddit.over18}
+				nav.subreddit-posts-header
+					data.subreddit-posts-current-page
+					Error(message="Reddit doesn't allow 3rd party applications to search NSFW content.")
+			{:else}
+				nav.subreddit-posts-header
+					data.subreddit-posts-current-page
+					ButtonFrame
+						menu.subreddit-posts-options-search
+							Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search: search, feed_sort: value, subpage: 'search', subreddit_name: name }) }) } activated={true} options={tabs_array(tabs.search.sorts)} selected={sort})
+							{#key search}
+								TextInput(autofocus={true} enter_action={value => internal_navigate({ href: location.origin + format_url({ feed_search: value, feed_sort: sort, subpage: 'search', subreddit_name: name }) })} initial_value={search})
+							{#if search_flair_widget}
+								Button(action={() => search_picking_flair = true} text='Flairs...')
+								{#if search_picking_flair}
+									<!-- svelte-ignore a11y-no-static-element-interactions -->
+									.subreddit-flair-search-close-handler(on:click={() => search_picking_flair = false} on:keydown={e => { if(e.key === 'Enter') { search_picking_flair = false } } })
+										Popup(on:close={() => search_picking_flair = false})
+											SubredditWidget(widget={search_flair_widget})
+				section.subreddit-content
+					{#if search}
 						{#key search}
-							TextInput(autofocus={true} enter_action={value => internal_navigate({ href: location.origin + format_url({ feed_search: value, feed_sort: sort, subpage: 'search', subreddit_name: name }) })} initial_value={search})
-						{#if search_flair_widget}
-							Button(action={() => search_picking_flair = true} text='Flairs...')
-							{#if search_picking_flair}
-								<!-- svelte-ignore a11y-no-static-element-interactions -->
-								.subreddit-flair-search-close-handler(on:click={() => search_picking_flair = false} on:keydown={e => { if(e.key === 'Enter') { search_picking_flair = false } } })
-									Popup(on:close={() => search_picking_flair = false})
-										SubredditWidget(widget={search_flair_widget})
-			section.subreddit-content
-				{#if subreddit.over18}
-					Error(message="Reddit doesn't allow 3rd party applications to search NSFW content")
-				{:else if search}
-					{#key search}
-						{#key sort}
-							{#key after_id}
-								Feed(after_id={after_id} filter='all' search={search} sort={sort} subpage='search' subreddit_name={name} type='subreddit_posts')
+							{#key sort}
+								{#key after_id}
+									Feed(after_id={after_id} filter='all' search={search} sort={sort} subpage='search' subreddit_name={name} type='subreddit_posts')
 
 style.
 	.subreddit
