@@ -90,9 +90,9 @@ script.
 					read = read.concat(new_items.map((x) -> AccountState.check_post_read(x)))
 					has_next_page = switch
 						when page_items.length < page_size then false
-						when type.endsWith('_comments') then true
-						when type.endsWith('_messages') then true
-						when type.endsWith('_posts') and type != 'collection_posts' then true
+						when type.endsWith('comments') then true
+						when type.endsWith('messages') then true
+						when type.endsWith('posts') and type != 'collection_posts' then true
 						else false
 					current_page = current_page + 1
 		)
@@ -110,24 +110,24 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 					{#if filter !== 'unread' || !read[i]}
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						li.feed-item(class='feed-item-align-{align}' on:mousedown={e => { if(e.button === 0) { read[i] = true } }})
-							{#if type.endsWith('_comments')}
+							{#if type.endsWith('comments')}
 								Comment(id={item?.id || item} out_of_context={true})
-							{:else if type.endsWith('_messages')}
+							{:else if type.endsWith('messages')}
 								{#if item.was_comment}
 									Comment(id={item.id} out_of_context={true})
 								{:else}
 									Message(message={item})
-							{:else if type.endsWith('_posts')}
+							{:else if type.endsWith('posts')}
 								a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
 									Post(expanded={false} id={item} out_of_context={!type === 'subreddit_posts'})
-							{:else if type.endsWith('_subreddits')}
+							{:else if type.endsWith('subreddits')}
 								a(href={format_url({ subreddit_name: item })})
 									FeedLink(subreddit_name={item} type='subreddit')
 							{:else if type === 'subreddit_wikipages'}
 								a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
 		{#if has_next_page}
 			menu.feed-items-actions
-				{#if type.endsWith('_posts')}
+				{#if type.endsWith('posts')}
 					Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')
 				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
