@@ -5,25 +5,25 @@ script.
 	export color = null
 	export emoji_style = null
 	export rich_text = null
-	export size = 'medium'
 	export subreddit_name = null
 	export text = null
 
-	background_color = color or 'var(--c-subreddit-theme-default)'
-	text_color =
-		if color
-			HexColor.contrast(color)
-		else
-			'var(--c-subreddit-theme-text-default)'
+	DEFAULT_BACKGROUND_COLOR = '#808080'
 
-	if !color and subreddit_name
-		api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
-			if subreddit?.primary_color or subreddit?.key_color
-				background_color = subreddit.primary_color or subreddit.key_color
-				text_color = HexColor.contrast(background_color)
-		)
+	if color
+		background_color = color
+		text_color = HexColor.contrasting(background_color)
+	else
+		background_color = DEFAULT_BACKGROUND_COLOR
+		text_color = HexColor.contrasting(background_color)
+		if subreddit_name
+			api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
+				if subreddit?.primary_color or subreddit?.key_color
+					background_color = subreddit.primary_color or subreddit.key_color
+					text_color = HexColor.contrasting(background_color)
+			)
 
-span.post-flair(class='post-flair-size-{size}' style="background-color: {background_color}; color: {text_color}" title={text})
+span.post-flair(style="background-color: {background_color}; color: {text_color}" title={text})
 	{#if rich_text && rich_text.length}
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}

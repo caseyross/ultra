@@ -1,22 +1,36 @@
 script.
 	import { setContext } from 'svelte'
+	
 	import { HexColor } from '../../lib/index.js'
 
-	themes = [
-		'dark'
-		'light'
-		'night'
-	]
+	DEFAULT_COLOR = '#ffffff'
+	DEFAULT_TEXT_COLOR = '#333333'
 
-	set_theme = (new_theme_name) ->
-		if !new_theme_name
-			return
-		# Remove all other themes
-		document.body.classList.remove(themes.filter((x) -> x != new_theme_name).map((x) -> 'theme-' + x))
-		# Add theme
-		document.body.classList.add('theme-' + new_theme_name)
+	set_theme_color = (color) ->
+		# Calculate colors
+		if !color
+			color = DEFAULT_COLOR
+			text_color = DEFAULT_TEXT_COLOR
+		else
+			text_color = HexColor.contrasting(color)
+		document.body.style.setProperty('--c-theme', color)
+		document.body.style.setProperty('--c-theme-text', text_color)
+		# Remove previous theme
+		for name from document.body.classList.values()
+			if name.startsWith('color-strategy')
+				document.body.classList.remove(name)
+		# Add new theme
+		console.log HexColor.lightness(color)
+		switch
+			when HexColor.lightness(color) > 0.675
+				document.body.classList.add('color-strategy-ultralight-bg')
+			when HexColor.lightness(color) > 0.500
+				document.body.classList.add('color-strategy-light-bg')
+			else
+				document.body.classList.add('color-strategy-dark-bg')
 
-	setContext('set_theme', set_theme)
-	set_theme('night')
+	setContext('set_theme_color', set_theme_color)
+	
+	set_theme_color()
 
 slot

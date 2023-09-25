@@ -45,8 +45,8 @@
 html
 	font-size 15px // declared here for em/rem sizing
 body
-	background-color var(--c-bg)
-	color var(--c-text-strong)
+	background-color var(--c-theme)
+	color var(--c-theme-text)
 	display grid
 	font-family var(--f-family-prop)
 	font-weight var(--f-wght-normal)
@@ -59,75 +59,49 @@ body
 	word-spacing 0.5px
 	&::-webkit-scrollbar
 		display none
-	--c-author-admin red
-	--c-author-mod darkseagreen
-	--c-author-op cornflowerblue
-	--c-author-vip rebeccapurple
 	--c-brand-gradient linear-gradient(120deg, #CEE3F8, orangered)
-	--c-score-0 #e3e6eb
-	--c-score-1 antiquewhite
-	--c-score-2 wheat
-	--c-score-3 lightsalmon
-	--c-score-4 coral
 	--c-shade-weak rgba(0,0,0,0.125)
 	--c-shade-strong rgba(0,0,0,0.50)
-	--c-subreddit-theme-default lightsalmon
-	--c-subreddit-theme-text-default white
 	--c-vote-down steelblue
-	--c-vote-up var(--c-brand-gradient)
+	--c-vote-up var(--c-brand-gradient)\
 	--f-family-mono 'Roboto Mono', monospace
 	--f-family-prop 'Helvetica', 'Arial', sans-serif
-.theme-light
+.color-strategy-dark-bg
+	color-scheme dark
+	--c-blend-faint rgba(255,255,255,0.0625)
+	--c-blend-weak rgba(255,255,255,0.125)
+	--c-con-weak rgba(0,0,0,0.125)
+	--c-con-normal rgba(0,0,0,0.25)
+	--c-text-xfaint rgba(255,255,255,0.125)
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-tint-normal rgba(255,255,255,0.125)
+	--f-wght-normal 400
+	--f-wght-strong 600
+.color-strategy-light-bg
 	color-scheme light
-	--c-bg #f0f1f4
 	--c-blend-faint rgba(0,0,0,0.0625)
 	--c-blend-weak rgba(0,0,0,0.125)
-	--c-blend-normal rgba(0,0,0,0.25)
-	--c-blend-strong rgba(0,0,0,0.50)
-	--c-blend-xstrong rgba(0,0,0,0.75)
 	--c-con-weak rgba(255,255,255,0.5)
 	--c-con-normal white
-	--c-con-strong white
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
-	--c-text-strong #222222
+	--c-tint-normal rgba(255,255,255,0.5)
 	--f-wght-normal 450
 	--f-wght-strong 650
-.theme-night
-	color-scheme dark
-	--c-bg #24242b
-	--c-blend-faint rgba(255,255,255,0.0625)
-	--c-blend-weak rgba(255,255,255,0.125)
-	--c-blend-normal rgba(255,255,255,0.25)
-	--c-blend-strong rgba(255,255,255,0.50)
-	--c-blend-xstrong rgba(255,255,255,0.75)
-	--c-con-weak rgba(0,0,0,0.125)
-	--c-con-normal rgba(0,0,0,0.25)
-	--c-con-strong rgba(0,0,0,0.50)
-	--c-text-xfaint rgba(255,255,255,0.125)
-	--c-text-faint rgba(255,255,255,0.25)
-	--c-text-weak rgba(255,255,255,0.50)
-	--c-text-strong #e1e5e5
-	--f-wght-normal 400
-	--f-wght-strong 600
-.theme-dark
-	color-scheme dark
-	--c-bg black
-	--c-blend-faint rgba(255,255,255,0.0625)
-	--c-blend-weak rgba(255,255,255,0.125)
-	--c-blend-normal rgba(255,255,255,0.25)
-	--c-blend-strong rgba(255,255,255,0.50)
-	--c-blend-xstrong rgba(255,255,255,0.75)
-	--c-con-weak rgba(0,0,0,0.125)
-	--c-con-normal rgba(0,0,0,0.25)
-	--c-con-strong rgba(0,0,0,0.50)
-	--c-text-xfaint rgba(255,255,255,0.125)
-	--c-text-faint rgba(255,255,255,0.25)
-	--c-text-weak rgba(255,255,255,0.50)
-	--c-text-strong #ccc
-	--f-wght-normal 400
-	--f-wght-strong 600
+.color-strategy-ultralight-bg
+	color-scheme light
+	--c-blend-faint rgba(0,0,0,0.0625)
+	--c-blend-weak rgba(0,0,0,0.125)
+	--c-con-weak rgba(0,0,0,0.03125)
+	--c-con-normal rgba(0,0,0,0.0625)
+	--c-text-xfaint rgba(0,0,0,0.125)
+	--c-text-faint rgba(0,0,0,0.25)
+	--c-text-weak rgba(0,0,0,0.50)
+	--c-tint-normal rgba(0,0,0,0.0625)
+	--f-wght-normal 450
+	--f-wght-strong 650
 
 // General layout & typography
 a

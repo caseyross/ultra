@@ -78,6 +78,7 @@ script.
 			when !Number.isFinite(post.score) then '?'
 			when post.score < 1 then '−?'
 			else post.score - 1
+	set_theme_color = getContext('set_theme_color')
 	
 	interact = (action_type, data) ->
 		switch action_type
@@ -123,6 +124,10 @@ script.
 		{ data: post, error, loading } = x
 		if post?.suggested_sort && !comments_sort
 			comments_sort = post.suggested_sort
+		if expanded and post?.subreddit
+			api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
+				set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+			)
 	)
 	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
 	if expanded
@@ -288,7 +293,7 @@ style.
 			width calc(480px + 2 * 1em)
 	.post-body
 		align-items flex-start
-		background var(--c-blend-weak)
+		background var(--c-tint-normal)
 		border-radius 13px
 		display inline-flex
 		flex-flow column nowrap
@@ -342,7 +347,7 @@ style.
 	.post-score
 		background none
 		border-radius 4px 0 0 4px
-		border-right 2px solid var(--c-bg)
+		border-right 2px solid var(--c-theme)
 		color var(--c-text-weak)
 		display flex
 		font-family var(--f-family-mono)

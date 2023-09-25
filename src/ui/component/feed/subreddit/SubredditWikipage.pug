@@ -1,5 +1,5 @@
 script.
-	import { tick } from 'svelte'
+	import { getContext, tick } from 'svelte'
 
 	import api from '../../../../api/index.js'
 	import { Time } from '../../../../lib/index.js'
@@ -15,6 +15,7 @@ script.
 	error = null
 	loading = false
 	page = null
+	set_theme_color = getContext('set_theme_color')
 
 	api.loadWatch(api.ID('subreddit_wikipage', subreddit_name, page_name, revision_id),
 		(x) ->
@@ -25,6 +26,9 @@ script.
 				# it's not worth it to support this handling for other views, but this is a special case
 				await tick()
 				document.getElementById(location.hash[1..])?.scrollIntoView()
+	)
+	api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
+		set_theme_color(subreddit?.primary_color || subreddit?.key_color)
 	)
 
 svelte:head
@@ -104,11 +108,10 @@ style.
 		@media (min-width: 1280px)
 			width 300px
 	:global(.wiki .toc a)
-		color inherit
 		padding 0
 		text-decoration none
 	:global(.wiki .toc a:hover)
-		color var(--c-text-strong)
+		text-decoration underline
 	:global(.wiki .toc + *)
 		margin-top 0
 	:global(.wiki .toc li)
