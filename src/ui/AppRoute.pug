@@ -6,7 +6,6 @@ script.
 	import CollectionAvatar from './component/feed/collection/CollectionAvatar.pug'
 	import CollectionInfo from './component/feed/collection/CollectionInfo.pug'
 	import Feed from './component/feed/Feed.pug'
-	import FeedFilterOptions from './component/feed/FeedFilterOptions.pug'
 	import FeedSearchOptions from './component/feed/FeedSearchOptions.pug'
 	import FeedSortOptions from './component/feed/FeedSortOptions.pug'
 	import FeedSummary from './component/feed/FeedSummary.pug'
@@ -83,8 +82,6 @@ nav#app-main-navigation
 		{#if feed.sort === 'search'}
 			{#key feed.subreddit_name}
 				FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
-		{:else if feed.type.endsWith('posts')}
-			FeedFilterOptions(filter={feed.filter})
 		{#key feed.collection_id}
 			{#key feed.filter}
 				{#key feed.multireddit_name}
