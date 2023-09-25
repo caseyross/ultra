@@ -2,6 +2,16 @@ import ID from '../../core/ID.coffee'
 
 export default {
 
+	post:
+		targetID: (post_id, comments_sort, max_comments, focus_comment_id, focus_comment_parent_count) ->
+			if focus_comment_id
+				ID('comment', focus_comment_id)
+			else
+				null
+		modify: (target) ->
+			delete target.deeper_replies
+			delete target.deeper_replies_id
+
 	post_more_replies:
 		targetID: (post_id, post_comments_sort, post_max_comments, parent_comment_id) ->
 			if parent_comment_id

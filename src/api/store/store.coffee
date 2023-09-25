@@ -82,8 +82,9 @@ export reload = (id) ->
 		updater = datasetUpdaters[ID.type(id)]
 		if updater
 			targetID = updater.targetID(...ID.varArray(id)[1..])
-			change = (target) -> updater.modify(target, datasets.main.data)
-			setDataFromExisting(targetID, change)
+			if targetID
+				change = (target) -> updater.modify(target, datasets.main.data)
+				setDataFromExisting(targetID, change)
 	.catch (error) ->
 		log({
 			id,
@@ -101,7 +102,7 @@ setData = (id, data, partial = false, merge = false) ->
 	if cache[id].data and merge
 		for newKey, newValue of data
 			# Write or overwrite keys where the new value is non-trivial. Merge paired arrays at surface level.
-			if newValue and !(Array.isArray(newValue) and newValue.length < 1)
+			if newValue? and !(Array.isArray(newValue) and newValue.length < 1)
 				if Array.isArray(newValue) and Array.isArray(cache[id].data[newKey])
 					cache[id].data[newKey] = [...new Set(cache[id].data[newKey].concat(newValue))]
 				else
@@ -178,8 +179,9 @@ export submit = (id, payload, reportStatus = ->) ->
 				updater = interactionUpdaters[ID.type(id)]
 				if updater
 					targetID = updater.targetID(...ID.varArray(id)[1..])
-					change = (target) -> updater.modify(target, datasets.main.data)
-					setDataFromExisting(targetID, change)
+					if targetID
+						change = (target) -> updater.modify(target, datasets.main.data)
+						setDataFromExisting(targetID, change)
 		reportStatus({ error: null, sending: false, success: true })
 	.catch (error) ->
 		reportStatus({ error, sending: false, success: false })
