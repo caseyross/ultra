@@ -97,9 +97,9 @@ script.
 	setContext('internal_navigate', internal_navigate) # only for use in rare situations where link tags cannot be used
 	set_route_from_current_url()
 
-AccountProviderOverlay
-	ThemeProviderOverlay
-		NetworkStatusOverlay
+ThemeProviderOverlay
+	NetworkStatusOverlay
+		AccountProviderOverlay
 			RadialMenuOverlay
 				TableManagerOverlay
 					AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})

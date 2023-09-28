@@ -1,4 +1,4 @@
-import { configure, hasClientID } from './core/configure.coffee'
+import { configure, getClientID, hasClientID } from './core/configure.coffee'
 import errors from './core/errors.coffee'
 import ID from './core/ID.coffee'
 import { finishPendingLogin, getLoginStatus, getLoginURL, getUser, hasPendingLogin, isLoggedIn, logout, setUser } from './net/account.coffee'
@@ -11,6 +11,7 @@ export default {
 	ID,
 
 	configure,
+	getClientID,
 	hasClientID,
 	
 	finishPendingLogin,

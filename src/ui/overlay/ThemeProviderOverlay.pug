@@ -20,14 +20,15 @@ script.
 			if name.startsWith('color-strategy')
 				document.body.classList.remove(name)
 		# Add new theme
-		console.log HexColor.lightness(color)
 		switch
 			when HexColor.lightness(color) > 0.675
 				document.body.classList.add('color-strategy-ultralight-bg')
 			when HexColor.lightness(color) > 0.500
 				document.body.classList.add('color-strategy-light-bg')
-			else
+			when HexColor.lightness(color) > 0.075
 				document.body.classList.add('color-strategy-dark-bg')
+			else
+				document.body.classList.add('color-strategy-ultradark-bg')
 
 	setContext('set_theme_color', set_theme_color)
 	

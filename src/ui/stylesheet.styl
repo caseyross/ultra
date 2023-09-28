@@ -12,6 +12,16 @@
 	font-weight 400 700
 	src url('./font/arimo_i.woff2')
 @font-face
+	font-family 'Inter'
+	font-style normal
+	font-weight 100 900
+	src url('./font/inter_v4.woff2')
+@font-face
+	font-family 'Inter'
+	font-style italic
+	font-weight 100 900
+	src url('./font/inter_v4_i.woff2')
+@font-face
 	font-family 'Roboto Flex'
 	font-stretch 25% 151%
 	font-style normal oblique
@@ -27,6 +37,16 @@
 	font-style italic
 	font-weight 100 700
 	src url('./font/roboto_mono_i.woff2')
+@font-face
+	font-family 'IBM Plex Sans'
+	font-style normal
+	font-weight 100 700
+	src url('./font/plex_sans.woff2')
+@font-face
+	font-family 'IBM Plex Sans'
+	font-style italic
+	font-weight 100 700
+	src url('./font/plex_sans_i.woff2')
 
 // Baseline resets
 *
@@ -52,18 +72,33 @@ body
 	font-weight var(--f-wght-normal)
 	grid-auto-flow row
 	grid-template-columns 1fr
+	letter-spacing calc(1px / 6)
 	line-height 20px
 	overflow-y scroll
 	place-items center
-	scrollbar-width 0
-	word-spacing 0.5px
+	scrollbar-width none
 	&::-webkit-scrollbar
 		display none
 	--c-brand-gradient linear-gradient(120deg, #CEE3F8, orangered)
 	--c-vote-down steelblue
 	--c-vote-up var(--c-brand-gradient)
-	--f-family-mono 'Roboto Mono', monospace
-	--f-family-prop 'Helvetica', 'Arial', sans-serif
+	--f-family-mono monospace
+	--f-family-prop 'Inter', sans-serif
+.color-strategy-ultradark-bg
+	color-scheme dark
+	--c-blend-faint rgba(255,255,255,0.0625)
+	--c-blend-weak rgba(255,255,255,0.125)
+	--c-con-weak rgba(255,255,255,0.0625)
+	--c-con-normal rgba(255,255,255,0.125)
+	--c-shade-weak rgba(255,255,255,0.0625)
+	--c-shade-normal rgba(255,255,255,0.125)
+	--c-shade-strong rgba(255,255,255,0.25)
+	--c-text-xfaint rgba(255,255,255,0.125)
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-tint-normal rgba(255,255,255,0.125)
+	--f-wght-normal 350
+	--f-wght-strong 650
 .color-strategy-dark-bg
 	color-scheme dark
 	--c-blend-faint rgba(255,255,255,0.0625)
@@ -71,13 +106,14 @@ body
 	--c-con-weak rgba(0,0,0,0.125)
 	--c-con-normal rgba(0,0,0,0.25)
 	--c-shade-weak rgba(0,0,0,0.125)
+	--c-shade-normal rgba(0,0,0,0.25)
 	--c-shade-strong rgba(0,0,0,0.50)
 	--c-text-xfaint rgba(255,255,255,0.125)
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-tint-normal rgba(255,255,255,0.125)
-	--f-wght-normal 400
-	--f-wght-strong 600
+	--f-wght-normal 350
+	--f-wght-strong 650
 .color-strategy-light-bg
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -85,13 +121,14 @@ body
 	--c-con-weak rgba(255,255,255,0.5)
 	--c-con-normal white
 	--c-shade-weak rgba(0,0,0,0.0625)
+	--c-shade-normal rgba(0,0,0,0.125)
 	--c-shade-strong rgba(0,0,0,0.25)
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-tint-normal rgba(255,255,255,0.5)
-	--f-wght-normal 450
-	--f-wght-strong 650
+	--f-wght-normal 400
+	--f-wght-strong 700
 .color-strategy-ultralight-bg
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -99,13 +136,14 @@ body
 	--c-con-weak rgba(0,0,0,0.03125)
 	--c-con-normal rgba(0,0,0,0.0625)
 	--c-shade-weak rgba(0,0,0,0.03125)
+	--c-shade-normal rgba(0,0,0,0.0625)
 	--c-shade-strong rgba(0,0,0,0.125)
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-tint-normal rgba(0,0,0,0.0625)
-	--f-wght-normal 450
-	--f-wght-strong 650
+	--f-wght-normal 400
+	--f-wght-strong 700
 
 // General layout & typography
 a
@@ -123,7 +161,7 @@ address
 blockquote
 	border-left 2px solid var(--c-text-xfaint)
 	color var(--c-text-weak)
-	margin 0.666em 0 0
+	margin 1em 0 0
 	padding-left 1em
 cite
 	font-style normal
@@ -133,6 +171,8 @@ code
 	font-family var(--f-family-mono)
 	font-size 12px
 	word-break break-all
+details
+	margin 1em 0 0
 fieldset
 	border 0
 	padding 0
@@ -141,16 +181,16 @@ kbd
 hr
 	border 0
 	border-bottom 1px solid var(--c-text-xfaint)
-	margin 1.333em 0
+	margin 1.5em 0 0
 	width 100%
 menu
 	padding 0
 p
-	margin 0.666em 0 0
+	margin 1em 0 0
 pre
 	font-family var(--f-family-mono)
 	font-size 12px
-	margin 0.666em 0 0
+	margin 1em 0 0
 	overflow auto
 	white-space pre-line
 sub
@@ -165,19 +205,18 @@ sup
 	h5
 	h6
 		font-weight var(--f-wght-strong)
-		line-height 1.333
+		line-height 1.25
 		margin 1rem 0 0
 	h1
 		font-size 1.5em
-		letter-spacing -0.666px
-		line-height 1.25
+		letter-spacing 0
 	h2
 		font-size 1.25em
-		letter-spacing -0.5px
+		letter-spacing 0
 	h3
 	h4
 		font-size 1.1666em
-		letter-spacing -0.333px
+		letter-spacing 0
 	h5
 	h6
 	b
@@ -284,6 +323,12 @@ summary
 	text-transform inherit
 	user-select none
 	word-spacing inherit
+summary
+	background var(--c-blend-weak)
+	border-radius 11px
+	display inline-flex
+	margin 1em 0 0
+	padding 3px 9px
 
 // Media
 iframe
@@ -294,4 +339,5 @@ video
 	display block
 	max-width 100%
 .md img
-	margin 0.666em 0 0
+	border-radius 1em
+	margin 1em 0 0

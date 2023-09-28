@@ -1,18 +1,18 @@
 import api from '../../api/index.js'
 import { parse_url } from '../url/index.js'
+import { DEMO_API_CLIENT_ID } from '../demo_key.js'
 
-# Set the API config from environment vars and query params.
-DEMO_API_CLIENT_ID = 'uhWd025AEIHZjUg3vESPAA' # public
-query = new URLSearchParams(location.search)
-clientID = process.env.API_CLIENT_ID
-if !clientID? and !api.hasClientID()
+# Set API config from environment vars / query parameters / previously stored values.
+if process.env.API_CLIENT_ID
+	clientID = process.env.API_CLIENT_ID
+else if !api.hasClientID()
 	clientID = DEMO_API_CLIENT_ID
-debug = query.get('debug')? or query.get('log')? or process.env.API_DEBUG?
-redirectURI = location.origin
+else
+	# Retain previously used client ID.
 api.configure({
-	clientID,
-	debug,
-	redirectURI,
+	clientID: clientID
+	debug: (new URLSearchParams(location.search)).get('debug')? or process.env.API_DEBUG?
+	redirectURI: location.origin
 })
 
 # If a login attempt was started by a prior instance of the application, finish it.

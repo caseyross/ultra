@@ -11,5 +11,8 @@ export configure = ({
 	if redirectURI?
 		localStorage['api.config.redirect_uri'] = redirectURI
 
+export getClientID = ->
+	localStorage['api.config.client_id']
+
 export hasClientID = ->
-	localStorage['api.config.client_id']?
+	localStorage['api.config.client_id']

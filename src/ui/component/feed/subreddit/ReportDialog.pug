@@ -51,7 +51,6 @@ form.report-menu
 				fieldset.report-menu-subreddit-rules
 					{#each subreddit_rules as rule}
 						label.report-menu-rule.report-menu-subreddit-rule(title={rule.description})
-							span.report-menu-subreddit-rule-number \#{rule.priority + 1}
 							h1.report-menu-subreddit-rule-violation-name {rule.violation_reason}
 							.report-menu-subreddit-rule-violation-description
 								FormattedHTML(html={rule.description_html || ''})
@@ -71,6 +70,9 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
+		width 960px
+	.report-menu-hint
+		flex 0 0 auto
 	.report-menu-rule
 		aspect-ratio 1
 		background var(--c-con-weak)
@@ -113,11 +115,10 @@ style.
 		align-items center
 		display flex
 		gap 9px
+		padding 0 1ch
 	.report-menu-subreddit-rule
 		border-radius 9px
 		word-break break-word
-	.report-menu-subreddit-rule-number
-		font-size 12px
 	.report-menu-subreddit-rule-violation-name
 		font-size 1rem
 		line-height 1.333

@@ -44,7 +44,7 @@ script.
 style.
 	.button
 		align-items center
-		background var(--c-con-weak)
+		background var(--c-shade-weak)
 		border-radius 11px
 		display inline-flex
 		font-weight bold
@@ -54,15 +54,15 @@ style.
 		position relative
 		text-align left
 		user-select none
+		white-space nowrap
 		&.button-activated
-			background var(--c-brand-gradient)
-			color black
+			background var(--c-shade-strong)
 		&:disabled
 		&.button-disabled
 			cursor auto
 			opacity 0.5
 		&:hover:not(.button-activated)
-			background var(--c-con-normal)
+			background var(--c-shade-strong)
 	.button-badge
 		border-radius 10px
 		background var(--c-blend-weak)
