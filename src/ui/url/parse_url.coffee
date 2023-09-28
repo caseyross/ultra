@@ -5,7 +5,7 @@ GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
 POST_COMMENTS_INITIAL_SIZE = 200
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
-	['api', 'c', 'chat', 'collection', 'dev', 'domain', 'gallery', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
+	['api', 'c', 'chat', 'collection', 'comments', 'contributor-program', 'dev', 'domain', 'gallery', 'gold', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
 RECOGNIZED_SUBREDDIT_PATH_SEGMENTS =
 	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'rules', 's', 'search', 'submit', 'w', 'wiki']
 RECOGNIZED_USER_PATH_SEGMENTS =
@@ -98,6 +98,11 @@ export default (url) ->
 	switch a
 		when 'c', 'collection'
 			feed.collection_id = b
+		when 'comments', 'p', 'post'
+			post.id = b
+			post.focus_comment_id = c if c?
+			delete post.focus_comment_parent_count unless post.focus_comment_id?
+			preload.push(api.ID('post', post.id, post.comments_sort or 'confidence', POST_COMMENTS_INITIAL_SIZE, post.focus_comment_id, post.focus_comment_parent_count))
 		when 'message'
 			feed.type = 'account_messages'
 			switch b
@@ -107,11 +112,6 @@ export default (url) ->
 				when 'unread' then feed.filter = 'unread'
 			feed.filter = 'unread' unless feed.filter
 			feed.base_page_id = api.ID('account_messages', feed.filter, FEED_PAGE_SIZE)
-		when 'p', 'post'
-			post.id = b
-			post.focus_comment_id = c if c?
-			delete post.focus_comment_parent_count unless post.focus_comment_id?
-			preload.push(api.ID('post', post.id, post.comments_sort or 'confidence', POST_COMMENTS_INITIAL_SIZE, post.focus_comment_id, post.focus_comment_parent_count))
 		when 'r', 'subreddit'
 			if b in ['friends', 'mod'] then unsupported = true
 			else
