@@ -22,23 +22,23 @@ script.
 				{ data: subscribed_subreddits } = x
 			)
 		else
-			api.loadWatch(api.ID('subreddits_popular', 25), (x) ->
+			api.loadWatch(api.ID('global_subreddits_popular', 10), (x) ->
 				{ data: trending_subreddits } = x
 			)
 
 aside.multireddit-info
 	section.multireddit-info-header
 		MultiredditAvatar(multireddit_name={multireddit_name} user_name={user_name})
-		h1.multireddit-info-name {multireddit_name.toLowerCase()}
+		h1.multireddit-info-name {user_name === 'r' ? 'r/' : ''}{multireddit_name.toLowerCase()}
 	{#if multireddit}
 		{#if multireddit.description_html}
 			FormattedHTML(html={multireddit.description_html})
 		{#if multireddit.subreddits}
 			SubredditWidget(widget={{ data: multireddit.subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'List of subreddits' }})
 		{:else if subscribed_subreddits}
-			SubredditWidget(widget={{ data: subscribed_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Subscriptions' }})
+			SubredditWidget(widget={{ data: subscribed_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Your subreddits' }})
 		{:else if trending_subreddits}
-			SubredditWidget(widget={{ data: trending_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Trending subreddits' }})
+			SubredditWidget(widget={{ data: trending_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Trendy subreddits' }})
 	{#if user_name !== 'r'}
 		cite.multireddit-info-owner
 			| by

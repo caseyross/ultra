@@ -45,7 +45,7 @@ script.
 				when 'search' then api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_text}", 'all', search_sort, page_size)
 				else api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
 		when 'popular_subreddits'
-			api.ID('subreddits_popular', page_size)
+			api.ID('global_subreddits_popular', page_size)
 		when 'subreddit_comments'
 			api.ID('subreddit_comments', subreddit_name, page_size)
 		when 'subreddit_posts'
