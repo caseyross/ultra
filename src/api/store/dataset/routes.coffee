@@ -56,6 +56,12 @@ export default {
 		get("/api/info", {
 			id: "t1_#{comment_id}"
 		})
+	global_subreddits_popular: (max_subreddits) ->
+		get("/subreddits/popular", {
+			limit: Number(max_subreddits) + 1 # first result is always r/home
+			show: 'all'
+			sr_detail: true
+		})
 	multireddit: (user_name, multireddit_name) ->
 		if user_name is 'r' then Promise.resolve({})
 		else get("/api/multi/user/#{user_name}/m/#{multireddit_name}")
@@ -174,13 +180,6 @@ export default {
 		})
 	subreddit_wikipages_all: (subreddit_name) ->
 		get("/r/#{subreddit_name}/wiki/pages")
-
-	subreddits_popular: (max_subreddits) ->
-		get("/subreddits/popular", {
-			limit: Number(max_subreddits) + 1 # first result is always r/home
-			show: 'all'
-			sr_detail: true
-		})
 	user: (user_name) ->
 		get("/user/#{user_name}/about", {
 			sr_detail: true
