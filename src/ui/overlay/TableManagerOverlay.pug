@@ -19,7 +19,9 @@ slot
 style.
 	:global(tr)
 		cursor ns-resize
+		outline 1px solid transparent
+		transition outline-color 0.05s
 		&:hover
-			outline 1px solid var(--c-text-weak)
+			outline-color var(--c-text-weak)
 	:global(.tr-expanded)
 		white-space initial
