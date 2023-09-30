@@ -24,46 +24,6 @@ export default {
 				else
 					''
 
-	# reason for keeping track of this is to be able to sort the user's subscriptions in order of likely preference
-	get_subreddit_viewcount: (name) ->
-		key = key_prefix + 'subreddit_viewcount'
-		index = localStorage[key]?.indexOf(name + ':')
-		if index == undefined or index < 0
-			return 0
-		else
-			endIndex = localStorage[key].indexOf(' ', index + 3)
-			return Number(localStorage[key].slice(index + name.length + 1, endIndex))
-	get_subreddit_viewcounts: ->
-		key = key_prefix + 'subreddit_viewcount'
-		if !localStorage[key]?
-			return []
-		else
-			viewcounts = localStorage[key].split(' ').map((x) ->
-				[name, count] = x.split(':')
-				return {
-					name,
-					count,
-				}
-			)
-			viewcounts.sort((a, b) -> b.count - a.count)
-			return viewcounts
-	increment_subreddit_viewcount: (name) ->
-		key = key_prefix + 'subreddit_viewcount'
-		index = localStorage[key]?.indexOf(name + ':')
-		if index == undefined
-			localStorage[key] = name + ':1'
-		else if index < 0
-			localStorage[key] = localStorage[key] + ' ' + name + ':1'
-		else
-			endIndex = localStorage[key].indexOf(' ', index + 3)
-			if endIndex < 0
-				endIndex = Infinity
-			count = Number(localStorage[key].slice(index + name.length + 1, endIndex))
-			localStorage[key] =
-				localStorage[key].slice(0, index + name.length + 1) +
-				(count + 1) +
-				localStorage[key].slice(endIndex)
-
 	get_media_volume: ->
 		key = key_prefix + 'media_volume'
 		Number(localStorage[key]) or 0
