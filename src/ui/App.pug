@@ -8,7 +8,10 @@ script.
 	import RadialMenuOverlay from './overlay/RadialMenuOverlay.pug'
 	import TableManagerOverlay from './overlay/TableManagerOverlay.pug'
 	import ThemeProviderOverlay from './overlay/ThemeProviderOverlay.pug'
+	
 	import AppRoute from './AppRoute.pug'
+	import AppRouteHome from './AppRouteHome.pug'
+	import AppRouteUnsupported from './AppRouteUnsupported.pug'
 	
 	route = {}
 	scroll_cache = {}
@@ -102,4 +105,10 @@ ThemeProviderOverlay
 		AccountProviderOverlay
 			RadialMenuOverlay
 				TableManagerOverlay
-					AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})
+					{#if route.feed || route.post || route.wiki}
+						{#if route.feed?.type === 'homepage'}
+							AppRouteHome
+						{:else}
+							AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})
+					{:else}
+						AppRouteUnsupported(url={location})

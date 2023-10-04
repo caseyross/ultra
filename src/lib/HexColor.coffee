@@ -1,14 +1,14 @@
 HexColor = {
 
-	contrasting: (color) ->
-		if HexColor.lightness(color) > 0.5
-			'#000000'
-		else
-			'#ffffff'
-
+	# This is scaled so that 0.5 is approximately the switchover point between black or white text providing better contrast on the given color.
+	# i.e.:
+	# - value between 0--0.5, use white text.
+	# - value between 0.5--0.75, use black text.
+	#
+	# Max value is 0.75.
 	lightness: (color) ->
 		{ R, G, B } = HexColor.rgb(color)
-		return 0.1 * R + 0.6 * G + 0.0 * B # yes, blue component counts for 0
+		return 0.1 * R + 0.6 * G + 0.05 * B
 
 	rgb: (color) ->
 		if color.startsWith('#')

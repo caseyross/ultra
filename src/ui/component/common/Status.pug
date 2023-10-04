@@ -13,15 +13,17 @@ script.
 style.
 	.status
 		border-radius 1em
+		display flex
+		flex-flow column nowrap
 		font-weight var(--f-wght-strong)
-		max-width 480px
+		gap 1em
 		padding 1em
 		width 100%
 	.status-body
 		align-items center
 		display flex
+		flex 1 1 auto
 		justify-content space-between
-		width 100%
 	.status-type-error
 		background salmon
 		color white

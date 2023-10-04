@@ -8,7 +8,6 @@ script.
 	import BanDialog from '../feed/subreddit/BanDialog.pug'
 	import Button from '../common/Button.pug'
 	import CommentEditor from './CommentEditor.pug'
-	import FeedLink from '../feed/FeedLink.pug'
 	import FormattedHTML from '../common/FormattedHTML.pug'
 	import Popup from '../common/Popup.pug'
 	import ReportDialog from '../feed/subreddit/ReportDialog.pug'
@@ -111,10 +110,10 @@ script.
 	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
-		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-downvoted={comment.likes === false} class:comment-highlighted={id === focus_comment_id} class:comment-upvoted={comment.likes === true} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-id={comment.id} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title="{Time.sToAbsRelTimeStr(comment.created_utc)}{comment.edited ? ', edited ' + Time.sToAbsRelTimeStr(comment.edited) : ''}")
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-highlighted={id === focus_comment_id} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-id={comment.id} data-pinned={comment.stickied || null} data-radial-menu='comment' data-saved={comment.saved || null} on:radialmenu={e => interact(e.detail)} role='comment' title="{Time.sToAbsRelTimeStr(comment.created_utc)}{comment.edited ? ', edited ' + Time.sToAbsRelTimeStr(comment.edited) : ''}")
 			section.comment-meta
 				{#if api.isLoggedIn()}
-					button.comment-score(data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={comment.score_hidden ? 'score hidden' : comment.score - 1})
+					button.comment-score(class:comment-score-downvoted={comment.likes === false} class:comment-score-upvoted={comment.likes === true} data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={comment.score_hidden ? 'score hidden' : comment.score - 1})
 						| {score_text(comment)}
 						{#if comment.controversiality > 0.25}
 							span.comment-score-controversial-marker(title='controversial comment') †
@@ -123,7 +122,7 @@ script.
 						| {score_text(comment)}
 						{#if comment.controversiality > 0.25}
 							span.comment-score-controversial-marker(title='controversial comment') †
-				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} downvote={() => interact('downvote')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author} score={comment.score} score_controversiality={comment.controversiality} score_hidden={comment.score_hidden} upvote={() => interact('upvote')})
+				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
 			FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
@@ -154,12 +153,11 @@ style.
 		flex-flow column nowrap
 		:global(& > .md)
 			background var(--c-tint-normal)
-			border-radius 13px
-			display inline-block
+			border-radius 1em
 			padding 1em
 		:global(& > .md img)
-			border-radius 11px
-			max-height 128px
+			border-radius 9px
+			max-height 256px
 			width auto
 		:global(&.comment-highlighted > .md)
 			outline 1px solid #ffdd5d
@@ -168,35 +166,30 @@ style.
 			pointer-events none
 		:global(&.comment-with-low-score:not(&.comment-deleted) > .md)
 			opacity 0.5
-	.comment-clip
-		display flex
-		flex-flow column nowrap
-		gap 0.333em
 	.comment-meta
 		align-items center
-		background var(--c-blend-faint)
-		border-radius 4px
-		display inline-flex
+		display flex
+		gap 0.5em
+		max-width 100%
+		padding 0.333em
 	.comment-replies
 		border-left 1px solid var(--c-text-xfaint)
 		margin 1.333em 0
 		padding-left 1.333em
 	.comment-score
-		background none
-		border-radius 4px 0 0 4px
-		border-right 2px solid var(--c-theme)
+		background var(--c-blend-faint)
+		border-radius 11px
 		color var(--c-text-weak)
-		display flex
+		display inline-flex
 		font-family var(--f-family-mono)
-		font-size 1.15em
 		font-weight var(--f-wght-strong)
 		line-height 1
 		padding 1px 6px
-		.comment-upvoted &
-			background var(--c-vote-up)
-			color black
-		.comment-downvoted &
-			background var(--c-vote-down)
+		&.comment-score-downvoted
+			opacity 0.5
+		&.comment-score-upvoted
+			background var(--c-text-strong)
+			color var(--c-theme)
 	.comment-score-controversial-marker
 		cursor help
 		font-size 12px
@@ -205,6 +198,7 @@ style.
 		align-items center
 		display flex
 		gap 1ch
+		padding 0.666em 0
 		white-space nowrap
 	.comment-source-name
 		color var(--c-text-faint)

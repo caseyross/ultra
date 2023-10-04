@@ -3,7 +3,8 @@ import api from '../../api/index.js'
 FEED_PAGE_SIZE = 10
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
-POST_COMMENTS_INITIAL_SIZE = 200
+HOMEPAGE_FEEDS_COUNT = 100
+POST_COMMENTS_INITIAL_SIZE = 100
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
 	['api', 'c', 'chat', 'collection', 'comments', 'contributor-program', 'dev', 'domain', 'gallery', 'gold', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
 RECOGNIZED_SUBREDDIT_PATH_SEGMENTS =
@@ -68,9 +69,12 @@ export default (url) ->
 		path.shift()
 	if path.at(-1) is ''
 		path.pop()
-	# Treat empty path as r/all.
 	if !path[0]?
-		path.splice(0, 0, 'r', 'all')
+		feed.type = 'homepage'
+		if api.isLoggedIn()
+			feed.base_page_id = api.ID('account_subreddits_subscribed', HOMEPAGE_FEEDS_COUNT)
+		else
+			feed.base_page_id = api.ID('global_subreddits_popular', HOMEPAGE_FEEDS_COUNT)
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?
 		path.shift()

@@ -10,7 +10,8 @@ script.
 	export widget = null
 
 article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
-	h1.subreddit-widget-title {widget.kind === 'post-flair' ? 'Flair Filter' : widget.shortName}
+	{#if widget.kind !== 'image' && widget.kind !== 'post-flair'}
+		h1.subreddit-widget-title {widget.shortName}
 	{#if widget.kind === 'button'}
 		.md
 			ul.subreddit-widget-links
@@ -21,14 +22,16 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 		{#if widget.data.length > 0}
 			.md
 				table.subreddit-widget-calendar-events
-					tr
-						th Time until
-						th Event
-					{#each widget.data as event}
-						tr.subreddit-widget-calendar-event(title='{Time.sToAbsTimeStr(event.startTime)}')
-							td {Time.msToRelTimeStr(Time.unixMs(), { abbr: true, endMs: Time.sToMs(event.startTime) })}
-							td
-								FormattedHTML(html={event.titleHtml})
+					thead
+						tr
+							th(style='width: 45px') ETA
+							th Event
+					tbody
+						{#each widget.data as event}
+							tr.subreddit-widget-calendar-event(title='{Time.sToAbsTimeStr(event.startTime)}')
+								td {Time.msToRelTimeStr(Time.unixMs(), { abbr: true, endMs: Time.sToMs(event.startTime) })}
+								td
+									FormattedHTML(html={event.titleHtml})
 		{:else}
 			span.subreddit-widget-calendar-events-empty (No events.)
 	{:else if widget.kind === 'community-list'}
@@ -38,7 +41,7 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 					{#if subreddit.name.startsWith('u_')}
 						FeedLink(type='user' user_name={subreddit.name.slice(2)})
 					{:else}
-						FeedLink(subreddit_name={subreddit.name} type='subreddit')
+						FeedLink(type='subreddit' icon_url={subreddit.communityIcon || subreddit.iconUrl} subreddit_name={subreddit.name})
 	{:else if widget.kind === 'custom'}
 		FormattedHTML(html={widget.textHtml})
 	{:else if widget.kind === 'image'}
@@ -61,14 +64,13 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		:global(& > h1 + *)
-			padding 1em
 	.subreddit-widget-calendar-events
-		white-space initial
+		white-space nowrap
 	.subreddit-widget-calendar-events-empty
 		color var(--c-text-weak)
 	.subreddit-widget-image
-		background var(--c-con-weak)
+		background var(--c-blend-weak)
+		border-radius 1em
 	.subreddit-widget-link
 		margin-top 0.333em
 	.subreddit-widget-post-flairs
@@ -79,4 +81,3 @@ style.
 		margin-top 0.333em
 	.subreddit-widget-title
 		font-size inherit
-		font-stretch 125%

@@ -15,7 +15,6 @@ script.
 	import Post from '../post/Post.pug'
 	import Status from '../common/Status.pug'
 
-	export align = 'start'
 	export collection_id = null
 	export filter = null
 	export internal_navigate = getContext('internal_navigate')
@@ -105,11 +104,13 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 			{#if !loading}
 				.feed-all-read You've read all {type.split('_').at(-1)} up to page {current_page}.
 		{:else}
+			{#if type.endsWith('posts')}
+				Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')
 			ol.feed-items
 				{#each items as item, i (item)}
 					{#if filter !== 'unread' || !read[i]}
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-						li.feed-item(class='feed-item-align-{align}' on:mousedown={e => { if(e.button === 0) { read[i] = true } }})
+						li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
 							{#if type.endsWith('comments')}
 								Comment(id={item?.id || item} out_of_context={true})
 							{:else if type.endsWith('messages')}
@@ -119,7 +120,7 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 									Message(message={item})
 							{:else if type.endsWith('posts')}
 								a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
-									Post(expanded={false} id={item} out_of_context={!type === 'subreddit_posts'})
+									Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
 							{:else if type.endsWith('subreddits')}
 								a(href={format_url({ subreddit_name: item })})
 									FeedLink(subreddit_name={item} type='subreddit')
@@ -127,8 +128,6 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 								a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
 		{#if has_next_page}
 			menu.feed-items-actions
-				{#if type.endsWith('posts')}
-					Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')
 				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
 	{:else}
@@ -148,28 +147,20 @@ style.
 		width 100%
 	.feed-all-read
 		color var(--c-text-weak)
-	.feed-item-align-end
-		align-self flex-end
-		text-align right
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
+		gap 1em
 		overflow auto
 		scrollbar-width none
 		&::-webkit-scrollbar
 			display none
-		.feed-type-posts &
-			background var(--c-shade-weak)
-			border-radius 11px
+		.feed-type-comments &
+			gap 2em
 	.feed-items-actions
 		display flex
 		flex-flow row wrap
 		gap 1ch
-		justify-content space-between
 		width 100%
 	.feed-loading
 		color var(--c-text-weak)
-	.feed-post-link
-		display block
-		padding 1em

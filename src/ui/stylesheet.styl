@@ -63,13 +63,13 @@
 
 // Page structure & theme
 html
-	font-size 15px // declared here for em/rem sizing
+	font-size 15px
 body
 	background-color var(--c-theme)
-	color var(--c-theme-text)
+	color var(--c-text-strong)
 	display grid
 	font-family var(--f-family-prop)
-	font-weight var(--f-wght-normal)
+	font-weight var(--f-wght-weak)
 	grid-auto-flow row
 	grid-template-columns 1fr
 	letter-spacing calc(1px / 6)
@@ -77,13 +77,11 @@ body
 	overflow-y scroll
 	place-items center
 	scrollbar-width none
+	word-spacing calc(1px / 6)
+	--f-family-mono 'Consolas', monospace
+	--f-family-prop 'Inter', sans-serif
 	&::-webkit-scrollbar
 		display none
-	--c-brand-gradient linear-gradient(120deg, #CEE3F8, orangered)
-	--c-vote-down steelblue
-	--c-vote-up var(--c-brand-gradient)
-	--f-family-mono monospace
-	--f-family-prop 'Inter', sans-serif
 .color-strategy-ultradark-bg
 	color-scheme dark
 	--c-blend-faint rgba(255,255,255,0.0625)
@@ -96,8 +94,10 @@ body
 	--c-text-xfaint rgba(255,255,255,0.125)
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong #e8e8e8
 	--c-tint-normal rgba(255,255,255,0.125)
-	--f-wght-normal 350
+	--f-wght-weak 400
+	--f-wght-normal 500
 	--f-wght-strong 650
 .color-strategy-dark-bg
 	color-scheme dark
@@ -111,8 +111,10 @@ body
 	--c-text-xfaint rgba(255,255,255,0.125)
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong #f8f8f8
 	--c-tint-normal rgba(255,255,255,0.125)
-	--f-wght-normal 350
+	--f-wght-weak 400
+	--f-wght-normal 500
 	--f-wght-strong 650
 .color-strategy-light-bg
 	color-scheme light
@@ -126,8 +128,10 @@ body
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong #333333
 	--c-tint-normal rgba(255,255,255,0.5)
-	--f-wght-normal 400
+	--f-wght-weak 450
+	--f-wght-normal 550
 	--f-wght-strong 700
 .color-strategy-ultralight-bg
 	color-scheme light
@@ -141,8 +145,10 @@ body
 	--c-text-xfaint rgba(0,0,0,0.125)
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong #333333
 	--c-tint-normal rgba(0,0,0,0.0625)
-	--f-wght-normal 400
+	--f-wght-weak 450
+	--f-wght-normal 550
 	--f-wght-strong 700
 
 // General layout & typography
@@ -180,8 +186,8 @@ kbd
 	font-family var(--f-family-mono)
 hr
 	border 0
-	border-bottom 1px solid var(--c-text-xfaint)
-	margin 1.5em 0 0
+	border-bottom 1px solid var(--c-text-faint)
+	margin 1em 0 0
 	width 100%
 menu
 	padding 0
@@ -193,6 +199,7 @@ pre
 	margin 1em 0 0
 	overflow auto
 	white-space pre-line
+	white-space-collapse preserve
 sub
 sup
 	line-height 0
@@ -205,33 +212,35 @@ sup
 	h5
 	h6
 		font-weight var(--f-wght-strong)
-		line-height 1.25
 		margin 1rem 0 0
 	h1
-		font-size 1.5em
+		font-size 1.333em
 		letter-spacing 0
+		line-height 1.1666
 	h2
 		font-size 1.25em
 		letter-spacing 0
+		line-height 1.2
 	h3
 	h4
-		font-size 1.1666em
+		font-size 1.125em
 		letter-spacing 0
+		line-height 1.25
 	h5
 	h6
 	b
 	strong
 		font-size inherit
 		font-weight var(--f-wght-strong)
+		letter-spacing 0
 .md-spoiler-text
 	background black
-	border-radius 5px
 	color transparent
-	cursor default
+	padding-bottom 1px
 	*
 		opacity 0
 	&:hover
-		background var(--c-con-weak)
+		background var(--c-blend-weak)
 		color inherit
 		*
 			opacity 1
@@ -245,10 +254,10 @@ ul
 	ol
 	ul
 		counter-reset list
-		margin 0.333em 0 0
+		margin 1em 0 0
 	li
 		counter-increment list
-		margin 0.333em 0 0
+		margin 1em 0 0
 		padding-left 1ch
 		position relative
 		&::before
@@ -257,7 +266,7 @@ ul
 			top 0
 			white-space pre
 	ol > li
-		margin-left 1.5em
+		margin-left 1.333em
 		&::before
 			align-items center
 			background var(--c-blend-weak)
@@ -323,6 +332,8 @@ summary
 	text-transform inherit
 	user-select none
 	word-spacing inherit
+input[type='text']
+	cursor initial
 summary
 	background var(--c-blend-weak)
 	border-radius 11px
@@ -339,5 +350,4 @@ video
 	display block
 	max-width 100%
 .md img
-	border-radius 1em
 	margin 1em 0 0

@@ -1,6 +1,5 @@
 script.
 	import api from '../../../api/index.js'
-	import { HexColor } from '../../../lib/index.js'
 	
 	export color = null
 	export emoji_style = null
@@ -8,47 +7,57 @@ script.
 	export subreddit_name = null
 	export text = null
 
-	DEFAULT_BACKGROUND_COLOR = '#808080'
+	DEFAULT_COLOR = '#ff4500'
 
 	if color
 		background_color = color
-		text_color = HexColor.contrasting(background_color)
 	else
-		background_color = DEFAULT_BACKGROUND_COLOR
-		text_color = HexColor.contrasting(background_color)
+		background_color = DEFAULT_COLOR
 		if subreddit_name
 			api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
 				if subreddit?.primary_color or subreddit?.key_color
 					background_color = subreddit.primary_color or subreddit.key_color
-					text_color = HexColor.contrasting(background_color)
 			)
 
-span.post-flair(style="background-color: {background_color}; color: {text_color}" title={text})
+span.post-flair(title={text})
+	span.post-flair-graphic(style="background-color: {background_color}")
 	{#if rich_text && rich_text.length}
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}
-				| {segment.t}
+				span.post-flair-text {segment.t}
 			{:else if segment.e === 'emoji' && emoji_style !== null}
 				{#if emoji_style === 'image'}
 					img.post-flair-emoji(alt={segment.a} src={segment.u} title={segment.a})
 				{:else if emoji_style === 'text'}
-					| {segment.a}
+					span.post-flair-text {segment.a}
 	{:else}
-		| {text}
+		span.post-flair-text {text}
 
 style.
 	.post-flair
 		align-items center
 		border-radius 11px
+		color var(--c-text-weak)
 		display inline-flex
+		font-feature-settings 'calt', 'cpsp'
 		font-size 10px
-		font-weight bold
-		gap 5px
+		font-weight var(--f-wght-strong)
+		gap 1ch
 		letter-spacing 1px
 		line-height 1
-		padding 5px 10px
+		height 20px
+		max-width 100%
+		overflow hidden
 		text-transform uppercase
 		user-select none
 		white-space nowrap
 	.post-flair-emoji
 		height 16px
+	.post-flair-graphic
+		aspect-ratio 1
+		border-radius 50%
+		flex 0 0 auto
+		height 100%
+	.post-flair-text
+		overflow hidden
+		text-overflow ellipsis

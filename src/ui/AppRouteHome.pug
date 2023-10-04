@@ -1,0 +1,38 @@
+script.
+	import api from '../api/index.js'
+
+	import LoginButton from './component/user/account/LoginButton.pug'
+	import LogoutButton from './component/user/account/LogoutButton.pug'
+	import SubredditAvatar from './component/feed/subreddit/SubredditAvatar.pug'
+	import Status from './component/common/Status.pug'
+
+	MAX_SUBREDDITS = 100
+
+	error = false
+	loading = false
+	subreddits = []
+
+	if api.isLoggedIn()
+		api.loadWatch(api.ID('account_subreddits_subscribed', MAX_SUBREDDITS), ({ data, error, loading }) ->
+			subreddits = data or []
+		)
+	else
+		api.loadWatch(api.ID('global_subreddits_popular', MAX_SUBREDDITS), ({ data, error, loading }) ->
+			subreddits = data or []
+		)
+
+{#if api.isLoggedIn()}
+	LogoutButton
+{:else}
+	LoginButton
+{#if loading}
+	span Loading...
+{:else if error}
+	Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
+{:else if subreddits}
+	ol
+		{#each subreddits as subreddit}
+			li(style='position:fixed;top:{Math.random() * 100}vh;left:{Math.random() * 100}vw')
+				SubredditAvatar(name={subreddit})
+
+style.

@@ -36,7 +36,7 @@ label.text-input-label
 		HotkeyLabel(key={key})
 	| {label}
 	<!-- svelte-ignore a11y-autofocus -->
-	input.text-input(autofocus={autofocus} bind:this={input} on:keydown={process_keydown} on:input={e => type_action(e.target.value)} placeholder={placeholder})
+	input.text-input(autofocus={autofocus} bind:this={input} on:keydown={process_keydown} on:input={e => type_action(e.target.value)} placeholder={placeholder} type='text')
 
 style.
 	.text-input

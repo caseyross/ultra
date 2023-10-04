@@ -1,7 +1,13 @@
 script.
 	import { format_url } from '../../url/index.js'
 
+	import CollectionAvatar from './collection/CollectionAvatar.pug'
+	import MultiredditAvatar from './multireddit/MultiredditAvatar.pug'
+	import SubredditAvatar from './subreddit/SubredditAvatar.pug'
+	import UserAvatar from '../user/UserAvatar.pug'
+
 	export collection_id = null
+	export icon_url = null
 	export multireddit_name = null
 	export subreddit_name = null
 	export type = null
@@ -14,48 +20,25 @@ script.
 		when 'user' then user_name
 
 a.feed-link(class="feed-link-type-{type}" href={format_url({ collection_id, multireddit_name, subreddit_name, user_name })})
+	{#if type === 'collection'}
+		CollectionAvatar(id={collection_id} size='small')
+	{#if type === 'multireddit'}
+		MultiredditAvatar(multireddit_name={multireddit_name} size='small' user_name={user_name})
+	{:else if type === 'subreddit'}
+		SubredditAvatar(icon_url={icon_url} name={subreddit_name} size='small')
+	{:else if type === 'user'}
+		UserAvatar(name={user_name} size='small')
 	span.feed-link-text(title={label}) {label}
 
 style.
 	.feed-link
 		align-items center
-		border-radius 12px
 		display inline-flex
+		gap 1ch
 		max-width 100%
-		padding-right 0.7em
-		text-transform lowercase
-		white-space pre
-		&.feed-link-type-collection
-			background wheat
-			color black
-		&.feed-link-type-multireddit
-			background darkseagreen
-			color white
-		&.feed-link-type-subreddit
-			background coral
-			color white
-		&.feed-link-type-user
-			background lightskyblue
-			color white
-	.feed-link::before
-		border-radius 999px
-		color var(--c-text-weak)
-		display inline
-		font-size 0.8em
-		font-weight bold
-		height 1.25em
-		line-height 1.25
-		margin-left 0.2em
-		margin-right 0.4em
-		padding 0 0.5em
+		white-space nowrap
 	.feed-link-text
+		font-family var(--f-family-mono)
 		overflow hidden
 		text-overflow ellipsis
-	.feed-link-type-collection::before
-		content 'c/'
-	.feed-link-type-multireddit::before
-		content 'm/'
-	.feed-link-type-subreddit::before
-		content 'r/'
-	.feed-link-type-user::before
-		content 'u/'
+		text-transform lowercase

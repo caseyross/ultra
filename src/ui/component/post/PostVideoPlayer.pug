@@ -159,15 +159,15 @@ figure.media-player(bind:this={player} class:media-player-controls-hidden={fulls
 	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
 	menu.media-player-controls
 		Button(action={play_pause} activated={!paused} description='Play / pause' key='p' text="{Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
+		.media-scrobbler(title='Drag left or right to change playback position')
+			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
+			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
 		.media-volume(title='Drag left or right to change volume')
 			figure.media-volume-graphics
 				span.media-volume-bar.media-volume-bar-mute(class:media-volume-bar-filled={audio?.volume == 0}) x
 				{#each [0.25, 0.5, 0.75, 1] as value}
 					span.media-volume-bar(class:media-volume-bar-filled={audio?.volume >= value} style='height: {value * 100}%')
 			input.media-volume-input(bind:this={volume_mixer} max={1} min={0} step={0.25} type='range' on:input={e => set_volume(e.target.value)} value={audio?.volume})
-		.media-scrobbler(title='Drag left or right to change playback position')
-			figure.media-scrobbler-graphics(style='background: linear-gradient(to right, {buffer_gradient_params(buffer_regions)})')
-			input.media-scrobbler-input(bind:this={scrobbler} on:input={e => set_time(e.target.value)} max={duration} min={0} step={1/1000} type='range')
 		Button(action={toggle_fullscreen} description='Toggle fullscreen' key='f' text='⟷')
 
 style.
@@ -175,11 +175,9 @@ style.
 		display none
 	video
 		background black
-		border-radius 1em
 		&::-webkit-media-controls
 			display none
 		:fullscreen &
-			border-radius 0
 			height 100% !important
 			width 100% !important
 		.media-player-controls-hidden &
@@ -193,13 +191,14 @@ style.
 		display flex
 		font-feature-settings 'calt', 'tnum'
 		gap 0.333em
-		margin-top 0.666em
+		margin 0.666em 0
+		padding 0 0.666em
 		:fullscreen &
 			background var(--c-theme)
-			border-radius 27px
+			border-radius 2em
 			bottom 1em
 			left 25vw
-			padding 0.666em 1em
+			padding 0.333em
 			position fixed
 			transition opacity 0.4s
 			width 50vw
@@ -208,7 +207,6 @@ style.
 	.media-player-video-hint-overlay
 		align-items center
 		background rgba(0,0,0,0.50)
-		border-radius 1em
 		color white
 		display flex
 		justify-content center
@@ -221,7 +219,7 @@ style.
 			opacity 1
 	.media-scrobbler
 		align-items center
-		background var(--c-blend-weak)
+		background var(--c-shade-weak)
 		border-radius 11px
 		display flex
 		flex 1
@@ -243,20 +241,20 @@ style.
 		width 100%
 		&::-moz-range-thumb
 			appearance none
-			background var(--c-brand-gradient)
+			background var(--c-text-strong)
 			border-radius 3px
 			height 23px
 			margin-top 2px
 			width 4px
 		&::-webkit-slider-thumb
 			appearance none
-			background var(--c-brand-gradient)
+			background var(--c-text-strong)
 			border-radius 3px
 			height 23px
 			margin-top 2px
 			width 4px
 	.media-volume
-		background var(--c-blend-weak)
+		background var(--c-shade-weak)
 		border-radius 11px
 		padding 0 9px
 		position relative
@@ -265,7 +263,8 @@ style.
 		border-radius 3px
 		width 6px
 	.media-volume-bar-filled
-		background var(--c-brand-gradient)
+		background var(--c-text-strong)
+		color var(--c-text-strong) !important
 	.media-volume-bar-mute
 		align-self flex-start
 		background none !important

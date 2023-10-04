@@ -4,8 +4,6 @@ script.
 	import api from '../../../api/index.js'
 	
 	import Feed from './Feed.pug'
-	import LoginButton from '../user/account/LoginButton.pug'
-	import LogoutButton from '../user/account/LogoutButton.pug'
 	import Status from '../common/Status.pug'
 
 	export collection_id = null
@@ -81,48 +79,9 @@ article.feed-summary
 			Status(type='error' message="An error occurred. We don't have any further details." title="Error: {error.reason || error.description}")
 		{:else}
 			Status(type='error' message="An unknown error occurred. We don't know what to do about it." title="Unknown error")
-	{:else if info}
-		{#if info.banner_background_image}
-			img.feed-summary-banner-image(alt='Feed banner' src={info.banner_background_image})
-		hr
-		{#if subreddit_name}
-			{#key subreddit_name}
-				h1.feed-summary-heading Latest comments
-				Feed(page_size={100} sort='new' subreddit_name={subreddit_name} time_range='all' type='subreddit_comments')
-		{:else if multireddit_name}
-			section#app-welcome-message
-				header
-					{#if api.isLoggedIn()}
-						h1 Welcome
-							code {api.getUser()}
-						hr
-						p
-							strong Left click
-							| on post and comment scores to upvote.
-							strong Right click
-							| to downvote.
-						p
-							strong Right click and hold
-							| anywhere on a post or comment for additional actions.
-						hr
-						LogoutButton
-					{:else}
-						LoginButton
-			h1 Your subreddits
-			Feed(page_size={100} type='account_subscribed_subreddits')
-		{:else if user_name}
-			{#key user_name}
-				h1.feed-summary-heading Latest comments
-				Feed(page_size={100} sort='new' time_range='all' type='user_comments' user_name={user_name})
 
 style.
 	.feed-summary
 		display flex
 		flex-flow column nowrap
 		gap 2em
-	.feed-summary-banner-image
-		min-height 60px
-		max-height 80px
-		object-fit cover
-	.feed-summary-heading
-		font-size 1em

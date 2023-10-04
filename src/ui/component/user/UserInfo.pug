@@ -32,7 +32,7 @@ script.
 		UserAvatar(name={name} size='xlarge')
 		h1.user-name(title={user?.name || name}) {user?.name || name.toLowerCase()}
 		section.user-stats
-			span.user-age(title={Time.sToAbsTimeStr(user.created_utc)}) {Time.sToRelTimeStr(user.created_utc, { abbr: true })}
+			span.user-age(title='created {Time.sToAbsTimeStr(user.created_utc)}') {Time.sToRelTimeStr(user.created_utc, { abbr: true })}
 			| ·
 			span.user-karma {user.total_karma} karma
 		{#if user.is_suspended}
@@ -49,6 +49,8 @@ script.
 							span.user-trophy-comment(title={trophy?.description}) {trophy?.description || ''}
 
 style.
+	.user-age
+		cursor help
 	.user-info
 		display flex
 		flex-flow column nowrap

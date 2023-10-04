@@ -4,26 +4,21 @@ script.
 	import { HexColor } from '../../lib/index.js'
 
 	DEFAULT_COLOR = '#ffffff'
-	DEFAULT_TEXT_COLOR = '#333333'
 
 	set_theme_color = (color) ->
-		# Calculate colors
+		# Set main color
 		if !color
 			color = DEFAULT_COLOR
-			text_color = DEFAULT_TEXT_COLOR
-		else
-			text_color = HexColor.contrasting(color)
 		document.body.style.setProperty('--c-theme', color)
-		document.body.style.setProperty('--c-theme-text', text_color)
 		# Remove previous theme
 		for name from document.body.classList.values()
 			if name.startsWith('color-strategy')
 				document.body.classList.remove(name)
 		# Add new theme
 		switch
-			when HexColor.lightness(color) > 0.675
+			when HexColor.lightness(color) > 0.725
 				document.body.classList.add('color-strategy-ultralight-bg')
-			when HexColor.lightness(color) > 0.500
+			when HexColor.lightness(color) > 0.450
 				document.body.classList.add('color-strategy-light-bg')
 			when HexColor.lightness(color) > 0.075
 				document.body.classList.add('color-strategy-dark-bg')
