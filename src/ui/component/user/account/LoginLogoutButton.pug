@@ -1,0 +1,46 @@
+script.
+	import { onDestroy } from 'svelte'
+	
+	import api from '../../../../api/index.js'
+
+	import Button from '../../common/Button.pug'
+
+	scopes = [
+		'account'
+		'edit'
+		'history'
+		'identity'
+		'modposts'
+		'mysubreddits'
+		'privatemessages'
+		'read'
+		'report'
+		'save'
+		'structuredstyles'
+		'subscribe'
+		'vote'
+		'wikiread'
+	]
+	status = 'unknown'
+	timer_id = null
+
+	check_for_finalized_status = ->
+		status = api.getLoginStatus()
+		if status != 'logged-in' and status != 'logged-out'
+			timer_id = setTimeout(
+				->
+					check_for_finalized_status()
+				100
+			)
+
+	onDestroy ->
+		clearTimeout(timer_id)
+
+	check_for_finalized_status()
+
+{#if status === 'logged-in'}
+	Button(link={api.getLoginURL({ memoString: location.pathname, scopeArray: scopes })} text='Login')
+{:else if status === 'logged-out'}
+	Button(action={() => { api.logout(); location.reload() }} text='Logout')
+{:else}
+	Button(loading={true} text='Checking login...')
