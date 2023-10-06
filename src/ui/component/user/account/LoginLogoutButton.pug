@@ -1,0 +1,53 @@
+script.
+	import { onDestroy } from 'svelte'
+	
+	import api from '../../../../api/index.js'
+
+	import Button from '../../common/Button.pug'
+
+	scopes = [
+		'account'
+		'edit'
+		'history'
+		'identity'
+		'modposts'
+		'mysubreddits'
+		'privatemessages'
+		'read'
+		'report'
+		'save'
+		'structuredstyles'
+		'subscribe'
+		'vote'
+		'wikiread'
+	]
+	status = 'unknown'
+	timer_id = null
+
+	check_for_finalized_status = ->
+		status = api.getLoginStatus()
+		if status != 'logged-in' and status != 'logged-out'
+			clearTimeout(timer_id)
+			timer_id = setTimeout(
+				->
+					check_for_finalized_status()
+				100
+			)
+
+	onDestroy ->
+		clearTimeout(timer_id)
+
+	# Messy because right after logging in, we have to assume we're logged out. We can only confirm a successful login after the first authenticated API call returns. So we unfortunately need to check twice after load to be able to cover this case.
+	setTimeout(
+		->
+			check_for_finalized_status()
+		1000
+	)
+	check_for_finalized_status()
+
+{#if status === 'logged-in'}
+	Button(action={() => { api.logout(); location.reload() }} text='Logout')
+{:else if status === 'logged-out'}
+	Button(link={api.getLoginURL({ memoString: location.pathname, scopeArray: scopes })} text='Login')
+{:else}
+	Button(loading={true} loading_text='...')
