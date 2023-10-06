@@ -175,9 +175,11 @@ style.
 		display none
 	video
 		background black
+		border-radius 1em
 		&::-webkit-media-controls
 			display none
 		:fullscreen &
+			border-radius 0
 			height 100% !important
 			width 100% !important
 		.media-player-controls-hidden &
@@ -207,6 +209,7 @@ style.
 	.media-player-video-hint-overlay
 		align-items center
 		background rgba(0,0,0,0.50)
+		border-radius 1em
 		color white
 		display flex
 		justify-content center
