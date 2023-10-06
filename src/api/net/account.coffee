@@ -89,7 +89,7 @@ export finishPendingLogin = ->
 
 # Check whether the current credentials represent a user account (as opposed to representing a "logged out" user).
 export isLoggedIn = ->
-	localStorage['api.credentials.exchange_code']? or localStorage['api.credentials.exchange_token']?
+	localStorage['api.credentials.exchange_token']?
 
 # There are 3 possible states here, each corresponding to one stage of the login process.
 # 1. `logged-out`: No account is being used.
@@ -105,10 +105,12 @@ export getLoginStatus = ->
 			return 'logged-out'
 
 # Upon logging in, the API does not directly provide the account's username. For convenience, an arbitrary string (e.g. the username) can be manually associated with the current set of account credentials. This will then persist until the credentials are cleared (via logout or otherwise).
-export setUser = (name) -> localStorage['api.credentials.associated_name'] = name
+export setUser = (name) ->
+	localStorage['api.credentials.associated_name'] = name
 
 # Used after `setUser` to retrieve the string associated with the currently active account credentials.
-export getUser = -> localStorage['api.credentials.associated_name'] ? null
+export getUser = ->
+	localStorage['api.credentials.associated_name'] ? null
 
 # Simple compared to the login flow. We just need to delete any local account credentials and privileged data. In the interests of cleaning up after ourselves, we also proactively ask the API to void those credentials instead of just letting them expire. 
 export logout = ->
