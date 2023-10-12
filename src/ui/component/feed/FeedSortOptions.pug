@@ -1,7 +1,6 @@
 script.
 	import { getContext } from 'svelte'
-
-	import api from '../../../api/index.js'
+	
 	import { format_url } from '../../url/index.js'
 
 	import Button from '../common/Button.pug'
@@ -13,7 +12,6 @@ script.
 	export time_range = null
 	export type = null
 	export user_name = null
-	export wikipage_name = null
 
 	internal_navigate = getContext('internal_navigate')
 	sort_options = [
@@ -51,13 +49,4 @@ script.
 		{ label: 'Controversial', value: 'controversial_all' }
 	]
 
-	if wikipage_name
-		sort_options = sort_options.concat([{ label: 'Wiki', value: 'wiki' }])
-		sort = 'wiki'
-	else if type == 'subreddit_posts'
-		api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
-			if subreddit?.wiki_enabled
-				sort_options = sort_options.concat([{ label: 'Wiki', value: 'wiki' }])
-		)
-
-Button(action={value => internal_navigate({ href: location.origin + format_url(value === 'wiki' ? { subreddit_name, wikipage_name: 'index' } : { feed_filter: filter, feed_sort: value.split('_')[0], feed_time_range: value.split('_')[1], multireddit_name, subreddit_name, user_name }) })} options={(type === 'multireddit_posts' && user_name === 'r' && multireddit_name === 'subscribed') ? sort_options_frontpage : type === 'user_posts' ? sort_options_user : sort_options} selected={['controversial', 'top'].includes(sort) ? [sort, time_range].join('_') : sort})
+Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_filter: filter, feed_sort: value.split('_')[0], feed_time_range: value.split('_')[1], multireddit_name, subreddit_name, user_name }) })} options={(type === 'multireddit_posts' && user_name === 'r' && multireddit_name === 'subscribed') ? sort_options_frontpage : type === 'user_posts' ? sort_options_user : sort_options} selected={['controversial', 'top'].includes(sort) ? [sort, time_range].join('_') : sort})

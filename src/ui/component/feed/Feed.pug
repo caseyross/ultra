@@ -7,7 +7,6 @@ script.
 	import AccountState from '../../state/AccountState.coffee'
 	
 	import Button from '../common/Button.pug'
-	import Checkbox from '../common/Checkbox.pug'
 	import Comment from '../post/Comment.pug'
 	import FeedLink from './FeedLink.pug'
 	import Label from '../common/Label.pug'
@@ -17,7 +16,6 @@ script.
 
 	export collection_id = null
 	export filter = null
-	export internal_navigate = getContext('internal_navigate')
 	export multireddit_name = null
 	export page_size = 10
 	export search_sort = null
@@ -46,10 +44,12 @@ script.
 		when 'popular_subreddits'
 			api.ID('global_subreddits_popular', page_size)
 		when 'subreddit_comments'
-			api.ID('subreddit_comments', subreddit_name, page_size)
+			switch sort
+				when 'modqueue' then api.ID('subreddit_modqueue_comments', subreddit_name, page_size)
+				else api.ID('subreddit_comments', subreddit_name, page_size)
 		when 'subreddit_posts'
 			switch sort
-				when 'modqueue' then api.ID('subreddit_modqueue_{filter}s', subreddit_name, page_size)
+				when 'modqueue' then api.ID('subreddit_modqueue_posts', subreddit_name, page_size)
 				when 'search' then api.ID('search_posts', "subreddit=#{subreddit_name}+#{search_text}", 'all', search_sort, page_size)
 				else api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
 		when 'subreddit_wikipages'
@@ -59,9 +59,10 @@ script.
 		when 'user_posts'
 			api.ID('user_posts', user_name, time_range, sort, page_size)
 	
-	current_page = 0
+	page_number = 0
 	error = null
 	has_next_page = true
+	internal_navigate = getContext('internal_navigate')
 	loading = null
 	next_after_id = (items) ->
 		items.at(-1)?.id or items.at(-1)
@@ -78,7 +79,7 @@ script.
 			items = []
 			read = []
 			has_next_page = false
-			current_page = 1
+			page_number = 1
 		else
 			api.loadWatch(api.ID(base_page_id, next_after_id(items), next_after_id_type(items)), (x) ->
 				{ error, data, loading } = x
@@ -93,41 +94,37 @@ script.
 						when type.endsWith('messages') then true
 						when type.endsWith('posts') and type != 'collection_posts' then true
 						else false
-					current_page = current_page + 1
+					page_number = page_number + 1
 		)
 
 	load_next_page()
 
 nav.feed(class="feed-type-{type.split('_').at(-1)}")
 	{#if items.length > 0}
-		{#if filter === 'unread' && read.every(x => x)}
-			{#if !loading}
-				.feed-all-read You've read all {type.split('_').at(-1)} up to page {current_page}.
-		{:else}
-			{#if type.endsWith('posts')}
-				Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')
-			ol.feed-items
-				{#each items as item, i (item)}
-					{#if filter !== 'unread' || !read[i]}
-						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-						li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
-							{#if type.endsWith('comments')}
-								Comment(id={item?.id || item} out_of_context={true})
-							{:else if type.endsWith('messages')}
-								{#if item.was_comment}
-									Comment(id={item.id} out_of_context={true})
-								{:else}
-									Message(message={item})
-							{:else if type.endsWith('posts')}
-								a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
-									Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
-							{:else if type.endsWith('subreddits')}
-								a(href={format_url({ subreddit_name: item })})
-									FeedLink(subreddit_name={item} type='subreddit')
-							{:else if type === 'subreddit_wikipages'}
-								a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
-		{#if has_next_page}
-			menu.feed-items-actions
+		ol.feed-items
+			{#each items as item, i (item)}
+				{#if filter !== 'unread' || !read[i]}
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
+						{#if type.endsWith('comments')}
+							Comment(id={item?.id || item} out_of_context={true})
+						{:else if type.endsWith('messages')}
+							{#if item.was_comment}
+								Comment(id={item.id} out_of_context={true})
+							{:else}
+								Message(message={item})
+						{:else if type.endsWith('posts')}
+							a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
+								Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
+						{:else if type.endsWith('subreddits')}
+							a(href={format_url({ subreddit_name: item })})
+								FeedLink(subreddit_name={item} type='subreddit')
+						{:else if type === 'subreddit_wikipages'}
+							a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
+		menu.feed-items-actions
+			{#if type.endsWith('posts') && filter === 'unread' && read.length > 0}
+				Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read item{read.filter(x => x).length === 1 ? '' : 's'} ")
+			{#if has_next_page}
 				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
 	{:else}
@@ -142,25 +139,18 @@ style.
 	.feed
 		display flex
 		flex-flow column nowrap
-		gap 2em
-		overflow auto
+		gap 1.333em
 		width 100%
-	.feed-all-read
-		color var(--c-text-weak)
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 1em
-		overflow auto
-		scrollbar-width none
-		&::-webkit-scrollbar
-			display none
-		.feed-type-comments &
-			gap 2em
+		gap 0.666em
 	.feed-items-actions
 		display flex
 		flex-flow row wrap
 		gap 1ch
 		width 100%
 	.feed-loading
+		color var(--c-text-weak)
+	.feed-read-count
 		color var(--c-text-weak)

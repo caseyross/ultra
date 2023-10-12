@@ -3,7 +3,6 @@ script.
 
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
-	import { format_url } from '../../url/index.js'
 
 	import Status from '../common/Status.pug'
 	import UserAvatar from './UserAvatar.pug'
@@ -12,10 +11,15 @@ script.
 
 	error = null
 	loading = null
+	set_theme_color = getContext('set_theme_color')
 	trophies = null
 	user = null
 	
-	api.loadWatch(api.ID('user', name), (x) -> { data: user, error, loading } = x)
+	api.loadWatch(api.ID('user', name), (x) ->
+		{ data: user, error, loading } = x
+		if user
+			set_theme_color(user.profile_color)
+	)
 	api.loadWatch(api.ID('user_trophies', name), (x) -> { data: trophies } = x)
 
 {#if error}

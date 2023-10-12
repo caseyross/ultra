@@ -40,7 +40,7 @@ body
 	place-items center
 	scrollbar-width none
 	word-spacing calc(1px / 6)
-	--f-family-mono 'Consolas', monospace
+	--f-family-mono monospace
 	--f-family-prop 'Inter', sans-serif
 	&::-webkit-scrollbar
 		display none
@@ -61,6 +61,7 @@ body
 	--f-wght-weak 400
 	--f-wght-normal 500
 	--f-wght-strong 650
+	--f-wght-xstrong 800
 .color-strategy-dark-bg
 	color-scheme dark
 	--c-blend-faint rgba(255,255,255,0.0625)
@@ -78,6 +79,7 @@ body
 	--f-wght-weak 400
 	--f-wght-normal 500
 	--f-wght-strong 650
+	--f-wght-xstrong 800
 .color-strategy-light-bg
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -95,6 +97,7 @@ body
 	--f-wght-weak 450
 	--f-wght-normal 550
 	--f-wght-strong 700
+	--f-wght-xstrong 850
 .color-strategy-ultralight-bg
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -112,6 +115,7 @@ body
 	--f-wght-weak 450
 	--f-wght-normal 550
 	--f-wght-strong 700
+	--f-wght-xstrong 850
 
 // General layout & typography
 a
@@ -123,6 +127,7 @@ a
 		&:empty
 			display none
 		&:has(img)
+			display inline-block
 			text-decoration none
 address
 	font-style normal
@@ -137,7 +142,6 @@ code
 	color palegreen
 	background black
 	font-family var(--f-family-mono)
-	font-size 12px
 	word-break break-all
 details
 	margin 1em 0 0
@@ -156,10 +160,12 @@ menu
 p
 	margin 1em 0 0
 pre
+	background black
+	border-radius 1em
 	font-family var(--f-family-mono)
-	font-size 12px
 	margin 1em 0 0
 	overflow auto
+	padding 1em
 	white-space pre-line
 	white-space-collapse preserve
 sub

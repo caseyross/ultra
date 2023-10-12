@@ -1,4 +1,6 @@
 script.
+	import { getContext } from 'svelte'
+
 	import api from '../../../../api/index.js'
 
 	import ButtonGroup from '../../common/ButtonGroup.pug'
@@ -14,6 +16,7 @@ script.
 	name_loading = false
 	name_error = false
 	rules_expanded = false
+	set_theme_color = getContext('set_theme_color')
 	subreddit = null
 	tab = 'about'
 	tabs = [
@@ -25,6 +28,7 @@ script.
 	load_subreddit = (name) ->
 		api.loadWatch(api.ID('subreddit', name), (x) ->
 			{ data: subreddit } = x
+			set_theme_color(subreddit?.primary_color || subreddit?.key_color)
 		)
 		api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
 			{ data: widgets } = x

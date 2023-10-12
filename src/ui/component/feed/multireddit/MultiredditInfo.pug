@@ -1,4 +1,6 @@
 script.
+	import { getContext } from 'svelte'
+
 	import api from '../../../../api/index.js'
 
 	import FeedLink from '../FeedLink.pug'
@@ -10,11 +12,14 @@ script.
 	export user_name = null
 	
 	multireddit = null
+	set_theme_color = getContext('set_theme_color')
 	subscribed_subreddits = null
 	trending_subreddits = null
 
 	api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) ->
 		{ data: multireddit } = x
+		if multireddit
+			set_theme_color(multireddit.key_color)
 	)
 	if user_name == 'r'
 		if multireddit_name == 'subscribed'
@@ -30,6 +35,10 @@ aside.multireddit-info
 	header.multireddit-info-header
 		MultiredditAvatar(multireddit_name={multireddit_name} user_name={user_name})
 		h1.multireddit-info-name {user_name === 'r' ? 'r/' : ''}{multireddit_name.toLowerCase()}
+	{#if user_name !== 'r'}
+		address.multireddit-info-owner
+			| by
+			FeedLink(type='user' user_name={user_name})
 	{#if multireddit}
 		{#if multireddit.description_html}
 			FormattedHTML(html={multireddit.description_html})
@@ -39,10 +48,6 @@ aside.multireddit-info
 			SubredditWidget(widget={{ data: subscribed_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Your subreddits' }})
 		{:else if trending_subreddits}
 			SubredditWidget(widget={{ data: trending_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Trendy subreddits' }})
-	{#if user_name !== 'r'}
-		cite.multireddit-info-owner
-			| by
-			FeedLink(type='user' user_name={user_name})
 
 style.
 	.multireddit-info

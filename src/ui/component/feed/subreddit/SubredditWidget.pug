@@ -30,8 +30,7 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 						{#each widget.data as event}
 							tr.subreddit-widget-calendar-event(title='{Time.sToAbsTimeStr(event.startTime)}')
 								td {Time.msToRelTimeStr(Time.unixMs(), { abbr: true, endMs: Time.sToMs(event.startTime) })}
-								td
-									FormattedHTML(html={event.titleHtml})
+								td {event.title}
 		{:else}
 			span.subreddit-widget-calendar-events-empty (No events.)
 	{:else if widget.kind === 'community-list'}
@@ -55,7 +54,7 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 		ul.subreddit-widget-post-flairs
 			{#each widget.order.map(x => widget.templates[x]) as flair}
 				a(href={format_url({ feed_search_sort: 'new', feed_search_text: 'flair:"' + flair.text + '"', feed_sort: 'search', subreddit_name: widget.subreddit })})
-					PostFlair(color={flair.backgroundColor} emoji_style='image' rich_text={flair.richtext} text={flair.text})
+					PostFlair(emoji_style='image' rich_text={flair.richtext} text={flair.text})
 	{:else if widget.kind === 'textarea'}
 		FormattedHTML(html={widget.textHtml})
 
@@ -77,6 +76,7 @@ style.
 		display flex
 		flex-flow row wrap
 		gap 10px
+		max-width 480px
 	.subreddit-widget-related-subreddit
 		margin-top 0.333em
 	.subreddit-widget-title

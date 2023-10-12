@@ -32,8 +32,8 @@ script.
 		switch
 			when comment.score_hidden then '?'
 			when !Number.isFinite(comment.score) then '?'
-			when comment.score < 1 then "−#{String(comment.score - 1)[1..]}"
-			else comment.score - 1
+			when comment.score < 0 then '−' + Math.abs(comment.score)
+			else comment.score
 	
 	interact = (action_type, data) ->
 		switch action_type

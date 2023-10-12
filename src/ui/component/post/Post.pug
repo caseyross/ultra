@@ -76,9 +76,7 @@ script.
 		switch
 			when post.hide_score then '?'
 			when !Number.isFinite(post.score) then '?'
-			when post.score < 1 then '−?'
-			else post.score - 1
-	set_theme_color = getContext('set_theme_color')
+			else post.score
 	
 	interact = (action_type, data) ->
 		switch action_type
@@ -124,10 +122,6 @@ script.
 		{ data: post, error, loading } = x
 		if post?.suggested_sort && !comments_sort
 			comments_sort = post.suggested_sort
-		if expanded and post?.subreddit
-			api.loadWatch(api.ID('subreddit', post.subreddit), ({ data: subreddit }) ->
-				set_theme_color(subreddit?.primary_color || subreddit?.key_color)
-			)
 	)
 	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
 	if expanded
@@ -153,7 +147,7 @@ svelte:head
 					{#if out_of_context}
 						FeedLink(type='subreddit' subreddit_name={post.subreddit})
 					{:else if post.link_flair_text}
-						PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} size='medium' subreddit_name={post.subreddit} text={post.link_flair_text})
+						PostFlair(emoji_style='image' rich_text={post.link_flair_richtext} size='medium' text={post.link_flair_text})
 				h1.post-title {post.title}
 				{#if expanded}
 					section.post-meta
@@ -267,7 +261,7 @@ style.
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 3px
+		gap 1.333em
 		margin-top 0.333em
 		&.post-body-with-background
 			background var(--c-tint-normal)
@@ -276,13 +270,15 @@ style.
 			padding 1em
 		:global(& .twitter-tweet)
 			margin 0 !important
+			width 450px !important
 		:global(& .twitter-tweet iframe)
 			border-radius 11px
 	.post-category
+		height 20px
+		width 100%
 		.post-and-comments-expanded &
 			bottom 100%
 			position absolute
-			width 100%
 		.post-and-comments-expanded .post-crosspost-link &
 			position initial
 	.post-comments
@@ -356,7 +352,6 @@ style.
 		cursor help
 		font-size 12px
 	.post-text
-		margin-top 1em
 		:global(& img)
 			border-radius 1em
 	.post-title
@@ -365,5 +360,7 @@ style.
 		line-height 1.2
 		overflow-wrap anywhere
 		.post-and-comments-expanded &
-			font-size 2em
+			font-size 1.5em
+			font-weight var(--f-wght-xstrong)
 			letter-spacing -0.333px
+			line-height 1.1666

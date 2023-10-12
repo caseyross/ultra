@@ -1,20 +1,13 @@
 script.
-	export size = 'medium'
 
-a.app-logo(class='app-logo-size-{size}' href='/')
-	img.app-logo-graphic(alt='Arc logo icon' src='/brand_triangle.svg')
+a.app-logo(href='/')
+	svg(fill='none' height='18' viewBox='0 -3.5 25 21.5' width='25' xmlns='http://www.w3.org/2000/svg')
+		path(d='M10.8696 1.29458C11.6669 0.172467 13.3331 0.172468 14.1304 1.29458L23.7559 14.8416C24.6968 16.1658 23.75 18 22.1255 18H2.8745C1.25003 18 0.303235 16.1658 1.24414 14.8416L10.8696 1.29458Z' fill='currentColor')
 
 style.
-	.app-logo-graphic
-		aspect-ratio 1
+	.app-logo
 		transition all 0.1s
 		&:active
 			filter saturate(200%)
 		&:hover
 			filter saturate(150%)
-		.app-logo-size-small &
-			width 18px
-		.app-logo-size-medium &
-			width 30px
-		.app-logo-size-large &
-			width 48px

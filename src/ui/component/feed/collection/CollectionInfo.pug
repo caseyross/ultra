@@ -1,4 +1,6 @@
 script.
+	import { getContext } from 'svelte'
+
 	import api from '../../../../api/index.js'
 	import FeedLink from '../FeedLink.pug'
 
@@ -6,9 +8,15 @@ script.
 	
 	collection = null
 	loading = null
+	set_theme_color = getContext('set_theme_color')
 
 	api.loadWatch(api.ID('collection', id), (x) ->
 		{ data: collection, loading } = x
+		if collection?.subreddit
+			api.loadWatch(api.ID('subreddit', collection.subreddit), (x) ->
+				{ data: subreddit } = x
+				set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+			)
 	)
 
 {#if loading}
@@ -19,7 +27,7 @@ script.
 		cite.collection-info-subreddit
 			| in
 			FeedLink(subreddit_name={collection.subreddit} type='subreddit')
-		cite.collection-info-author
+		address.collection-info-author
 			| by
 			FeedLink(type='user' user_name={collection.owner})
 
