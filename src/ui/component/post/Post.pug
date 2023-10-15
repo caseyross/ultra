@@ -141,7 +141,7 @@ svelte:head
 		Status(type='error' message="An unknown error occurred." title="Unknown error")
 {:else if post}
 	article.post-and-comments(class:post-and-comments-expanded={expanded})
-		article.post(data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title="{Time.sToAbsRelTimeStr(post.created_utc)} ago ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) + ' ago' : ''}")
+		article.post(data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title="{Time.sToAbsRelTimeStr(post.created_utc)} ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) : ''}")
 			header.post-header
 				section.post-category
 					{#if out_of_context}

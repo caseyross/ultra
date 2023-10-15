@@ -55,7 +55,7 @@ svelte:head
 			h1.wiki-path-current-page {page_name.split('/').at(-1).toLowerCase()}
 		section.wiki-info
 			{#if page.revision_date}
-				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised {Time.sToRelTimeStr(page.revision_date)} ago
+				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised: {Time.sToAbsRelTimeStr(page.revision_date)}
 		section.wiki-body
 			{#if page_name === 'pages'}
 				ol.wiki-all-pages-list.md
