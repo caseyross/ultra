@@ -2,6 +2,7 @@ script.
 	import { getContext } from 'svelte'
 
 	import api from '../../../../api/index.js'
+	import CollectionAvatar from './CollectionAvatar.pug'
 	import FeedLink from '../FeedLink.pug'
 
 	export id = null
@@ -23,14 +24,14 @@ script.
 	.collection-info-loading Loading...
 {:else if collection}
 	.collection-info
-		h1.collection-info-name
-			a(href='/c/{id}') {collection.title}
+		header.collection-info-header
+			CollectionAvatar(id={id})
+			address.collection-info-author
+				| by
+				FeedLink(type='user' user_name={collection.owner})
 		cite.collection-info-subreddit
 			| in
 			FeedLink(subreddit_name={collection.subreddit} type='subreddit')
-		address.collection-info-author
-			| by
-			FeedLink(type='user' user_name={collection.owner})
 
 style.
 	.collection-info
@@ -43,9 +44,10 @@ style.
 		gap 0.666em
 	.collection-info-loading
 		color var(--c-text-weak)
-	.collection-info-name
-		font-size 1.333em
-		font-weight var(--f-wght-strong)
+	.collection-info-header
+		align-items center
+		display flex
+		gap 1ch
 	.collection-info-subreddit
 		color var(--c-text-weak)
 		display flex

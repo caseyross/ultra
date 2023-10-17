@@ -5,6 +5,7 @@ script.
 
 	import FeedLink from '../FeedLink.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
+	import MultiredditAvatar from './MultiredditAvatar.pug'
 	import SubredditWidget from '../subreddit/SubredditWidget.pug'
 
 	export multireddit_name = null
@@ -24,11 +25,11 @@ script.
 
 {#if user_name !== 'r'}
 	aside.multireddit-info
-		h1.multireddit-info-name
-			a(href='/u/{user_name}/{multireddit_name}') {multireddit_name.toLowerCase()}
-		address.multireddit-info-owner
-			| by
-			FeedLink(type='user' user_name={user_name})
+		header.multireddit-info-header
+			MultiredditAvatar(multireddit_name={multireddit_name} user_name={user_name})
+			address.multireddit-info-owner
+				| by
+				FeedLink(type='user' user_name={user_name})
 		{#if multireddit}
 			{#if multireddit.description_html}
 				FormattedHTML(html={multireddit.description_html})
@@ -40,12 +41,10 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
-	.multireddit-info-name
-		font-size 1.333em
-		font-weight var(--f-wght-strong)
-		overflow hidden
-		text-overflow ellipsis
-		white-space nowrap
+	.multireddit-info-header
+		align-items center
+		display flex
+		gap 1ch
 	.multireddit-info-owner
 		color var(--c-text-weak)
 		display flex

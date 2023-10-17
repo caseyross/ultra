@@ -123,7 +123,8 @@ script.
 						{#if comment.controversiality > 0.25}
 							span.comment-score-controversial-marker(title='controversial comment') †
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
-			FormattedHTML(html={comment.body_html})
+			section.color-strategy-ultralight-bg.comment-body
+				FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
 				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
@@ -132,8 +133,8 @@ script.
 				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
 		{#if out_of_context}
 			cite.comment-source
-				Button(link={relativize_url(comment.permalink) + '?context=1'} text='Context →')
-				a.comment-source-name(href={format_url({ post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })}) {comment.link_title}
+				span.comment-source-hint on:
+				a.comment-source-name(href={relativize_url(comment.permalink) + '?context=1'}) {comment.link_title}
 		{:else}
 			ol.comment-replies
 				{#if replying}
@@ -151,30 +152,31 @@ style.
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		:global(& > .md)
-			background var(--c-tint-normal)
+	.comment-body
+		background white
+		border-radius 1.333em
+		color black
+		padding 1em
+		:global(& img)
 			border-radius 1em
-			padding 1em
-		:global(& > .md img)
-			border-radius 9px
 			max-height 256px
 			width auto
-		:global(&.comment-highlighted > .md)
+		.comment-highlighted > &
 			outline 1px solid #ffdd5d
-		:global(&.comment-deleted > .md)
+		.comment-deleted > &
 			opacity 0.25
 			pointer-events none
-		:global(&.comment-with-low-score:not(&.comment-deleted) > .md)
+		.comment-with-low-score:not(.comment-deleted) > &
 			opacity 0.5
 	.comment-meta
 		align-items center
 		display flex
 		gap 0.5em
 		max-width 100%
-		padding 0.333em
+		padding 0.333em 0
 	.comment-replies
-		border-left 1px solid var(--c-text-xfaint)
-		margin 1.333em 0
+		border-left 1px solid var(--c-text-faint)
+		margin 0.333em 0
 		padding-left 1.333em
 	.comment-score
 		background var(--c-blend-faint)
@@ -198,9 +200,10 @@ style.
 		align-items center
 		display flex
 		gap 1ch
-		padding 0.666em 0
+		margin-top 0.333em
 		white-space nowrap
-	.comment-source-name
+	.comment-source-hint
 		color var(--c-text-faint)
+	.comment-source-name
 		overflow hidden
 		text-overflow ellipsis

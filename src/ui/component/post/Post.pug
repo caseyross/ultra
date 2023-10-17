@@ -186,7 +186,7 @@ svelte:head
 					Status(type='error' message="Reddit Talks are only available on the official site.")
 						Button(link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else if post.selftext || post.format !== 'self'}
-					section.post-body(class:post-body-with-background={post.selftext_html || post.format === 'crosspost' || (post.format === 'link' && !iframe_embeds(post.url)) || post.format === 'prediction'})
+					section.color-strategy-ultralight-bg.post-body
 						{#if post.format === 'crosspost'}
 							a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 								svelte:self(expanded={false} id={post.crosspost_parent} out_of_context={true})
@@ -260,18 +260,17 @@ style.
 		width 100%
 	.post-body
 		align-items flex-start
+		background white
+		border-radius 1.333em
+		color black
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		margin-top 0.333em
-		&.post-body-with-background
-			background var(--c-tint-normal)
-			border-radius 1em
-			display inline-flex
-			padding 1em
+		padding 1em
 		:global(& .twitter-tweet)
 			margin 0 !important
-			width 450px !important
+			width 480px !important
 		:global(& .twitter-tweet iframe)
 			border-radius 11px
 	.post-category
@@ -285,8 +284,8 @@ style.
 	.post-comments
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
-		margin-top 1.666em
+		gap 0.666em
+		margin-top 1em
 		width 100%
 	.post-crosspost-link
 		width 100%
@@ -301,8 +300,8 @@ style.
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 0.666em
-		padding 0.333em
+		gap 0.333em
+		padding 0.333em 0
 		position relative
 	.post-iframe
 		aspect-ratio 1
@@ -361,6 +360,7 @@ style.
 		font-weight inherit
 		line-height 1.2
 		overflow-wrap anywhere
+		width 100%
 		.post-and-comments-expanded &
 			font-size 1.666em
 			font-weight var(--f-wght-strong)

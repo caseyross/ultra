@@ -9,6 +9,8 @@ script.
 	import Button from '../common/Button.pug'
 	import Comment from '../post/Comment.pug'
 	import FeedLink from './FeedLink.pug'
+	import FeedSearchOptions from './FeedSearchOptions.pug'
+	import FeedSortOptions from './FeedSortOptions.pug'
 	import Label from '../common/Label.pug'
 	import Message from '../message/Message.pug'
 	import Post from '../post/Post.pug'
@@ -62,7 +64,6 @@ script.
 		when 'user_posts'
 			api.ID('user_posts', user_name, time_range, sort, page_size)
 	
-	page_number = 0
 	error = null
 	has_next_page = true
 	internal_navigate = getContext('internal_navigate')
@@ -76,6 +77,7 @@ script.
 			else null
 	items = []
 	read = []
+	page_number = 0
 
 	load_next_page = ->
 		if sort == 'search' and !search_text
@@ -102,10 +104,16 @@ script.
 
 	load_next_page()
 
-{#if items.length > 0}
+{#if items.length > 0 || sort === 'search'}
 	{#if title}
 		h1.feed-title {title}
 	ol.feed(class="feed-type-{type.split('_').at(-1)}")
+		{#if type.endsWith('posts')}
+			FeedSortOptions(collection_id={collection_id} filter={filter} multireddit_name={multireddit_name} sort={sort} subreddit_name={subreddit_name} time_range={time_range} type={type} user_name={user_name})
+			{#if sort === 'search'}
+				FeedSearchOptions(multireddit_name={multireddit_name} search_sort={search_sort} search_text={search_text} subreddit_name={subreddit_name})
+		{#if type.endsWith('posts') && filter === 'unread' && read.filter(x => x).length > 0}
+			Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read item{read.filter(x => x).length === 1 ? '' : 's'} ")
 		{#each items as item, i (item)}
 			{#if filter !== 'unread' || !read[i]}
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -126,8 +134,6 @@ script.
 						FeedLink(size='large' subreddit_name={item} type='subreddit')
 					{:else if type === 'subreddit_wikipages'}
 						a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
-		{#if type.endsWith('posts') && filter === 'unread' && read.length > 0}
-			Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read item{read.filter(x => x).length === 1 ? '' : 's'} ")
 		{#if has_next_page}
 			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'Load more'})
@@ -141,10 +147,13 @@ script.
 
 style.
 	.feed
+		align-items inherit
 		display flex
 		flex-flow column nowrap
-		gap 1em
+		gap 1.333em
 		width 100%
+	.feed-item
+		max-width 100%
 	.feed-items
 		display flex
 		flex-flow column nowrap
@@ -153,3 +162,7 @@ style.
 		color var(--c-text-weak)
 	.feed-read-count
 		color var(--c-text-weak)
+	.feed-title
+		color var(--c-text-weak)
+		font-size 1.666em
+		letter-spacing -0.333px

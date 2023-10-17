@@ -6,6 +6,7 @@ script.
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import Status from '../../common/Status.pug'
+	import SubredditAvatar from './SubredditAvatar.pug'
 	import SubredditRules from './SubredditRules.pug'
 	import SubredditWidget from './SubredditWidget.pug'
 
@@ -48,9 +49,9 @@ script.
 	Status(type='error' message='Error loading subreddit description.')
 {:else if name}
 	article.subreddit-info
-		h1.subreddit-info-name(title={subreddit?.display_name || name})
-			a(href='/{subreddit?.display_name || name}') {name.toLowerCase()}
-		ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
+		header.subreddit-info-header
+			SubredditAvatar(name={name})
+			ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
 		{#if tab === 'rules'}
 			SubredditRules(name={name})
 		{:else}
@@ -58,7 +59,7 @@ script.
 				{#if subreddit.public_description_html}
 					FormattedHTML(html={subreddit.public_description_html})
 				{:else}
-					p.subreddit-info-description-empty (No description.)
+					.subreddit-info-description-empty No subreddit description provided.
 			{#if widgets?.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')).length}
 				ol.subreddit-info-widgets
 					{#each widgets.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')) as widget}
@@ -73,13 +74,10 @@ style.
 		color var(--c-text-weak)
 	.subreddit-info-loading
 		color var(--c-text-weak)
-	.subreddit-info-name
-		font-size 1.1666em
-		font-weight var(--f-wght-strong)
-		letter-spacing -0.333px
-		overflow hidden
-		text-overflow ellipsis
-		white-space nowrap
+	.subreddit-info-header
+		align-items center
+		display flex
+		gap 1ch
 	.subreddit-info-widgets
 		display flex
 		flex-flow column nowrap

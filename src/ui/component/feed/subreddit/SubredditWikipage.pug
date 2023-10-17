@@ -56,7 +56,7 @@ svelte:head
 		section.wiki-info
 			{#if page.revision_date}
 				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised: {Time.sToAbsRelTimeStr(page.revision_date)}
-		section.wiki-body
+		section.color-strategy-ultralight-bg.wiki-body
 			{#if page_name === 'pages'}
 				ol.wiki-all-pages-list.md
 					{#each page as page_name}
@@ -69,10 +69,12 @@ svelte:head
 					pre.md {page.content_css}
 
 style.
-	.wiki
-		width 480px
 	.wiki-body
-		margin-top 2em
+		background white
+		border-radius 1.333em
+		color black
+		margin-top 1em
+		padding 1em
 	.wiki-edit-date
 		cursor help
 	.wiki-info
@@ -95,18 +97,18 @@ style.
 		display none
 		max-height 100vh
 		overflow auto
-		padding 64px 0
+		padding 5em 1em
 		position fixed
-		left calc(50% + 320px)
+		left calc(50% + 280px)
 		scrollbar-width none
 		top 0
-		width 180px
+		width 200px
 		&::-webkit-scrollbar
 			display none
-		@media (min-width: 1024px)
+		@media (min-width: 960px)
 			display initial
 		@media (min-width: 1280px)
-			width 300px
+			width 320px
 	:global(.wiki .toc a)
 		padding 0
 		text-decoration none
