@@ -10,6 +10,7 @@ script.
 	import ThemeProviderOverlay from './overlay/ThemeProviderOverlay.pug'
 	
 	import AppRoute from './AppRoute.pug'
+	import AppRouteFrontpage from './AppRouteFrontpage.pug'
 	import AppRouteUnsupported from './AppRouteUnsupported.pug'
 	
 	route = {}
@@ -105,6 +106,9 @@ ThemeProviderOverlay
 			RadialMenuOverlay
 				TableManagerOverlay
 					{#if route.feed || route.post || route.wiki}
-						AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})
+						{#if route.feed?.type === 'frontpage'}
+							AppRouteFrontpage
+						{:else}
+							AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})
 					{:else}
 						AppRouteUnsupported(url={location})

@@ -71,13 +71,7 @@ export default (url) ->
 	if path.at(-1) is ''
 		path.pop()
 	if !path[0]?
-		if api.isLoggedIn()
-			path.splice(0, 0, 'u', 'r', 'subscribed')
-			preload.push(api.ID('account_multireddits_owned', HOMEPAGE_SUBREDDITS_PAGE_SIZE))
-			preload.push(api.ID('account_subreddits_subscribed', HOMEPAGE_SUBREDDITS_PAGE_SIZE))
-		else
-			path.splice(0, 0, 'r', 'all')
-		preload.push(api.ID('global_subreddits_popular', HOMEPAGE_SUBREDDITS_PAGE_SIZE))
+		feed.type = 'frontpage'
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?
 		path.shift()
