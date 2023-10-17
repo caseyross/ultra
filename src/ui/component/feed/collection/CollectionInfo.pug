@@ -23,7 +23,8 @@ script.
 	.collection-info-loading Loading...
 {:else if collection}
 	.collection-info
-		h1.collection-info-name {collection.title}
+		h1.collection-info-name
+			a(href='/c/{id}') {collection.title}
 		cite.collection-info-subreddit
 			| in
 			FeedLink(subreddit_name={collection.subreddit} type='subreddit')

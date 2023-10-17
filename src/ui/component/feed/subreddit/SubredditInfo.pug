@@ -6,7 +6,6 @@ script.
 	import ButtonGroup from '../../common/ButtonGroup.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
 	import Status from '../../common/Status.pug'
-	import SubredditAvatar from './SubredditAvatar.pug'
 	import SubredditRules from './SubredditRules.pug'
 	import SubredditWidget from './SubredditWidget.pug'
 
@@ -49,9 +48,8 @@ script.
 	Status(type='error' message='Error loading subreddit description.')
 {:else if name}
 	article.subreddit-info
-		header.subreddit-info-header
-			SubredditAvatar(name={name})
-			h1.subreddit-info-name(title={subreddit?.display_name || name}) {name.toLowerCase()}
+		h1.subreddit-info-name(title={subreddit?.display_name || name})
+			a(href='/{subreddit?.display_name || name}') {name.toLowerCase()}
 		ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
 		{#if tab === 'rules'}
 			SubredditRules(name={name})
@@ -73,11 +71,6 @@ style.
 		gap 2em
 	.subreddit-info-description-empty
 		color var(--c-text-weak)
-	.subreddit-info-header
-		align-items center
-		display flex
-		gap 1em
-		width 100%
 	.subreddit-info-loading
 		color var(--c-text-weak)
 	.subreddit-info-name
@@ -86,6 +79,7 @@ style.
 		letter-spacing -0.333px
 		overflow hidden
 		text-overflow ellipsis
+		white-space nowrap
 	.subreddit-info-widgets
 		display flex
 		flex-flow column nowrap

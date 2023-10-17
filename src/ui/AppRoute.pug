@@ -1,13 +1,12 @@
 script.
 	import api from '../api/index.js'
 	
-	import AppLogo from './component/common/AppLogo.pug'
 	import CollectionAvatar from './component/feed/collection/CollectionAvatar.pug'
 	import CollectionInfo from './component/feed/collection/CollectionInfo.pug'
 	import Feed from './component/feed/Feed.pug'
 	import FeedSearchOptions from './component/feed/FeedSearchOptions.pug'
 	import FeedSortOptions from './component/feed/FeedSortOptions.pug'
-	import FeedSummary from './component/feed/FeedSummary.pug'
+	import FeedStatus from './component/feed/FeedStatus.pug'
 	import MultiredditAvatar from './component/feed/multireddit/MultiredditAvatar.pug'
 	import MultiredditInfo from './component/feed/multireddit/MultiredditInfo.pug'
 	import Post from './component/post/Post.pug'
@@ -33,10 +32,20 @@ main#app-main-content
 				{#key post.focus_comment_parent_count}
 					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
 	{:else if feed}
-		{#if feed.subreddit_name && !feed.collection_id}
+		{#key feed.collection_id}
+			{#key feed.multireddit_name}
+				{#key feed.subreddit_name}
+					{#key feed.user_name}
+						FeedStatus(collection_id={feed.collection_id} multireddit_name={feed.multireddit_name} subreddit_name={feed.subreddit_name} user_name={feed.user_name})
+		{#if feed.collection_id || feed.multireddit_name}
+			{#if api.isLoggedIn()}
+				Feed(page_size={100} type='account_owned_multireddits')
+				Feed(page_size={100} type='account_subscribed_subreddits')
+			Feed(page_size={100} type='popular_subreddits')
+		{:else if feed.subreddit_name}
 			{#key feed.subreddit_name}
 				Feed(page_size={25} sort={feed.sort} subreddit_name={feed.subreddit_name} type='subreddit_comments')
-		{:else if feed.user_name && !feed.multireddit_name}
+		{:else if feed.user_name}
 			{#key feed.user_name}
 				Feed(page_size={25} type='user_comments' user_name={feed.user_name})
 {#if !wiki}
@@ -60,7 +69,6 @@ main#app-main-content
 nav#app-main-navigation
 	{#if feed}
 		menu#app-feed-navigation
-			AppLogo
 			{#if feed.type === 'collection_posts'}
 				{#key feed.collection_id}
 					CollectionAvatar(id={feed.collection_id} size='large')
@@ -74,11 +82,6 @@ nav#app-main-navigation
 			{:else if feed.type === 'user_posts'}
 				{#key feed.user_name}
 					UserAvatar(name={feed.user_name} size='large')
-		{#key feed.collection_id}
-			{#key feed.multireddit_name}
-				{#key feed.subreddit_name}
-					{#key feed.user_name}
-						FeedSummary(collection_id={feed.collection_id} multireddit_name={feed.multireddit_name} subreddit_name={feed.subreddit_name} user_name={feed.user_name})
 		menu#app-feed-options
 			FeedSortOptions(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
 			{#if feed.sort === 'search'}
@@ -94,8 +97,6 @@ nav#app-main-navigation
 									{#key feed.time_range}
 										{#key feed.user_name}
 											Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
-	{:else}
-		AppLogo
 
 style.
 	#app-feed-navigation
@@ -104,6 +105,7 @@ style.
 		gap 1em
 		justify-content flex-end
 	#app-feed-options
+		align-items flex-start
 		display flex
 		flex-flow column nowrap
 		gap 1em
@@ -111,7 +113,7 @@ style.
 		padding 5em 0
 		width 480px
 	#app-main-navigation
-		align-items flex-end
+		align-items flex-start
 		display none
 		flex-flow column nowrap
 		gap 2em
@@ -122,7 +124,7 @@ style.
 		right calc(50% + 300px)
 		scrollbar-width none
 		top 0
-		width 190px
+		width 200px
 		&::-webkit-scrollbar
 			display none
 		@media(min-width 1024px)
@@ -136,7 +138,7 @@ style.
 		position fixed
 		scrollbar-width none
 		top 0
-		width 190px
+		width 200px
 		&::-webkit-scrollbar
 			display none
 		@media(min-width 1024px)

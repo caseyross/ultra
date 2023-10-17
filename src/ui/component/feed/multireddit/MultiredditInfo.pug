@@ -5,7 +5,6 @@ script.
 
 	import FeedLink from '../FeedLink.pug'
 	import FormattedHTML from '../../common/FormattedHTML.pug'
-	import MultiredditAvatar from './MultiredditAvatar.pug'
 	import SubredditWidget from '../subreddit/SubredditWidget.pug'
 
 	export multireddit_name = null
@@ -21,20 +20,9 @@ script.
 		if multireddit
 			set_theme_color(multireddit.key_color)
 	)
-	if user_name == 'r'
-		if multireddit_name == 'subscribed'
-			api.loadWatch(api.ID('account_subreddits_subscribed', 100), (x) ->
-				{ data: subscribed_subreddits } = x
-			)
-		else
-			api.loadWatch(api.ID('global_subreddits_popular', 10), (x) ->
-				{ data: trending_subreddits } = x
-			)
-
 aside.multireddit-info
-	header.multireddit-info-header
-		MultiredditAvatar(multireddit_name={multireddit_name} user_name={user_name})
-		h1.multireddit-info-name {user_name === 'r' ? 'r/' : ''}{multireddit_name.toLowerCase()}
+	h1.multireddit-info-name
+		a(href='/u/{user_name}/{multireddit_name}') {multireddit_name.toLowerCase()}
 	{#if user_name !== 'r'}
 		address.multireddit-info-owner
 			| by
@@ -44,26 +32,18 @@ aside.multireddit-info
 			FormattedHTML(html={multireddit.description_html})
 		{#if multireddit.subreddits}
 			SubredditWidget(widget={{ data: multireddit.subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'List of subreddits' }})
-		{:else if subscribed_subreddits}
-			SubredditWidget(widget={{ data: subscribed_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Your subreddits' }})
-		{:else if trending_subreddits}
-			SubredditWidget(widget={{ data: trending_subreddits.map(x => ({ name: x })), kind: 'community-list', shortName: 'Trendy subreddits' }})
 
 style.
 	.multireddit-info
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
-	.multireddit-info-header
-		align-items center
-		display flex
-		gap 1em
-		width 100%
 	.multireddit-info-name
 		font-size 1.333em
 		font-weight var(--f-wght-strong)
 		overflow hidden
 		text-overflow ellipsis
+		white-space nowrap
 	.multireddit-info-owner
 		color var(--c-text-weak)
 		display flex

@@ -143,16 +143,17 @@ svelte:head
 	article.post-and-comments(class:post-and-comments-expanded={expanded})
 		article.post(data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title="{Time.sToAbsRelTimeStr(post.created_utc)} ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) : ''}")
 			header.post-header
-				section.post-category
-					{#if out_of_context}
-						FeedLink(type='subreddit' subreddit_name={post.subreddit})
-					{:else if post.link_flair_text}
-						PostFlair(emoji_style='image' rich_text={post.link_flair_richtext} size='medium' text={post.link_flair_text})
+				{#if out_of_context || post.link_flair_text}
+					section.post-category
+						{#if out_of_context}
+							FeedLink(type='subreddit' subreddit_name={post.subreddit})
+						{:else if post.link_flair_text}
+							PostFlair(emoji_style='image' rich_text={post.link_flair_richtext} size='medium' text={post.link_flair_text})
 				h1.post-title {post.title}
 				{#if expanded}
 					section.post-meta
 						{#if api.isLoggedIn()}
-							button.post-score(class:post-score-downvoted={post.likes === false} class:post-score-upvoted={post.likes === true} data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={post.hide_score ? 'score hidden' : post.score < 1 ? 'negative score (value unavailable)' : post.score - 1})
+							button.post-score(class:post-score-downvoted={post.likes === false} class:post-score-upvoted={post.likes === true} data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={post.hide_score ? 'score hidden' : post.score < 1 ? 'negative score (value unavailable)' : post.score})
 								| {score_text(post)}
 								{#if post.upvote_ratio < 0.7}
 									span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
@@ -355,12 +356,12 @@ style.
 		:global(& img)
 			border-radius 1em
 	.post-title
-		font-size 1.1666em
-		font-weight var(--f-wght-normal)
+		font-size 1.25em
+		font-weight inherit
 		line-height 1.2
 		overflow-wrap anywhere
 		.post-and-comments-expanded &
-			font-size 1.5em
-			font-weight var(--f-wght-xstrong)
+			font-size 1.666em
+			font-weight var(--f-wght-strong)
 			letter-spacing -0.333px
 			line-height 1.1666

@@ -40,10 +40,8 @@ svelte:head
 			title {info?.display_name || subreddit_name}
 		{:else if user_name}
 			title u/{info?.name || user_name}
-article.feed-summary
-	{#if loading}
-		p Loading...
-	{:else if error}
+{#if error}
+	.feed-status
 		{#if error.code === 403}
 			{#if multireddit_name}
 				Status(type='error' message="Only approved users can access this multireddit." title="Private multireddit")

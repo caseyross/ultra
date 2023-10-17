@@ -29,6 +29,8 @@ script.
 	base_page_id = switch type
 		when 'account_messages'
 			api.ID('account_messages', filter, page_size)
+		when 'account_owned_multireddits'
+			api.ID('account_multireddits_owned', page_size)
 		when 'account_saved_comments'
 			api.ID('account_saved_comments', user_name, page_size)
 		when 'account_saved_posts'
@@ -99,34 +101,32 @@ script.
 
 	load_next_page()
 
-nav.feed(class="feed-type-{type.split('_').at(-1)}")
+ol.feed(class="feed-type-{type.split('_').at(-1)}")
 	{#if items.length > 0}
-		ol.feed-items
-			{#each items as item, i (item)}
-				{#if filter !== 'unread' || !read[i]}
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
-						{#if type.endsWith('comments')}
-							Comment(id={item?.id || item} out_of_context={true})
-						{:else if type.endsWith('messages')}
-							{#if item.was_comment}
-								Comment(id={item.id} out_of_context={true})
-							{:else}
-								Message(message={item})
-						{:else if type.endsWith('posts')}
-							a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
-								Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
-						{:else if type.endsWith('subreddits')}
-							a(href={format_url({ subreddit_name: item })})
-								FeedLink(subreddit_name={item} type='subreddit')
-						{:else if type === 'subreddit_wikipages'}
-							a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
-		menu.feed-items-actions
-			{#if type.endsWith('posts') && filter === 'unread' && read.length > 0}
-				Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read item{read.filter(x => x).length === 1 ? '' : 's'} ")
-			{#if has_next_page}
-				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
-					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
+		{#each items as item, i (item)}
+			{#if filter !== 'unread' || !read[i]}
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
+					{#if type.endsWith('comments')}
+						Comment(id={item?.id || item} out_of_context={true})
+					{:else if type.endsWith('messages')}
+						{#if item.was_comment}
+							Comment(id={item.id} out_of_context={true})
+						{:else}
+							Message(message={item})
+					{:else if type.endsWith('posts')}
+						a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
+							Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
+					{:else if type.endsWith('subreddits')}
+						a(href={format_url({ subreddit_name: item })})
+							FeedLink(subreddit_name={item} type='subreddit')
+					{:else if type === 'subreddit_wikipages'}
+						a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
+		{#if type.endsWith('posts') && filter === 'unread' && read.length > 0}
+			Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read item{read.filter(x => x).length === 1 ? '' : 's'} ")
+	{#if has_next_page}
+		Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
+			Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'Load more'})
 	{:else}
 		{#if loading}
 			.feed-loading Loading...
@@ -145,12 +145,12 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 0.666em
-	.feed-items-actions
-		display flex
-		flex-flow row wrap
-		gap 1ch
-		width 100%
 	.feed-loading
 		color var(--c-text-weak)
+	.feed-post-link
+		background var(--c-tint-normal)
+		border-radius 1em
+		display block
+		padding 1em
 	.feed-read-count
 		color var(--c-text-weak)

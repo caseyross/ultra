@@ -71,11 +71,13 @@ export default (url) ->
 	if path.at(-1) is ''
 		path.pop()
 	if !path[0]?
-		feed.type = 'homepage'
 		if api.isLoggedIn()
-			feed.base_page_id = api.ID('account_subreddits_subscribed', HOMEPAGE_SUBREDDITS_PAGE_SIZE)
+			path.splice(0, 0, 'u', 'r', 'subscribed')
+			preload.push(api.ID('account_multireddits_owned', HOMEPAGE_SUBREDDITS_PAGE_SIZE))
+			preload.push(api.ID('account_subreddits_subscribed', HOMEPAGE_SUBREDDITS_PAGE_SIZE))
 		else
-			feed.base_page_id = api.ID('global_subreddits_popular', HOMEPAGE_SUBREDDITS_PAGE_SIZE)
+			path.splice(0, 0, 'r', 'all')
+		preload.push(api.ID('global_subreddits_popular', HOMEPAGE_SUBREDDITS_PAGE_SIZE))
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?
 		path.shift()
@@ -190,8 +192,6 @@ export default (url) ->
 			switch
 				when feed.user_name is 'r' and feed.multireddit_name is 'subscribed'
 					feed.sort = 'best' unless feed.sort
-					preload.push(api.ID('account_subscribed_subreddits', 25))
-					preload.push(api.ID('subreddits_popular', 25))
 				else
 					feed.sort = 'hot' unless feed.sort
 			switch feed.sort
