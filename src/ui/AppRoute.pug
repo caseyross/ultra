@@ -39,9 +39,9 @@ main#app-main-content
 						FeedStatus(collection_id={feed.collection_id} multireddit_name={feed.multireddit_name} subreddit_name={feed.subreddit_name} user_name={feed.user_name})
 		{#if feed.collection_id || feed.multireddit_name}
 			{#if api.isLoggedIn()}
-				Feed(page_size={100} type='account_owned_multireddits')
-				Feed(page_size={100} type='account_subscribed_subreddits')
-			Feed(page_size={100} type='popular_subreddits')
+				Feed(page_size={100} title='Your multireddits' type='account_owned_multireddits')
+				Feed(page_size={100} title='Your subscriptions' type='account_subscribed_subreddits')
+			Feed(page_size={100} title='Popular subreddits' type='popular_subreddits')
 		{:else if feed.subreddit_name}
 			{#key feed.subreddit_name}
 				Feed(page_size={25} sort={feed.sort} subreddit_name={feed.subreddit_name} type='subreddit_comments')
@@ -110,6 +110,9 @@ style.
 		flex-flow column nowrap
 		gap 1em
 	#app-main-content
+		display flex
+		flex-flow column nowrap
+		gap 2em
 		padding 5em 0
 		width 480px
 	#app-main-navigation

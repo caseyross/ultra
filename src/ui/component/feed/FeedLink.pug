@@ -1,4 +1,6 @@
 script.
+	import api from '../../../api/index.js'
+	import { HexColor } from '../../../lib/index.js'
 	import { format_url } from '../../url/index.js'
 
 	import CollectionAvatar from './collection/CollectionAvatar.pug'
@@ -9,6 +11,7 @@ script.
 	export collection_id = null
 	export icon_url = null
 	export multireddit_name = null
+	export size = 'small'
 	export subreddit_name = null
 	export type = null
 	export user_name = null
@@ -19,15 +22,29 @@ script.
 		when 'subreddit' then subreddit_name
 		when 'user' then user_name
 
-a.feed-link(class="feed-link-type-{type}" href={format_url({ collection_id, multireddit_name, subreddit_name, user_name })})
+	info = null
+	if size == 'large'
+		switch type
+			when 'collection' then api.loadWatch(api.ID('collection', collection_id), (x) -> info = x?.data)
+			when 'multireddit' then api.loadWatch(api.ID('multireddit', user_name, multireddit_name), (x) -> info = x?.data)
+			when 'subreddit' then api.loadWatch(api.ID('subreddit', subreddit_name), (x) -> info = x?.data)
+			when 'user' then api.loadWatch(api.ID('user', user_name), (x) -> info = x?.data)
+	
+	colors = (size, info) ->
+		if size == 'large'
+			"background: #{info?.primary_color or info?.key_color or info?.profile_color or '#ff4500'}; color: #{if HexColor.lightness(info?.primary_color or info?.key_color or info?.profile_color or '#ff4500') > 0.5 then 'black' else 'white'}"
+		else
+			''
+
+a.feed-link(class="feed-link-size-{size} feed-link-type-{type}" href={format_url({ collection_id, multireddit_name, subreddit_name, user_name })} style={colors(size, info)})
 	{#if type === 'collection'}
-		CollectionAvatar(id={collection_id} size='small')
+		CollectionAvatar(id={collection_id} size={size === 'large' ? 'medium' : 'small'})
 	{#if type === 'multireddit'}
-		MultiredditAvatar(multireddit_name={multireddit_name} size='small' user_name={user_name})
+		MultiredditAvatar(multireddit_name={multireddit_name} size={size === 'large' ? 'medium' : 'small'} user_name={user_name})
 	{:else if type === 'subreddit'}
-		SubredditAvatar(icon_url={icon_url} name={subreddit_name} size='small')
+		SubredditAvatar(icon_url={icon_url} name={subreddit_name} size={size === 'large' ? 'medium' : 'small'})
 	{:else if type === 'user'}
-		UserAvatar(name={user_name} size='small')
+		UserAvatar(name={user_name} size={size === 'large' ? 'medium' : 'small'})
 	span.feed-link-text(title={label}) {label}
 
 style.
@@ -37,6 +54,11 @@ style.
 		gap 1ch
 		max-width 100%
 		white-space nowrap
+		&.feed-link-size-large
+			border-radius 32px
+			font-size 1.5em
+			padding 1rem
+			width 100%
 	.feed-link-text
 		font-family var(--f-family-mono)
 		overflow hidden
