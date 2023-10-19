@@ -186,7 +186,7 @@ svelte:head
 					Status(type='error' message="Reddit Talks are only available on the official site.")
 						Button(link='https://www.reddit.com/talk/{post.live_audio?.room_id}' new_tab={true} text='View on Reddit')
 				{:else if post.selftext || post.format !== 'self'}
-					section.color-strategy-ultralight-bg.post-body
+					section.post-body
 						{#if post.format === 'crosspost'}
 							a.post-crosspost-link(href={format_url({ post_id: post.crosspost_parent })})
 								svelte:self(expanded={false} id={post.crosspost_parent} out_of_context={true})
@@ -198,7 +198,7 @@ svelte:head
 											{#if !media.is_gif}
 												source(srcset={media.image_url_960})
 												source(srcset={media.image_url_640})
-											img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}" title='{i + 1} / {post.media.length}')
+											img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}; width: {Math.min(media.source_width, 480)}px" title='{i + 1} / {post.media.length}')
 									{#if media.caption_text || media.caption_url}
 										figcaption.post-gallery-image-caption
 											{#if media.caption_text}
@@ -232,7 +232,7 @@ svelte:head
 								Button(link={post.url} new_tab={true} text='View on Reddit')
 						{:else if post.format === 'video'}
 							{@const media = post.media[0]}
-								PostVideoPlayer(audio_url={media.video_audio_url} height={480 * 9 / 16} video_url={media.video_url} width={480})
+								PostVideoPlayer(audio_url={media.video_audio_url} height={480 / (media.video_aspect_ratio || 1)} video_url={media.video_url} width={480})
 						{#if post.selftext_html}
 							.post-text
 								FormattedHTML(html={post.selftext_html})
@@ -260,32 +260,25 @@ style.
 		width 100%
 	.post-body
 		align-items flex-start
-		background white
 		border-radius 1.333em
-		color black
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		margin-top 0.333em
-		padding 1em
 		:global(& .twitter-tweet)
 			margin 0 !important
-			width 480px !important
+			width 450px !important
 		:global(& .twitter-tweet iframe)
 			border-radius 11px
 	.post-category
 		height 20px
 		width 100%
-		.post-and-comments-expanded &
-			bottom 100%
-			position absolute
-		.post-and-comments-expanded .post-crosspost-link &
-			position initial
 	.post-comments
 		display flex
 		flex-flow column nowrap
-		gap 0.666em
-		margin-top 1em
+		gap 1.333em
+		margin-top 1.666em
+		padding 0.333em
 		width 100%
 	.post-crosspost-link
 		width 100%
@@ -293,21 +286,20 @@ style.
 		width 100%
 	.post-gallery-image-caption
 		font-size 12px
-		letter-spacing 0.333px
 		margin-top 1em
 		padding 0 1em
 	.post-header
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 0.333em
-		padding 0.333em 0
+		gap 0.666em
+		padding 0.333em
 		position relative
 	.post-iframe
 		aspect-ratio 1
 		background var(--c-text-faint)
 		border-radius 1em
-		width 480px
+		width 100%
 		&:fullscreen
 			border-radius 0
 	.post-image
@@ -315,11 +307,15 @@ style.
 		border-radius 1em
 		width 100%
 	.post-link
-		font-family var(--f-family-mono)
+		background var(--c-blend-weak)
+		border-radius 1.333rem
 		font-size 1.25em
 		line-height 1.333
+		padding 1rem
 		text-decoration underline
 		word-break break-all
+		&:hover
+			background var(--c-blend-normal)
 	.post-meta
 		align-items center
 		display flex
@@ -336,11 +332,10 @@ style.
 		& meter
 			width 240px
 	.post-score
-		background var(--c-blend-faint)
+		background var(--c-blend-weak)
 		border-radius 11px
 		color var(--c-text-weak)
 		display inline-flex
-		font-family var(--f-family-mono)
 		font-weight var(--f-wght-strong)
 		line-height 1
 		padding 1px 6px
@@ -353,6 +348,9 @@ style.
 		cursor help
 		font-size 12px
 	.post-text
+		background var(--c-con-normal)
+		border-radius 1.333em
+		padding 1em
 		:global(& img)
 			border-radius 1em
 	.post-title

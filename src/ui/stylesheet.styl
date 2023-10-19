@@ -48,6 +48,7 @@ body
 	color-scheme dark
 	--c-blend-faint rgba(255,255,255,0.0625)
 	--c-blend-weak rgba(255,255,255,0.125)
+	--c-blend-normal rgba(255,255,255,0.25)
 	--c-con-weak rgba(255,255,255,0.0625)
 	--c-con-normal rgba(255,255,255,0.125)
 	--c-shade-weak rgba(255,255,255,0.0625)
@@ -57,7 +58,6 @@ body
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong #d8d8d8
-	--c-tint-normal rgba(255,255,255,0.125)
 	--f-wght-weak 400
 	--f-wght-normal 500
 	--f-wght-strong 650
@@ -66,6 +66,7 @@ body
 	color-scheme dark
 	--c-blend-faint rgba(255,255,255,0.0625)
 	--c-blend-weak rgba(255,255,255,0.125)
+	--c-blend-normal rgba(255,255,255,0.25)
 	--c-con-weak rgba(0,0,0,0.125)
 	--c-con-normal rgba(0,0,0,0.25)
 	--c-shade-weak rgba(0,0,0,0.125)
@@ -75,17 +76,17 @@ body
 	--c-text-faint rgba(255,255,255,0.25)
 	--c-text-weak rgba(255,255,255,0.50)
 	--c-text-strong #f8f8f8
-	--c-tint-normal rgba(255,255,255,0.125)
 	--f-wght-weak 400
 	--f-wght-normal 500
 	--f-wght-strong 650
 	--f-wght-xstrong 800
 .color-strategy-light-bg
 	color-scheme light
-	--c-blend-faint rgba(0,0,0,0.0625)
-	--c-blend-weak rgba(0,0,0,0.125)
-	--c-con-weak rgba(255,255,255,0.5)
-	--c-con-normal white
+	--c-blend-faint rgba(0,0,0,0.03125)
+	--c-blend-weak rgba(0,0,0,0.0625)
+	--c-blend-normal rgba(0,0,0,0.125)
+	--c-con-weak rgba(255,255,255,0.25)
+	--c-con-normal rgba(255,255,255,0.5)
 	--c-shade-weak rgba(0,0,0,0.0625)
 	--c-shade-normal rgba(0,0,0,0.125)
 	--c-shade-strong rgba(0,0,0,0.25)
@@ -93,15 +94,15 @@ body
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong #333333
-	--c-tint-normal rgba(255,255,255,0.5)
 	--f-wght-weak 450
 	--f-wght-normal 550
 	--f-wght-strong 700
 	--f-wght-xstrong 850
 .color-strategy-ultralight-bg
 	color-scheme light
-	--c-blend-faint rgba(0,0,0,0.0625)
-	--c-blend-weak rgba(0,0,0,0.125)
+	--c-blend-faint rgba(0,0,0,0.03125)
+	--c-blend-weak rgba(0,0,0,0.0625)
+	--c-blend-normal rgba(0,0,0,0.125)
 	--c-con-weak rgba(0,0,0,0.03125)
 	--c-con-normal rgba(0,0,0,0.0625)
 	--c-shade-weak rgba(0,0,0,0.03125)
@@ -111,7 +112,6 @@ body
 	--c-text-faint rgba(0,0,0,0.25)
 	--c-text-weak rgba(0,0,0,0.50)
 	--c-text-strong #333333
-	--c-tint-normal rgba(0,0,0,0.0625)
 	--f-wght-weak 450
 	--f-wght-normal 550
 	--f-wght-strong 700
@@ -162,6 +162,7 @@ p
 pre
 	background black
 	border-radius 1em
+	color white
 	font-family var(--f-family-mono)
 	margin 1em 0 0
 	overflow auto
@@ -258,7 +259,6 @@ ul
 		font inherit
 		font-feature-settings 'tnum'
 		font-size 13px
-		letter-spacing 0.333px
 		line-height 1.5
 		margin 1rem 0 0
 		table-layout fixed

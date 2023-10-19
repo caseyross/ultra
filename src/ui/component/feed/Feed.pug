@@ -11,7 +11,6 @@ script.
 	import FeedLink from './FeedLink.pug'
 	import FeedSearchOptions from './FeedSearchOptions.pug'
 	import FeedSortOptions from './FeedSortOptions.pug'
-	import Label from '../common/Label.pug'
 	import Message from '../message/Message.pug'
 	import Post from '../post/Post.pug'
 	import Status from '../common/Status.pug'
@@ -104,62 +103,81 @@ script.
 
 	load_next_page()
 
-{#if items.length > 0 || sort === 'search'}
+nav.feed(class="feed-type-{type.split('_').at(-1)}")
 	{#if title}
 		h1.feed-title {title}
-	ol.feed(class="feed-type-{type.split('_').at(-1)}")
-		{#if type.endsWith('posts')}
+	{#if type.endsWith('posts')}
+		menu.feed-options
 			FeedSortOptions(collection_id={collection_id} filter={filter} multireddit_name={multireddit_name} sort={sort} subreddit_name={subreddit_name} time_range={time_range} type={type} user_name={user_name})
 			{#if sort === 'search'}
 				FeedSearchOptions(multireddit_name={multireddit_name} search_sort={search_sort} search_text={search_text} subreddit_name={subreddit_name})
-		{#if type.endsWith('posts') && filter === 'unread' && read.filter(x => x).length > 0}
-			Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read item{read.filter(x => x).length === 1 ? '' : 's'} ")
-		{#each items as item, i (item)}
-			{#if filter !== 'unread' || !read[i]}
-				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
-					{#if type.endsWith('comments')}
-						Comment(id={item?.id || item} out_of_context={true})
-					{:else if type.endsWith('messages')}
-						{#if item.was_comment}
-							Comment(id={item.id} out_of_context={true})
-						{:else}
-							Message(message={item})
-					{:else if type.endsWith('multireddits')}
-						FeedLink(multireddit_name={item.split('-')[1]} size='large' type='multireddit' user_name={item.split('-')[0]})
-					{:else if type.endsWith('posts')}
-						a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
-							Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
-					{:else if type.endsWith('subreddits')}
-						FeedLink(size='large' subreddit_name={item} type='subreddit')
-					{:else if type === 'subreddit_wikipages'}
-						a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
-		{#if has_next_page}
-			Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
-				Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'Load more'})
-{:else}
+	{#if items.length > 0 && !(filter === 'unread' && read.filter(x => !x).length === 0)}
+		ol.feed-items
+			{#each items as item, i (item)}
+				{#if filter !== 'unread' || !read[i]}
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
+						{#if type.endsWith('comments')}
+							Comment(id={item?.id || item} out_of_context={true})
+						{:else if type.endsWith('messages')}
+							{#if item.was_comment}
+								Comment(id={item.id} out_of_context={true})
+							{:else}
+								Message(message={item})
+						{:else if type.endsWith('multireddits')}
+							FeedLink(multireddit_name={item.split('-')[1]} size='large' type='multireddit' user_name={item.split('-')[0]})
+						{:else if type.endsWith('posts')}
+							a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
+								Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
+						{:else if type.endsWith('subreddits')}
+							FeedLink(size='large' subreddit_name={item} type='subreddit')
+						{:else if type === 'subreddit_wikipages'}
+							a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
+	{:else if !type.endsWith('reddits') && !(sort === 'search' && !search_text) && !has_next_page}
+		Status(type='warning' message="No {type.split('_').at(-1)}.")
 	{#if loading}
 		.feed-loading Loading {type.split('_').at(-1)}...
 	{:else if error}
 		Status(type='error' message="Error loading {type.split('_').at(-1)}.")
-	{:else if !type.endsWith('reddits') && !(sort === 'search' && !search_text) && !has_next_page}
-		Status(type='warning' message="No {type.split('_').at(-1)}.")
+	.feed-actions
+		{#if type.endsWith('posts') && filter === 'unread' && read.filter(x => x).length > 0}
+			Button(action={() => internal_navigate({ href: apply_query_parameters({ filter: 'all' }) })} text="Show {read.filter(x => x).length} read")
+		{#if has_next_page}
+			Button(action={() => load_next_page()} text={error ? 'Retry' : 'More'})
 
 style.
 	.feed
 		align-items inherit
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
+		gap 2em
+		width 100%
+	.feed-actions
+		display flex
+		justify-content space-between
 		width 100%
 	.feed-item
 		max-width 100%
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 0.666em
+		gap 1.333em
+		width 100%
+		.feed-type-comments &
+			gap 0.666em
 	.feed-loading
 		color var(--c-text-weak)
+	.feed-options
+		align-items inherit
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		width 100%
+	.feed-post-link
+		background var(--c-con-normal)
+		border-radius 1em
+		display block
+		padding 1em
 	.feed-read-count
 		color var(--c-text-weak)
 	.feed-title

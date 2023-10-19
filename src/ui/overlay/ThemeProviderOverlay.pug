@@ -3,7 +3,7 @@ script.
 	
 	import { HexColor } from '../../lib/index.js'
 
-	DEFAULT_COLOR = '#ff4500' # orangered
+	DEFAULT_COLOR = '#ffffff'
 
 	set_theme_color = (color) ->
 		# Set main color
@@ -18,7 +18,7 @@ script.
 		switch
 			when HexColor.lightness(color) > 0.725
 				document.body.classList.add('color-strategy-ultralight-bg')
-			when HexColor.lightness(color) > 0.450
+			when HexColor.lightness(color) > 0.50
 				document.body.classList.add('color-strategy-light-bg')
 			when HexColor.lightness(color) > 0.075
 				document.body.classList.add('color-strategy-dark-bg')

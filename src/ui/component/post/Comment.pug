@@ -123,7 +123,7 @@ script.
 						{#if comment.controversiality > 0.25}
 							span.comment-score-controversial-marker(title='controversial comment') †
 				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
-			section.color-strategy-ultralight-bg.comment-body
+			section.comment-body
 				FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
@@ -133,7 +133,7 @@ script.
 				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
 		{#if out_of_context}
 			cite.comment-source
-				span.comment-source-hint on:
+				span.comment-source-hint via:
 				a.comment-source-name(href={relativize_url(comment.permalink) + '?context=1'}) {comment.link_title}
 		{:else}
 			ol.comment-replies
@@ -153,13 +153,11 @@ style.
 		display flex
 		flex-flow column nowrap
 	.comment-body
-		background white
-		border-radius 1.333em
-		color black
+		border-radius 1em
 		padding 1em
 		:global(& img)
 			border-radius 1em
-			max-height 256px
+			max-height 120px
 			width auto
 		.comment-highlighted > &
 			outline 1px solid #ffdd5d
@@ -173,17 +171,16 @@ style.
 		display flex
 		gap 0.5em
 		max-width 100%
-		padding 0.333em 0
+		padding 0.333em
 	.comment-replies
 		border-left 1px solid var(--c-text-faint)
 		margin 0.333em 0
 		padding-left 1.333em
 	.comment-score
-		background var(--c-blend-faint)
+		background var(--c-blend-weak)
 		border-radius 11px
 		color var(--c-text-weak)
 		display inline-flex
-		font-family var(--f-family-mono)
 		font-weight var(--f-wght-strong)
 		line-height 1
 		padding 1px 6px
@@ -205,5 +202,6 @@ style.
 	.comment-source-hint
 		color var(--c-text-faint)
 	.comment-source-name
+		color var(--c-text-weak)
 		overflow hidden
 		text-overflow ellipsis
