@@ -1,0 +1,12 @@
+script.
+	import { getContext } from 'svelte'
+
+	import { apply_query_parameters } from '../../url/index.js'
+
+	import Checkbox from '../common/Checkbox.pug'
+
+	export filter = null
+
+	internal_navigate = getContext('internal_navigate')
+
+Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')

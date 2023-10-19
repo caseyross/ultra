@@ -1,13 +1,10 @@
 script.
-	import { getContext } from 'svelte'
-
 	import api from '../../../api/index.js'
-	import { apply_query_parameters, format_url } from '../../url/index.js'
+	import { format_url } from '../../url/index.js'
 
 	import AccountState from '../../state/AccountState.coffee'
 	
 	import Button from '../common/Button.pug'
-	import Checkbox from '../common/Checkbox.pug'
 	import Comment from '../post/Comment.pug'
 	import FeedLink from './FeedLink.pug'
 	import Label from '../common/Label.pug'
@@ -17,7 +14,6 @@ script.
 
 	export collection_id = null
 	export filter = null
-	export internal_navigate = getContext('internal_navigate')
 	export multireddit_name = null
 	export page_size = 10
 	export search_sort = null
@@ -104,8 +100,6 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 			{#if !loading}
 				.feed-all-read You've read all {type.split('_').at(-1)} up to page {current_page}.
 		{:else}
-			{#if type.endsWith('posts')}
-				Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')
 			ol.feed-items
 				{#each items as item, i (item)}
 					{#if filter !== 'unread' || !read[i]}

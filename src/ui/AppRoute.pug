@@ -4,6 +4,7 @@ script.
 	import CollectionAvatar from './component/feed/collection/CollectionAvatar.pug'
 	import CollectionInfo from './component/feed/collection/CollectionInfo.pug'
 	import Feed from './component/feed/Feed.pug'
+	import FeedFilterOptions from './component/feed/FeedFilterOptions.pug'
 	import FeedSearchOptions from './component/feed/FeedSearchOptions.pug'
 	import FeedSortOptions from './component/feed/FeedSortOptions.pug'
 	import FeedSummary from './component/feed/FeedSummary.pug'
@@ -45,6 +46,8 @@ main#app-main-content
 				{#if feed.sort === 'search'}
 					{#key feed.subreddit_name}
 						FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
+			{#if feed.type.endsWith('posts')}
+				FeedFilterOptions(filter={feed.filter})
 			{#key feed.collection_id}
 				{#key feed.filter}
 					{#key feed.multireddit_name}
@@ -100,6 +103,8 @@ nav#app-main-navigation
 									{#key feed.subreddit_name}
 										{#key feed.time_range}
 											{#key feed.user_name}
+												{#if feed.type.endsWith('posts')}
+													FeedFilterOptions(filter={feed.filter})
 												Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
 	{:else}
 		a(href='/')
