@@ -194,6 +194,7 @@ export default (url) ->
 					feed.sort = 'hot' unless feed.sort
 			switch feed.sort
 				when 'search'
+					feed.filter = 'all' unless feed.filter
 					feed.search_sort = 'relevance' unless feed.search_sort
 					if feed.search_text?
 						feed.base_page_id = api.ID('search_posts', "multireddit=#{feed.user_name}-#{feed.multireddit_name}+#{feed.search_text}", 'all', feed.search_sort, FEED_PAGE_SIZE)
@@ -208,6 +209,7 @@ export default (url) ->
 					feed.filter = 'posts' unless feed.filter
 					feed.base_page_id = api.ID("subreddit_modqueue_#{feed.filter}", feed.subreddit_name, FEED_PAGE_SIZE)
 				when 'search'
+					feed.filter = 'all' unless feed.filter
 					feed.search_sort = 'relevance' unless feed.search_sort
 					if feed.sort is 'search' and feed.search_text?
 						feed.base_page_id = api.ID('search_posts', "subreddit=#{feed.subreddit_name}+#{feed.search_text}", 'all', feed.search_sort, FEED_PAGE_SIZE)
