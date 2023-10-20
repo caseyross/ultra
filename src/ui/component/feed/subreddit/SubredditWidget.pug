@@ -30,8 +30,7 @@ article.subreddit-widget(class='subreddit-widget-type-{widget.kind}')
 						{#each widget.data as event}
 							tr.subreddit-widget-calendar-event(title='{Time.sToAbsTimeStr(event.startTime)}')
 								td {Time.msToRelTimeStr(Time.unixMs(), { abbr: true, endMs: Time.sToMs(event.startTime) })}
-								td
-									FormattedHTML(html={event.titleHtml})
+								td {event.title}
 		{:else}
 			span.subreddit-widget-calendar-events-empty (No events.)
 	{:else if widget.kind === 'community-list'}
