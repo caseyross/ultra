@@ -139,7 +139,7 @@ Time = {
 		monthsBack = currentDate.getMonth() + (12 * (currentDate.getFullYear() - targetDate.getFullYear()) - targetDate.getMonth())
 		switch
 			when monthsBack < 12
-				Time.msToRelTimeStr(ms, { abbr: true })
+				Time.msToRelTimeStr(ms, { abbr: true }) + ' ago'
 			else
 				months[targetDate.getMonth()].short_name + ' ' + targetDate.getFullYear()
 	
