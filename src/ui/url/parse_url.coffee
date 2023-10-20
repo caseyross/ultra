@@ -6,7 +6,7 @@ GEO_SEO_PREFIXES =
 HOMEPAGE_FEEDS_COUNT = 100
 POST_COMMENTS_INITIAL_SIZE = 100
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
-	['api', 'c', 'chat', 'collection', 'comments', 'contributor-program', 'dev', 'domain', 'gallery', 'gold', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'video', 'w', 'wiki'] # front page sort options handled separately
+	['api', 'c', 'chat', 'collection', 'comments', 'contributor-program', 'dev', 'domain', 'gallery', 'gold', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'users', 'video', 'w', 'wiki'] # front page sort options handled separately
 RECOGNIZED_SUBREDDIT_PATH_SEGMENTS =
 	['about', 'c', 'collection', 'comments', 'duplicates', 'mod', 'p', 'post', 'rules', 's', 'search', 'submit', 'w', 'wiki']
 RECOGNIZED_USER_PATH_SEGMENTS =
