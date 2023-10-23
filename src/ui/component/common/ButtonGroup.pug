@@ -6,11 +6,10 @@ script.
 	export selected = null
 
 menu.button-group
-	{#each options as option}
-		Button(action={() => action ? action(option.value) : option.action(option.value)} activated={selected === option.value} disabled={option.disabled} link={option.link} text={option.label})
+	{#each options as option, i}
+		Button(action={() => action ? action(option.value) : option.action(option.value)} activated={selected === option.value} adjacency={i === 0 ? 'group-start' : i === options.length - 1 ? 'group-end' : 'group-middle'} disabled={option.disabled} link={option.link} text={option.label})
 
 style.
 	.button-group
 		display inline-flex
-		flex-flow row wrap
-		gap 2px
+		flex-flow row nowrap
