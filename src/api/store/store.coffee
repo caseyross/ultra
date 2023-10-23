@@ -101,12 +101,9 @@ setData = (id, data, partial = false, merge = false) ->
 	# For most datasets, we will simply overwrite the entire object. However, certain datasets (e.g. comments from differing endpoints) need to be handled with more scrutiny, as they may not represent straight sub- or super-sets of the same object.
 	if cache[id].data and merge
 		for newKey, newValue of data
-			# Write or overwrite keys where the new value is non-trivial. Merge paired arrays at surface level.
-			if newValue? and !(Array.isArray(newValue) and newValue.length < 1)
-				if Array.isArray(newValue) and Array.isArray(cache[id].data[newKey])
-					cache[id].data[newKey] = [...new Set(cache[id].data[newKey].concat(newValue))]
-				else
-					cache[id].data[newKey] = newValue
+			# Write or overwrite keys where the new value is non-trivial, except don't overwrite existing arrays of greater length.
+			unless !newValue? or (Array.isArray(cache[id].data[newKey]) and Array.isArray(newValue) and cache[id].data[newKey].length > newValue.length)
+				cache[id].data[newKey] = newValue
 	else
 		cache[id].data = data
 	cache[id].error = false
