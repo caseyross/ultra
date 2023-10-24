@@ -47,8 +47,8 @@ script.
 	sort_options_user = [
 		{ label: 'New', value: 'new' }
 		{ label: 'Hot', value: 'hot' }
-		{ label: 'Top', value: 'top_all' }
-		{ label: 'Controversial', value: 'controversial_all' }
+		{ label: 'Top (All)', value: 'top_all' }
+		{ label: 'Con. (All)', value: 'controversial_all' }
 	]
 
 	if wikipage_name
@@ -60,4 +60,4 @@ script.
 				sort_options = sort_options.concat([{ label: 'Wiki', value: 'wiki' }])
 		)
 
-Button(action={value => internal_navigate({ href: location.origin + format_url(value === 'wiki' ? { subreddit_name, wikipage_name: 'index' } : { feed_filter: filter, feed_sort: value.split('_')[0], feed_time_range: value.split('_')[1], multireddit_name, subreddit_name, user_name }) })} options={(type === 'multireddit_posts' && user_name === 'r' && multireddit_name === 'subscribed') ? sort_options_frontpage : type === 'user_posts' ? sort_options_user : sort_options} selected={['controversial', 'top'].includes(sort) ? [sort, time_range].join('_') : sort})
+Button(action={value => internal_navigate({ href: location.origin + format_url(value === 'wiki' ? { subreddit_name, wikipage_name: 'index' } : { feed_filter: filter, feed_sort: value.split('_')[0], feed_time_range: value.split('_')[1], multireddit_name, subreddit_name, user_name }) })} options={(type === 'multireddit_posts' && user_name === 'r' && multireddit_name === 'home') ? sort_options_frontpage : type === 'user_posts' ? sort_options_user : sort_options} selected={['controversial', 'top'].includes(sort) ? [sort, time_range].join('_') : sort})

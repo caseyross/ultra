@@ -3,7 +3,6 @@ import api from '../../api/index.js'
 FEED_PAGE_SIZE = 10
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
-HOMEPAGE_FEEDS_COUNT = 100
 POST_COMMENTS_INITIAL_SIZE = 100
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
 	['api', 'c', 'chat', 'collection', 'comments', 'contributor-program', 'dev', 'domain', 'gallery', 'gold', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'users', 'video', 'w', 'wiki'] # front page sort options handled separately
@@ -70,18 +69,14 @@ export default (url) ->
 	if path.at(-1) is ''
 		path.pop()
 	if !path[0]?
-		feed.type = 'homepage'
-		if api.isLoggedIn()
-			feed.base_page_id = api.ID('account_subreddits_subscribed', HOMEPAGE_FEEDS_COUNT)
-		else
-			feed.base_page_id = api.ID('global_subreddits_popular', HOMEPAGE_FEEDS_COUNT)
+		path.splice(0, 0, 'subreddits')
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?
 		path.shift()
 	# Treat top-level paths as subreddit names unless we know otherwise.
 	if path[0]? and path[0] not in RECOGNIZED_PRIMARY_PATH_SEGMENTS
 		path.splice(0, 0, 'r')
-	# Convert r/all and r/popular to normal multireddit format.
+	# Convert special multireddits to normal multireddit format.
 	if path[0] is 'r' and path[1] in ['all', 'popular']
 		path.splice(0, 0, 'u')
 	# Normalize subreddit post paths.
@@ -143,6 +138,9 @@ export default (url) ->
 						wiki.page_name = [d, e, f, g].filter((x) -> x).join('/') or 'index'
 						if wiki.page_name == 'pages' then wiki.page_name = 'index'
 						preload.push(api.ID('subreddit_wikipage', wiki.subreddit_name, wiki.page_name, wiki.page_version))
+		when 'subreddits'
+			feed.type = 'subreddits'
+			feed.filter = b or (if api.isLoggedIn() then 'mine' else 'popular')
 		when 'u', 'user'
 			feed.user_name = b
 			switch c
@@ -183,10 +181,11 @@ export default (url) ->
 			feed.type = 'subreddit_posts'
 	switch feed.type
 		when 'collection_posts'
+			feed.filter = 'unread' unless feed.filter
 			feed.base_page_id = api.ID('collection', feed.collection_id)
 		when 'multireddit_posts'
 			switch
-				when feed.user_name is 'r' and feed.multireddit_name is 'subscribed'
+				when feed.user_name is 'r' and feed.multireddit_name is 'home'
 					feed.sort = 'best' unless feed.sort
 					preload.push(api.ID('account_subscribed_subreddits', 25))
 					preload.push(api.ID('subreddits_popular', 25))
@@ -202,6 +201,10 @@ export default (url) ->
 					feed.filter = 'unread' unless feed.filter
 					feed.base_page_id = api.ID('multireddit_posts', feed.user_name, feed.multireddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 			preload.push(api.ID('multireddit', feed.user_name, feed.multireddit_name))
+		when 'subreddits'
+			switch feed.filter
+				when 'mine' then feed.base_page_id = api.ID('account_subreddits_subscribed', 100)
+				else feed.base_page_id = api.ID('global_subreddits_popular', 81)
 		when 'subreddit_posts'
 			feed.sort = 'hot' unless feed.sort
 			switch feed.sort
@@ -218,6 +221,7 @@ export default (url) ->
 					feed.base_page_id = api.ID('subreddit_posts', feed.subreddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 			preload.push(api.ID('subreddit', feed.subreddit_name))
 		when 'user_posts'
+			feed.filter = 'unread' unless feed.filter
 			feed.sort = 'new' unless feed.sort
 			feed.base_page_id = api.ID('user_posts', feed.user_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 			preload.push(api.ID('user', feed.user_name))

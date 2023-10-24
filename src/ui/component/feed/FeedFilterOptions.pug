@@ -9,4 +9,4 @@ script.
 
 	internal_navigate = getContext('internal_navigate')
 
-Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read')
+Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'unread'} text='Unread')

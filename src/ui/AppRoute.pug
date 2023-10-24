@@ -7,7 +7,7 @@ script.
 	import FeedFilterOptions from './component/feed/FeedFilterOptions.pug'
 	import FeedSearchOptions from './component/feed/FeedSearchOptions.pug'
 	import FeedSortOptions from './component/feed/FeedSortOptions.pug'
-	import FeedSummary from './component/feed/FeedSummary.pug'
+	import FeedStatus from './component/feed/FeedStatus.pug'
 	import MultiredditAvatar from './component/feed/multireddit/MultiredditAvatar.pug'
 	import MultiredditInfo from './component/feed/multireddit/MultiredditInfo.pug'
 	import Post from './component/post/Post.pug'
@@ -33,30 +33,66 @@ main#app-main-content
 				{#key post.focus_comment_parent_count}
 					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
 	{:else if feed}
-		#app-feed-content
-			{#key feed.collection_id}
-				{#key feed.multireddit_name}
-					{#key feed.subreddit_name}
-						{#key feed.user_name}
-							FeedSummary(collection_id={feed.collection_id} multireddit_name={feed.multireddit_name} subreddit_name={feed.subreddit_name} user_name={feed.user_name})
-			menu#app-feed-options
-				{#key feed.type}
-					{#key feed.subreddit_name}
-						FeedSortOptions(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name} wikipage_name={wiki?.page_name})
-				{#if feed.sort === 'search'}
-					{#key feed.subreddit_name}
-						FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
-			{#if feed.type.endsWith('posts')}
-				FeedFilterOptions(filter={feed.filter})
-			{#key feed.collection_id}
-				{#key feed.filter}
+		header#app-feed-header
+			{#if feed.collection_id}
+				{#key feed.collection_id}
+					CollectionAvatar(id={feed.collection_id} size='large')
+				section#app-feed-header-section
+					span#app-feed-type Collection
+					h1#app-feed-title {feed.collection_id}
+			{:else if feed.multireddit_name}
+				{#key feed.user_name}
 					{#key feed.multireddit_name}
-						{#key feed.search_sort}
-							{#key feed.search_text}
-								{#key feed.sort}
-									{#key feed.subreddit_name}
-										{#key feed.time_range}
-											{#key feed.user_name}
+						MultiredditAvatar(multireddit_name={feed.multireddit_name} size='large' user_name={feed.user_name})
+				section#app-feed-header-section
+					span#app-feed-type Multireddit
+					h1#app-feed-title {feed.user_name}/{feed.multireddit_name}
+			{:else if feed.subreddit_name}
+				{#key feed.subreddit_name}
+					SubredditAvatar(name={feed.subreddit_name} size='large')
+				section#app-feed-header-section
+					span#app-feed-type Subreddit
+					h1#app-feed-title {feed.subreddit_name}
+			{:else if feed.user_name}
+				{#key feed.user_name}
+					UserAvatar(name={feed.user_name} size='large')
+				section#app-feed-header-section
+					span#app-feed-type User
+					h1#app-feed-title {feed.user_name}
+			{:else}
+				a(href='/')
+					img#app-home-icon(alt='Reddit logo' src='/reddit_logo.svg')
+				h1#app-feed-title reddit
+		menu#app-feed-options
+			{#key feed.type}
+				{#key feed.subreddit_name}
+					FeedSortOptions(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name} wikipage_name={wiki?.page_name})
+			{#if feed.sort === 'search'}
+				{#key feed.subreddit_name}
+					FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
+			{:else}
+				{#if feed.type.endsWith('posts')}
+					FeedFilterOptions(filter={feed.filter})
+		{#key feed.collection_id}
+			{#key feed.multireddit_name}
+				{#key feed.subreddit_name}
+					{#key feed.user_name}
+						FeedStatus(collection_id={feed.collection_id} multireddit_name={feed.multireddit_name} subreddit_name={feed.subreddit_name} user_name={feed.user_name})
+		{#key feed.collection_id}
+			{#key feed.filter}
+				{#key feed.multireddit_name}
+					{#key feed.search_sort}
+						{#key feed.search_text}
+							{#key feed.sort}
+								{#key feed.subreddit_name}
+									{#key feed.time_range}
+										{#key feed.user_name}
+											{#if feed.filter === 'comments'}
+												{#if feed.subreddit_name}
+													Feed(page_size='25' subreddit_name={feed.subreddit_name} type='subreddit_comments')
+												{:else if feed.user_name && !feed.multireddit_name}
+													Feed(page_size='25' type='user_comments' user_name={feed.user_name})
+											{:else}
 												Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
 {#if !wiki}
 	aside#app-secondary-content
@@ -78,22 +114,20 @@ main#app-main-content
 				UserInfo(name={feed.user_name})
 nav#app-main-navigation
 	{#if feed}
-		menu#app-feed-navigation
-			{#if feed?.type === 'multireddit_posts' || feed?.type === 'subreddit_posts' || feed?.type === 'user_posts' || wiki?.page_name}
-				{#if feed.type === 'collection_posts'}
-					{#key feed.collection_id}
-						CollectionAvatar(id={feed.collection_id} size='large')
-				{#if feed.type === 'multireddit_posts'}
-					{#key feed.user_name}
-						{#key feed.multireddit_name}
-							MultiredditAvatar(multireddit_name={feed.multireddit_name} size='large' user_name={feed.user_name})
-				{:else if feed.type === 'subreddit_posts' || wiki?.page_name}
-					{#key feed.subreddit_name}
-						SubredditAvatar(name={feed.subreddit_name} size='large')
-				{:else if feed.type === 'user_posts'}
-					{#key feed.user_name}
-						UserAvatar(name={feed.user_name} size='large')
 		{#if post || wiki}
+			{#if feed.collection_id}
+				{#key feed.collection_id}
+					CollectionAvatar(id={feed.collection_id} size='large')
+			{#if feed.multireddit_name}
+				{#key feed.user_name}
+					{#key feed.multireddit_name}
+						MultiredditAvatar(multireddit_name={feed.multireddit_name} size='large' user_name={feed.user_name})
+			{:else if feed.subreddit_name}
+				{#key feed.subreddit_name}
+					SubredditAvatar(name={feed.subreddit_name} size='large')
+			{:else if feed.user_name}
+				{#key feed.user_name}
+					UserAvatar(name={feed.user_name} size='large')
 			{#key feed.collection_id}
 				{#key feed.filter}
 					{#key feed.multireddit_name}
@@ -103,31 +137,38 @@ nav#app-main-navigation
 									{#key feed.subreddit_name}
 										{#key feed.time_range}
 											{#key feed.user_name}
-												{#if feed.type.endsWith('posts')}
-													FeedFilterOptions(filter={feed.filter})
 												Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
 	{:else}
 		a(href='/')
 			img#app-home-icon(alt='Reddit logo' src='/reddit_logo.svg')
 
 style.
-	#app-feed-content
-		align-items flex-start
-		display flex
-		flex-flow column nowrap
-		gap 2em
-	#app-feed-navigation
+	#app-feed-header
 		align-items center
 		display flex
 		gap 1em
-		justify-content flex-end
+		padding 1em 0
+	#app-feed-header-section
+		display flex
+		flex-flow column nowrap
+		gap 0.333em
 	#app-feed-options
 		display flex
 		gap 1em
+	#app-feed-title
+		letter-spacing -0.333px
+		font-size 2em
+		font-weight var(--f-wght-strong)
+	#app-feed-type
+		color var(--c-text-weak)
 	#app-home-icon
 		aspect-ratio 1
 		height 64px
 	#app-main-content
+		align-items flex-start
+		display flex
+		flex-flow column nowrap
+		gap 2em
 		padding 3em 0
 		width 480px
 	#app-main-navigation
@@ -137,9 +178,9 @@ style.
 		gap 2em
 		height 100dvh
 		overflow auto
-		padding 4.5em 0
+		padding 4em 0
 		position fixed
-		right calc(50% + 315px)
+		right calc(50% + 300px)
 		scrollbar-width none
 		top 0
 		width 160px
@@ -149,10 +190,10 @@ style.
 			display flex
 	#app-secondary-content
 		display none
-		left calc(50% + 315px)
+		left calc(50% + 300px)
 		height 100dvh
 		overflow auto
-		padding 4.5em 0
+		padding 5em 0
 		position fixed
 		scrollbar-width none
 		top 0

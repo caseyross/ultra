@@ -28,8 +28,9 @@ script.
 	.user-info-loading Loading...
 {:else if user}
 	aside.user-info
-		UserAvatar(name={name} size='xlarge')
-		h1.user-name(title={user?.name || name}) {user?.name || name.toLowerCase()}
+		header.user-info-header
+			UserAvatar(name={name} size='medium')
+			h1.user-name(title={user?.name || name}) {user?.name || name.toLowerCase()}
 		section.user-stats
 			span.user-age(title='created {Time.sToAbsTimeStr(user.created_utc)}') {Time.sToRelTimeStr(user.created_utc, { abbr: true })}
 			| ·
@@ -54,9 +55,17 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 2em
+	.user-info-header
+		align-items center
+		display flex
+		gap 1em
+		white-space nowrap
+		width 100%
 	.user-info-loading
 		color var(--c-text-weak)
 	.user-name
+		font-size inherit
+		font-weight inherit
 		overflow hidden
 		text-overflow ellipsis
 	.user-stats

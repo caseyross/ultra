@@ -6,7 +6,7 @@ script.
 	import Status from './component/common/Status.pug'
 	import SubredditAvatar from './component/feed/subreddit/SubredditAvatar.pug'
 
-	MAX_SUBREDDITS = 100
+	export filter = null
 
 	error = false
 	loading = false
@@ -14,7 +14,10 @@ script.
 	subreddits = []
 	subreddits_data = {}
 
-	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), MAX_SUBREDDITS), ({ data, error, loading }) ->
+	page_id = switch filter
+		when 'mine' then api.ID('account_subreddits_subscribed', 100)
+		else api.ID('global_subreddits_popular', 81)
+	api.loadWatch(page_id, ({ data, error, loading }) ->
 		subreddits = data or []
 		if subreddits.length
 			for subreddit_name in subreddits
@@ -31,14 +34,14 @@ script.
 {:else if error}
 	Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
 {:else if subreddits}
-	main#app-home
+	main#app-subreddits
 		ol.subreddit-grid(style='grid-template-columns: repeat({Math.ceil(Math.sqrt(subreddits.length))}, 1fr); grid-template-rows: repeat({Math.ceil(subreddits.length / Math.ceil(Math.sqrt(subreddits.length)))}, 1fr)')
 			{#each subreddits as subreddit}
 				a.subreddit-grid-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}")
 					SubredditAvatar(name={subreddit} size='large')
 
 style.
-	#app-home
+	#app-subreddits
 		height 100dvh
 		padding 3em
 		width 100dvw

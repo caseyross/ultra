@@ -98,7 +98,7 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 	{#if items.length > 0}
 		{#if filter === 'unread' && read.every(x => x)}
 			{#if !loading}
-				.feed-all-read You've read all {type.split('_').at(-1)} up to page {current_page}.
+				Status(type='success' message="All {type.split('_').at(-1)} read up to page {current_page}.")
 		{:else}
 			ol.feed-items
 				{#each items as item, i (item)}
@@ -130,10 +130,11 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 		{:else if error}
 			Status(type='error' message="Error loading {type.split('_').at(-1)}.")
 		{:else if !(sort === 'search' && !search_text) && !has_next_page}
-			Status(type='warning' message="No {type.split('_').at(-1)}.")
+			Status(type='warning' message="No {type.split('_').at(-1)} found.")
 
 style.
 	.feed
+		align-items inherit
 		display flex
 		flex-flow column nowrap
 		gap 2em
@@ -142,19 +143,18 @@ style.
 	.feed-all-read
 		color var(--c-text-weak)
 	.feed-items
+		border-radius 1em
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		overflow auto
 		scrollbar-width none
+		width 100%
 		&::-webkit-scrollbar
 			display none
-		.feed-type-comments &
-			gap 2em
 	.feed-items-actions
 		display flex
 		flex-flow row wrap
 		gap 1ch
-		width 100%
 	.feed-loading
 		color var(--c-text-weak)
