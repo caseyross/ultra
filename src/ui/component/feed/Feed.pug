@@ -137,9 +137,12 @@ style.
 		align-items inherit
 		display flex
 		flex-flow column nowrap
-		gap 2em
+		gap 1em
 		overflow auto
+		scrollbar-width none
 		width 100%
+		&::-webkit-scrollbar
+			display none
 	.feed-all-read
 		color var(--c-text-weak)
 	.feed-items
@@ -147,11 +150,7 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		overflow auto
-		scrollbar-width none
 		width 100%
-		&::-webkit-scrollbar
-			display none
 	.feed-items-actions
 		display flex
 		flex-flow row wrap
