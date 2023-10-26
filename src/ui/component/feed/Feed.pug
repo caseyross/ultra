@@ -135,18 +135,17 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 style.
 	.feed
 		align-items inherit
+		border-radius 1em
 		display flex
 		flex-flow column nowrap
 		gap 1em
 		overflow auto
+		padding-bottom 1em
 		scrollbar-width none
 		width 100%
 		&::-webkit-scrollbar
 			display none
-	.feed-all-read
-		color var(--c-text-weak)
 	.feed-items
-		border-radius 1em
 		display flex
 		flex-flow column nowrap
 		gap 1em
