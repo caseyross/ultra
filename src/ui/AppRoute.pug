@@ -8,6 +8,7 @@ script.
 	import FeedSearchOptions from './component/feed/FeedSearchOptions.pug'
 	import FeedSortOptions from './component/feed/FeedSortOptions.pug'
 	import FeedStatus from './component/feed/FeedStatus.pug'
+	import LoginLogoutButton from './component/user/account/LoginLogoutButton.pug'
 	import MultiredditAvatar from './component/feed/multireddit/MultiredditAvatar.pug'
 	import MultiredditInfo from './component/feed/multireddit/MultiredditInfo.pug'
 	import Post from './component/post/Post.pug'
@@ -128,16 +129,19 @@ nav#app-main-navigation
 			{:else if feed.user_name}
 				{#key feed.user_name}
 					UserAvatar(name={feed.user_name} size='large')
-			{#key feed.collection_id}
-				{#key feed.filter}
-					{#key feed.multireddit_name}
-						{#key feed.search_sort}
-							{#key feed.search_text}
-								{#key feed.sort}
-									{#key feed.subreddit_name}
-										{#key feed.time_range}
-											{#key feed.user_name}
-												Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
+			{#if post}
+				{#key feed.collection_id}
+					{#key feed.filter}
+						{#key feed.multireddit_name}
+							{#key feed.search_sort}
+								{#key feed.search_text}
+									{#key feed.sort}
+										{#key feed.subreddit_name}
+											{#key feed.time_range}
+												{#key feed.user_name}
+													Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
+		{:else}
+			LoginLogoutButton
 	{:else}
 		a(href='/')
 			img#app-home-icon(alt='Reddit logo' src='/reddit_logo.svg')
