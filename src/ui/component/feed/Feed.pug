@@ -1,10 +1,12 @@
 script.
-	import api from '../../../api/index.js'
-	import { format_url } from '../../url/index.js'
+	import { getContext } from 'svelte'
 
+	import api from '../../../api/index.js'
+	import { apply_query_parameters, format_url } from '../../url/index.js'
 	import AccountState from '../../state/AccountState.coffee'
 	
 	import Button from '../common/Button.pug'
+	import Checkbox from '../common/Checkbox.pug'
 	import Comment from '../post/Comment.pug'
 	import FeedLink from './FeedLink.pug'
 	import Label from '../common/Label.pug'
@@ -18,6 +20,7 @@ script.
 	export page_size = 10
 	export search_sort = null
 	export search_text = null
+	export show_actions = true
 	export sort = null
 	export subreddit_name = null
 	export time_range = null
@@ -58,6 +61,7 @@ script.
 	current_page = 0
 	error = null
 	has_next_page = true
+	internal_navigate = getContext('internal_navigate')
 	loading = null
 	next_after_id = (items) ->
 		items.at(-1)?.id or items.at(-1)
@@ -119,9 +123,11 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 								a(href={format_url({ subreddit_name: item })})
 									FeedLink(subreddit_name={item} type='subreddit')
 							{:else if type === 'subreddit_wikipages'}
-								a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
-		{#if has_next_page}
-			menu.feed-items-actions
+								a.feed-wikipage-link(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
+		{#if show_actions}
+			{#if type.endsWith('posts')}
+				Checkbox(action={() => internal_navigate({ href: apply_query_parameters({ filter: filter === 'unread' ? 'all' : 'unread' }) })} checked={filter === 'all'} text='Show read posts')
+			{#if has_next_page}
 				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
 					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
 	{:else}
@@ -139,20 +145,13 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1em
-		overflow auto
-		padding-bottom 1em
-		scrollbar-width none
 		width 100%
-		&::-webkit-scrollbar
-			display none
 	.feed-items
 		display flex
 		flex-flow column nowrap
-		gap 1em
+		gap 0.666em
 		width 100%
-	.feed-items-actions
-		display flex
-		flex-flow row wrap
-		gap 1ch
 	.feed-loading
 		color var(--c-text-weak)
+	.feed-wikipage-link:hover
+		text-decoration underline

@@ -18,37 +18,26 @@ script.
 	internal_navigate = getContext('internal_navigate')
 	sort_options = [
 		{ label: 'New', value: 'new' }
-		{ label: 'Rising', value: 'rising' }
+		{ label: 'Ris.', value: 'rising' }
 		{ label: 'Hot', value: 'hot' }
-		{ label: 'Top (7d)', value: 'top_week' }
-		{ label: 'Top (30d)', value: 'top_month' }
-		{ label: 'Top (1y)', value: 'top_year' }
-		{ label: 'Top (All)', value: 'top_all' }
-		{ label: 'Con. (7d)', value: 'controversial_week' }
-		{ label: 'Con. (30d)', value: 'controversial_month' }
-		{ label: 'Con. (1y)', value: 'controversial_year' }
-		{ label: 'Con. (All)', value: 'controversial_all' }
-		{ label: 'Search', value: 'search' }
+		{ label: 'TopD', value: 'top_day' }
+		{ label: 'TopW', value: 'top_week' }
+		{ label: 'TopM', value: 'top_month' }
+		{ label: 'TopY', value: 'top_year' }
+		{ label: 'Top', value: 'top_all' }
+		{ label: 'ConD', value: 'controversial_day' }
+		{ label: 'ConW', value: 'controversial_week' }
+		{ label: 'ConM', value: 'controversial_month' }
+		{ label: 'ConY', value: 'controversial_year' }
+		{ label: 'Con.', value: 'controversial_all' }
+		{ label: 'Find', value: 'search' }
 	]
-	sort_options_frontpage = [
-		{ label: 'New', value: 'new' }
-		{ label: 'Rising', value: 'rising' }
-		{ label: 'Hot', value: 'hot' }
-		{ label: 'Best', value: 'best' }
-		{ label: 'Top (7d)', value: 'top_week' }
-		{ label: 'Top (30d)', value: 'top_month' }
-		{ label: 'Top (1y)', value: 'top_year' }
-		{ label: 'Top (All)', value: 'top_all' }
-		{ label: 'Con. (7d)', value: 'controversial_week' }
-		{ label: 'Con. (30d)', value: 'controversial_month' }
-		{ label: 'Con. (1y)', value: 'controversial_year' }
-		{ label: 'Con. (All)', value: 'controversial_all' }
-	]
+	sort_options_frontpage = [{ label: 'Best', value: 'best' }].concat(sort_options)
 	sort_options_user = [
 		{ label: 'New', value: 'new' }
 		{ label: 'Hot', value: 'hot' }
-		{ label: 'Top (All)', value: 'top_all' }
-		{ label: 'Con. (All)', value: 'controversial_all' }
+		{ label: 'Top', value: 'top_all' }
+		{ label: 'Con.', value: 'controversial_all' }
 	]
 
 	if wikipage_name
