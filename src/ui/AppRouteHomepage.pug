@@ -3,6 +3,7 @@ script.
 
 	import api from '../api/index.js'
 
+	import LoginLogoutButton from './component/user/account/LoginLogoutButton.pug'
 	import Status from './component/common/Status.pug'
 	import SubredditAvatar from './component/feed/subreddit/SubredditAvatar.pug'
 
@@ -34,24 +35,37 @@ script.
 {:else if error}
 	Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
 {:else if subreddits}
-	main#app-subreddits
+	main#app-homepage
 		ol.subreddit-grid(style='grid-template-columns: repeat({Math.ceil(Math.sqrt(subreddits.length))}, 1fr); grid-template-rows: repeat({Math.ceil(subreddits.length / Math.ceil(Math.sqrt(subreddits.length)))}, 1fr)')
 			{#each subreddits as subreddit}
 				a.subreddit-grid-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}")
 					SubredditAvatar(name={subreddit} size='large')
+		nav#app-homepage-navigation
+			LoginLogoutButton
 
 style.
-	#app-subreddits
+	#app-homepage
+		display grid
+		gap 2em
+		grid-template-columns 1fr
+		grid-template-rows 1fr 2em
 		height 100dvh
-		padding 3em
+		padding 4em
+		padding-bottom 2em
 		width 100dvw
+	#app-homepage-navigation
+		display flex
+		justify-content center
+		width 100%
 	.subreddit-grid
 		display grid
-		gap 10px
+		gap 1em
 		height 100%
 		width 100%
 	.subreddit-grid-cell
-		background var(--c-shade-weak)
+		border 1px solid var(--c-text-strong)
 		border-radius 1em
 		display grid
 		place-content center
+		&:hover
+			transform scale(1.1)

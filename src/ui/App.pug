@@ -10,7 +10,7 @@ script.
 	import ThemeProviderOverlay from './overlay/ThemeProviderOverlay.pug'
 	
 	import AppRoute from './AppRoute.pug'
-	import AppRouteSubreddits from './AppRouteSubreddits.pug'
+	import AppRouteHomepage from './AppRouteHomepage.pug'
 	import AppRouteUnsupported from './AppRouteUnsupported.pug'
 	
 	route = {}
@@ -107,7 +107,7 @@ ThemeProviderOverlay
 				TableManagerOverlay
 					{#if route.feed || route.post || route.wiki}
 						{#if route.feed?.type === 'subreddits'}
-							AppRouteSubreddits(filter={route.feed.filter})
+							AppRouteHomepage(filter={route.feed.filter})
 						{:else}
 							AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})
 					{:else}
