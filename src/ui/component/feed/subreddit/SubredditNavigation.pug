@@ -1,0 +1,45 @@
+script.
+	import api from '../../../../api/index.js'
+	import { relativize_url } from '../../../url/index.js'
+	
+	export name = null
+
+	subreddit_custom_menu = null
+	api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+		{ data: widgets } = x
+		subreddit_custom_menu = widgets?.topbar?[0]?.data
+	)
+
+nav.subreddit-navigation
+	{#if subreddit_custom_menu}
+		{#each subreddit_custom_menu as item}
+			{#if item.children}
+				details.subreddit-navigation-custom-menu-item
+					summary.subreddit-navigation-custom-menu-expandable {item.text}
+					ol.subreddit-navigation-custom-menu-dropdown
+						{#each item.children as child}
+							a.subreddit-navigation-custom-menu-dropdown-link(href={relativize_url(child.url)}) {child.text}
+			{:else}
+				a.subreddit-navigation-custom-menu-item.subreddit-navigation-custom-menu-link(href={relativize_url(item.url)}) {item.text}
+
+style.
+	.subreddit-navigation
+		align-items flex-start
+		display flex
+		flex 0 0 auto
+		gap 2em
+		padding-right 20px
+		writing-mode vertical-rl
+	.subreddit-navigation-custom-menu-dropdown
+		display flex
+		flex-flow column nowrap
+		gap 0.25em
+		padding 0 1em
+		text-align right
+		writing-mode initial
+	.subreddit-navigation-custom-menu-expandable
+		padding 9px 3px
+	.subreddit-navigation-custom-menu-item
+		margin 0
+	.subreddit-navigation-custom-menu-link
+		border-left 1px solid

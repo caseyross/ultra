@@ -13,6 +13,7 @@ script.
 	import Post from './component/post/Post.pug'
 	import SubredditAvatar from './component/feed/subreddit/SubredditAvatar.pug'
 	import SubredditInfo from './component/feed/subreddit/SubredditInfo.pug'
+	import SubredditNavigation from './component/feed/subreddit/SubredditNavigation.pug'
 	import SubredditWikipage from './component/feed/subreddit/SubredditWikipage.pug'
 	import UserAvatar from './component/user/UserAvatar.pug'
 	import UserInfo from './component/user/UserInfo.pug'
@@ -77,21 +78,20 @@ main#app-main-content
 				UserInfo(name={feed.user_name})
 nav#app-main-navigation
 	{#if feed}
-		menu#app-feed-navigation
-			{#if feed?.type === 'multireddit_posts' || feed?.type === 'subreddit_posts' || feed?.type === 'user_posts' || wiki?.page_name}
-				{#if feed.type === 'collection_posts'}
-					{#key feed.collection_id}
-						CollectionAvatar(id={feed.collection_id} size='large')
-				{#if feed.type === 'multireddit_posts'}
-					{#key feed.user_name}
-						{#key feed.multireddit_name}
-							MultiredditAvatar(multireddit_name={feed.multireddit_name} size='large' user_name={feed.user_name})
-				{:else if feed.type === 'subreddit_posts' || wiki?.page_name}
-					{#key feed.subreddit_name}
-						SubredditAvatar(name={feed.subreddit_name} size='large')
-				{:else if feed.type === 'user_posts'}
-					{#key feed.user_name}
-						UserAvatar(name={feed.user_name} size='large')
+		{#if feed?.type === 'multireddit_posts' || feed?.type === 'subreddit_posts' || feed?.type === 'user_posts' || wiki?.page_name}
+			{#if feed.type === 'collection_posts'}
+				{#key feed.collection_id}
+					CollectionAvatar(id={feed.collection_id} size='large')
+			{#if feed.type === 'multireddit_posts'}
+				{#key feed.user_name}
+					{#key feed.multireddit_name}
+						MultiredditAvatar(multireddit_name={feed.multireddit_name} size='large' user_name={feed.user_name})
+			{:else if feed.type === 'subreddit_posts' || wiki?.page_name}
+				{#key feed.subreddit_name}
+					SubredditAvatar(name={feed.subreddit_name} size='large')
+			{:else if feed.type === 'user_posts'}
+				{#key feed.user_name}
+					UserAvatar(name={feed.user_name} size='large')
 		{#if post || wiki}
 			{#key feed.collection_id}
 				{#key feed.filter}
@@ -105,16 +105,13 @@ nav#app-main-navigation
 												{#if feed.type.endsWith('posts')}
 													FeedFilterOptions(filter={feed.filter})
 												Feed(collection_id={feed.collection_id} filter={feed.filter} minimized={true} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
+		{:else if feed.type === 'subreddit_posts'}
+			SubredditNavigation(name={feed.subreddit_name})
 	{:else}
 		a(href='/')
 			img#app-home-icon(alt='Reddit logo' src='/reddit_logo.svg')
 
 style.
-	#app-feed-navigation
-		align-items center
-		display flex
-		gap 1em
-		justify-content flex-end
 	#app-feed-options
 		display flex
 		gap 1em
@@ -134,7 +131,7 @@ style.
 		flex-flow column nowrap
 		gap 2em
 		height 100dvh
-		overflow auto
+		overflow visible
 		padding 4em 0
 		position fixed
 		right calc(50% + 315px)
