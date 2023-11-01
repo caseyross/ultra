@@ -4,7 +4,7 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 	import { apply_query_parameters, format_url, relativize_url } from '../../url/index.js'
-	import AccountState from '../../state/AccountState.coffee'
+	import account_state from '../../state/account_state.coffee'
 	import html_embeds from './embeds/html_embeds.coffee'
 	import iframe_embeds from './embeds/iframe_embeds.coffee'
 
@@ -132,7 +132,7 @@ script.
 	)
 	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
 	if expanded
-		AccountState.mark_post_read(id)
+		account_state.mark_post_read(id)
 
 svelte:head
 	{#if expanded && post}
@@ -151,7 +151,7 @@ svelte:head
 		{#if expanded}
 			section.post-meta
 				{#if api.isLoggedIn()}
-					button.post-score(class:post-score-downvoted={post.likes === false} class:post-score-upvoted={post.likes === true} data-radial-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={post.hide_score ? 'score hidden' : post.score < 1 ? 'negative score (value hidden)' : post.score - 1})
+					button.post-score(class:post-score-downvoted={post.likes === false} class:post-score-upvoted={post.likes === true} data-mouse-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={post.hide_score ? 'score hidden' : post.score < 1 ? 'negative score (value hidden)' : post.score - 1})
 						| {score_text(post)}
 						{#if post.upvote_ratio < 0.7}
 							span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
@@ -161,7 +161,7 @@ svelte:head
 						{#if post.upvote_ratio < 0.7}
 							span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
 				UserByline(distinguish={post.distinguished} flair_color={post.author_flair_background_color} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
-		article.post(class:post-minimized={minimized} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-radial-menu='post' data-saved={post.saved || null} on:radialmenu={e => interact(e.detail)} title="{Time.sToAbsRelTimeStr(post.created_utc)} ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) : ''}")
+		article.post(class:post-minimized={minimized} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-mouse-menu='post' data-saved={post.saved || null} on:mousemenu={e => interact(e.detail)} title="{Time.sToAbsRelTimeStr(post.created_utc)} ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) : ''}")
 			header.post-header
 				{#if out_of_context}
 					FeedLink(type='subreddit' subreddit_name={post.subreddit})

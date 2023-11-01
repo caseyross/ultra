@@ -2,7 +2,7 @@ script.
 	import api from '../../../api/index.js'
 	import { format_url } from '../../url/index.js'
 
-	import AccountState from '../../state/AccountState.coffee'
+	import account_state from '../../state/account_state.coffee'
 	
 	import Button from '../generic/Button.pug'
 	import Comment from '../comment/Comment.pug'
@@ -83,7 +83,7 @@ script.
 					page_items = data?.posts or data
 					new_items = page_items.filter((x) -> !items.includes(x))
 					items = items.concat(new_items)
-					read = read.concat(new_items.map((x) -> AccountState.check_post_read(x)))
+					read = read.concat(new_items.map((x) -> account_state.check_post_read(x)))
 					has_next_page = switch
 						when page_items.length < page_size then false
 						when type.endsWith('comments') then true

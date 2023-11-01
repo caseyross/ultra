@@ -39,7 +39,7 @@ script.
 			address.message-author
 				UserAvatar(name={message.author})
 			strong.message-subject {message.subject}
-		section.message-body(data-radial-menu='message' on:radialmenu={e => interact(e.detail)})
+		section.message-body(data-mouse-menu='message' on:mousemenu={e => interact(e.detail)})
 			FormattedHTML(html={message.body_html})
 		{#if replying}
 			CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})

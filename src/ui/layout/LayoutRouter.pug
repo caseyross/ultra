@@ -1,17 +1,17 @@
 script.
 	import { setContext } from 'svelte'
 
-	import { parse_url } from './url/index.js'
+	import { parse_url } from '../url/index.js'
 	
-	import AccountProviderOverlay from './overlay/AccountProviderOverlay.pug'
-	import NetworkStatusOverlay from './overlay/NetworkStatusOverlay.pug'
-	import RadialMenuOverlay from './overlay/RadialMenuOverlay.pug'
-	import TableManagerOverlay from './overlay/TableManagerOverlay.pug'
-	import ThemeProviderOverlay from './overlay/ThemeProviderOverlay.pug'
+	import OverlayAccountProvider from './overlay/OverlayAccountProvider.pug'
+	import OverlayMouseMenu from './overlay/OverlayMouseMenu.pug'
+	import OverlayNetworkStatus from './overlay/OverlayNetworkStatus.pug'
+	import OverlayTableManager from './overlay/OverlayTableManager.pug'
+	import OverlayThemeProvider from './overlay/OverlayThemeProvider.pug'
 	
-	import AppRoute from './AppRoute.pug'
-	import AppRouteHome from './AppRouteHome.pug'
-	import AppRouteUnsupported from './AppRouteUnsupported.pug'
+	import LayoutHome from './LayoutHome.pug'
+	import LayoutStandard from './LayoutStandard.pug'
+	import LayoutUnsupported from './LayoutUnsupported.pug'
 	
 	route = {}
 	scroll_cache = {}
@@ -100,15 +100,15 @@ script.
 	setContext('internal_navigate', internal_navigate) # only for use in rare situations where link tags cannot be used
 	set_route_from_current_url()
 
-ThemeProviderOverlay
-	NetworkStatusOverlay
-		AccountProviderOverlay
-			RadialMenuOverlay
-				TableManagerOverlay
+OverlayThemeProvider
+	OverlayNetworkStatus
+		OverlayAccountProvider
+			OverlayTableManager
+				OverlayMouseMenu
 					{#if route.feed || route.post || route.wiki}
 						{#if route.feed?.type === 'homepage'}
-							AppRouteHome
+							LayoutHome
 						{:else}
-							AppRoute(feed={route.feed} post={route.post} wiki={route.wiki})
+							LayoutStandard(feed={route.feed} post={route.post} wiki={route.wiki})
 					{:else}
-						AppRouteUnsupported(url={location})
+						LayoutUnsupported(url={location})

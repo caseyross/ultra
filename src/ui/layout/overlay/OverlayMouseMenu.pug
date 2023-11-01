@@ -1,5 +1,5 @@
 script.
-	import available_menus from './radial_menus/index.js'
+	import available_menus from './mouse_menus/index.js'
 
 	active = false
 	choice = null
@@ -33,7 +33,7 @@ script.
 					when 4 then 'W'
 				final_choice = menu[menu_variant]?(target_element.dataset)?[menu_direction]
 				if final_choice
-					target_element.dispatchEvent(new CustomEvent('radialmenu', { detail: final_choice?.action }))
+					target_element.dispatchEvent(new CustomEvent('mousemenu', { detail: final_choice?.action }))
 				choice = null
 				menu_variant = null
 				menu = null
@@ -58,10 +58,10 @@ script.
 					return # if selecting text inside clicked element, allow default browser behavior
 				if event.target.tagName is 'A'
 					return # if clicking link, allow default browser behavior
-				element = event.target.closest("[data-radial-menu]")
+				element = event.target.closest("[data-mouse-menu]")
 				if element
 					target_element = element
-					menu = available_menus[target_element.dataset.radialMenu]
+					menu = available_menus[target_element.dataset.mouseMenu]
 					if !menu
 						return
 					menu_variant = get_modifier_keys(event)
@@ -92,37 +92,37 @@ script.
 slot
 {#if active && menu[menu_variant]?.(target_element.dataset)}
 	{@const choices = menu[menu_variant](target_element.dataset)}
-		menu.radial-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px')
-			figure.radial-menu-icon.radial-menu-icon-center 🗙
-			figure.radial-menu-icon.radial-menu-icon-north(class:radial-menu-icon-selected={choice === 1}) {choices.N?.icon || ''}
-			figure.radial-menu-icon.radial-menu-icon-west(class:radial-menu-icon-selected={choice === 4}) {choices.W?.icon || ''}
-			figure.radial-menu-icon.radial-menu-icon-east(class:radial-menu-icon-selected={choice === 2}) {choices.E?.icon || ''}
-			figure.radial-menu-icon.radial-menu-icon-south(class:radial-menu-icon-selected={choice === 3}) {choices.S?.icon || ''}
+		menu.mouse-menu(style='height: {radius * 2}px; left: {position[0] - radius}px; top: {position[1] - radius}px; width: {radius * 2}px')
+			figure.mouse-menu-icon.mouse-menu-icon-center 🗙
+			figure.mouse-menu-icon.mouse-menu-icon-north(class:mouse-menu-icon-selected={choice === 1}) {choices.N?.icon || ''}
+			figure.mouse-menu-icon.mouse-menu-icon-west(class:mouse-menu-icon-selected={choice === 4}) {choices.W?.icon || ''}
+			figure.mouse-menu-icon.mouse-menu-icon-east(class:mouse-menu-icon-selected={choice === 2}) {choices.E?.icon || ''}
+			figure.mouse-menu-icon.mouse-menu-icon-south(class:mouse-menu-icon-selected={choice === 3}) {choices.S?.icon || ''}
 
 style.
-	.radial-menu
+	.mouse-menu
 		align-items center
 		cursor default
 		display flex
 		font-size 1.5em
 		justify-content center
 		position fixed
-	.radial-menu-icon
+	.mouse-menu-icon
 		align-items center
 		display flex
 		justify-content center
 		height 100%
 		position absolute
 		width 100%
-		&.radial-menu-icon-selected
+		&.mouse-menu-icon-selected
 			font-size 2em
-	.radial-menu-icon-center
+	.mouse-menu-icon-center
 		color salmon
-	.radial-menu-icon-east
+	.mouse-menu-icon-east
 		left 100%
-	.radial-menu-icon-north
+	.mouse-menu-icon-north
 		bottom 100%
-	.radial-menu-icon-south
+	.mouse-menu-icon-south
 		top 100%
-	.radial-menu-icon-west
+	.mouse-menu-icon-west
 		right 100%

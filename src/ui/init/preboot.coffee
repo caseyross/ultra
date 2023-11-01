@@ -1,6 +1,6 @@
 import api from '../../api/index.js'
 import { parse_url } from '../url/index.js'
-import { DEMO_API_CLIENT_ID } from '../demo_key.js'
+import { DEMO_API_CLIENT_ID } from './config/demo_key.js'
 
 # Set API config from environment vars / query parameters / previously stored values.
 if process.env.API_CLIENT_ID
