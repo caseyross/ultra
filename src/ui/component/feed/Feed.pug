@@ -14,6 +14,7 @@ script.
 
 	export collection_id = null
 	export filter = null
+	export minimized = false
 	export multireddit_name = null
 	export page_size = 10
 	export search_sort = null
@@ -114,7 +115,7 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 									Message(message={item})
 							{:else if type.endsWith('posts')}
 								a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
-									Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
+									Post(expanded={false} id={item} minimized={minimized} out_of_context={type !== 'subreddit_posts'})
 							{:else if type.endsWith('subreddits')}
 								a(href={format_url({ subreddit_name: item })})
 									FeedLink(subreddit_name={item} type='subreddit')
@@ -142,6 +143,7 @@ style.
 	.feed-all-read
 		color var(--c-text-weak)
 	.feed-items
+		border-radius 1em
 		display flex
 		flex-flow column nowrap
 		gap 1em

@@ -185,6 +185,7 @@ export default (url) ->
 		when 'collection_posts'
 			feed.base_page_id = api.ID('collection', feed.collection_id)
 		when 'multireddit_posts'
+			feed.filter = 'unread' unless feed.filter
 			switch
 				when feed.user_name is 'r' and feed.multireddit_name is 'subscribed'
 					feed.sort = 'best' unless feed.sort
@@ -218,6 +219,7 @@ export default (url) ->
 					feed.base_page_id = api.ID('subreddit_posts', feed.subreddit_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 			preload.push(api.ID('subreddit', feed.subreddit_name))
 		when 'user_posts'
+			feed.filter = 'unread' unless feed.filter
 			feed.sort = 'new' unless feed.sort
 			feed.base_page_id = api.ID('user_posts', feed.user_name, feed.time_range, feed.sort, FEED_PAGE_SIZE)
 			preload.push(api.ID('user', feed.user_name))
