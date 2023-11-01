@@ -1,10 +1,10 @@
 script.
 	import api from '../../../api/index.js'
 	
-	import CommentEditor from '../post/CommentEditor.pug'
-	import FormattedHTML from '../common/FormattedHTML.pug'
-	import Popup from '../common/Popup.pug'
-	import ReportDialog from '../feed/subreddit/ReportDialog.pug'
+	import CommentEditor from '../comment/CommentEditor.pug'
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Popup from '../generic/Popup.pug'
+	import SubredditReportMenu from '../subreddit/SubredditReportMenu.pug'
 	import UserAvatar from '../user/UserAvatar.pug'
 
 	export message = null
@@ -47,7 +47,7 @@ script.
 			p.message-reply-succeeded ✅ Reply sent
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
-				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name='reddit.com' target_type='message')
+				SubredditReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name='reddit.com' target_type='message')
 
 style.
 	.message

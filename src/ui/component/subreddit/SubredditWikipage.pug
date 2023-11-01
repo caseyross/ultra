@@ -1,12 +1,12 @@
 script.
 	import { getContext, tick } from 'svelte'
 
-	import api from '../../../../api/index.js'
-	import { Time } from '../../../../lib/index.js'
-	import { format_url } from '../../../url/index.js'
+	import api from '../../../api/index.js'
+	import { Time } from '../../../lib/index.js'
+	import { format_url } from '../../url/index.js'
 	
-	import FormattedHTML from '../../common/FormattedHTML.pug'
-	import Status from '../../common/Status.pug'
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Status from '../generic/Status.pug'
 	
 	export page_name = null
 	export revision_id = null

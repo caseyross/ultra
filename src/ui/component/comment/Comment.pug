@@ -5,12 +5,12 @@ script.
 	import { Time } from '../../../lib/index.js'
 	import { format_url, relativize_url } from '../../url/index.js'
 
-	import BanDialog from '../feed/subreddit/BanDialog.pug'
-	import Button from '../common/Button.pug'
+	import Button from '../generic/Button.pug'
 	import CommentEditor from './CommentEditor.pug'
-	import FormattedHTML from '../common/FormattedHTML.pug'
-	import Popup from '../common/Popup.pug'
-	import ReportDialog from '../feed/subreddit/ReportDialog.pug'
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Popup from '../generic/Popup.pug'
+	import SubredditBanMenu from '../subreddit/SubredditBanMenu.pug'
+	import SubredditReportMenu from '../subreddit/SubredditReportMenu.pug'
 	import UserByline from '../user/UserByline.pug'
 
 	export id = null
@@ -126,10 +126,10 @@ script.
 			FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
-				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
+				SubredditReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
 		{#if banning}
 			Popup(on:close={() => banning = false})
-				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
+				SubredditBanMenu(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
 		{#if out_of_context}
 			cite.comment-source
 				Button(link={relativize_url(comment.permalink) + '?context=1'} text='Context →')

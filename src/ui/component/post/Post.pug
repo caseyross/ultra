@@ -8,18 +8,18 @@ script.
 	import html_embeds from './embeds/html_embeds.coffee'
 	import iframe_embeds from './embeds/iframe_embeds.coffee'
 
-	import BanDialog from '../feed/subreddit/BanDialog.pug'
-	import Button from '../common/Button.pug'
-	import CommentEditor from './CommentEditor.pug'
+	import Button from '../generic/Button.pug'
+	import CommentEditor from '../comment/CommentEditor.pug'
 	import FeedLink from '../feed/FeedLink.pug'
-	import FormattedHTML from '../common/FormattedHTML.pug'
-	import Popup from '../common/Popup.pug'
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Popup from '../generic/Popup.pug'
 	import PostComments from './PostComments.pug'
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
 	import PostFlair from './PostFlair.pug'
 	import PostVideoPlayer from './PostVideoPlayer.pug'
-	import ReportDialog from '../feed/subreddit/ReportDialog.pug'
-	import Status from '../common/Status.pug'
+	import Status from '../generic/Status.pug'
+	import SubredditBanMenu from '../subreddit/SubredditBanMenu.pug'
+	import SubredditReportMenu from '../subreddit/SubredditReportMenu.pug'
 	import UserByline from '../user/UserByline.pug'
 	
 	export comments_initial_count = 100
@@ -253,10 +253,10 @@ svelte:head
 					PostComments(focus_comment_parent_count={focus_comment_parent_count} focus_comment_id={focus_comment_id} initial_count={comments_initial_count} post_id={id} sort={comments_sort})
 		{#if banning}
 			Popup(on:close={() => banning = false})
-				BanDialog(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: post.subreddit, user_name: post.author })})
+				SubredditBanMenu(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: post.subreddit, user_name: post.author })})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
-				ReportDialog(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
+				SubredditReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={post.subreddit} target_type='post')
 {:else if loading}
 	.post-loading Loading...
 
