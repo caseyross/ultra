@@ -16,8 +16,10 @@ script.
 	import PostComments from './PostComments.pug'
 	import PostCommentsAutorefreshButton from './PostCommentsAutorefreshButton.pug'
 	import PostFlair from './PostFlair.pug'
+	import PostTag from './PostTag.pug'
 	import PostVideoPlayer from './PostVideoPlayer.pug'
 	import Status from '../generic/Status.pug'
+	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
 	import SubredditBanMenu from '../subreddit/SubredditBanMenu.pug'
 	import SubredditReportMenu from '../subreddit/SubredditReportMenu.pug'
 	import UserByline from '../user/UserByline.pug'
@@ -28,7 +30,6 @@ script.
 	export focus_comment_id = null
 	export focus_comment_parent_count = null
 	export id = null
-	export minimized = false
 	export out_of_context = false
 
 	banning = false
@@ -149,24 +150,40 @@ svelte:head
 {:else if post}
 	article.post-and-comments(class:post-and-comments-expanded={expanded})
 		{#if expanded}
-			section.post-meta
-				{#if api.isLoggedIn()}
-					button.post-score(class:post-score-downvoted={post.likes === false} class:post-score-upvoted={post.likes === true} data-mouse-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={post.hide_score ? 'score hidden' : post.score < 1 ? 'negative score (value hidden)' : post.score - 1})
-						| {score_text(post)}
-						{#if post.upvote_ratio < 0.7}
-							span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
-				{:else}
-					data.post-score(title={post.hide_score ? 'score hidden' : post.score - 1})
-						| {score_text(post)}
-						{#if post.upvote_ratio < 0.7}
-							span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
-				UserByline(distinguish={post.distinguished} flair_color={post.author_flair_background_color} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
-		article.post(class:post-minimized={minimized} data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-mouse-menu='post' data-saved={post.saved || null} on:mousemenu={e => interact(e.detail)} title="{Time.sToAbsRelTimeStr(post.created_utc)} ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) : ''}")
+			{#if false}
+				section.post-meta
+					{#if api.isLoggedIn()}
+						button.post-score(class:post-score-downvoted={post.likes === false} class:post-score-upvoted={post.likes === true} data-mouse-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown|stopPropagation={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown|stopPropagation={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={post.hide_score ? 'score hidden' : post.score < 1 ? 'negative score (value hidden)' : post.score - 1})
+							| {score_text(post)}
+							{#if post.upvote_ratio < 0.7}
+								span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
+					{:else}
+						data.post-score(title={post.hide_score ? 'score hidden' : post.score - 1})
+							| {score_text(post)}
+							{#if post.upvote_ratio < 0.7}
+								span.post-score-controversial-marker(title='controversial post ({Math.trunc(post.upvote_ratio * 100)}% upvoted)') †
+					UserByline(distinguish={post.distinguished} flair_color={post.author_flair_background_color} flair_rich_text={post.author_flair_richtext} flair_text={post.author_flair_text} name={post.author})
+		article.post(data-can-edit={post.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !post.locked) || null} data-can-mod={post.can_mod_post || null} data-locked={post.locked || null} data-mouse-menu='post' data-saved={post.saved || null} on:mousemenu={e => interact(e.detail)} title="{Number.isFinite(post.score) ? post.score + ' points' : 'score unknown'}, {Time.sToAbsRelTimeStr(post.created_utc)} ({Time.sToAbsTimeStr(post.created_utc)}){post.edited ? ', edited ' + Time.sToAbsRelTimeStr(post.edited) : ''}")
 			header.post-header
-				{#if out_of_context}
-					FeedLink(type='subreddit' subreddit_name={post.subreddit})
-				{:else if post.link_flair_text}
-					PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} size='medium' subreddit_name={post.subreddit} text={post.link_flair_text})
+				section.post-meta
+					{#if out_of_context}
+						FeedLink(type='subreddit' subreddit_name={post.subreddit})
+					{:else}
+						SubredditAvatar(name={post.subreddit} size='small')
+						{#if post.stickied}
+							PostTag(name='sticky')
+						{#if post.over_18}
+							PostTag(name='nsfw')
+						{#if post.spoiler}
+							PostTag(name='spoiler')
+						{#if post.is_original_content}
+							PostTag(name='oc')
+						{#if post.locked}
+							PostTag(name='locked')
+						{#if post.archived}
+							PostTag(name='archived')
+						{#if post.link_flair_text}
+							PostFlair(color={post.link_flair_background_color} emoji_style='image' rich_text={post.link_flair_richtext} size='medium' subreddit_name={post.subreddit} text={post.link_flair_text})
 				h1.post-title {post.title}
 			{#if expanded}
 				{#if post.removed_by_category}
@@ -201,7 +218,6 @@ svelte:head
 									a(href={media.image_url} rel='external noreferrer preconnect' target='_blank')
 										picture
 											{#if !media.is_gif}
-												source(srcset={media.image_url_960})
 												source(srcset={media.image_url_640})
 											img.post-image(alt='' src={media.image_url} style="aspect-ratio: {media.aspect_ratio}" title='{i + 1} / {post.media.length}')
 									{#if media.caption_text || media.caption_url}
@@ -237,7 +253,7 @@ svelte:head
 								Button(link={post.url} new_tab={true} text='View on Reddit')
 						{:else if post.format === 'video'}
 							{@const media = post.media[0]}
-								PostVideoPlayer(audio_url={media.video_audio_url} height={480 * 9 / 16} video_url={media.video_url} width={480})
+								PostVideoPlayer(audio_url={media.video_audio_url} height={384 * 9 / 16} video_url={media.video_url} width={384})
 						{#if post.selftext_html}
 							.post-text
 								FormattedHTML(html={post.selftext_html})
@@ -264,14 +280,18 @@ style.
 	.post
 		background var(--c-tint-normal)
 		border-radius 1em
-		width 100%
+		width 320px
+		.post-and-comments-expanded &
+			width 384px
+		:global(.post-crosspost-link &)
+			width 100% !important
 	.post-and-comments
 		width 100%
 	.post-body
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 3px
+		gap 1px
 		:global(& .twitter-tweet)
 			margin 0 !important
 		:global(& .twitter-tweet iframe)
@@ -288,8 +308,6 @@ style.
 	.post-gallery-image
 		width 100%
 	.post-gallery-image-caption
-		font-size 12px
-		letter-spacing 0.333px
 		padding 1em
 	.post-header
 		align-items flex-start
@@ -301,18 +319,22 @@ style.
 		aspect-ratio 1
 		background var(--c-text-faint)
 		border-radius 1em
-		width 480px
+		width 384px
 		&:fullscreen
 			border-radius 0
 	.post-image
 		background var(--c-text-faint)
-		border-radius 1em
 		width 100%
+		.post-gallery-image:first-child &
+			border-top-left-radius 1em
+			border-top-right-radius 1em
+		.post-gallery-image:last-child &
+			border-bottom-left-radius 1em
+			border-bottom-right-radius 1em
 	.post-link
-		font-family var(--f-family-mono)
 		font-size 1.25em
 		line-height 1.333
-		padding 0 1em 1em
+		padding 0 1rem 1rem
 		text-decoration underline
 		word-break break-all
 	.post-meta
@@ -320,7 +342,6 @@ style.
 		display flex
 		gap 0.5em
 		max-width 100%
-		padding 0.333em
 	.post-predictions
 		display flex
 		flex-flow column nowrap
@@ -355,12 +376,10 @@ style.
 		:global(& img)
 			border-radius 1em
 	.post-title
-		font-size 1.5em
+		font-size 1.1666em
 		font-weight var(--f-wght-normal)
-		letter-spacing 0
 		line-height 1.2
 		overflow-wrap anywhere
-		.post-minimized &
-			font-size 1.1666em
-			letter-spacing inherit
-			line-height 1.2
+		.post-and-comments-expanded &
+			font-size 1.5em
+			font-weight var(--f-wght-strong)

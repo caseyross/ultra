@@ -1,4 +1,5 @@
 script.
+	import UserDistinguish from './UserDistinguish.pug'
 	import UserFlair from './UserFlair.pug'
 
 	export distinguish = null
@@ -7,16 +8,10 @@ script.
 	export flair_text = null
 	export name = null
 
-	distinguish_text = (distinguish) ->
-		switch distinguish
-			when 'admin' then ' (Admin)'
-			when 'moderator' then ' (Mod)'
-			when 'special' then ' (Ex-Admin)'
-			when 'submitter' then ' (OP)'
-			else ''
-
 address.user-byline
-	a.user-byline-name(href='/u/{name}') {name}{distinguish_text(distinguish)}
+	{#if distinguish}
+		UserDistinguish(type={distinguish})
+	a.user-byline-name(href='/u/{name}') {name}
 	{#if flair_text}
 		UserFlair(color={flair_color} emoji_style='image' rich_text={flair_rich_text} text={flair_text})
 

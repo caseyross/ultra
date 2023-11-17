@@ -1,5 +1,6 @@
 script.
 	import api from '../../../api/index.js'
+	import { HexColor } from '../../../lib/index.js'
 	
 	export color = null
 	export emoji_style = null
@@ -19,8 +20,7 @@ script.
 					background_color = subreddit.primary_color or subreddit.key_color
 			)
 
-span.post-flair(title={text})
-	span.post-flair-graphic(style="background-color: {background_color}")
+span.post-flair(style="background-color: {background_color}; color: {HexColor.lightness(background_color) > 0.5 ? 'black' : 'white'}" title={text})
 	{#if rich_text && rich_text.length}
 		{#each rich_text as segment}
 			{#if segment.e === 'text'}
@@ -36,28 +36,23 @@ span.post-flair(title={text})
 style.
 	.post-flair
 		align-items center
-		border-radius 11px
-		color var(--c-text-weak)
+		border-radius 5px
 		display inline-flex
 		font-feature-settings 'calt', 'cpsp'
 		font-size 10px
 		font-weight var(--f-wght-strong)
-		gap 1ch
-		letter-spacing 1px
+		gap 5px
+		letter-spacing 0.666px
 		line-height 1
 		height 20px
 		max-width 100%
 		overflow hidden
+		padding 0 6px
 		text-transform uppercase
 		user-select none
 		white-space nowrap
 	.post-flair-emoji
 		height 16px
-	.post-flair-graphic
-		aspect-ratio 1
-		border-radius 50%
-		flex 0 0 auto
-		height 100%
 	.post-flair-text
 		overflow hidden
 		text-overflow ellipsis

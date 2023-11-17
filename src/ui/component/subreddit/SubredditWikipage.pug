@@ -70,7 +70,7 @@ svelte:head
 
 style.
 	.wiki
-		width 480px
+		max-width 512px
 	.wiki-body
 		margin-top 2em
 	.wiki-edit-date
@@ -103,10 +103,6 @@ style.
 		width 180px
 		&::-webkit-scrollbar
 			display none
-		@media (min-width: 1024px)
-			display initial
-		@media (min-width: 1280px)
-			width 300px
 	:global(.wiki .toc a)
 		padding 0
 		text-decoration none

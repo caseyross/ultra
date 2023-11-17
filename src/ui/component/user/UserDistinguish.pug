@@ -1,0 +1,42 @@
+script.
+	export type = null
+
+	label_text = switch type
+		when 'admin' then 'admin'
+		when 'moderator' then 'mod'
+		when 'special' then 'vip'
+		when 'submitter' then 'op'
+
+data.user-distinguish(class='user-distinguish-type-{type}') {label_text}
+
+style.
+	.user-distinguish
+		align-items center
+		border-radius 5px
+		display inline-flex
+		flex 0 0 auto
+		font-feature-settings 'calt', 'cpsp'
+		font-size 10px
+		font-weight var(--f-wght-strong)
+		letter-spacing 0.666px
+		line-height 1
+		height 20px
+		max-width 100%
+		overflow hidden
+		padding 0 6px
+		text-overflow ellipsis
+		text-transform uppercase
+		user-select none
+		white-space nowrap
+	.user-distinguish-type-admin
+		background-color var(--c-fixed-admin)
+		color white
+	.user-distinguish-type-moderator
+		background-color var(--c-fixed-mod)
+		color white
+	.user-distinguish-type-special
+		background-color var(--c-fixed-exadmin)
+		color white
+	.user-distinguish-type-submitter
+		background-color var(--c-fixed-user)
+		color white
