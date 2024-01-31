@@ -6,7 +6,7 @@ script.
 	import Status from '../component/generic/Status.pug'
 	import SubredditAvatar from '../component/subreddit/SubredditAvatar.pug'
 
-	SUBREDDIT_POOL_SIZE = 98
+	SUBREDDITS_OPTIMAL_COUNT = 49
 
 	error = false
 	loading = false
@@ -15,7 +15,7 @@ script.
 	subreddits_data = {}
 	subreddits_randomized = []
 
-	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), SUBREDDIT_POOL_SIZE), ({ data, error, loading }) ->
+	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), SUBREDDITS_OPTIMAL_COUNT * 2), ({ data, error, loading }) ->
 		subreddits = data or []
 		if subreddits.length
 			for subreddit_name in subreddits
@@ -24,7 +24,7 @@ script.
 						subreddits_data[subreddit_name] = subreddit
 				)
 			picks = new Set()
-			while subreddits_randomized.length < (subreddits.length / 2)
+			while subreddits_randomized.length < Math.min(subreddits.length, SUBREDDITS_OPTIMAL_COUNT)
 				pick = subreddits[Math.floor(Math.random() * subreddits.length)]
 				if !picks.has(pick)
 					picks.add(pick)
