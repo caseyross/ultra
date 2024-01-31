@@ -6,15 +6,16 @@ script.
 	import Status from '../component/generic/Status.pug'
 	import SubredditAvatar from '../component/subreddit/SubredditAvatar.pug'
 
-	MAX_SUBREDDITS = 100
+	SUBREDDIT_POOL_SIZE = 98
 
 	error = false
 	loading = false
 	set_theme_color = getContext('set_theme_color')
 	subreddits = []
 	subreddits_data = {}
+	subreddits_randomized = []
 
-	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), MAX_SUBREDDITS), ({ data, error, loading }) ->
+	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), SUBREDDIT_POOL_SIZE), ({ data, error, loading }) ->
 		subreddits = data or []
 		if subreddits.length
 			for subreddit_name in subreddits
@@ -22,6 +23,12 @@ script.
 					if subreddit
 						subreddits_data[subreddit_name] = subreddit
 				)
+			picks = new Set()
+			while subreddits_randomized.length < (subreddits.length / 2)
+				pick = subreddits[Math.floor(Math.random() * subreddits.length)]
+				if !picks.has(pick)
+					picks.add(pick)
+					subreddits_randomized.push(pick)
 	)
 
 	set_theme_color('#ffffff')
@@ -31,24 +38,23 @@ script.
 {:else if error}
 	Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
 {:else if subreddits}
-	main#app-home
-		ol.subreddit-grid(style='grid-template-columns: repeat({Math.ceil(Math.sqrt(subreddits.length))}, 1fr); grid-template-rows: repeat({Math.ceil(subreddits.length / Math.ceil(Math.sqrt(subreddits.length)))}, 1fr)')
-			{#each subreddits as subreddit}
-				a.subreddit-grid-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}")
-					SubredditAvatar(name={subreddit} size='large')
+	ol.subreddit-grid
+		{#each subreddits_randomized as subreddit}
+			a.subreddit-grid-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}")
+				SubredditAvatar(name={subreddit} size='large')
 
 style.
-	#app-home
-		height 100dvh
-		padding 3em
-		width 100dvw
 	.subreddit-grid
 		display grid
-		gap 10px
-		height 100%
-		width 100%
+		gap 16px
+		grid-template-columns repeat(7, 96px)
+		height 100dvh
+		padding 96px
+		place-content center
 	.subreddit-grid-cell
+		aspect-ratio 1
 		background var(--c-shade-weak)
-		border-radius 1em
+		border-radius 50%
 		display grid
 		place-content center
+		width 100%
