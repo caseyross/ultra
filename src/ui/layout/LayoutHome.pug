@@ -46,15 +46,16 @@ script.
 style.
 	.subreddit-grid
 		display grid
-		gap 16px
+		gap 3px
 		grid-template-columns repeat(7, 96px)
 		height 100dvh
-		padding 96px
 		place-content center
 	.subreddit-grid-cell
 		aspect-ratio 1
 		background var(--c-shade-weak)
-		border-radius 50%
+		border-radius 0.666em
 		display grid
 		place-content center
 		width 100%
+		&:hover
+			outline 3px solid

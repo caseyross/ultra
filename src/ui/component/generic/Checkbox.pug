@@ -25,6 +25,8 @@ style.
 			content ''
 			display inline-block
 			width 1em
+		:global(&:hover::before)
+			background-color var(--c-text-faint)
 		:global(&.checkbox-activated::before)
 			background-color var(--c-text-strong)
 	.checkbox-input

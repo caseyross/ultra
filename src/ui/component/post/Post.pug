@@ -281,8 +281,12 @@ style.
 		background var(--c-tint-normal)
 		border-radius 1em
 		width 320px
+		&:hover
+			outline 1px solid
 		.post-and-comments-expanded &
 			width 384px
+			&:hover
+				outline none
 		:global(.post-crosspost-link &)
 			width 100% !important
 	.post-and-comments
