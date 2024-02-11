@@ -13,10 +13,10 @@ const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-
 module.exports = {
 	entry: {
 		preboot: {
-			import: './src/ui/init/preboot.coffee',
+			import: './src/ui/preboot.coffee',
 		},
 		boot: {
-			import: './src/ui/init/boot.coffee',
+			import: './src/ui/boot.coffee',
 			dependOn: 'preboot',
 		}
 	},
