@@ -1,10 +1,10 @@
 import { Time } from '../../lib/index.js'
-import errors from '../core/errors.coffee'
-import ID from '../core/ID.coffee'
-import log from '../core/log.coffee'
+import errors from '../base/errors.coffee'
+import ID from '../base/ID.coffee'
+import log from '../base/log.coffee'
 import ratelimit from '../net/ratelimit.coffee'
-import datasetExtractor from './dataset/extract.coffee'
-import datasetExtractorAlternates from './dataset/alternate_extractors/index.js'
+import datasetExtractorGeneric from './dataset/extract.coffee'
+import datasetExtractors from './dataset/extractors/index.js'
 import datasetRoutes from './dataset/routes.coffee'
 import datasetUpdaters from './dataset/updaters.coffee'
 import interactionExtractors from './interaction/extractors/index.js'
@@ -67,7 +67,7 @@ export reload = (id) ->
 	setLoading(id)
 	return route(...ID.varArray(id)[1..])
 	.then (rawData) ->
-		extract = datasetExtractorAlternates[ID.type(id)] ? datasetExtractor
+		extract = datasetExtractors[ID.type(id)] ? datasetExtractorGeneric
 		extract(rawData, id)
 	.then (datasets) ->
 		log({

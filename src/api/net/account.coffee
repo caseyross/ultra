@@ -1,5 +1,5 @@
-import errors from '../core/errors.coffee'
-import { clear as clearStore } from '../store/store.coffee'
+import errors from '../base/errors.coffee'
+import { clear as clearStore } from '../ops/ops.coffee'
 import credentials from './credentials.coffee'
 
 ACCOUNT_SCOPES_ALL = [

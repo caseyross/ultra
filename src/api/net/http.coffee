@@ -1,4 +1,4 @@
-import errors from '../core/errors.coffee'
+import errors from '../base/errors.coffee'
 import credentials from './credentials.coffee'
 import ratelimit from './ratelimit.coffee'
 

@@ -1,4 +1,4 @@
-import ID from '../../core/ID.coffee'
+import ID from '../../base/ID.coffee'
 
 # Separate and extract independent Reddit entities from raw API data.
 # Primarily useful to parse Reddit's "Listing" and "Thing" data structures, and to flatten comment trees for store ingestion.

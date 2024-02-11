@@ -1,5 +1,5 @@
 import { Time } from '../../../lib/index.js'
-import ID from '../../core/ID.coffee'
+import ID from '../../base/ID.coffee'
 import { getUser } from '../../net/account.coffee'
 
 export default {

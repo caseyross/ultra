@@ -1,4 +1,4 @@
-import ID from '../../core/ID.coffee'
+import ID from '../../base/ID.coffee'
 
 export default {
 

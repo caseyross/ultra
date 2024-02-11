@@ -1,5 +1,5 @@
-import errors from '../../../core/errors.coffee'
-import ID from '../../../core/ID.coffee'
+import errors from '../../../base/errors.coffee'
+import ID from '../../../base/ID.coffee'
 import extract from '../extract.coffee'
 
 # Our "post" API response type is slightly different from Reddit's "t3" kind.

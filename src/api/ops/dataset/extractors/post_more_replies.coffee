@@ -1,4 +1,4 @@
-import ID from '../../../core/ID.coffee'
+import ID from '../../../base/ID.coffee'
 import extract from '../extract.coffee'
 
 # Unlike the initially-loaded comments for posts, "more children" results are provided as flat lists instead of trees.
