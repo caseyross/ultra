@@ -4,7 +4,7 @@ script.
 	import api from '../../../api/index.js'
 	import { Time } from '../../../lib/index.js'
 	import { apply_query_parameters, format_url, relativize_url } from '../../url/index.js'
-	import account_state from '../../account_state.coffee'
+	import AccountSettings from '../../persistence/AccountSettings.coffee'
 	import html_embeds from './embeds/html_embeds.coffee'
 	import iframe_embeds from './embeds/iframe_embeds.coffee'
 
@@ -133,7 +133,7 @@ script.
 	)
 	api.preload(api.ID('post', id, comments_sort or 'confidence', comments_initial_count, focus_comment_id, focus_comment_parent_count))
 	if expanded
-		account_state.mark_post_read(id)
+		AccountSettings.mark_post_read(id)
 
 svelte:head
 	{#if expanded && post}
