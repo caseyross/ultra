@@ -6,9 +6,9 @@ script.
 	DEFAULT_COLOR = '#ffffff'
 
 	set_theme_color = (color) ->
-		# Set main color
 		if !color
 			color = DEFAULT_COLOR
+		# Set main color
 		document.body.style.setProperty('--c-theme', color)
 		# Remove previous theme
 		for name from document.body.classList.values()
