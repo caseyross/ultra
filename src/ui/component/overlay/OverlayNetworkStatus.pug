@@ -4,9 +4,9 @@ script.
 	import api from '../../../api/index.js'
 	import { DEMO_API_CLIENT_ID } from '../../../config/demo_key.js'
 	import { Time, TimeSource } from '../../../lib/index.js'
-	import Button from '../../component/generic/Button.pug'
-	import Popup from '../../component/generic/Popup.pug'
-	import TextInput from '../../component/generic/TextInput.pug'
+	import Button from '../generic/Button.pug'
+	import Popup from '../generic/Popup.pug'
+	import TextInput from '../generic/TextInput.pug'
 
 	demo_mode_activated = api.getClientID() == DEMO_API_CLIENT_ID
 	demo_mode_help_open = false

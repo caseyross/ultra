@@ -1,17 +1,17 @@
 script.
 	import { setContext } from 'svelte'
 
-	import { parse_url } from '../url/index.js'
+	import { parse_url } from './url/index.js'
 	
-	import OverlayAccountProvider from './overlay/OverlayAccountProvider.pug'
-	import OverlayMouseMenu from './overlay/OverlayMouseMenu.pug'
-	import OverlayNetworkStatus from './overlay/OverlayNetworkStatus.pug'
-	import OverlayTableManager from './overlay/OverlayTableManager.pug'
-	import OverlayThemeProvider from './overlay/OverlayThemeProvider.pug'
+	import OverlayAccountProvider from './component/overlay/OverlayAccountProvider.pug'
+	import OverlayMouseMenu from './component/overlay/OverlayMouseMenu.pug'
+	import OverlayNetworkStatus from './component/overlay/OverlayNetworkStatus.pug'
+	import OverlayTableManager from './component/overlay/OverlayTableManager.pug'
+	import OverlayThemeProvider from './component/overlay/OverlayThemeProvider.pug'
 	
-	import LayoutHome from './LayoutHome.pug'
-	import LayoutStandard from './LayoutStandard.pug'
-	import LayoutUnsupported from './LayoutUnsupported.pug'
+	import LayoutFrontpage from './component/layout/LayoutFrontpage.pug'
+	import LayoutNotSupported from './component/layout/LayoutNotSupported.pug'
+	import LayoutPost from './component/layout/LayoutPost.pug'
 	
 	route = {}
 	scroll_cache = {}
@@ -107,8 +107,8 @@ OverlayThemeProvider
 				OverlayMouseMenu
 					{#if route.feed || route.post || route.wiki}
 						{#if route.feed?.type === 'homepage'}
-							LayoutHome
+							LayoutFrontpage
 						{:else}
-							LayoutStandard(feed={route.feed} post={route.post} wiki={route.wiki})
+							LayoutPost(feed={route.feed} post={route.post} wiki={route.wiki})
 					{:else}
-						LayoutUnsupported(url={location})
+						LayoutNotSupported(url={location})

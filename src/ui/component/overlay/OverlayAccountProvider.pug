@@ -1,7 +1,7 @@
 script.
 	import api from '../../../api/index.js'
 
-	import LayoutCrash from '../LayoutCrash.pug'
+	import Crash from '../../Crash.pug'
 	
 	status = api.getLoginStatus()
 	user_loaded = false
@@ -22,6 +22,6 @@ script.
 			)
 
 {#if user_load_error}
-	LayoutCrash(error={user_load_error})
+	Crash(error={user_load_error})
 {:else if (status === 'logged-in' && user_loaded) || (status === 'logged-out')}
 	slot

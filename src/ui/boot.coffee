@@ -1,12 +1,12 @@
 import './global.styl'
-import LayoutRouter from './layout/LayoutRouter.pug'
-import LayoutCrash from './layout/LayoutCrash.pug'
+import App from './App.pug'
+import Crash from './Crash.pug'
 
 try
-	new LayoutRouter
+	new App
 		target: document.body
 catch error
-	new LayoutCrash
+	new Crash
 		target: document.body
 		props:
 			error: error
