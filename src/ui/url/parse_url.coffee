@@ -3,7 +3,7 @@ import api from '../../api/index.js'
 FEED_PAGE_SIZE = 10
 GEO_SEO_PREFIXES =
 	['de', 'es', 'fr', 'it', 'pt']
-HOME_SUBS_POOL_TARGET_SIZE = 98
+HOME_SUBS_POOL_TARGET_SIZE = 49
 POST_COMMENTS_INITIAL_SIZE = 100
 RECOGNIZED_PRIMARY_PATH_SEGMENTS =
 	['api', 'c', 'chat', 'collection', 'comments', 'contributor-program', 'dev', 'domain', 'gallery', 'gold', 'link', 'live', 'login', 'media', 'message', 'over18', 'p', 'poll', 'post', 'prefs', 'premium', 'r', 'reddits', 'register', 'report', 'rules', 'search', 'submit', 'subreddit', 'subreddits', 't', 'tb', 'u', 'user', 'users', 'video', 'w', 'wiki'] # front page sort options handled separately

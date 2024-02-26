@@ -15,7 +15,7 @@ script.
 	subreddits_data = {}
 	subreddits_randomized = []
 
-	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), SUBREDDITS_OPTIMAL_COUNT * 2), ({ data, error, loading }) ->
+	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), SUBREDDITS_OPTIMAL_COUNT), ({ data, error, loading }) ->
 		subreddits = data or []
 		if subreddits.length
 			for subreddit_name in subreddits
