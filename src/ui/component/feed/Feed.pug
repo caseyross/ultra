@@ -123,7 +123,7 @@ nav.feed(class="feed-type-{type.split('_').at(-1)}")
 		{#if has_next_page}
 			menu.feed-items-actions
 				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
-					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'Load page ' + (current_page + 1)})
+					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
 	{:else}
 		{#if loading}
 			.feed-loading Loading...
