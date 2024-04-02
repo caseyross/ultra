@@ -1,3 +1,5 @@
+(**Status**: No longer being actively developed, due to reddit's 2023 API changes and 2024 IPO.)
+
 # Arc: a modern, user-friendly UI for reddit
 
 ## Try it
