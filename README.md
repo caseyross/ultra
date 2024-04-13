@@ -1,31 +1,28 @@
-(**Status**: No longer being actively developed, due to reddit's 2023 API changes and 2024 IPO.)
+(**Status**: Usable, but longer under active development, due to Reddit's 2023 API changes.)
 
-# Arc: a modern, user-friendly UI for reddit
+# ultrareddit
 
-## Try it
+## description
 
-https://arc-ui.com
+Ultrareddit is a Reddit UI ("client") written in JavaScript.
 
-## Features
+It aims to provide a minimalist, highly refined interface that includes only essential features and avoids needless complications.
 
-- Clean, user-friendly UI
-- Extremely fast (faster than old.reddit.com)
-- Carefully optimized for ease of reading
-- Video player that works
-- Self-hostable
+## feedback
 
-## Self-hosting
+If you have feedback, please open an issue or a discussion here. I can't promise to address all feedback but I would love to hear from anyone using the app.
 
-Arc is a static HTML site with lots of JavaScript. You can self-host it via the following steps:
+## privacy
 
-- Download the code. Run `npm` in the code directory to install needed NPM modules. Then, run `npm run build` to generate all needed site files, which will appear in the /dist directory. The contents of this directory can then be uploaded to any web hosting platform of your choice. You will need to configure such platform to route all incoming requests to the site to `index.html`.
+The app collects no data, and I don't have the ability to see any of your Reddit activity. After loading the app code, your connection is exclusively to Reddit's servers.
 
-(Optional) You can "bake-in" your reddit API credentials to the build so that it does not automatically run in Demo Mode. To do this, add a file named `.env` to the root directory with a line stating `API_CLIENT_ID=<your-client-id>`, then build the site files as normal.
+## self-host info
 
-## Privacy policy
+The app is a static site with all functionality provided via JavaScript. If desired, you can self-host it through the following steps (which can also be automated, as they're pretty standard):
 
-Arc collects no data from you --- zero.
-
-If you use arc-ui.com, you will appear in my web host's anonymized analytics (current web host: Cloudflare).
-
-Reddit collects lots of data from you, so be aware.
+1) Download the repository code.
+2) Add a file named `.env` to the root of repository with the following line: `API_CLIENT_ID=<your-client-id>` (replace `<your-client-id>` with your own Reddit API client ID). You can also use an environment variable to accomplish the same thing.
+3) In your terminal, run `npm` in the code directory to install needed NPM modules.
+4) Run `npm run build` to generate all needed site files, which will appear in the `dist` directory.
+5) Upload the contents of the `dist` directory to a web hosting platform of your choice.
+6) Configure your web hosting platform to route all incoming requests for the site to `index.html`.
