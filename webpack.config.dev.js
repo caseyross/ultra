@@ -15,7 +15,9 @@ module.exports = {
 		liveReload: false,
 		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
 		hot: false,
-		https: true,
+		server: {
+			type: 'https',
+		},
 		static: {
 			directory: path.join(__dirname, 'dist'),
 		},
