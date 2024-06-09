@@ -1,28 +1,17 @@
-(**Status**: Usable, but longer under active development, due to Reddit's 2023 API changes.)
+Ultra is a minimalist, performance-focused UI ("client") for reddit.com. It runs in your web browser as a static webpage.
 
-# ultrareddit
+## Data policy
 
-## description
+Ultra does not collect or store any user data, except for a minimal amount of configuration data that never leaves your computer. Your usage is conducted entirely between you and reddit.com servers.
 
-Ultrareddit is a Reddit UI ("client") written in JavaScript.
+## Self-host guide
 
-It aims to provide a minimalist, highly refined interface that includes only essential features and avoids needless complications.
+Ultra is deployed as a static website with all functionality provided through client-side JS. You can self-host it through the following steps. This process is easily automatable for deployments on cloud services.
 
-## feedback
+1) Clone the repository.
+2) Using `npm` or a similar tool, execute `npm run build` in the root directory (where this README is located), which will build the website files from source and place them in the `dist` folder.
+3) Upload the contents of the `dist` folder to any web server, and configure the web server to route all incoming requests to `/` (index.html).
 
-If you have feedback, please open an issue or a discussion here. I can't promise to address all feedback but I would love to hear from anyone using the app.
+## Future roadmap
 
-## privacy
-
-The app collects no data, and I don't have the ability to see any of your Reddit activity. After loading the app code, your connection is exclusively to Reddit's servers.
-
-## self-host info
-
-The app is a static site with all functionality provided via JavaScript. If desired, you can self-host it through the following steps (which can also be automated, as they're pretty standard):
-
-1) Download the repository code.
-2) Add a file named `.env` to the root of repository with the following line: `API_CLIENT_ID=<your-client-id>` (replace `<your-client-id>` with your own Reddit API client ID). You can also use an environment variable to accomplish the same thing.
-3) In your terminal, run `npm` in the code directory to install needed NPM modules.
-4) Run `npm run build` to generate all needed site files, which will appear in the `dist` directory.
-5) Upload the contents of the `dist` directory to a web hosting platform of your choice.
-6) Configure your web hosting platform to route all incoming requests for the site to `index.html`.
+Unlikely, due to loss of confidence in reddit.com as a platform after 2023 API changes.
