@@ -279,7 +279,7 @@ svelte:head
 style.
 	.post
 		background var(--c-tint-normal)
-		border-radius 1em
+		border-radius 1.333em
 		width 320px
 		.post-and-comments-expanded > &
 			width 384px
@@ -291,7 +291,7 @@ style.
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 1px
+		gap 0.333em
 		:global(& .twitter-tweet)
 			margin 0 !important
 		:global(& .twitter-tweet iframe)
@@ -299,8 +299,8 @@ style.
 	.post-comments
 		display flex
 		flex-flow column nowrap
-		gap 1.333em
-		margin-top 1.666em
+		gap 0.666em
+		margin-top 2em
 		width 100%
 	.post-crosspost-link
 		padding 0 1em 1em
@@ -308,7 +308,9 @@ style.
 	.post-gallery-image
 		width 100%
 	.post-gallery-image-caption
-		padding 1em
+		font-size 12px
+		font-weight var(--f-wght-strong)
+		padding 0.333em 1em
 	.post-header
 		align-items flex-start
 		display flex
@@ -318,7 +320,7 @@ style.
 	.post-iframe
 		aspect-ratio 1
 		background var(--c-text-faint)
-		border-radius 1em
+		border-radius 1.333em
 		width 384px
 		&:fullscreen
 			border-radius 0
@@ -373,8 +375,6 @@ style.
 	.post-text
 		margin-top 1em
 		padding 0 1em 1em
-		:global(& img)
-			border-radius 1em
 	.post-title
 		font-size 1.1666em
 		font-weight var(--f-wght-normal)
