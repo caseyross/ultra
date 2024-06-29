@@ -34,7 +34,6 @@ credentials = {
 		localStorage['api.credentials.renewing'] = 'TRUE'
 		# Reddit uses (mostly standard) OAuth 2 for authentication. (https://github.com/reddit-archive/reddit/wiki/OAuth2)
 		exchange_code = localStorage['api.credentials.exchange_code']
-		delete localStorage['api.credentials.exchange_code'] # no reuse allowed
 		exchange_token = localStorage['api.credentials.exchange_token']
 		body = new URLSearchParams(switch
 			when exchange_code # New account login
@@ -72,6 +71,8 @@ credentials = {
 				localStorage['api.credentials.key_expiry'] = Time.unixMs() + Time.sToMs(data.expires_in)
 				if data.refresh_token? then localStorage['api.credentials.exchange_token'] = data.refresh_token
 		.finally ->
+			if exchange_code
+				delete localStorage['api.credentials.exchange_code'] # no reuse allowed
 			localStorage['api.credentials.renewing'] = 'FALSE'
 			if not credentials.valid then throw new errors.NeedCredentials({ description: 'failed to acquire valid credentials' })
 
