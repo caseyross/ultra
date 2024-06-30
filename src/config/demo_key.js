@@ -2,4 +2,4 @@
 // It's public information, so putting it in code removes the need for configuring environment variables on deployments.
 // Since the 7-2023 Reddit API changes, this Client ID is only powerful enough to run the application in a data-restricted mode.
 
-export const DEMO_API_CLIENT_ID = 'uhWd025AEIHZjUg3vESPAA'
+export const DEMO_API_CLIENT_ID = '5gx0OJWLaiCkuvtXrBiVmw'
