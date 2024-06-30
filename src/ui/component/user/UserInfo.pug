@@ -28,9 +28,8 @@ script.
 	.user-info-loading Loading...
 {:else if user}
 	aside.user-info
-		{#if false}
-			UserAvatar(name={name} size='xlarge')
-			h1.user-name(title={user?.name || name}) {user?.name || name.toLowerCase()}
+		UserAvatar(name={name} size='xlarge')
+		h1.user-name(title={user?.name || name}) {user?.name || name.toLowerCase()}
 		{#if user.is_suspended}
 			Status(type='error' message="This user is suspended.")
 		{:else if user.is_blocked}
@@ -55,7 +54,6 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 2em
-		width 320px
 	.user-info-loading
 		color var(--c-text-weak)
 	.user-name

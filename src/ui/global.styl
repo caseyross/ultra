@@ -24,8 +24,6 @@
 		border-radius 1.333em
 
 // Page structure & theme
-html
-	font-size 15px
 body
 	background-color var(--c-theme)
 	color var(--c-text-strong)
@@ -34,8 +32,8 @@ body
 	font-weight var(--f-wght-weak)
 	grid-auto-flow row
 	grid-template-columns 1fr
-	letter-spacing calc(1px / 6)
-	line-height 20px
+	letter-spacing calc(1px / 3)
+	line-height 1.25
 	overflow-y scroll
 	place-items center
 	scrollbar-width none
@@ -44,7 +42,7 @@ body
 	--c-fixed-exadmin rebeccapurple
 	--c-fixed-mod darkseagreen
 	--c-fixed-user cornflowerblue
-	--f-family-mono 'Consolas', monospace
+	--f-family-mono monospace
 	--f-family-prop 'Inter', sans-serif
 	&::-webkit-scrollbar
 		display none
@@ -64,7 +62,7 @@ body
 	--c-tint-normal rgba(255,255,255,0.125)
 	--f-wght-weak 400
 	--f-wght-normal 500
-	--f-wght-strong 650
+	--f-wght-strong 600
 .color-strategy-dark-bg
 	color-scheme dark
 	--c-blend-faint rgba(255,255,255,0.0625)
@@ -81,7 +79,7 @@ body
 	--c-tint-normal rgba(255,255,255,0.125)
 	--f-wght-weak 400
 	--f-wght-normal 500
-	--f-wght-strong 650
+	--f-wght-strong 600
 .color-strategy-light-bg
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -98,7 +96,7 @@ body
 	--c-tint-normal rgba(255,255,255,0.5)
 	--f-wght-weak 450
 	--f-wght-normal 550
-	--f-wght-strong 700
+	--f-wght-strong 650
 .color-strategy-ultralight-bg
 	color-scheme light
 	--c-blend-faint rgba(0,0,0,0.0625)
@@ -115,7 +113,7 @@ body
 	--c-tint-normal rgba(0,0,0,0.0625)
 	--f-wght-weak 450
 	--f-wght-normal 550
-	--f-wght-strong 700
+	--f-wght-strong 650
 
 // General layout & typography
 a
@@ -138,10 +136,7 @@ blockquote
 cite
 	font-style normal
 code
-	color palegreen
-	background black
 	font-family var(--f-family-mono)
-	font-size 12px
 	word-break break-all
 details
 	margin 1em 0 0
@@ -309,9 +304,10 @@ summary
 
 // Media
 iframe
-	border 0
 img
 video
+	border 0
+	border-radius 1em
 	box-sizing content-box
 	display block
 	max-width 100%

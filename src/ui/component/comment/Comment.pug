@@ -11,7 +11,6 @@ script.
 	import Popup from '../generic/Popup.pug'
 	import SubredditBanMenu from '../subreddit/SubredditBanMenu.pug'
 	import SubredditReportMenu from '../subreddit/SubredditReportMenu.pug'
-	import UserByline from '../user/UserByline.pug'
 
 	export id = null
 	export out_of_context = false
@@ -19,6 +18,12 @@ script.
 	banning = false
 	comment = null
 	deeper_replies_loading = false
+	distinguish_text = (comment) -> switch
+		when comment.is_submitter then 'OP'
+		when comment.distinguished == 'moderator' then 'MOD'
+		when comment.distinguished == 'admin' then 'ADM'
+		when comment.distinguished == 'special' then 'VIP'
+		else ''
 	editing = false
 	edit_error = null
 	edit_sending = false
@@ -28,12 +33,11 @@ script.
 	reply_error = null
 	reply_sending = false
 	reporting = false
-	score_text = (comment) ->
-		switch
-			when comment.score_hidden then '?'
-			when !Number.isFinite(comment.score) then '?'
-			when comment.score < 1 then "−#{String(comment.score - 1)[1..]}"
-			else comment.score - 1
+	score_text = (comment) -> switch
+		when comment.score_hidden then '?'
+		when !Number.isFinite(comment.score) then '?'
+		when comment.score < 0 then "−#{String(comment.score)[1..]}"
+		else comment.score - 0
 	
 	interact = (action_type, data) ->
 		switch action_type
@@ -111,19 +115,17 @@ script.
 		<!-- 'comment' role is draft status and not recognized yet -->
 		<!-- svelte-ignore a11y-unknown-role -->
 		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-highlighted={id === focus_comment_id} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-id={comment.id} data-mouse-menu='comment' data-pinned={comment.stickied || null} data-saved={comment.saved || null} on:mousemenu={e => interact(e.detail)} role='comment' title="{Number.isFinite(comment.score) ? comment.score + ' points' : 'score unknown'}, {Time.sToAbsRelTimeStr(comment.created_utc)}{comment.edited ? ', edited ' + Time.sToAbsRelTimeStr(comment.edited) : ''}")
-			{#if false}
-				section.comment-meta
-					{#if api.isLoggedIn()}
-						button.comment-score(class:comment-score-downvoted={comment.likes === false} class:comment-score-upvoted={comment.likes === true} data-mouse-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={comment.score_hidden ? 'score hidden' : comment.score - 1})
-							| {score_text(comment)}
-							{#if comment.controversiality > 0.25}
-								span.comment-score-controversial-marker(title='controversial comment') †
-					{:else}
-						data.comment-score(title={comment.score_hidden ? 'score hidden' : comment.score - 1})
-							| {score_text(comment)}
-							{#if comment.controversiality > 0.25}
-								span.comment-score-controversial-marker(title='controversial comment') †
-					UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
+			section.comment-meta
+				{#if api.isLoggedIn()}
+					button.comment-score(class:comment-score-downvoted={comment.likes === false} class:comment-score-upvoted={comment.likes === true} data-mouse-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={score_text(comment)})
+						{#if comment.controversiality > 0.25}
+							span.comment-score-controversial-marker(title='controversial comment') †
+						| {distinguish_text(comment) || score_text(comment)}
+				{:else}
+					data.comment-score(title={score_text(comment)})
+						{#if comment.controversiality > 0.25}
+							span.comment-score-controversial-marker(title='controversial comment') †
+						| {distinguish_text(comment) || score_text(comment)}
 			FormattedHTML(html={comment.body_html})
 		{#if reporting}
 			Popup(on:close={() => reporting = false})
@@ -140,53 +142,58 @@ script.
 				{#if replying}
 					CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
 				{#if comment.deeper_replies}
-					Button(action={() => api.load(comment.deeper_replies_id)} loading={deeper_replies_loading} text="? more")
+					.comment-more-replies
+						Button(action={() => api.load(comment.deeper_replies_id)} loading={deeper_replies_loading} text="+ ? more")
 				{:else}
 					{#each comment.replies as reply_id (reply_id)}
 						svelte:self(id={reply_id})
 					{#if comment.num_more_replies > 0}
-						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="{comment.num_more_replies} more")
+						.comment-more-replies
+							Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="+ {comment.num_more_replies} more")
 
 style.
 	.comment
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		max-width 320px
-		:global(& > .md)
-			background var(--c-tint-normal)
-			border-radius 1.333em
-			padding 1em
+		position relative
+		margin-bottom 2em
 		:global(& > .md img)
-			border-radius 9px
+			border-radius 0.666em
 			max-height 256px
 			width auto
 		:global(&.comment-highlighted > .md)
+			border-radius 1em
 			outline 1px solid #ffdd5d
+			padding 1em
 		:global(&.comment-deleted > .md)
 			opacity 0.25
 			pointer-events none
 		:global(&.comment-with-low-score:not(&.comment-deleted) > .md)
 			opacity 0.5
 	.comment-meta
-		align-items center
+		align-items flex-end
 		display flex
-		gap 0.5em
-		max-width 100%
-		padding 0.333em
+		padding 0 1em
+		position absolute
+		right 100%
+		top 0
+	.comment-more-replies
+		margin-bottom 1.333em
 	.comment-replies
-		border-left 1px solid var(--c-text-xfaint)
-		margin 0.333em 0
 		padding-left 1.333em
 	.comment-score
 		background var(--c-blend-faint)
 		border-radius 11px
 		color var(--c-text-weak)
+		cursor default
 		display inline-flex
 		font-family var(--f-family-mono)
 		font-weight var(--f-wght-strong)
 		line-height 1
 		padding 1px 6px
+		button&
+			cursor pointer
 		&.comment-score-downvoted
 			opacity 0.5
 		&.comment-score-upvoted

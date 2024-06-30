@@ -45,10 +45,9 @@ script.
 	Status(type='error' message='Error loading subreddit description.')
 {:else if name}
 	article.subreddit-info
-		{#if false}
-			header.subreddit-info-header
-				SubredditAvatar(name={name})
-				h1.subreddit-info-name(title={subreddit?.display_name || name}) {name.toLowerCase()}
+		header.subreddit-info-header
+			SubredditAvatar(name={name})
+			h1.subreddit-info-name(title={subreddit?.display_name || name}) {name.toLowerCase()}
 		ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
 		{#if tab === 'rules'}
 			SubredditRules(name={name})
@@ -68,7 +67,6 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 2em
-		width 320px
 	.subreddit-info-description-empty
 		color var(--c-text-weak)
 	.subreddit-info-header
@@ -79,9 +77,8 @@ style.
 	.subreddit-info-loading
 		color var(--c-text-weak)
 	.subreddit-info-name
-		font-size 1.1666em
+		font-size 1.5em
 		font-weight var(--f-wght-strong)
-		letter-spacing -0.333px
 		overflow hidden
 		text-overflow ellipsis
 	.subreddit-info-widgets

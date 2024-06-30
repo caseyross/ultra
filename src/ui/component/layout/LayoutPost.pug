@@ -1,8 +1,4 @@
 script.
-	import api from '../../../api/index.js'
-	
-	import AccountLoginButton from '../account/AccountLoginButton.pug'
-	import AccountLogoutButton from '../account/AccountLogoutButton.pug'
 	import CollectionAvatar from '../collection/CollectionAvatar.pug'
 	import CollectionInfo from '../collection/CollectionInfo.pug'
 	import Feed from '../feed/Feed.pug'
@@ -10,6 +6,7 @@ script.
 	import FeedSearchOptions from '../feed/FeedSearchOptions.pug'
 	import FeedSortOptions from '../feed/FeedSortOptions.pug'
 	import FeedSummary from '../feed/FeedSummary.pug'
+	import LayoutGlobalNavigation from './LayoutGlobalNavigation.pug'
 	import MultiredditAvatar from '../multireddit/MultiredditAvatar.pug'
 	import MultiredditInfo from '../multireddit/MultiredditInfo.pug'
 	import Post from '../post/Post.pug'
@@ -24,72 +21,9 @@ script.
 	export post = null
 	export wiki = null
 
-menu#app-global-navigation
-	a#app-home-link(href='/')
-		img#app-logo-dark(alt='App logo' src='/brand_triangle_dark.svg')
-		img#app-logo-light(alt='App logo' src='/brand_triangle_light.svg')
-	menu#app-account-management
-		{#if api.isLoggedIn()}
-			AccountLogoutButton
-		{:else}
-			AccountLoginButton
-nav#app-main-navigation
-	{#if feed}
-		{#if feed?.type === 'multireddit_posts' || feed?.type === 'subreddit_posts' || feed?.type === 'user_posts' || wiki?.page_name}
-			header#app-feed-header
-				{#if feed.type === 'collection_posts'}
-					{#key feed.collection_id}
-						CollectionAvatar(id={feed.collection_id} size='large')
-				{#if feed.type === 'multireddit_posts'}
-					{#key feed.user_name}
-						{#key feed.multireddit_name}
-							MultiredditAvatar(multireddit_name={feed.multireddit_name} size='large' user_name={feed.user_name})
-				{:else if feed.type === 'subreddit_posts' || wiki?.page_name}
-					{#key feed.subreddit_name}
-						SubredditAvatar(name={feed.subreddit_name} size='large')
-				{:else if feed.type === 'user_posts'}
-					{#key feed.user_name}
-						UserAvatar(name={feed.user_name} size='large')
-				{:else}
-					a(href='/')
-						img#app-feed-icon-default(alt='Reddit logo' src='/reddit_logo.svg')
-				section#app-feed-header-layout
-					{#if feed.type === 'subreddit_posts'}
-						{#key feed.subreddit_name}
-							SubredditStatus(name={feed.subreddit_name})
-					{:else}
-						#empty
-					menu#app-feed-options
-						{#key feed.subreddit_name}
-							FeedSortOptions(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name} wikipage_name={wiki?.page_name})
-						{#if feed.type.endsWith('posts')}
-							FeedFilterOptions(filter={feed.filter})
-		{#if feed.sort === 'search'}
-			menu#app-feed-search
-				{#key feed.subreddit_name}
-					FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
-		{#key feed.collection_id}
-			{#key feed.filter}
-				{#key feed.multireddit_name}
-					{#key feed.search_sort}
-						{#key feed.search_text}
-							{#key feed.sort}
-								{#key feed.subreddit_name}
-									{#key feed.time_range}
-										{#key feed.user_name}
-											Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
-main#app-main-content
-	{#if wiki}
-		{#key wiki.subreddit_name}
-			{#key wiki.page_name}
-				{#key wiki.page_version}
-					SubredditWikipage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
-	{:else if post}
-		{#key post.id}
-			{#key post.focus_comment_id}
-				{#key post.focus_comment_parent_count}
-					Post(comments_sort={post.comments_sort} expanded={true} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id})
-	{:else if feed}
+LayoutGlobalNavigation
+{#if feed && !wiki}
+	aside#app-feed-info
 		{#key feed.collection_id}
 			{#key feed.multireddit_name}
 				{#key feed.subreddit_name}
@@ -108,64 +42,62 @@ main#app-main-content
 		{:else if feed?.user_name}
 			{#key feed.user_name}
 				UserInfo(name={feed.user_name})
+main#app-main-content
+	{#if wiki}
+		{#key wiki.subreddit_name}
+			{#key wiki.page_name}
+				{#key wiki.page_version}
+					SubredditWikipage(page_name={wiki.page_name} revision_id={wiki.page_version} subreddit_name={wiki.subreddit_name})
+	{:else if post}
+		{#key post.id}
+			{#key post.focus_comment_id}
+				{#key post.focus_comment_parent_count}
+					Post(comments_sort={post.comments_sort} focus_comment_parent_count={post.focus_comment_parent_count} focus_comment_id={post.focus_comment_id} id={post.id} out_of_context={true} selected={true} standalone={true})
+	{:else if feed}
+		{#if feed?.type === 'multireddit_posts' || feed?.type === 'subreddit_posts' || feed?.type === 'user_posts' || wiki?.page_name}
+			menu#app-feed-options
+				{#key feed.subreddit_name}
+					FeedSortOptions(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name} wikipage_name={wiki?.page_name})
+				{#if feed.type.endsWith('posts')}
+					FeedFilterOptions(filter={feed.filter})
+		{#if feed.sort === 'search'}
+			menu#app-feed-search
+				{#key feed.subreddit_name}
+					FeedSearchOptions(multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} subreddit_name={feed.subreddit_name})
+		{#key feed.collection_id}
+			{#key feed.filter}
+				{#key feed.multireddit_name}
+					{#key feed.search_sort}
+						{#key feed.search_text}
+							{#key feed.sort}
+								{#key feed.subreddit_name}
+									{#key feed.time_range}
+										{#key feed.user_name}
+											Feed(collection_id={feed.collection_id} filter={feed.filter} multireddit_name={feed.multireddit_name} search_sort={feed.search_sort} search_text={feed.search_text} sort={feed.sort} subreddit_name={feed.subreddit_name} time_range={feed.time_range} type={feed.type} user_name={feed.user_name})
 
 style.
-	#app-feed-header
-		display flex
-		justify-content space-between
-		width 100%
-	#app-feed-header-layout
+	#app-feed-info
+		align-items flex-end
 		display flex
 		flex-flow column nowrap
-		height 100%
-		justify-content space-between
-	#app-feed-icon-default
-		aspect-ratio 1
-		height 64px
+		gap 2.333em
+		height 100vh
+		max-width 400px
+		overflow-y scroll
+		padding 4em 0 4em 6em
+		position fixed
+		right calc(50% + 360px)
+		scrollbar-width none
+		top 0
+		&::-webkit-scrollbar
+			display none
 	#app-feed-options
 		display flex
-		gap 1em
-	#app-logo-dark
-		display none
-		:global(.color-strategy-light-bg &)
-		:global(.color-strategy-ultralight-bg &)
-			display block
-	#app-logo-light
-		display none
-		:global(.color-strategy-dark-bg &)
-		:global(.color-strategy-ultradark-bg &)
-			display block
-	#app-global-navigation
-		align-items center
-		display flex
-		gap 1em
-		left 1em
-		position fixed
-		top 1em
-		writing-mode vertical-lr
-		z-index 1
+		gap 2em
+		padding 1.333em
 	#app-main-content
 		align-items flex-start
 		display flex
 		flex-flow column nowrap
-		gap 2.333em
-		margin-left 50%
-		padding 4.333em 0
-		width 50%
-	#app-main-navigation
-		display flex
-		flex-flow column nowrap
-		gap 2em
-		height 100dvh
-		left 0
-		overflow auto
-		overscroll-behavior contain
-		padding 4em 0
-		padding-left calc(50% - 320px - 4em)
-		padding-right 4em
-		position fixed
-		scrollbar-width none
-		top 0
-		width 50%
-		&::-webkit-scrollbar
-			display none
+		gap 1.333em
+		padding 3em 0

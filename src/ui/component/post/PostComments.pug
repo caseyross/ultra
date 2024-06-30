@@ -34,7 +34,8 @@ script.
 			{#each post.replies as reply_id (reply_id)}
 				Comment(id={reply_id})
 			{#if post.num_more_replies > 0}
-				Button(action={() => api.load(post.more_replies_id)} loading={more_replies_loading} text="{post.num_more_replies} more")
+				.post-comments-more-replies
+					Button(action={() => api.load(post.more_replies_id)} loading={more_replies_loading} text="{post.num_more_replies} more")
 {:else if loading}
 	.post-comments-loading-notification Loading...
 
@@ -43,3 +44,5 @@ style.
 		color var(--c-text-weak)
 	.post-comments-loading-notification
 		color var(--c-text-weak)
+	.post-comments-more-replies
+		margin-bottom 1.333em

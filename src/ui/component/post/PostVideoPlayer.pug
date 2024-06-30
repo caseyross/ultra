@@ -156,7 +156,7 @@ figure.media-player(bind:this={player} class:media-player-controls-hidden={fulls
 	<!-- svelte-ignore a11y-media-has-caption -->
 	video(bind:buffered={buffer_regions} bind:duration={duration} bind:ended={ended} bind:paused={paused} bind:this={video} style='height: {height}px; width: {width}px')
 		source(src={video_url} type='video/mp4')
-	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play in fullscreen
+	figure.media-player-video-hint-overlay(style='height: {height}px; width: {width}px') ▶ Play fullscreen
 	menu.media-player-controls
 		Button(action={play_pause} activated={!paused} description='Play / pause' key='p' text="{Time.sToMediaDurationStr(reactive_time > 0 ? reactive_time : duration)}")
 		.media-scrobbler(title='Drag left or right to change playback position')
@@ -174,10 +174,11 @@ style.
 	audio
 		display none
 	video
-		background black
+		border-radius 1rem
 		&::-webkit-media-controls
 			display none
 		:fullscreen &
+			border-radius 0
 			height 100% !important
 			width 100% !important
 		.media-player-controls-hidden &
@@ -190,9 +191,8 @@ style.
 	.media-player-controls
 		display flex
 		font-feature-settings 'calt', 'tnum'
-		gap 0.333em
-		margin 0.666em 0
-		padding 0 0.666em
+		gap 0.5em
+		margin-top 0.5em
 		:fullscreen &
 			background var(--c-theme)
 			border-radius 2em
@@ -207,6 +207,7 @@ style.
 	.media-player-video-hint-overlay
 		align-items center
 		background rgba(0,0,0,0.50)
+		border-radius 1rem
 		color white
 		display flex
 		justify-content center

@@ -51,15 +51,15 @@ slot
 {:else if ratelimit_remaining_ratio < 0.25}
 	#network-status.network-status-warning RATELIMIT LOW
 {:else if demo_mode_activated}
-	#network-status.network-status-demo DEMO MODE
+	#network-status.network-status-demo INSERT API KEY
 		button#network-status-demo-help-button(on:click={() => demo_mode_help_open = true}) 
 {#if demo_mode_help_open}
 	Popup(on:close={() => demo_mode_help_open = false})
-		h1#network-status-demo-info-header Demo mode
+		h1#network-status-demo-info-header 
 		article#network-status-demo-info-body.md
-			p Due to new Reddit rules, this website can only serve data to about 5 users at a time. If more people are using the website, you may be unable to view data.
+			p Reddit requires each user to have an API key to read data. Each key has a limited amount of bandwidth. You're currently using the default key for this website, which is shared among all users. That means data could be unavailable if there are lots of users.
 			details
-				summary How do I exit demo mode?
+				summary How to get your own Reddit API key
 				ol.network-status-demo-info-list
 					li Open the following page:
 						a(href='https://old.reddit.com/prefs/apps') old.reddit.com/prefs/apps
@@ -80,18 +80,17 @@ slot
 
 style.
 	#network-status
-		align-items flex-end
+		align-items center
+		bottom 3rem
 		display flex
 		gap 1rem
-		font-size 2em
+		font-size 3rem
 		font-weight var(--f-wght-strong)
 		justify-content center
-		left 0
-		padding 1rem
+		left 1rem
 		position fixed
-		text-transform lowercase
-		top 0
-		width 100%
+		text-transform uppercase
+		writing-mode vertical-lr
 		&.network-status-demo
 			color var(--c-text-faint)
 		&.network-status-error

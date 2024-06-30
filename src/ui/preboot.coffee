@@ -8,7 +8,7 @@ if process.env.API_CLIENT_ID
 else if !api.hasClientID()
 	clientID = DEMO_API_CLIENT_ID
 else
-	# Retain previously used client ID.
+	# No-op; retain previously used client ID.
 api.configure({
 	clientID: clientID
 	debug: (new URLSearchParams(location.search)).get('debug')? or process.env.API_DEBUG?

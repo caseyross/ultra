@@ -3,6 +3,7 @@ script.
 
 	import api from '../../../api/index.js'
 
+	import LayoutGlobalNavigation from './LayoutGlobalNavigation.pug'
 	import Status from '../generic/Status.pug'
 	import SubredditAvatar from '../subreddit/SubredditAvatar.pug'
 
@@ -23,23 +24,18 @@ script.
 					if subreddit
 						subreddits_data[subreddit_name] = subreddit
 				)
-			picks = new Set()
-			while subreddits_randomized.length < Math.min(subreddits.length, SUBREDDITS_OPTIMAL_COUNT)
-				pick = subreddits[Math.floor(Math.random() * subreddits.length)]
-				if !picks.has(pick)
-					picks.add(pick)
-					subreddits_randomized.push(pick)
 	)
 
 	set_theme_color('#ffffff')
 
+LayoutGlobalNavigation
 {#if loading}
 	span Loading...
 {:else if error}
 	Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
 {:else if subreddits}
 	ol.subreddit-grid
-		{#each subreddits_randomized as subreddit}
+		{#each subreddits as subreddit}
 			a.subreddit-grid-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}")
 				SubredditAvatar(name={subreddit} size='large')
 

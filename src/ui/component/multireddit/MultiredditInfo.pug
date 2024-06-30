@@ -27,10 +27,9 @@ script.
 			)
 
 aside.multireddit-info
-	{#if false}
-		header.multireddit-info-header
-			MultiredditAvatar(multireddit_name={multireddit_name} user_name={user_name})
-			h1.multireddit-info-name {user_name === 'r' ? 'r/' : ''}{multireddit_name.toLowerCase()}
+	header.multireddit-info-header
+		MultiredditAvatar(multireddit_name={multireddit_name} user_name={user_name})
+		h1.multireddit-info-name {user_name === 'r' ? 'r/' : ''}{multireddit_name.toLowerCase()}
 	{#if multireddit}
 		{#if multireddit.description_html}
 			FormattedHTML(html={multireddit.description_html})
@@ -50,14 +49,13 @@ style.
 		display flex
 		flex-flow column nowrap
 		gap 1.333em
-		width 320px
 	.multireddit-info-header
 		align-items center
 		display flex
 		gap 1em
 		width 100%
 	.multireddit-info-name
-		font-size 1.333em
+		font-size 1.5em
 		font-weight var(--f-wght-strong)
 		overflow hidden
 		text-overflow ellipsis

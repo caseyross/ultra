@@ -1,0 +1,43 @@
+script.
+	import api from '../../../api/index.js'
+
+	import AccountLoginButton from '../account/AccountLoginButton.pug'
+	import AccountLogoutButton from '../account/AccountLogoutButton.pug'
+	import UserAvatar from '../user/UserAvatar.pug'
+	
+nav#app-global-navigation
+	a#app-home-link(href='/')
+		img#app-logo-dark(alt='App logo' src='/brand_triangle_dark.svg')
+		img#app-logo-light(alt='App logo' src='/brand_triangle_light.svg')
+	menu#app-account-management
+		{#if api.isLoggedIn()}
+			{#if api.getUser()}
+				UserAvatar(name={api.getUser()})
+			AccountLogoutButton
+		{:else}
+			AccountLoginButton
+
+style.
+	#app-account-management
+		align-items center
+		display flex
+		gap 1em
+	#app-global-navigation
+		align-items center
+		display flex
+		gap 1em
+		left 1em
+		position fixed
+		top 1em
+		writing-mode vertical-lr
+		z-index 1
+	#app-logo-dark
+		display none
+		:global(.color-strategy-light-bg &)
+		:global(.color-strategy-ultralight-bg &)
+			display block
+	#app-logo-light
+		display none
+		:global(.color-strategy-dark-bg &)
+		:global(.color-strategy-ultradark-bg &)
+			display block

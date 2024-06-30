@@ -1,4 +1,6 @@
 script.
+	import LayoutGlobalNavigation from './LayoutGlobalNavigation.pug'
+
 	export url = null
 	
 	redirect_url = new URL(url)
@@ -6,6 +8,7 @@ script.
 	redirect_url.hostname = 'www.reddit.com'
 	redirect_url.port = ''
 
+LayoutGlobalNavigation
 main#app-route-unsupported
 	a#app-route-unsupported-message(href={redirect_url})
 		h1 Unsupported page
