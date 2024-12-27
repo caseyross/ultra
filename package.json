@@ -19,7 +19,7 @@
 		"webpack-dev-server": "^5.0.4"
 	},
 	"scripts": {
-		"dev": "webpack serve --config webpack.config.dev.js",
-		"build": "webpack --config webpack.config.js"
+		"b": "webpack --config webpack.config.js",
+		"d": "webpack serve --config webpack.config.dev.js"
 	}
 }
