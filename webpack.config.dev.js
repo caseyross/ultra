@@ -1,6 +1,8 @@
 const path = require('path')
 const webpackConfig = require('./webpack.config.js')
 
+const PORT = 1337
+
 module.exports = {
 	...webpackConfig,
 	devServer: {
@@ -15,14 +17,16 @@ module.exports = {
 		liveReload: false,
 		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
 		hot: false,
-		open: true,
+		open: {
+			target: ['https://[::1]:' + PORT],
+		},
 		server: {
 			type: 'https',
 		},
 		static: {
 			directory: path.join(__dirname, 'dist'),
 		},
-		port: 1337,
+		port: PORT,
 	},
 	mode: 'development',
 }
