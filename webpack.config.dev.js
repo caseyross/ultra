@@ -15,6 +15,7 @@ module.exports = {
 		liveReload: false,
 		historyApiFallback: true, // serve index.html for all routes without designated pages (i.e. all of them)
 		hot: false,
+		open: true,
 		server: {
 			type: 'https',
 		},
