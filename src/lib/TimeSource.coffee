@@ -2,10 +2,8 @@ callbacks = {}
 
 setInterval(
 	->
-		requestIdleCallback(->
-			for timer_id in Object.getOwnPropertySymbols(callbacks)
-				callbacks[timer_id]()
-		)
+		for timer_id in Object.getOwnPropertySymbols(callbacks)
+			callbacks[timer_id]()
 	3000
 )
 

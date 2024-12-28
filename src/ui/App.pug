@@ -92,9 +92,14 @@ script.
 	)
 	window.addEventListener('scroll',
 		(event) ->
-			requestIdleCallback(->
-				save_scroll_for_current_url()
-			)
+			if requestIdleCallback?
+				requestIdleCallback(->
+					save_scroll_for_current_url()
+				)
+			else
+				setTimeout(->
+					save_scroll_for_current_url()
+				, 0)
 	)
 
 	setContext('internal_navigate', internal_navigate) # only for use in rare situations where link tags cannot be used
