@@ -1,0 +1,45 @@
+script.
+	import api from 'rr-api'
+	import { setContext } from 'svelte'
+
+	import Button from '../generic/Button.pug'
+	import Comment from '../comment/Comment.pug'
+	
+	export focus_comment_id = null
+	export focus_comment_parent_count = null
+	export initial_count = null
+	export post_id = null
+	export sort = null
+
+	loading = false
+	more_replies_loading = false
+	post = null
+	
+	if focus_comment_id
+		setContext('focus_comment_id', focus_comment_id)
+
+	api.loadWatch(api.ID('post', post_id, sort or 'confidence', initial_count, focus_comment_id, focus_comment_parent_count), (x) ->
+		{ data: post, loading } = x
+		if post?.more_replies
+			api.watch(post.more_replies_id, (x) ->
+				{ loading: more_replies_loading } = x
+			)
+	)
+
+{#if post}
+	{#if !post.replies.length}
+		.post-comments-empty-notification No comments yet.
+	{:else}
+		ol
+			{#each post.replies as reply_id (reply_id)}
+				Comment(id={reply_id})
+			{#if post.num_more_replies > 0}
+				Button(action={() => api.load(post.more_replies_id)} loading={more_replies_loading} text="{post.num_more_replies} more")
+{:else if loading}
+	.post-comments-loading-notification Loading...
+
+style.
+	.post-comments-empty-notification
+		color var(--c-text-weak)
+	.post-comments-loading-notification
+		color var(--c-text-weak)

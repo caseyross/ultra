@@ -1,0 +1,95 @@
+script.
+	import api from 'rr-api'
+	import { Time } from 'rr-lib'
+	
+	export batch_id = null
+	export name = null
+	export size = 'medium'
+	
+	user = null
+	
+	if name != '[deleted]'
+		if batch_id
+			api.loadWatch(batch_id, (x) ->
+				if x?.data or x?.error
+					api.loadWatch(api.ID('user', name), (y) ->
+						user = y?.data
+					)
+			)
+		else
+			api.loadWatch(api.ID('user', name), (x) ->
+				user = x?.data
+			)
+
+{#if name === '[deleted]'}
+	span.user-avatar.user-avatar-account-unavailable(title='Unknown user (possibly deleted)') ✗
+{:else if user}
+	{#if user.is_suspended}
+		span.user-avatar.user-avatar-account-suspended(title='Suspended user') ✗
+	{:else}
+		a.user-avatar(class='user-avatar-size-{size}' href='/u/{name}')
+			{#if user.profile_img}
+				img.user-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src={user.profile_img})
+			{#if size === 'small' || size === 'medium'}
+				{#if user.comment_karma + user.link_karma < 0}
+					figure.user-avatar-badge.user-avatar-badge-negative-karma-user(title='Low karma user')
+						span.user-avatar-badge-backdrop −
+						span.user-avatar-badge-text −
+				{:else if Time.unixS() - user.created_utc < 365 * 24 * 60 * 60}
+					figure.user-avatar-badge.user-avatar-badge-new-user(title='New user')
+						span.user-avatar-badge-backdrop ✗
+						span.user-avatar-badge-text ✗
+				{:else if Time.unixS() - user.created_utc > 10 * 365 * 24 * 60 * 60}
+					figure.user-avatar-badge.user-avatar-badge-veteran-user(title='Veteran user')
+						span.user-avatar-badge-backdrop ⌃
+						span.user-avatar-badge-text ⌃
+
+style.
+	.user-avatar
+		aspect-ratio 1
+		display inline-block
+		flex 0 0 auto
+		position relative
+		user-select none
+	.user-avatar-account-suspended
+	.user-avatar-account-unavailable
+		color var(--c-text-faint)
+		font-size 30px
+		line-height 24px
+		text-align center
+	.user-avatar-badge
+		bottom -9px
+		cursor help
+		font-size 18px
+		font-weight 900
+		line-height 1
+		position absolute
+		right -4px
+	.user-avatar-badge-backdrop
+		color black
+	.user-avatar-badge-negative-karma-user
+		color red
+	.user-avatar-badge-new-user
+		color darkseagreen
+	.user-avatar-badge-veteran-user
+		bottom -12px
+		color gold
+		right -3px
+	.user-avatar-badge-text
+		left 2px
+		font-weight 500
+		font-size 14px
+		position absolute
+		top 2px
+	.user-avatar-image
+		border-radius 50%
+	.user-avatar-size-small
+		width 20px
+	.user-avatar-size-medium
+		width 32px
+	.user-avatar-size-large
+		width 64px
+	.user-avatar-size-xlarge
+		width 128px
+	.user-avatar-size-xxlarge
+		width 256px

@@ -1,0 +1,37 @@
+script.
+	import api from 'rr-api'
+
+	export id = null
+	export size = 'medium'
+
+	subreddit = null
+	api.loadWatch(api.ID('collection', id), (x) ->
+		if x.data?.subreddit
+			api.loadWatch(api.ID('subreddit', x.data.subreddit), (x) ->
+				{ data: subreddit } = x
+			)
+	)
+
+a.collection-avatar(class='collection-avatar-size-{size}' href='/c/{id}' title='/c/{id}')
+	picture
+		source(srcset={subreddit?.community_icon})
+		source(srcset={subreddit?.icon_img})
+		img.collection-avatar-image(alt='' decoding='async' fetchpriority='low' loading='lazy' src='/reddit_logo.svg')
+
+style.
+	.collection-avatar
+		aspect-ratio 1
+		display inline-block
+		flex 0 0 auto
+		user-select none
+	.collection-avatar-image
+		border-radius 50%
+		height 100%
+		object-fit cover
+		width 100%
+	.collection-avatar-size-large
+		width 64px
+	.collection-avatar-size-medium
+		width 32px
+	.collection-avatar-size-small
+		width 20px

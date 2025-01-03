@@ -12,10 +12,12 @@
         "html-webpack-plugin": "^5.6.0",
         "pug": "^3.0.3",
         "pug-to-svelte": "^1.1.0",
+        "rr-api": "git://github.com/caseyross/rr-api.git",
+        "rr-lib": "git://github.com/caseyross/rr-lib.git",
         "style-loader": "^4.0.0",
         "stylus": "^0.63.0",
         "stylus-loader": "^8.1.1",
-        "svelte": "4",
+        "svelte": "^4.2.19",
         "svelte-loader": "^3.2.4",
         "webpack": "^5.97.1",
         "webpack-cli": "^6.0.1",
@@ -691,6 +693,10 @@
     "retry": ["retry@0.13.1", "", {}, "sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg=="],
 
     "reusify": ["reusify@1.0.4", "", {}, "sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw=="],
+
+    "rr-api": ["rr-api@github:caseyross/rr-api#3a4fd66", { "dependencies": { "rr-lib": "git://github.com/caseyross/rr-lib.git" } }, "caseyross-rr-api-3a4fd66"],
+
+    "rr-lib": ["rr-lib@github:caseyross/rr-lib#d9d3a76", {}, "caseyross-rr-lib-d9d3a76"],
 
     "run-applescript": ["run-applescript@7.0.0", "", {}, "sha512-9by4Ij99JUr/MCFBUkDKLWK3G9HVXmabKz9U5MlIAIuvuzkiOicRYs8XJLxX+xahD+mLiiCYDqF9dKAgtzKP1A=="],
 

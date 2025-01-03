@@ -1,0 +1,120 @@
+script.
+	import api from 'rr-api'
+	import { Time } from 'rr-lib'
+	import { getContext, tick } from 'svelte'
+
+	import { format_url } from '../../url/index.js'
+	
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Status from '../generic/Status.pug'
+	
+	export page_name = null
+	export revision_id = null
+	export subreddit_name = null
+	
+	error = null
+	loading = false
+	page = null
+	set_theme_color = getContext('set_theme_color')
+
+	api.loadWatch(api.ID('subreddit_wikipage', subreddit_name, page_name, revision_id),
+		(x) ->
+			{ data: page, error, loading } = x
+			if location.hash and page
+				# a common wiki use case is to load a wiki page directly at a specific heading
+				# since the heading may not exist at the time the browser would normally do the scroll, we need to handle it
+				# it's not worth it to support this handling for other views, but this is a special case
+				await tick()
+				document.getElementById(location.hash[1..])?.scrollIntoView()
+	)
+	api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
+		set_theme_color(subreddit?.primary_color || subreddit?.key_color)
+	)
+
+svelte:head
+	title Wiki | {page_name.toLowerCase()} - {subreddit_name.toLowerCase()}
+{#if error}
+	{#if error?.code === 403}
+		{#if error.reason === 'private'}
+			Status(type='error' message="Only approved users can access this subreddit." title="Private subreddit")
+		{:else}
+			Status(type='error' message="Only moderators of this subreddit can access the wiki." title="Mod-only wiki")
+	{:else if error.reason}
+		Status(type='error' message="An error occurred. This is the best description we have of the error." title="Error: {error.reason}")
+	{:else}
+		Status(type='error' message="An unknown error occurred." title="Unknown error")
+{:else if loading}
+	p Loading...
+{:else if page}
+	article.wiki
+		section.wiki-path
+			a(href='/{subreddit_name}/wiki') Wiki
+			{#each page_name.split('/').slice(0, page_name.split('/').length - 1) as path_segment, i}
+				| →
+				a(href="/{subreddit_name}/wiki/{page_name.split('/').slice(0, i + 1).join('/')}") {path_segment}
+			h1.wiki-path-current-page {page_name.split('/').at(-1).toLowerCase()}
+		section.wiki-info
+			{#if page.revision_date}
+				date.wiki-edit-date(title={Time.sToAbsTimeStr(page.revision_date)}) Last revised {Time.sToRelTimeStr(page.revision_date)} ago
+		section.wiki-body
+			{#if page_name === 'pages'}
+				ol.wiki-all-pages-list.md
+					{#each page as page_name}
+						li
+							a(href={format_url({ subreddit_name, wikipage_name: page_name })}) {page_name}
+			{:else}
+				{#if page.content_html}
+					FormattedHTML(html={page.content_html})
+				{:else if page.content_css}
+					pre.md {page.content_css}
+
+style.
+	.wiki
+		max-width 512px
+	.wiki-body
+		margin-top 2em
+	.wiki-edit-date
+		cursor help
+	.wiki-info
+		align-items center
+		color var(--c-text-weak)
+		display flex
+		font-size 12px
+		gap 1ch
+		margin-top 1em
+	.wiki-path
+		color var(--c-text-weak)
+		.wiki-path-current-page
+			font-size 5em
+			font-weight var(--f-wght-strong)
+			letter-spacing -2px
+			line-height 1
+	:global(.wiki .toc)
+		color var(--c-text-weak)
+		display none
+		max-height 100vh
+		overflow auto
+		padding 64px 0
+		position fixed
+		left calc(50% + 320px)
+		scrollbar-width none
+		top 0
+		width 180px
+		&::-webkit-scrollbar
+			display none
+	:global(.wiki .toc a)
+		padding 0
+		text-decoration none
+	:global(.wiki .toc a:hover)
+		text-decoration underline
+	:global(.wiki .toc + *)
+		margin-top 0
+	:global(.wiki .toc li)
+		margin-top 0.666em
+	:global(.wiki .toc li::before)
+		display none
+	:global(.wiki .toc ol ol)
+	:global(.wiki .toc ol ul)
+	:global(.wiki .toc ul ol)
+	:global(.wiki .toc ul ul)
+		border-left 1px solid var(--c-text-faint)

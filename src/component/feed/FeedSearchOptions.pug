@@ -1,0 +1,52 @@
+script.
+	import api from 'rr-api'
+	import { getContext } from 'svelte'
+
+	import { format_url } from '../../url/index.js'
+
+	import Button from '../generic/Button.pug'
+	import Popup from '../generic/Popup.pug'
+	import SubredditWidget from '../subreddit/SubredditWidget.pug'
+	import TextInput from '../generic/TextInput.pug'
+
+	export multireddit_name = null
+	export search_sort = null
+	export search_text = null
+	export subreddit_name = null
+	export user_name = null
+
+	internal_navigate = getContext('internal_navigate')
+	search_sort_options = [
+		{ label: 'Most Recent', value: 'new' }
+		{ label: 'Most Comments', value: 'comments' }
+		{ label: 'Highest Score', value: 'top' }
+		{ label: 'Closest Match', value: 'relevance' }
+	]
+	subreddit_search_flair_widget = null
+	subreddit_search_picking_flair = false
+
+	if subreddit_name and !subreddit_search_flair_widget
+		api.loadWatch(api.ID('subreddit_widgets', subreddit_name), (x) ->
+			{ data: widgets } = x
+			subreddit_search_flair_widget = widgets?.sidebar.find((x) => x.kind == 'post-flair')
+		)
+
+menu.feed-options-search
+	Button(action={value => internal_navigate({ href: location.origin + format_url({ feed_search_sort: value, feed_search_text: search_text, feed_sort: 'search', multireddit_name, subreddit_name, user_name }) }) } options={search_sort_options} selected={search_sort})
+	{#key search_text}
+		TextInput(autofocus={true} enter_action={value => internal_navigate({ href: location.origin + format_url({ feed_search_sort: search_sort, feed_search_text: value, feed_sort: 'search', multireddit_name, subreddit_name, user_name }) }) } initial_value={search_text})
+	{#if subreddit_search_flair_widget}
+		Button(action={() => subreddit_search_picking_flair = true} text='Flair')
+		{#if subreddit_search_picking_flair}
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			.feed-options-search-subreddit-flair-close-handler(on:click={() => subreddit_search_picking_flair = false} on:keydown={e => { if(e.key === 'Enter') { subreddit_search_picking_flair = false } } })
+				Popup(on:close={() => subreddit_search_picking_flair = false})
+					SubredditWidget(widget={subreddit_search_flair_widget})
+
+style.
+	.feed-options-search
+		display flex
+		flex-flow inherit
+		gap 1em
+	.feed-options-search-subreddit-flair-close-handler
+		position absolute

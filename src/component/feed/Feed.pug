@@ -1,0 +1,156 @@
+script.
+	import api from 'rr-api'
+
+	import AccountSettings from '../../persistence/AccountSettings.coffee'
+	import { format_url } from '../../url/index.js'
+
+	import Button from '../generic/Button.pug'
+	import Comment from '../comment/Comment.pug'
+	import FeedLink from './FeedLink.pug'
+	import Label from '../generic/Label.pug'
+	import Message from '../message/Message.pug'
+	import Post from '../post/Post.pug'
+	import Status from '../generic/Status.pug'
+
+	export collection_id = null
+	export filter = null
+	export multireddit_name = null
+	export page_size = 10
+	export search_sort = null
+	export search_text = null
+	export sort = null
+	export subreddit_name = null
+	export time_range = null
+	export type = null
+	export user_name = null
+
+	base_page_id = switch type
+		when 'account_messages'
+			api.ID('account_messages', filter, page_size)
+		when 'account_saved_comments'
+			api.ID('account_saved_comments', user_name, page_size)
+		when 'account_saved_posts'
+			api.ID('account_saved_posts', user_name, page_size)
+		when 'account_subscribed_subreddits'
+			api.ID('account_subreddits_subscribed', page_size)
+		when 'collection_posts'
+			api.ID('collection', collection_id)
+		when 'multireddit_posts'
+			switch sort
+				when 'search' then api.ID('search_posts', "multireddit=#{user_name}-#{multireddit_name}+#{search_text}", 'all', search_sort, page_size)
+				else api.ID('multireddit_posts', user_name, multireddit_name, time_range, sort, page_size)
+		when 'popular_subreddits'
+			api.ID('global_subreddits_popular', page_size)
+		when 'subreddit_comments'
+			api.ID('subreddit_comments', subreddit_name, page_size)
+		when 'subreddit_posts'
+			switch sort
+				when 'modqueue' then api.ID('subreddit_modqueue_{filter}s', subreddit_name, page_size)
+				when 'search' then api.ID('search_posts', "subreddit=#{subreddit_name}+#{search_text}", 'all', search_sort, page_size)
+				else api.ID('subreddit_posts', subreddit_name, time_range, sort, page_size)
+		when 'subreddit_wikipages'
+			api.ID('subreddit_wikipages_all', subreddit_name)
+		when 'user_comments'
+			api.ID('user_comments', user_name, time_range, sort, page_size)
+		when 'user_posts'
+			api.ID('user_posts', user_name, time_range, sort, page_size)
+	
+	current_page = 0
+	error = null
+	has_next_page = true
+	loading = null
+	next_after_id = (items) ->
+		items.at(-1)?.id or items.at(-1)
+	next_after_id_type = (items) ->
+		switch items.at(-1)?.was_comment
+			when true then 'comment'
+			when false then 'message'
+			else null
+	items = []
+	read = []
+
+	load_next_page = ->
+		if sort == 'search' and !search_text
+			items = []
+			read = []
+			has_next_page = false
+			current_page = 1
+		else
+			api.loadWatch(api.ID(base_page_id, next_after_id(items), next_after_id_type(items)), (x) ->
+				{ error, data, loading } = x
+				if !error and !loading and data
+					page_items = data?.posts or data
+					new_items = page_items.filter((x) -> !items.includes(x))
+					items = items.concat(new_items)
+					read = read.concat(new_items.map((x) -> AccountSettings.check_post_read(x)))
+					has_next_page = switch
+						when page_items.length < page_size then false
+						when type.endsWith('comments') then true
+						when type.endsWith('messages') then true
+						when type.endsWith('posts') and type != 'collection_posts' then true
+						else false
+					current_page = current_page + 1
+		)
+
+	load_next_page()
+
+nav.feed(class="feed-type-{type.split('_').at(-1)}")
+	{#if items.length > 0}
+		{#if filter === 'unread' && read.every(x => x)}
+			{#if !loading}
+				.feed-all-read You've read all {type.split('_').at(-1)} up to page {current_page}.
+		{:else}
+			ol.feed-items
+				{#each items as item, i (item)}
+					{#if filter !== 'unread' || !read[i]}
+						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+						li.feed-item(on:mousedown={e => { if(e.button === 0) { read[i] = true; read = read } }})
+							{#if type.endsWith('comments')}
+								Comment(id={item?.id || item} out_of_context={true})
+							{:else if type.endsWith('messages')}
+								{#if item.was_comment}
+									Comment(id={item.id} out_of_context={true})
+								{:else}
+									Message(message={item})
+							{:else if type.endsWith('posts')}
+								a.feed-post-link(href={format_url({ collection_id, feed_filter: filter, feed_search_sort: search_sort, feed_search_text: search_text, feed_sort: sort, feed_time_range: time_range === 'all' ? null : time_range, multireddit_name, post_id: item, subreddit_name, user_name })})
+									Post(expanded={false} id={item} out_of_context={type !== 'subreddit_posts'})
+							{:else if type.endsWith('subreddits')}
+								a(href={format_url({ subreddit_name: item })})
+									FeedLink(subreddit_name={item} type='subreddit')
+							{:else if type === 'subreddit_wikipages'}
+								a(href={format_url({ subreddit_name, wikipage_name: item })}) {item.split('/').join(' / ')}
+		{#if has_next_page}
+			menu.feed-items-actions
+				Label(text={error ? 'Error: ' + (error.reason || error.message) : ''})
+					Button(action={() => load_next_page()} loading={loading} text={error ? 'Retry' : 'More'})
+	{:else}
+		{#if loading}
+			.feed-loading Loading...
+		{:else if error}
+			Status(type='error' message="Error loading {type.split('_').at(-1)}.")
+		{:else if !(sort === 'search' && !search_text) && !has_next_page}
+			Status(type='warning' message="No {type.split('_').at(-1)}.")
+
+style.
+	.feed
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		width 100%
+	.feed-all-read
+		color var(--c-text-weak)
+	.feed-items
+		border-radius 1.333em
+		display flex
+		flex-flow column nowrap
+		gap 0.666em
+		.feed-type-comments &
+			gap 1.333em
+	.feed-items-actions
+		display flex
+		flex-flow row wrap
+		gap 1ch
+		width 100%
+	.feed-loading
+		color var(--c-text-weak)

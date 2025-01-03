@@ -1,0 +1,89 @@
+script.
+	import api from 'rr-api'
+
+	import ButtonGroup from '../generic/ButtonGroup.pug'
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Status from '../generic/Status.pug'
+	import SubredditAvatar from './SubredditAvatar.pug'
+	import SubredditRules from './SubredditRules.pug'
+	import SubredditWidget from './SubredditWidget.pug'
+
+	export name = null
+	export post_id = null
+	
+	name_loading = false
+	name_error = false
+	rules_expanded = false
+	subreddit = null
+	tab = 'about'
+	tabs = [
+		{ label: 'About', value: 'about' }
+		{ label: 'Rules', value: 'rules' }
+	]
+	widgets = null
+
+	load_subreddit = (name) ->
+		api.loadWatch(api.ID('subreddit', name), (x) ->
+			{ data: subreddit } = x
+		)
+		api.loadWatch(api.ID('subreddit_widgets', name), (x) ->
+			{ data: widgets } = x
+		)
+
+	if name
+		load_subreddit(name)
+	else if post_id
+		api.loadWatch(api.ID('post', post_id), ({ data, loading: name_loading }) ->
+			if data?.subreddit
+				name = data?.subreddit
+				load_subreddit(name)
+		)
+
+{#if name_loading}
+	.subreddit-info-loading Loading...
+{:else if name_error}
+	Status(type='error' message='Error loading subreddit description.')
+{:else if name}
+	article.subreddit-info
+		header.subreddit-info-header
+			SubredditAvatar(name={name})
+			h1.subreddit-info-name(title={subreddit?.display_name || name}) {name.toLowerCase()}
+		ButtonGroup(action={value => tab = value} options={tabs} selected={tab})
+		{#if tab === 'rules'}
+			SubredditRules(name={name})
+		{:else}
+			{#if subreddit}
+				{#if subreddit.public_description_html}
+					FormattedHTML(html={subreddit.public_description_html})
+				{:else}
+					p.subreddit-info-description-empty (No description.)
+			{#if widgets?.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')).length}
+				ol.subreddit-info-widgets
+					{#each widgets.sidebar.filter(x => !(x.kind === 'post-flair' || x.kind === 'subreddit-rules')) as widget}
+						SubredditWidget(widget={widget})
+
+style.
+	.subreddit-info
+		display flex
+		flex-flow column nowrap
+		gap 2em
+		width 320px
+	.subreddit-info-description-empty
+		color var(--c-text-weak)
+	.subreddit-info-header
+		align-items center
+		display flex
+		gap 1em
+		width 100%
+	.subreddit-info-loading
+		color var(--c-text-weak)
+	.subreddit-info-name
+		font-size 1.1666em
+		font-weight var(--f-wght-strong)
+		letter-spacing -0.333px
+		overflow hidden
+		text-overflow ellipsis
+	.subreddit-info-widgets
+		display flex
+		flex-flow column nowrap
+		gap 1em

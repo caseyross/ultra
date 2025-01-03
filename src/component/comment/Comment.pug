@@ -1,0 +1,207 @@
+script.
+	import api from 'rr-api'
+	import { Time } from 'rr-lib'
+	import { getContext } from 'svelte'
+	
+	import { format_url, relativize_url } from '../../url/index.js'
+
+	import Button from '../generic/Button.pug'
+	import CommentEditor from './CommentEditor.pug'
+	import FormattedHTML from '../generic/FormattedHTML.pug'
+	import Popup from '../generic/Popup.pug'
+	import SubredditBanMenu from '../subreddit/SubredditBanMenu.pug'
+	import SubredditReportMenu from '../subreddit/SubredditReportMenu.pug'
+	import UserByline from '../user/UserByline.pug'
+
+	export id = null
+	export out_of_context = false
+	
+	banning = false
+	comment = null
+	deeper_replies_loading = false
+	editing = false
+	edit_error = null
+	edit_sending = false
+	focus_comment_id = getContext('focus_comment_id')
+	more_replies_loading = false
+	replying = false
+	reply_error = null
+	reply_sending = false
+	reporting = false
+	score_text = (comment) ->
+		switch
+			when comment.score_hidden then '?'
+			when !Number.isFinite(comment.score) then '?'
+			when comment.score < 1 then "−#{String(comment.score - 1)[1..]}"
+			else comment.score - 1
+	
+	interact = (action_type, data) ->
+		switch action_type
+			when 'approve'
+				api.submit(api.ID('comment_approve', id), {}, (status) ->
+					if status.success
+						api.submit(api.ID('comment_ignore_reports', id))
+				)
+			when 'distinguish_as_mod'
+				api.submit(api.ID('comment_distinguish', id), { type: 'moderator' })
+			when 'downvote'
+				api.submit(api.ID('comment_vote', id), { numerical_vote: if comment.likes == false then 0 else -1 })
+			when 'edit'
+				editing = true
+			when 'edit_finish'
+				api.submit(api.ID('comment_edit', id), { new_text: data.new_text }, (status) ->
+					edit_error = status.error
+					edit_sending = status.sending
+					if status.success
+						editing = false
+				)
+			when 'pin'
+				api.submit(api.ID('comment_pin', id))
+			when 'remove'
+				api.submit(api.ID('comment_remove', id))
+			when 'remove_and_ban_user'
+				banning = true
+			when 'remove_and_ban_user_finish'
+				api.submit(api.ID('user_ban', data.user_name, data.subreddit_name), { days: data.days, message_to_user: data.message_to_user, violation_reason: data.violation_reason })
+				interact('remove')
+				banning = false
+			when 'reply'
+				replying = true
+			when 'reply_finish'
+				api.submit(api.ID('comment_reply', id), { text: data.text }, (status) ->
+					reply_error = status.error
+					reply_sending = status.sending
+					if status.success
+						replying = false
+				)
+			when 'report'
+				reporting = true
+			when 'report_finish'
+				api.submit(api.ID('comment_report', id), { violation_reason: data.violation_reason })
+				reporting = false
+			when 'save'
+				api.submit(api.ID('comment_save', id), {})
+			when 'undistinguish'
+				api.submit(api.ID('comment_distinguish', id), { type: null })
+			when 'unpin'
+				api.submit(api.ID('comment_pin', id), { unpin: true })
+			when 'unsave'
+				api.submit(api.ID('comment_save', id), { unsave: true })
+			when 'upvote'
+				api.submit(api.ID('comment_vote', id), { numerical_vote: if comment.likes == true then 0 else 1 })
+	
+	api.loadWatch(api.ID('comment', id),
+		(x) ->
+			{ data: comment } = x
+			if comment
+				if comment.deeper_replies
+					api.watch(comment.deeper_replies_id,
+						(x) -> { loading: deeper_replies_loading } = x
+					)
+				else if comment.more_replies
+					api.watch(comment.more_replies_id,
+						(x) -> { loading: more_replies_loading } = x
+					)
+	)
+
+{#if editing}
+	CommentEditor(error={edit_error} initial_text={comment.body} on:submit={e => interact('edit_finish', { new_text: e.detail })} sending={edit_sending})
+{:else if comment}
+	li(class={out_of_context ? 'comment-clip' : 'comment-tree'})
+		<!-- 'comment' role is draft status and not recognized yet -->
+		<!-- svelte-ignore a11y-unknown-role -->
+		article.comment(class:comment-deleted={(comment.author === '[deleted]' && comment.body[0] === '[' && comment.body.at(-1) === ']') || comment.removal_reason} class:comment-highlighted={id === focus_comment_id} class:comment-with-low-score={!comment.score_hidden && comment.score < 1} data-can-edit={comment.author === api.getUser() || null} data-can-interact={(api.isLoggedIn() && !comment.locked) || null} data-can-mod={comment.can_mod_post || null} data-distinguish={comment.distinguished || null} data-id={comment.id} data-mouse-menu='comment' data-pinned={comment.stickied || null} data-saved={comment.saved || null} on:mousemenu={e => interact(e.detail)} role='comment' title="{Number.isFinite(comment.score) ? comment.score + ' points' : 'score unknown'}, {Time.sToAbsRelTimeStr(comment.created_utc)}{comment.edited ? ', edited ' + Time.sToAbsRelTimeStr(comment.edited) : ''}")
+			section.comment-meta
+				{#if api.isLoggedIn()}
+					button.comment-score(class:comment-score-downvoted={comment.likes === false} class:comment-score-upvoted={comment.likes === true} data-mouse-menu={false} on:contextmenu={e => e.preventDefault()} on:keydown={e => e.key === 'Enter' ? interact(e.shiftKey ? 'downvote' : 'upvote') : null} on:mousedown={e => e.button === 0 ? interact('upvote') : e.button === 2 ? interact('downvote') : null} title={comment.score_hidden ? 'score hidden' : comment.score - 1})
+						| {score_text(comment)}
+						{#if comment.controversiality > 0.25}
+							span.comment-score-controversial-marker(title='controversial comment') †
+				{:else}
+					data.comment-score(title={comment.score_hidden ? 'score hidden' : comment.score - 1})
+						| {score_text(comment)}
+						{#if comment.controversiality > 0.25}
+							span.comment-score-controversial-marker(title='controversial comment') †
+				UserByline(distinguish={comment.distinguished || (comment.is_submitter && 'submitter')} flair_color={comment.author_flair_background_color} flair_rich_text={comment.author_flair_richtext} flair_text={comment.author_flair_text} name={comment.author})
+			FormattedHTML(html={comment.body_html})
+		{#if reporting}
+			Popup(on:close={() => reporting = false})
+				SubredditReportMenu(on:submit={e => interact('report_finish', { violation_reason: e.detail })} subreddit_name={comment.subreddit} target_type='comment')
+		{#if banning}
+			Popup(on:close={() => banning = false})
+				SubredditBanMenu(on:submit={e => interact('remove_and_ban_user_finish', { days: e.detail.days, message_to_user: e.detail.message_to_user, subreddit_name: comment.subreddit, user_name: comment.author })})
+		{#if out_of_context}
+			cite.comment-source
+				Button(link={relativize_url(comment.permalink) + '?context=1'} text='Context →')
+				a.comment-source-name(href={format_url({ post_id: comment.link_id.slice(3), subreddit_name: comment.subreddit })}) {comment.link_title}
+		{:else}
+			ol.comment-replies
+				{#if replying}
+					CommentEditor(error={reply_error} on:submit={e => interact('reply_finish', { text: e.detail })} sending={reply_sending})
+				{#if comment.deeper_replies}
+					Button(action={() => api.load(comment.deeper_replies_id)} loading={deeper_replies_loading} text="? more")
+				{:else}
+					{#each comment.replies as reply_id (reply_id)}
+						svelte:self(id={reply_id})
+					{#if comment.num_more_replies > 0}
+						Button(action={() => api.load(comment.more_replies_id)} loading={more_replies_loading} text="{comment.num_more_replies} more")
+
+style.
+	.comment
+		align-items flex-start
+		display flex
+		flex-flow column nowrap
+		max-width 320px
+		:global(& > .md)
+			background var(--c-tint-normal)
+			border-radius 1.333em
+			padding 1em
+		:global(& > .md img)
+			border-radius 9px
+			max-height 256px
+			width auto
+		:global(&.comment-highlighted > .md)
+			outline 1px solid #ffdd5d
+		:global(&.comment-deleted > .md)
+			opacity 0.25
+			pointer-events none
+		:global(&.comment-with-low-score:not(&.comment-deleted) > .md)
+			opacity 0.5
+	.comment-meta
+		align-items center
+		display flex
+		gap 0.5em
+		max-width 100%
+		padding 0.333em
+	.comment-replies
+		border-left 1px solid var(--c-text-xfaint)
+		margin 0.333em 0
+		padding-left 1.333em
+	.comment-score
+		background var(--c-blend-faint)
+		border-radius 11px
+		color var(--c-text-weak)
+		display inline-flex
+		font-family var(--f-family-mono)
+		font-weight var(--f-wght-strong)
+		line-height 1
+		padding 1px 6px
+		&.comment-score-downvoted
+			opacity 0.5
+		&.comment-score-upvoted
+			background var(--c-text-strong)
+			color var(--c-theme)
+	.comment-score-controversial-marker
+		cursor help
+		font-size 12px
+		top 0
+	.comment-source
+		align-items center
+		display flex
+		gap 1ch
+		padding 0.666em 0
+		white-space nowrap
+	.comment-source-name
+		color var(--c-text-faint)
+		overflow hidden
+		text-overflow ellipsis

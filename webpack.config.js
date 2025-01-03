@@ -13,10 +13,10 @@ const HtmlOutputInlineScriptWebpackPlugin = require('html-inline-script-webpack-
 module.exports = {
 	entry: {
 		preboot: {
-			import: './src/ui/preboot.coffee',
+			import: './src/preboot.coffee',
 		},
 		boot: {
-			import: './src/ui/boot.coffee',
+			import: './src/boot.coffee',
 			dependOn: 'preboot',
 		}
 	},
@@ -80,17 +80,17 @@ module.exports = {
 	plugins: [
 		new DotEnvFileWebpackPlugin(),
 		new HtmlOutputWebpackPlugin({
-			favicon: './src/ui/asset/brand_triangle_light.svg',
+			favicon: './src/asset/brand_triangle_light.svg',
 			inject: false, // manual script placement in template
 			publicPath: '/',
-			template: './src/ui/index.html',
+			template: './src/index.html',
 		}),
 		new HtmlOutputInlineScriptWebpackPlugin({
 			scriptMatchPattern: [/^runtime/, /^preboot/] // avoid add'l network roundtrip on critical path
 		}),
 		new FileCopyWebpackPlugin({
 			patterns: [
-				{ from: 'src/ui/asset/*.(png|svg)', to: '[name][ext]' }, // copy into top level, ignoring position in directory structure
+				{ from: 'src/asset/*.(png|svg)', to: '[name][ext]' }, // copy into top level, ignoring position in directory structure
 			],
 		}),
 	],

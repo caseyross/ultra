@@ -1,0 +1,33 @@
+script.
+	import api from 'rr-api'
+	
+	export name = null
+
+	subreddit = null
+	api.loadWatch(api.ID('subreddit', name), (x) ->
+		{ data: subreddit } = x
+		# Work around Reddit not sending complete subreddit data for frontpage subreddits
+		if !x.loading && subreddit? && !(subreddit.accounts_active? or subreddit.active_user_count?)
+			api.reload(api.ID('subreddit', name))
+	)
+
+{#if subreddit}
+	aside.subreddit-status
+		span.subreddit-status-metric(title='Subreddit created') ⏳ {(new Date(1000 * subreddit.created_utc)).getFullYear()}
+		{#if subreddit.subreddit_type === 'public'}
+			span.subreddit-status-metric(title='Subreddit type') 🏛️ Public
+		{:else if subreddit.subreddit_type === 'restricted'}
+			span.subreddit-status-metric(title='Subreddit type') 🏯 Restricted
+		{:else if subreddit.subreddit_type === 'private'}
+			span.subreddit-status-metric(title='Subreddit type') 🏰 Private
+		{:else if subreddit.subreddit_type === 'user'}
+			span.subreddit-status-metric(title='Subreddit type') 🏡 Personal
+		span.subreddit-status-metric(title='Users active, last 15 minutes') 🧑 {subreddit.accounts_active || subreddit.active_user_count}
+
+style.
+	.subreddit-status
+		display flex
+		gap 1em
+		padding 3px 9px
+	.subreddit-status-metric
+		cursor help
