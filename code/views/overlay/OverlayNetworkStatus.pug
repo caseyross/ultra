@@ -58,21 +58,19 @@ slot
 	Popup(on:close={() => demo_mode_help_open = false})
 		h1#network-status-demo-info-header Demo mode
 		article#network-status-demo-info-body.md
-			p Due to new Reddit rules, this website can only serve data to about 5 users at a time. If more people are using the website, you may be unable to view data.
+			p By default, this website uses a shared API key for all users. That means all users' requests count against the same ratelimit. If the ratelimit becomes a problem, you can setup your own personal Reddit API key instead.
 			details
-				summary How do I exit demo mode?
+				summary API key setup
 				ol.network-status-demo-info-list
 					li Open the following page:
-						a(href='https://old.reddit.com/prefs/apps') old.reddit.com/prefs/apps
-					li Create an app:
+						a(href='https://www.reddit.com/prefs/apps' target='_blank') reddit.com/prefs/apps
+					li Create an app. Fill out the following fields:
 						ol.network-status-demo-info-list
-							li Enter whatever name and description you want for the app.
-							li Enter the highlighted values in the app configuration:
-								img.network-status-demo-info-image(alt="Set type to 'installed app'. Enter the address of this website (up to '.com') in the 'about uri' and 'redirect uri' fields." src='/api_key_signup_tutorial_1.png')
-							li Confirm the creation.
-					li After successful creation, copy the highlighted value from the app summary:
-						img.network-status-demo-info-image(alt="Copy the long alphanumeric value after the text 'installed app'." src='/api_key_signup_tutorial_2.png')
-					li Enter that value here and click "Save".
+							li Name: any name
+							li App type: "installed app"
+							li Redirect URI: the base URL of this website (i.e., the URL of the homepage)
+					li After successful creation, you should see your new app in the list. You'll find the API key for the app underneath the name and app type (it should look like a bunch of random characters).
+					li Enter your new API key here and click "Save".
 				menu#network-status-demo-info-inputs
 					TextInput(placeholder='eg. {DEMO_API_CLIENT_ID}' type_action={value => new_client_id = value})
 					Button(action={() => save_new_client_id()} text='Save')
@@ -112,8 +110,6 @@ style.
 		font-size 1em
 		padding 1ch
 		text-transform uppercase
-	.network-status-demo-info-image
-		padding-top 0.333em
 	#network-status-demo-info-input-error
 		color var(--c-text-weak)
 	#network-status-demo-info-inputs
