@@ -69,7 +69,7 @@ export default (url) ->
 	if path.at(-1) is ''
 		path.pop()
 	if !path[0]?
-		feed.type = 'homepage'
+		feed.type = 'popular_subreddits'
 		feed.base_page_id = api.ID('global_subreddits_popular', 99)
 	# Strip global SEO prefixes (but keep r/de).
 	if path[0] in GEO_SEO_PREFIXES and path[1] is 'r' and path[2]?

@@ -5,8 +5,8 @@ script.
 
 	import { parse_url } from '../lib/url/index'
 	
-	import LayoutFrontpage from './layout/LayoutFrontpage'
-	import LayoutNotSupported from './layout/LayoutNotSupported'
+	import LayoutSubreddits from './layout/LayoutSubreddits'
+	import LayoutRedirect from './layout/LayoutRedirect'
 	import LayoutPost from './layout/LayoutPost'
 	
 	import OverlayAccountProvider from './overlay/OverlayAccountProvider'
@@ -113,9 +113,9 @@ OverlayThemeProvider
 			OverlayTableManager
 				OverlayMouseMenu
 					{#if route.feed || route.post || route.wiki}
-						{#if route.feed?.type === 'homepage'}
-							LayoutFrontpage
+						{#if route.feed?.type === 'popular_subreddits'}
+							LayoutSubreddits
 						{:else}
 							LayoutPost(feed={route.feed} post={route.post} wiki={route.wiki})
 					{:else}
-						LayoutNotSupported(url={location})
+						LayoutRedirect(url={location})
