@@ -1,60 +1,63 @@
 script.
 	import api from 'rr-api'
-	import { getContext } from 'svelte'
 
 	import Status from '../generic/Status'
 	import SubredditAvatar from '../subreddit/SubredditAvatar'
 
-	SUBREDDITS_OPTIMAL_COUNT = 49
-
 	error = false
 	loading = false
-	set_theme_color = getContext('set_theme_color')
 	subreddits = []
 	subreddits_data = {}
 	subreddits_randomized = []
 
-	api.loadWatch(api.ID((if api.isLoggedIn() then 'account_subreddits_subscribed' else 'global_subreddits_popular'), SUBREDDITS_OPTIMAL_COUNT), ({ data, error, loading }) ->
-		subreddits = data or []
-		if subreddits.length
-			for subreddit_name in subreddits
-				api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
-					if subreddit
-						subreddits_data[subreddit_name] = subreddit
-				)
-			picks = new Set()
-			while subreddits_randomized.length < Math.min(subreddits.length, SUBREDDITS_OPTIMAL_COUNT)
-				pick = subreddits[Math.floor(Math.random() * subreddits.length)]
-				if !picks.has(pick)
-					picks.add(pick)
-					subreddits_randomized.push(pick)
+	api.loadWatch(
+		api.ID('global_subreddits_popular', 99),
+		(x) ->
+			{ data, error, loading } = x
+			subreddits = data or []
+			if subreddits.length
+				# Randomize order
+				picks = new Set()
+				while subreddits_randomized.length < subreddits.length
+					pick = subreddits[Math.floor(Math.random() * subreddits.length)]
+					if !picks.has(pick)
+						picks.add(pick)
+						subreddits_randomized.push(pick)
+				# Get subreddit color data
+				for subreddit_name in subreddits
+					api.loadWatch(api.ID('subreddit', subreddit_name), ({ data: subreddit }) ->
+						if subreddit
+							subreddits_data[subreddit_name] = subreddit
+					)
 	)
 
-	set_theme_color('#ffffff')
-
-{#if loading}
-	span Loading...
-{:else if error}
-	Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
-{:else if subreddits}
-	ol.subreddit-grid
-		{#each subreddits_randomized as subreddit}
-			a.subreddit-grid-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}")
-				SubredditAvatar(name={subreddit} size='large')
-
+main#layout-frontpage
+	{#if loading}
+		h1 Loading subreddits...
+	{:else if error}
+		Status(type='error' message={error.description || error.reason || 'The server could be having issues. You can also try clearing your browser cache.'} title='Error loading subreddits')
+	{:else if subreddits}
+		ol#subreddit-list
+			{#each subreddits_randomized as subreddit}
+				a.subreddit-list-cell(href='/{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}' style="background-color: {subreddits_data[subreddit]?.primary_color || subreddits_data[subreddit]?.key_color}" title='{subreddits_data[subreddit] ? subreddits_data[subreddit].display_name : subreddit}')
+					SubredditAvatar(name={subreddit} size='large')
+				
 style.
-	.subreddit-grid
-		display grid
-		gap 3px
-		grid-template-columns repeat(7, 96px)
+	#layout-frontpage
+		padding 4em
+	#subreddit-list
+		display flex
+		flex-flow row nowrap
 		height 100dvh
-		place-content center
-	.subreddit-grid-cell
-		aspect-ratio 1
-		background var(--c-shade-weak)
-		border-radius 0.666em
+		left 0
+		overflow auto
+		position fixed
+		scrollbar-width none
+		top 0
+		width 100dvw
+		&::-webkit-scrollbar
+			display none
+	.subreddit-list-cell
 		display grid
+		height 100%
 		place-content center
-		width 100%
-		&:hover
-			border-radius 0.333em
