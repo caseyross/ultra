@@ -1,0 +1,319 @@
+// Imports
+@font-face
+	font-family 'Inter'
+	font-style normal
+	font-weight 100 900
+	src url('../fonts/inter_v4.woff2')
+@font-face
+	font-family 'Inter'
+	font-style italic
+	font-weight 100 900
+	src url('../fonts/inter_v4_i.woff2')
+
+// Baseline resets
+*
+	box-sizing border-box
+	margin 0
+	&:first-child
+		margin-top 0 !important
+	&::-webkit-scrollbar
+		background var(--c-blend-faint)
+		border-radius 1.333em
+	&::-webkit-scrollbar-thumb
+		background var(--c-blend-weak)
+		border-radius 1.333em
+
+// Page structure & theme
+html
+	font-size 15px
+body
+	background-color var(--c-theme)
+	color var(--c-text-strong)
+	display grid
+	font-family var(--f-family-prop)
+	font-weight var(--f-wght-weak)
+	grid-auto-flow row
+	grid-template-columns 1fr
+	letter-spacing calc(1px / 6)
+	line-height 20px
+	overflow-y scroll
+	place-items center
+	scrollbar-width none
+	word-spacing calc(1px / 6)
+	--c-fixed-admin orangered
+	--c-fixed-exadmin rebeccapurple
+	--c-fixed-mod darkseagreen
+	--c-fixed-user cornflowerblue
+	--f-family-mono 'Consolas', monospace
+	--f-family-prop 'Inter', sans-serif
+	&::-webkit-scrollbar
+		display none
+.color-strategy-ultradark-bg
+	color-scheme dark
+	--c-blend-faint rgba(255,255,255,0.0625)
+	--c-blend-weak rgba(255,255,255,0.125)
+	--c-con-weak rgba(255,255,255,0.0625)
+	--c-con-normal rgba(255,255,255,0.125)
+	--c-shade-weak rgba(255,255,255,0.0625)
+	--c-shade-normal rgba(255,255,255,0.125)
+	--c-shade-strong rgba(255,255,255,0.25)
+	--c-text-xfaint rgba(255,255,255,0.125)
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong #e8e8e8
+	--c-tint-normal rgba(255,255,255,0.125)
+	--f-wght-weak 400
+	--f-wght-normal 500
+	--f-wght-strong 650
+.color-strategy-dark-bg
+	color-scheme dark
+	--c-blend-faint rgba(255,255,255,0.0625)
+	--c-blend-weak rgba(255,255,255,0.125)
+	--c-con-weak rgba(0,0,0,0.125)
+	--c-con-normal rgba(0,0,0,0.25)
+	--c-shade-weak rgba(0,0,0,0.125)
+	--c-shade-normal rgba(0,0,0,0.25)
+	--c-shade-strong rgba(0,0,0,0.50)
+	--c-text-xfaint rgba(255,255,255,0.125)
+	--c-text-faint rgba(255,255,255,0.25)
+	--c-text-weak rgba(255,255,255,0.50)
+	--c-text-strong #f8f8f8
+	--c-tint-normal rgba(255,255,255,0.125)
+	--f-wght-weak 400
+	--f-wght-normal 500
+	--f-wght-strong 650
+.color-strategy-light-bg
+	color-scheme light
+	--c-blend-faint rgba(0,0,0,0.0625)
+	--c-blend-weak rgba(0,0,0,0.125)
+	--c-con-weak rgba(255,255,255,0.5)
+	--c-con-normal white
+	--c-shade-weak rgba(0,0,0,0.0625)
+	--c-shade-normal rgba(0,0,0,0.125)
+	--c-shade-strong rgba(0,0,0,0.25)
+	--c-text-xfaint rgba(0,0,0,0.125)
+	--c-text-faint rgba(0,0,0,0.25)
+	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong #333333
+	--c-tint-normal rgba(255,255,255,0.5)
+	--f-wght-weak 450
+	--f-wght-normal 550
+	--f-wght-strong 700
+.color-strategy-ultralight-bg
+	color-scheme light
+	--c-blend-faint rgba(0,0,0,0.0625)
+	--c-blend-weak rgba(0,0,0,0.125)
+	--c-con-weak rgba(0,0,0,0.03125)
+	--c-con-normal rgba(0,0,0,0.0625)
+	--c-shade-weak rgba(0,0,0,0.03125)
+	--c-shade-normal rgba(0,0,0,0.0625)
+	--c-shade-strong rgba(0,0,0,0.125)
+	--c-text-xfaint rgba(0,0,0,0.125)
+	--c-text-faint rgba(0,0,0,0.25)
+	--c-text-weak rgba(0,0,0,0.50)
+	--c-text-strong #333333
+	--c-tint-normal rgba(0,0,0,0.0625)
+	--f-wght-weak 450
+	--f-wght-normal 550
+	--f-wght-strong 700
+
+// General layout & typography
+a
+	color inherit
+	overflow-wrap anywhere
+	text-decoration none
+	.md &
+		text-decoration underline
+		&:empty
+			display none
+		&:has(img)
+			text-decoration none
+address
+	font-style normal
+blockquote
+	border-left 2px solid var(--c-text-xfaint)
+	color var(--c-text-weak)
+	margin 1em 0 0
+	padding-left 1em
+cite
+	font-style normal
+code
+	color palegreen
+	background black
+	font-family var(--f-family-mono)
+	font-size 12px
+	word-break break-all
+details
+	margin 1em 0 0
+fieldset
+	border 0
+	padding 0
+kbd
+	font-family var(--f-family-mono)
+hr
+	border 0
+	border-bottom 1px solid var(--c-text-faint)
+	margin 1em 0 0
+	width 100%
+menu
+	padding 0
+p
+	margin 1em 0 0
+pre
+	font-family var(--f-family-mono)
+	font-size 12px
+	margin 1em 0 0
+	overflow auto
+	white-space pre-line
+	white-space-collapse preserve
+sub
+sup
+	line-height 0
+.md
+	overflow-wrap anywhere
+	h1
+	h2
+	h3
+	h4
+	h5
+	h6
+		font-weight var(--f-wght-strong)
+		margin 1rem 0 0
+	h1
+		font-size 1.333em
+		letter-spacing 0
+		line-height 1.1666
+	h2
+		font-size 1.25em
+		letter-spacing 0
+		line-height 1.2
+	h3
+	h4
+		font-size 1.125em
+		letter-spacing 0
+		line-height 1.25
+	h5
+	h6
+	b
+	strong
+		font-size inherit
+		font-weight var(--f-wght-strong)
+		letter-spacing 0
+.md-spoiler-text
+	background black
+	color transparent
+	padding-bottom 1px
+	*
+		opacity 0
+	&:hover
+		background var(--c-blend-weak)
+		color inherit
+		*
+			opacity 1
+
+// Lists
+ol
+ul
+	list-style none
+	padding 0
+.md
+	ol
+	ul
+		counter-reset list
+		margin 1em 0 0
+	li
+		counter-increment list
+		margin 1em 0 0
+		padding-left 1ch
+		position relative
+		&::before
+			position absolute
+			right 100%
+			top 0
+			white-space pre
+	ol > li
+		margin-left 1.333em
+		&::before
+			align-items center
+			background var(--c-blend-weak)
+			border-radius 999px
+			content counter(list)
+			display inline-flex
+			font-feature-settings 'tnum'
+			font-size 0.75rem
+			font-weight var(--f-wght-strong)
+			justify-content center
+			width 1.333rem
+	ul > li
+		margin-left 1ch
+		&::before
+			content '–'
+
+// Tables
+.md
+	table
+		border-collapse collapse
+		font inherit
+		font-feature-settings 'tnum'
+		font-size 13px
+		letter-spacing 0.333px
+		line-height 1.5
+		margin 1rem 0 0
+		table-layout fixed
+		white-space pre
+		width 100%
+	tbody tr:nth-child(odd)
+		background var(--c-blend-faint)
+	td
+	th
+		padding 0.5em
+		overflow hidden
+		text-align left
+		text-overflow ellipsis
+	td
+		border-left 1px solid var(--c-text-faint)
+		vertical-align top
+	th
+		border-left 1px solid transparent
+		border-bottom-color var(--c-text-faint)
+		font-weight var(--f-wght-strong)
+		font-size 10px
+		letter-spacing 1px
+		text-transform uppercase
+		vertical-align bottom
+
+// Interactive
+button
+input
+select
+summary
+	background inherit
+	border 0
+	color inherit
+	cursor pointer
+	font inherit
+	letter-spacing inherit
+	line-height inherit
+	padding 0
+	text-transform inherit
+	user-select none
+	word-spacing inherit
+input[type='text']
+	cursor initial
+summary
+	background var(--c-shade-weak)
+	border-radius 11px
+	display inline-flex
+	margin 1em 0 0
+	padding 3px 9px
+
+// Media
+iframe
+	border 0
+img
+video
+	box-sizing content-box
+	display block
+	max-width 100%
+.md img
+	margin 1em 0 0

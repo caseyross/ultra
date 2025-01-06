@@ -1,0 +1,53 @@
+script.
+	import { onMount } from 'svelte'
+	
+	import HotkeyLabel from './HotkeyLabel'
+
+	export autofocus = false
+	export enter_action = null
+	export initial_value = ''
+	export key = null
+	export label = ''
+	export placeholder = ''
+	export type_action = ->
+
+	input = null
+	hotkeys = {}
+	if key
+		hotkeys[key] = ->
+			input?.focus()
+			input?.select()
+
+	process_keydown = (e) -> switch
+		when enter_action and e.key == 'Enter'
+			enter_action(e.target.value)
+		when e.key.length > 1 # non-typographic character
+			return
+		else
+			e.stopPropagation()
+			return
+
+	onMount ->
+		if initial_value
+			input.value = initial_value
+
+label.text-input-label
+	{#if key}
+		HotkeyLabel(key={key})
+	| {label}
+	<!-- svelte-ignore a11y-autofocus -->
+	input.text-input(autofocus={autofocus} bind:this={input} on:keydown={process_keydown} on:input={e => type_action(e.target.value)} placeholder={placeholder} type='text')
+
+style.
+	.text-input
+		border-bottom 2px solid var(--c-text-faint)
+		font-weight var(--f-wght-strong)
+		width 100%
+		&:focus
+			outline none
+	.text-input-label
+		align-items center
+		display inline-flex
+		gap 1ch
+		user-select none
+		flex 1 1 auto

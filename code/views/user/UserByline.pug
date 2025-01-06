@@ -1,0 +1,31 @@
+script.
+	import UserDistinguish from './UserDistinguish'
+	import UserFlair from './UserFlair'
+
+	export distinguish = null
+	export flair_color = null
+	export flair_rich_text = null
+	export flair_text = null
+	export name = null
+
+address.user-byline
+	{#if distinguish}
+		UserDistinguish(type={distinguish})
+	a.user-byline-name(href='/u/{name}') {name}
+	{#if flair_text}
+		UserFlair(color={flair_color} emoji_style='image' rich_text={flair_rich_text} text={flair_text})
+
+style.
+	.user-byline
+		align-items center
+		color var(--c-text-weak)
+		display flex
+		font-size 12px
+		line-height 1
+		gap 1ch
+		overflow hidden
+		padding 2px 0
+		text-overflow ellipsis
+		white-space nowrap
+	.user-byline-name
+		font-weight var(--f-wght-strong)

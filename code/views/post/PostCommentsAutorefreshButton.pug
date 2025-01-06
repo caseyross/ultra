@@ -1,0 +1,45 @@
+script.
+	import api from 'rr-api'
+	import { onDestroy } from 'svelte'
+	
+	import Button from '../generic/Button'
+	
+	export count = null
+	export post_id = null
+	
+	interval_options = [
+		{ label: 'Off', value: -1 }
+		{ label: '5s', value: 5 }
+		{ label: '30s', value: 30 }
+		{ label: '10min', value: 600 }
+	]
+	interval_options_dynamic = interval_options
+	interval_timer = null
+	seconds_until_refresh = 1
+	selected_value = null
+	
+	set_autorefresh_interval = (seconds) ->
+		clearInterval(interval_timer)
+		interval_timer = null
+		if seconds > 0
+			seconds_until_refresh = seconds
+			interval_timer = setInterval(
+				->
+					seconds_until_refresh = seconds_until_refresh - 1
+					interval_options_dynamic = interval_options.map((option) ->
+						if option.value == seconds
+							{ ...option, label: seconds_until_refresh }
+						else
+							option
+					)
+					if seconds_until_refresh < 1
+						api.reload(api.ID('post', post_id, 'new', count))
+						seconds_until_refresh = seconds
+				1000
+			)
+		selected_value = seconds
+	
+	onDestroy ->
+		clearInterval(interval_timer)
+
+Button(action={value => set_autorefresh_interval(Number(value))} options={seconds_until_refresh < selected_value ? interval_options_dynamic : interval_options} selected={selected_value})

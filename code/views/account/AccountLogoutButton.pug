@@ -1,0 +1,6 @@
+script.
+	import api from 'rr-api'
+
+	import Button from '../generic/Button'
+
+Button(action={() => { api.logout(); location.reload() }} text='Logout')

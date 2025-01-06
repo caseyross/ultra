@@ -1,0 +1,43 @@
+script.
+	import { format_url } from '../../lib/url/index'
+
+	import CollectionAvatar from '../collection/CollectionAvatar'
+	import MultiredditAvatar from '../multireddit/MultiredditAvatar'
+	import SubredditAvatar from '../subreddit/SubredditAvatar'
+	import UserAvatar from '../user/UserAvatar'
+
+	export collection_id = null
+	export icon_url = null
+	export multireddit_name = null
+	export subreddit_name = null
+	export type = null
+	export user_name = null
+
+	label = switch type
+		when 'collection' then collection_id
+		when 'multireddit' then user_name + '/' + multireddit_name
+		when 'subreddit' then subreddit_name
+		when 'user' then user_name
+
+a.feed-link(class="feed-link-type-{type}" href={format_url({ collection_id, multireddit_name, subreddit_name, user_name })})
+	{#if type === 'collection'}
+		CollectionAvatar(id={collection_id} size='small')
+	{#if type === 'multireddit'}
+		MultiredditAvatar(multireddit_name={multireddit_name} size='small' user_name={user_name})
+	{:else if type === 'subreddit'}
+		SubredditAvatar(icon_url={icon_url} name={subreddit_name} size='small')
+	{:else if type === 'user'}
+		UserAvatar(name={user_name} size='small')
+	span.feed-link-text(title={label}) {label}
+
+style.
+	.feed-link
+		align-items center
+		display inline-flex
+		gap 1ch
+		max-width 100%
+		white-space nowrap
+	.feed-link-text
+		overflow hidden
+		text-overflow ellipsis
+		text-transform lowercase

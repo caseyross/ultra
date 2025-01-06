@@ -1,0 +1,59 @@
+script.
+	import { createEventDispatcher } from 'svelte'
+	
+	import TextInput from '../generic/TextInput'
+
+	ban_lengths = [
+		{ label: 'A day', value: 1 }
+		{ label: 'A week', value: 7 }
+		{ label: 'A month', value: 28 }
+		{ label: 'A year', value: 364 }
+		{ label: 'Permanent', value: 999 }
+	]
+	dispatch = createEventDispatcher()
+	message_input_value = null
+
+form.ban-menu
+	fieldset.ban-menu-message-to-user
+		TextInput(autofocus={true} placeholder='Message to user...' type_action={value => message_input_value = value})
+	fieldset.ban-menu-durations
+		{#each ban_lengths as duration}
+			label.ban-menu-duration
+				span Ban length
+				h1.ban-menu-duration-name {duration.label}
+				input.ban-menu-duration-button(on:change={e => dispatch('submit', { days: e.target.value, message_to_user: message_input_value })} type='radio' value={duration.value})
+
+style.
+	.ban-menu
+		display flex
+		flex-flow column nowrap
+		gap 1em
+		width 480px
+	.ban-menu-duration
+		aspect-ratio 1
+		background var(--c-con-weak)
+		border-radius 6px
+		cursor pointer
+		display inline-flex
+		flex-flow column nowrap
+		gap 3px
+	.ban-menu-duration
+		padding 12px
+		position relative
+		&:hover
+			background salmon
+			color white
+	.ban-menu-duration-button
+		display none
+	.ban-menu-duration-name
+		font-size 13px
+	.ban-menu-durations
+		display grid
+		font-size 0.75em
+		grid-auto-flow row
+		grid-template-columns repeat(5, 1fr)
+		gap 9px
+	.ban-menu-message-to-user
+		align-items center
+		display flex
+		gap 9px

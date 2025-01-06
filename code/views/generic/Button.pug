@@ -1,0 +1,78 @@
+script.
+	import { hotkey } from './action/hotkeys'
+
+	import HotkeyLabel from './HotkeyLabel'
+	
+	export action = ->
+	export activated = false
+	export badge = null
+	export description = ''
+	export disabled = false
+	export key = null
+	export link = null
+	export loading = false
+	export loading_text = 'Loading...'
+	export new_tab = false
+	export options = null
+	export selected = null
+	export text = ''
+
+{#if options}
+	select.button.button-dropdown(class:button-activated={activated} class:disabled={disabled || loading} on:change={e => action(e.target.value)} title={description} use:hotkey={key})
+		{#each options as option}
+			option.button-dropdown-option(disabled={option.disabled} label={option.label} selected={selected === option.value} value={option.value})
+{:else if link}
+	a.button(class:button-activated={activated} class:button-disabled={disabled} href={disabled ? null : link} target={new_tab ? '_blank' : ''} title={description} use:hotkey={key})
+		{#if key}
+			HotkeyLabel(key={key})
+		{#if text}
+			| {text}
+		{#if badge}
+			span.button-badge {badge}
+{:else}
+	button.button(class:button-activated={activated} disabled={disabled || loading} on:keydown={e => e.key === 'Enter' && action()} on:mousedown={e => e.button === 0 && action()} title={description} use:hotkey={key})
+		{#if loading}
+			| {loading_text}
+		{:else}
+			{#if key}
+				HotkeyLabel(key={key})
+			{#if text}
+				| {text}
+			{#if badge}
+				span.button-badge {badge}
+
+style.
+	.button
+		align-items center
+		background var(--c-shade-weak)
+		border-radius 11px
+		display inline-flex
+		gap 5px
+		letter-spacing 0.333px
+		padding-block 3px
+		padding-inline 9px
+		position relative
+		text-align left
+		user-select none
+		white-space nowrap
+		&.button-activated
+			background var(--c-shade-strong)
+		&:disabled
+		&.button-disabled
+			cursor auto
+			opacity 0.5
+		&:hover:not(.button-activated)
+			background var(--c-shade-strong)
+	.button-badge
+		border-radius 10px
+		background var(--c-blend-weak)
+		font-size 0.5em
+		font-weight var(--f-wght-strong)
+		padding 0 1ch
+	.button-dropdown
+		font inherit
+		padding-bottom 4px
+	.button-dropdown-option
+		background var(--c-theme)
+		color var(--c-text-strong)
+		font inherit
